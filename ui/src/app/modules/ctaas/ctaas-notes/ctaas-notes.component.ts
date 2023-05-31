@@ -15,6 +15,8 @@ import { BannerService } from "../../../services/alert-banner.service";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import { Subject } from "rxjs";
 import { Constants } from 'src/app/helpers/constants';
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -51,6 +53,8 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         private subAccountService: SubAccountService,
         private bannerService: BannerService,
         private ctaasSetupService: CtaasSetupService,
+        private ftService: FeatureToggleService,
+        private router: Router,
         private datePipe: DatePipe) {}
     /**
      * calculate table height based on the window height
@@ -153,7 +157,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * @param note: Note
      */
     viewDashboard(note: Note): void{
-        this.openDialog(this.VIEW_DASHBOARD,note);
+        if (this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id)) {
+            this.router.navigate(['/spotlight/spotlight-dashboard'], {queryParams: {noteId: note.id}})
+        } else
+            this.openDialog(this.VIEW_DASHBOARD,note);
     }
 
     /**

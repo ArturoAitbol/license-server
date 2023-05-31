@@ -73,6 +73,9 @@ public class RoleAuthHandler {
             case SUBACCOUNT_STAKEHOLDER:
                 rolePermissions = SubAccountStakeholderPermissions;
                 break;
+            case IGES_ADMIN:
+                rolePermissions = IGESAdminPermissions;
+                break;
             default:
                 return false;
         }
@@ -209,20 +212,23 @@ public class RoleAuthHandler {
         return "";
     }
 
-    public static SelectQueryBuilder getCustomerRoleVerificationQuery(String subaccountId, JSONArray roles, String email){
+    public static SelectQueryBuilder getCustomerRoleVerificationQuery(String subaccountId, JSONArray roles,
+            String email) {
         SelectQueryBuilder verificationQueryBuilder = null;
         String currentRole = evaluateRoles(roles);
         switch (currentRole) {
             case CUSTOMER_FULL_ADMIN:
                 verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
-                verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
+                verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?",
+                        email);
                 verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
                 break;
             case SUBACCOUNT_ADMIN:
             case SUBACCOUNT_STAKEHOLDER:
                 verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
                 verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
-                verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+                verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId,
+                        QueryBuilder.DATA_TYPE.UUID);
                 break;
         }
         return verificationQueryBuilder;

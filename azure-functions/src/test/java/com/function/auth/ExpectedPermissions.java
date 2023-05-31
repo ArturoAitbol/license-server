@@ -14,6 +14,7 @@ public class ExpectedPermissions {
     private final Boolean customerFullAdmin;
     private final Boolean subaccountAdmin;
     private final Boolean subaccountStakeholder;
+    private final Boolean igesAdmin;
 
     ExpectedPermissions(Boolean fullAdmin,
                         Boolean salesAdmin,
@@ -24,7 +25,8 @@ public class ExpectedPermissions {
                         Boolean distributorFullAdmin,
                         Boolean customerFullAdmin,
                         Boolean subaccountAdmin,
-                        Boolean subaccountStakeholder){
+                        Boolean subaccountStakeholder,
+                        Boolean igesAdmin){
         this.fullAdmin = fullAdmin;
         this.salesAdmin = salesAdmin;
         this.configTester = configTester;
@@ -35,6 +37,7 @@ public class ExpectedPermissions {
         this.customerFullAdmin = customerFullAdmin;
         this.subaccountAdmin = subaccountAdmin;
         this.subaccountStakeholder = subaccountStakeholder;
+        this.igesAdmin = igesAdmin;
     }
 
     public Boolean getExpectation(String role){
@@ -59,6 +62,8 @@ public class ExpectedPermissions {
                 return subaccountAdmin;
             case SUBACCOUNT_STAKEHOLDER:
                 return subaccountStakeholder;
+            case IGES_ADMIN:
+                return igesAdmin;
         }
         return null;
     }

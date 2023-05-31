@@ -266,6 +266,7 @@ public class Permissions {
         public static final EnumSet<Resource> SubAccountStakeholderPermissions = EnumSet.of(
                         // CREATE
                         CREATE_SUBACCOUNT_ADMIN_DEVICE,
+        
                         CREATE_CALLBACK,
                         // DELETE
                         DELETE_SUBACCOUNT_ADMIN_DEVICE,
@@ -283,4 +284,7 @@ public class Permissions {
                         GET_MAP,
                         // MODIFY
                         MODIFY_AUTH_USER_PROFILE);
+            public static final EnumSet<Resource> IGESAdminPermissions = EnumSet.of(                
+                        GET_REPORTABLE_SUBACCOUNTS
+            );
 }

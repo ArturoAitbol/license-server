@@ -54,6 +54,7 @@ public enum Resource {
         GET_ALL_LICENSE_USAGE_DETAILS,//TekvLSGetAllLicenseUsageDetails
         GET_ALL_PROJECTS,//TekvLSGetAllProjects
         GET_ALL_SUBACCOUNTS,//TekvLSGetAllSubaccounts
+        GET_REPORTABLE_SUBACCOUNTS,//TekvLSGetReportableSubaccounts
         GET_CONSUMPTION_USAGE_DETAILS,//TekvLSGetConsumptionUsageDetails
         GET_USER_EMAIL_INFO,//TekvLSGetUserEmailsInfo
         GET_ALL_CTAAS_SETUPS,//TekvLSGetAllCtaasSetups
