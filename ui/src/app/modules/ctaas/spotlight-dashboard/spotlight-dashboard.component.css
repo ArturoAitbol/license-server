@@ -264,3 +264,22 @@ mat-form-field {
     height: auto;
     padding: 0px;
 }
+
+.light-text {
+    color: #8a8a8a;
+}
+
+.note-content{
+    background: white;
+}
+
+.notes-card-footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0px;
+}
+
+#note-author{
+    font-weight: bolder;
+}

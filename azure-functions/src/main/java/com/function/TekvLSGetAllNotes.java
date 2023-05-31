@@ -69,6 +69,7 @@ public class TekvLSGetAllNotes {
         }
         
         String status = request.getQueryParameters().getOrDefault("status", "");
+        String noteId = request.getQueryParameters().getOrDefault("id", "");
 
         // Build SQL statement
         SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM note");
@@ -102,6 +103,9 @@ public class TekvLSGetAllNotes {
 
         if (!status.isEmpty())
             queryBuilder.appendEqualsCondition("status", status, "note_status_type_enum");
+        if (!noteId.isEmpty())
+            queryBuilder.appendEqualsCondition("id", noteId, QueryBuilder.DATA_TYPE.UUID);
+
         queryBuilder.appendOrderBy("open_date", ORDER_DIRECTION.DESC);
 
         // Connect to the database
