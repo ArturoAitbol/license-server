@@ -72,7 +72,7 @@ export class DetailedReportsCompoment implements OnInit {
       if (params.type) this.types = params.type;
       if (params.status) this.status = params.status;
       if (params.regions != '' && params.regions) this.regionsStr = params.regions;
-      if (params.users != '' && params.users) this.usersStr = params.users;
+      if (params.users != '' && params.users) this.usersStr = JSON.parse(params.users).join(',');
       this.startDateStr = params.start;
       this.endDateStr = params.end;
       this.parseTitle();
