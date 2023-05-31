@@ -286,7 +286,6 @@ export class SpotlightDashboardComponent implements OnInit{
     this.vq.p2p = POLQA.callsByType.p2p;
     this.vq.onNet = POLQA.callsByType.onNet;
     this.vq.offNet = POLQA.callsByType.offNet;
-    console.log(POLQA)
     this.vqChartOptions.series = [ { name: 'percentages', data: voiceQualityRes.percentages }];
     this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
     this.vq.period = executionTime;
