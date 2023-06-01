@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import javax.net.ssl.*;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -81,7 +82,7 @@ public class TAPClient {
         url = String.format("%s/report?startDate=%s&endDate=%s", url, startDate, endDate);
         if (!types.isEmpty()) url += "&types=" + types;
         if (!status.isEmpty()) url += "&status=" + status;
-        if (!regions.isEmpty()) url += "&regions=" + regions;
+        if (!regions.isEmpty()) url += "&regions=" + URLEncoder.encode(regions, StandardCharsets.UTF_8.toString());
         if (!users.isEmpty()) url += "&users=" + users;
         context.getLogger().info("TAP detailed report endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
