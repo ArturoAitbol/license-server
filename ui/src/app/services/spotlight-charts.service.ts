@@ -3,7 +3,6 @@ import { environment } from "../../environments/environment";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Moment } from "moment";
-import { ReportName } from "../helpers/report-type";
 
 @Injectable({
     providedIn: 'root'
@@ -22,7 +21,7 @@ export class SpotlightChartsService {
      */
     
     public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment,  regions: { country: string, state: string, city: string }[], users: string[], subaccountId: string, groupBy: string, selectedFilter:boolean) {
-        return this.getNetworkQualityData(startDate, endDate, ReportName.TAP_VQ, regions, 'POLQA,Received Jitter,Received packet loss,Round trip time', users, subaccountId, groupBy, selectedFilter);
+        return this.getNetworkQualityData(startDate, endDate, null, regions, 'POLQA,Received Jitter,Received packet loss,Round trip time', users, subaccountId, groupBy, selectedFilter,'POLQA');
     }
 
     /**
@@ -33,10 +32,10 @@ export class SpotlightChartsService {
      * @param subaccountId Subaccount ID
      */
     public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, regions:  { country: string, state: string, city: string }[], users: string[], subaccountId: string, groupBy: string, selectedFilter:boolean) {
-        return this.getNetworkQualityData(startDate, endDate, null, regions, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', users, subaccountId,groupBy, selectedFilter);
+        return this.getNetworkQualityData(startDate, endDate, null, regions, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', users, subaccountId,groupBy, selectedFilter,null);
     }
 
-    private getNetworkQualityData(startDate: Moment, endDate: Moment, testPlan: string, regions: { country: string, state: string, city: string }[], metric: string, users: string[], subaccountId: string, groupBy: string, selectedFilter:boolean): Observable<any> {
+    private getNetworkQualityData(startDate: Moment, endDate: Moment, testPlan: string, regions: { country: string, state: string, city: string }[], metric: string, users: string[], subaccountId: string, groupBy: string, selectedFilter:boolean, callsFilter:string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
@@ -47,6 +46,7 @@ export class SpotlightChartsService {
         if (regions.length>0) params = params.set('regions', JSON.stringify(regions));
         if(selectedFilter === true) params = params.set('average', selectedFilter);
         if (testPlan) params = params.set('testPlan', testPlan);
+        if(callsFilter) params = params.set('callsFilter', callsFilter);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
     }
