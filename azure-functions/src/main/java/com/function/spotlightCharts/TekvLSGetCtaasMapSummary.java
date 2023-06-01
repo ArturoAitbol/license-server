@@ -1,7 +1,6 @@
 package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
-import com.function.clients.MapClient;
 import com.function.clients.TAPClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -72,7 +71,7 @@ public class TekvLSGetCtaasMapSummary {
         }
 
         String sql = "SELECT er.fromcity as from_city, er.fromstate as from_state, er.fromcountry as from_country," +
-                "       er.tocity as to_city, er.tostate as to_state, er.tocountry as to_country," +
+                "       er.tocity as to_city, er.tostate as to_state, er.tocountry as to_country, er.fromcoordinates as from_coordinates, er.tocoordinates as to_coordinates," +
         "               count(distinct sr.id) as total_calls,\n" +
                 "       count(distinct sr.id) FILTER (WHERE sr.status = 'PASSED') as passed,\n" +
                 "       count(distinct sr.id) FILTER (WHERE sr.status = 'FAILED') as failed," +
@@ -97,10 +96,8 @@ public class TekvLSGetCtaasMapSummary {
                 "         LEFT JOIN project p ON r.projectid = p.id" +
                 "         LEFT JOIN test_plan tp ON p.testplanid = tp.id" +
                 "         LEFT JOIN execution_report er on sr.execution_report_id = er.id " +
-                "WHERE sr.finalResult = true" +
-                "  AND sr.status != 'ABORTED'" +
-                "  AND sr.status != 'RUNNING'" +
-                "  AND sr.status != 'QUEUED'" +
+                "WHERE sr.finalResult = true AND tp.name IN ('LTS', 'STS', 'POLQA')" +
+                "  AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
                 "  AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype) = '' OR sr.failingerrortype = 'Routing Issue' OR" +
                 "       sr.failingerrortype = 'Teams Client Issue' OR sr.failingerrortype = 'Media Quality' OR" +
                 "       sr.failingerrortype = 'Media Routing')" +
@@ -110,7 +107,7 @@ public class TekvLSGetCtaasMapSummary {
         SelectQueryBuilder locationsQB = new SelectQueryBuilder(sql, true);
         locationsQB.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
         locationsQB.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
-        locationsQB.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity");
+        locationsQB.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates");
 
         // Build SQL statement to get the TAP URL
         SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -168,13 +165,12 @@ public class TekvLSGetCtaasMapSummary {
                 fromObj.put("city", entryArr.getString(0));
                 fromObj.put("state", entryArr.getString(1));
                 fromObj.put("country", entryArr.getString(2));
-                fromObj.put("location", MapClient.getMapCoordinates(entryArr.getString(0), entryArr.getString(1), entryArr.getString(2), context));
+                //fromObj.put("location", MapClient.getMapCoordinates(entryArr.getString(0), entryArr.getString(1), entryArr.getString(2), context));
                 res.put("from", fromObj);
                 JSONObject toObj = new JSONObject();
                 toObj.put("city", entryArr.getString(3));
                 toObj.put("state", entryArr.getString(4));
-                toObj.put("country", entryArr.getString(5));
-                toObj.put("location", MapClient.getMapCoordinates(entryArr.getString(3), entryArr.getString(4), entryArr.getString(5), context));
+                //toObj.put("country", entryArr.getString(5));    toObj.put("location", MapClient.getMapCoordinates(entryArr.getString(3), entryArr.getString(4), entryArr.getString(5), context));
                 res.put("to", toObj);
                 res.put("totalCalls", entryArr.get(6));
                 res.put("passed", entryArr.get(7));
