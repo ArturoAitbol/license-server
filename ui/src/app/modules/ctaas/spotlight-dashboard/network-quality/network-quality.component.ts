@@ -65,7 +65,7 @@ export class NetworkQualityComponent implements OnInit {
   summary = {
     totalCalls: 0,
     aboveThreshold: { jitter: 0, packetLoss: 0, roundTripTime: 0 },
-    overall: { packetLoss: 0, jitter: 0, sendBitrate: 0, roundTripTime: 0, polqa:0 }
+    overall: { packetLoss: 0, jitter: 0, roundTripTime: 0, polqa:0, sendBitrate: 0 }
   };
 
   privateIsLoading = true;
@@ -179,12 +179,12 @@ export class NetworkQualityComponent implements OnInit {
 
       const summary = res[1];
       this.summary.totalCalls = summary.totalCalls;
-      this.summary.overall.sendBitrate = summary.avgSentBitrate.toFixed(2);
-      this.summary.overall.jitter = summary.maxJitter.toFixed(2);
-      this.summary.overall.roundTripTime = summary.maxRoundTripTime.toFixed(2);
-      this.summary.overall.packetLoss = summary.maxPacketLoss.toFixed(2);
-      this.summary.overall.polqa = summary.minPolqa.toFixed(2);
-      this.summary.aboveThreshold.jitter = summary.jitterAboveThld.toFixed(2);
+      this.summary.overall.packetLoss = summary.maxPacketLoss;
+      this.summary.overall.jitter = summary.maxJitter;
+      this.summary.overall.roundTripTime = summary.maxRoundTripTime;
+      this.summary.overall.polqa = summary.minPolqa;
+      this.summary.overall.sendBitrate = summary.avgSentBitrate;
+      this.summary.aboveThreshold.jitter = summary.jitterAboveThld;
       this.summary.aboveThreshold.packetLoss = summary.packetLossAboveThld;
       this.summary.aboveThreshold.roundTripTime = summary.roundTripTimeAboveThld;
 
