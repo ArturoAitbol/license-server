@@ -19,7 +19,7 @@ const beforeEachFunction = waitForAsync(
 describe('Feature Toggle Guard - When feature toggles are enabled should let navigate to parent routes', () => {
     beforeEach(beforeEachFunction);
     it('should grant access to existing parent routes', () => {
-        const parentRoutes = ['dashboard', 'customer'];
+        const parentRoutes = ['customers-dashboard', 'customer'];
         parentRoutes.forEach(route => {
             expect(guard.canActivate({url: [{path: route, parameters: {}}]} as ActivatedRouteSnapshot)).toBeTrue();
         });

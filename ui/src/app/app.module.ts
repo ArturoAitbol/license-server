@@ -12,7 +12,7 @@ import { LoginPageComponent } from './views/login-page/login-page.component';
 import { LoadingComponent } from './generics/loading/loading.component';
 import { ErrorInterceptor } from './helpers/error.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DashboardComponent } from './customer-dashboard/customer-dashboard.component';
+import { CustomerDashboardComponent } from './customer-dashboard/customer-dashboard.component';
 import { AddCustomerAccountModalComponent } from './modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from './modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
@@ -46,7 +46,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         AppComponent,
         LoginPageComponent,
         LoadingComponent,
-        DashboardComponent,
+        CustomerDashboardComponent,
         AddCustomerAccountModalComponent,
         AddSubaccountModalComponent,
         ModifyCustomerAccountComponent,

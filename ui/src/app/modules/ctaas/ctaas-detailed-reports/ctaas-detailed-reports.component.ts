@@ -425,6 +425,8 @@ export class DetailedReportsCompoment implements OnInit {
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
       const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
       const reportResponse = detailedResponseObj[this.types];
+      reportResponse.summary.startTime = this.reportResponse.summary.summaryStartTime;
+      reportResponse.summary.endTime = this.reportResponse.summary.summaryEndTime;
       if (reportResponse) {
         this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(reportResponse)
           .subscribe((res: any) => {
