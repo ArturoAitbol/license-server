@@ -14,6 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -131,7 +133,7 @@ public class TekvLSGetNetworkQualitySummary {
 		if(!regions.isEmpty()){
 			StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
 			if(regionCondition != null)
-				query += "AND " + regionCondition;
+				query += " AND " + regionCondition;
 		}
 
 		// Build SQL statement
@@ -189,10 +191,15 @@ public class TekvLSGetNetworkQualitySummary {
 			// Retrieve the specified statistics
 			context.getLogger().info("Execute SQL statement: " + statement);
 			JSONArray resultSet = TAPClient.executeQuery(tapURL,statement,context);
-			for ( Object resultElement:resultSet) {
+			
+			DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+			symbols.setDecimalSeparator('.');
+			DecimalFormat df = new DecimalFormat("#.00", symbols);
+			
+			for (Object resultElement:resultSet) {
 				JSONArray values = (JSONArray) resultElement;
-				for(int i=0; i<statisticsLabels.size(); i++){
-					json.put(statisticsLabels.get(i),values.isNull(i) ? "--" : values.getFloat(i));
+				for (int i = 0; i<statisticsLabels.size(); i++) {
+					json.put(statisticsLabels.get(i),values.isNull(i) ? "--" : Float.parseFloat(df.format(values.getFloat(i))));
 				}
 			}
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();

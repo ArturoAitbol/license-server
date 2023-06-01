@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { AuthenticationResult } from '@azure/msal-browser';
+
 @Component({
     selector: 'app-login-page',
     templateUrl: './login-page.component.html',
@@ -24,7 +25,7 @@ export class LoginPageComponent implements OnInit {
         setTimeout(() => {
             this.loading_status = true;
         }, 3000);
-        // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || Constants.CUSTOMERS_DASHBOARD_VIEW_PATH;
     }
 
     /**

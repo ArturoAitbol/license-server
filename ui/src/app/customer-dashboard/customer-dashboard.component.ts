@@ -32,7 +32,7 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./customer-dashboard.component.css']
 })
 
-export class DashboardComponent implements OnInit, OnDestroy {
+export class CustomerDashboardComponent implements OnInit, OnDestroy {
     tableMaxHeight: number;
     displayedColumns: any[] = [];
     data: CustomerLicense[] = [];
@@ -433,11 +433,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 case this.VIEW_CTAAS_DASHBOARD:
                     const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                     if (hasCtaasService) {
-                        let routePath = '/spotlight/stakeholders';
+                        let routePath = Constants.STAKEHOLDERS_VIEW_PATH;
                         if(this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id))
-                            routePath = '/spotlight/visualization';
+                            routePath = Constants.POWERBI_DASHBOARD_PATH;
                         if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.selectedSubaccount.id))
-                            routePath = '/spotlight/spotlight-dashboard';
+                            routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
                         const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
                         console.log(routePath);
                         window.open(url);

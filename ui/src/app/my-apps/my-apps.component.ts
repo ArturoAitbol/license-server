@@ -11,6 +11,7 @@ import {AvailableServicesService} from '../services/available-services.service';
 import {CtaasSetupService} from '../services/ctaas-setup.service';
 import {SubAccountService} from '../services/sub-account.service';
 import { SnackBarService } from '../services/snack-bar.service';
+import { FeatureToggleService } from '../services/feature-toggle.service';
 
 @Component({
     selector: 'app-my-apps',
@@ -36,6 +37,7 @@ export class MyAppsComponent implements OnInit {
         private msalService: MsalService,
         private route: ActivatedRoute,
         private snackBarService: SnackBarService,
+        private featureToggleService: FeatureToggleService
     ) {
         this.route.queryParams.subscribe((query:Params) => {
             this.subaccountId = query.subaccountId;
@@ -82,12 +84,20 @@ export class MyAppsComponent implements OnInit {
 
     /**
      * navigate to service which is enabled to user
-     * @param value: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }
+     * @param service: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }
      */
-    onClickService(value: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }): void {
-        const {enabled, routePath} = value;
-        if (enabled) {
-            this.router.navigate([routePath], {queryParams:{subaccountId:this.subaccountId}});
+    onClickService(service: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }): void {
+        if (service.enabled) {
+            let routePath = service.routePath;
+            // this is temporal validation meanwhile there is not an unified permanent dashboard
+            if (service.value === tekVizionServices.SpotLight) {
+                routePath = Constants.STAKEHOLDERS_VIEW_PATH;
+                if(this.featureToggleService.isFeatureEnabled("powerbiFeature", this.subaccountId))
+                    routePath = Constants.POWERBI_DASHBOARD_PATH;
+                if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.subaccountId))
+                    routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
+            }
+            this.router.navigate([routePath], {queryParams: {subaccountId: this.subaccountId}});
         }
     }
 

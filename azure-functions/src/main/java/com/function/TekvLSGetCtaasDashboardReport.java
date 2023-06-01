@@ -68,6 +68,8 @@ public class TekvLSGetCtaasDashboardReport {
         String status = request.getQueryParameters().getOrDefault("status", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
+        String regions = request.getQueryParameters().getOrDefault("regions", "");
+        String users = request.getQueryParameters().getOrDefault("users", "");
 
         // Check if sub account is empty
         if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
@@ -170,7 +172,7 @@ public class TekvLSGetCtaasDashboardReport {
             String accessToken = TAPClient.getAccessToken(tapURL, context);
             context.getLogger().info("Report Types: " + types + " | Status: " + status + " | Start Date: " + startDate + " | End Date: " + endDate);
             // Make a http call to North Bound API to fetch detailed test report by types
-            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, types, startDate, endDate, status, context);
+            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, types, startDate, endDate, status, regions, users, context);
             if (response == null) {
                 json.put("error", "Error with fetching detailed test report from Automation Platform");
                 context.getLogger().info("Error with fetching detailed test report from Automation Platform");

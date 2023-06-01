@@ -17,7 +17,7 @@ import { FeatureToggleService } from "../services/feature-toggle.service";
 })
 export class RedirectPageComponent implements OnInit {
 
-  private readonly DASHBOARD_ROUTE_PATH: string = '/dashboard';
+  private readonly DASHBOARD_ROUTE_PATH: string = Constants.CUSTOMERS_DASHBOARD_VIEW_PATH;
   private readonly APPS_ROUTE_PATH: string = '/apps';
   private readonly  CONSUMPTION_MATRIX_PATH = '/consumption-matrix';
   loggedInUserRoles: string[] = [];

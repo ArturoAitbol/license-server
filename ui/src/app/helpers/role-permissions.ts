@@ -28,7 +28,7 @@ export const permissions = {
     },
     'tekvizion.FullAdmin': {
         paths: [
-            'dashboard',
+            'customers-dashboard',
             'visualization',
             'customer',
             'consumption',
@@ -117,7 +117,7 @@ export const permissions = {
     },
     'tekvizion.SalesAdmin': {
         paths: [
-            'dashboard',
+            'customers-dashboard',
             'visualization',
             'customer',
             'consumption',
@@ -160,7 +160,7 @@ export const permissions = {
     },
     'tekvizion.ConfigTester': {
         paths: [
-            'dashboard',
+            'customers-dashboard',
             'visualization',
             'customer',
             'consumption',
@@ -227,7 +227,7 @@ export const permissions = {
     },
     'distributor.FullAdmin': {
         paths: [
-            'dashboard',
+            'customers-dashboard',
             'visualization',
             'customer',
             'consumption',
@@ -264,7 +264,7 @@ export const permissions = {
     },
     'customer.FullAdmin': {
         paths: [
-            'dashboard',
+            'customers-dashboard',
             'visualization',
             'customer',
             'consumption',
@@ -321,7 +321,7 @@ export const permissions = {
     },
     'customer.SubaccountAdmin': {
         paths: [
-            'dashboard',
+            'customers-dashboard',
             'visualization',
             'customer',
             'consumption',
