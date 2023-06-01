@@ -71,8 +71,8 @@ export class DetailedReportsCompoment implements OnInit {
       this.subaccountDetails.id = params.subaccountId;
       if (params.type) this.types = params.type;
       if (params.status) this.status = params.status;
-      if (params.regions != '' && params.regions) this.regionsStr = params.regions;
-      if (params.users != '' && params.users) this.usersStr = JSON.parse(params.users).join(',');
+      if (params.regions && params.regions != '') this.regionsStr = params.regions;
+      if (params.users && params.users != '') this.usersStr = params.users;
       this.startDateStr = params.start;
       this.endDateStr = params.end;
       this.parseTitle();
@@ -132,8 +132,8 @@ export class DetailedReportsCompoment implements OnInit {
     let majorTimeIndex = 0;
     this.isLoadingResults = true;
     const PARSED_REPORT_TYPE = this.parseTestPlanNames();
-    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status, this.regionsStr,this.usersStr)
-      .subscribe((res: any) => {
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status,
+      this.regionsStr, this.usersStr).subscribe((res: any) => {
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         if (res.response.report && res.response.reportType) {

@@ -235,42 +235,44 @@ export class NetworkQualityComponent implements OnInit {
 
   navigateToCallingReliabilityDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
-    let regions = '';
-    let users = ''
     let startDate: Moment, endDate: Moment;
-    if(this.groupBy==='hour'){
+    if (this.groupBy==='hour') {
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
       endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
-    }else{
-      startDate = moment(category).utc().hour(0);
-      endDate = Utility.setHoursOfDate(moment(category).utc());
+    } else {
+      startDate = moment.utc(category).hour(0);
+      endDate = Utility.setHoursOfDate(moment.utc(category));
     }
-    if(this.regions.length > 0)
-      regions = JSON.stringify(this.regions);
-    if(this.selectedUsers.length > 0)
-      users = JSON.stringify(this.selectedUsers)
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }&regions=${regions}&users=${users}`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    if (this.regions.length > 0)
+      url += "&regions=" + JSON.stringify(this.regions);
+    if (this.selectedUsers.length > 0)
+      url+= "&users=" + this.selectedUsers.join(',');
     window.open(url);
   }
 
   navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
     let startDate: Moment, endDate: Moment;
-    if(this.groupBy==='hour'){
+    if (this.groupBy==='hour') {
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
       endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
-    }else{
-      startDate = moment(category).utc().hour(0);
-      endDate = Utility.setHoursOfDate(moment(category).utc());
+    } else {
+      startDate = moment.utc(category).hour(0);
+      endDate = Utility.setHoursOfDate(moment.utc(category));
     }
    
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    if (this.regions.length > 0)
+      url += "&regions=" + JSON.stringify(this.regions);
+    if (this.selectedUsers.length > 0)
+      url+= "&users=" + this.selectedUsers.join(',');
     window.open(url);
   }
 

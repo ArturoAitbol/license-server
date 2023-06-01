@@ -133,7 +133,7 @@ public class TekvLSGetNetworkQualitySummary {
 		if(!regions.isEmpty()){
 			StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
 			if(regionCondition != null)
-				query += "AND " + regionCondition;
+				query += " AND " + regionCondition;
 		}
 
 		// Build SQL statement
