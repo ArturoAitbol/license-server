@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -73,6 +73,10 @@ export class NetworkQualityComponent implements OnInit {
   selectedGraph = 'jitter';
 
   readonly MetricsThresholds = MetricsThresholds;
+
+  @ViewChild('outlet', { read: ViewContainerRef }) outletRef: ViewContainerRef;
+  @ViewChild('chartContent', { read: TemplateRef }) chartContentRef: TemplateRef<any>;
+
 
   constructor(private spotlightChartsService: SpotlightChartsService,
               private subaccountService: SubAccountService,
@@ -315,6 +319,8 @@ export class NetworkQualityComponent implements OnInit {
       ];
       this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
     }
+    this.outletRef.clear();
+    this.outletRef.createEmbeddedView(this.chartContentRef);
   }
 
   remove(user: string): void {
