@@ -283,3 +283,14 @@ mat-form-field {
 #note-author{
     font-weight: bolder;
 }
+
+.tooltip-title {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+.tooltip-body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    display: flex !important;
+}
