@@ -48,6 +48,7 @@ export class SpotlightDashboardComponent implements OnInit{
   // Weekly VQ variables
   weeklyVQ = {timePeriod: '', numberCalls: 0, numberStreams: 0, p2p: 0, onNet: 0, offNet: 0};
   weeklyVQChartOptions: Partial<ChartOptions>;
+  weeklyVqNumericValues = null;
 
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
@@ -116,11 +117,34 @@ export class SpotlightDashboardComponent implements OnInit{
               private route: ActivatedRoute,
               private fb: FormBuilder) {
     this.vqChartOptions = defaultVqChartOptions;
+    this.vqChartOptions.tooltip.custom = ({series, seriesIndex, dataPointIndex, w}) => {
+      return `
+      <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
+      <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
+        align-items: flex-start;">
+      <div>Percentage of calls streams: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
+      <div>Number of calls streams: <b>${ this.vq.numericValues[dataPointIndex] }</b></div>
+      </div>
+      `;
+    };
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
     this.weeklyCallsStatusChartOptions = defaultWeeklyCallsStatusChartOptions;
     this.weeklyVQChartOptions = defaultWeeklyVQChartOptions;
+    this.weeklyVQChartOptions.tooltip.custom = ({series, seriesIndex, dataPointIndex, w}) => {
+      return `
+      <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
+      <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
+        align-items: flex-start;">
+      <div>Category: <b>${ w.config.series[seriesIndex].name }</b></div>
+      <div>Percentage of calls streams: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
+      <div>Number of calls streams: <b>${ this.weeklyVqNumericValues[seriesIndex][dataPointIndex] }</b></div>
+      </div>
+      `;
+    };
     this.setWeeklyRange();
   }
 
@@ -389,6 +413,7 @@ export class SpotlightDashboardComponent implements OnInit{
       name: 'Bad',
       data: vqData.percentages.bad,
     } ];
+    this.weeklyVqNumericValues = [vqData.numericValues.excellent, vqData.numericValues.good, vqData.numericValues.fair, vqData.numericValues.bad];
 
     if(this.weeklySelectedRegions.length>0)
       this.reloadUserOptions(this.weeklySelectedRegions);

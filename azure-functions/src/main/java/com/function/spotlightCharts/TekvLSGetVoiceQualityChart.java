@@ -164,19 +164,26 @@ public class TekvLSGetVoiceQualityChart {
 			JSONArray resultSet = TAPClient.executeQuery(tapURL,statement,context);
 			if (Objects.equals(reportPeriod, "daily")) {
 				JSONArray percentages;
-				int streams = 0;
+				JSONArray numericValues;
+				float streams = 0;
 				int totalCalls = 0;
 				if(!resultSet.isEmpty() && resultSet.getJSONArray(0).getInt(5) > 0){
 					JSONArray values = resultSet.getJSONArray(0);
 					streams = values.getInt(5);
 					totalCalls = values.getInt(6);
 					percentages = new JSONArray();
+					numericValues = new JSONArray();
 					percentages.put(values.getInt(1) / streams * 100);
 					percentages.put(values.getInt(2) / streams * 100);
 					percentages.put(values.getInt(3) / streams * 100);
 					percentages.put(values.getInt(4) / streams * 100);
+					numericValues.put(values.getInt(1));
+					numericValues.put(values.getInt(2));
+					numericValues.put(values.getInt(3));
+					numericValues.put(values.getInt(4));
 				}else{
 					percentages = new JSONArray("[0,0,0,0]");
+					numericValues = new JSONArray("[0,0,0,0]");
 				}
 				JSONArray categories = new JSONArray("['Excellent [4-5]','Good [3-4)','Fair [2-3)','Poor [0-2)']");
 				JSONObject summary = new JSONObject();
@@ -185,6 +192,7 @@ public class TekvLSGetVoiceQualityChart {
 
 				json.put("summary",summary);
 				json.put("percentages",percentages);
+				json.put("numericValues",numericValues);
 				json.put("categories",categories);
 
 			} else if (reportPeriod.equals("weekly")){
@@ -200,6 +208,10 @@ public class TekvLSGetVoiceQualityChart {
 				JSONArray good = new JSONArray();
 				JSONArray fair = new JSONArray();
 				JSONArray bad = new JSONArray();
+				JSONArray excellentNumeric = new JSONArray();
+				JSONArray goodNumeric = new JSONArray();
+				JSONArray fairNumeric = new JSONArray();
+				JSONArray badNumeric = new JSONArray();
 				int totalStreams = 0;
 				int totalCalls = 0;
 				Map<String, JSONArray> percentagesMap = getPercentagesMap(resultSet);
@@ -214,6 +226,10 @@ public class TekvLSGetVoiceQualityChart {
 						good.put(values.getInt(2) / streams * 100);
 						fair.put(values.getInt(3) / streams * 100);
 						bad.put(values.getInt(4) / streams * 100);
+						excellentNumeric.put(values.getInt(1));
+						goodNumeric.put(values.getInt(2));
+						fairNumeric.put(values.getInt(3));
+						badNumeric.put(values.getInt(4));
 						totalStreams += streams;
 						totalCalls += values.getInt(6);
 					} else {
@@ -221,6 +237,10 @@ public class TekvLSGetVoiceQualityChart {
 						good.put(0);
 						fair.put(0);
 						bad.put(0);
+						excellentNumeric.put(0);
+						goodNumeric.put(0);
+						fairNumeric.put(0);
+						badNumeric.put(0);
 					}
 				}
 				JSONObject summary = new JSONObject();
@@ -232,7 +252,13 @@ public class TekvLSGetVoiceQualityChart {
 				percentages.put("good", good);
 				percentages.put("fair", fair);
 				percentages.put("bad", bad);
+				JSONObject numericValues = new JSONObject();
+				numericValues.put("excellent", excellentNumeric);
+				numericValues.put("good", goodNumeric);
+				numericValues.put("fair", fairNumeric);
+				numericValues.put("bad", badNumeric);
 				json.put("percentages", percentages);
+				json.put("numericValues", numericValues);
 				json.put("categories", categories);
 			}
 
