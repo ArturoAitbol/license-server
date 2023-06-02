@@ -185,7 +185,8 @@ export const permissions = {
             'addLicenseConsumption',
             'addTestSuite',
             'showBanner',
-            'resetFilter'
+            'resetFilter',
+            'maintenanceModeCheckbox',
         ],
         tables: {
             customerOptions: [
