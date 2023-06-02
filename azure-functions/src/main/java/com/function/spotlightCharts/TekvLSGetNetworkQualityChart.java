@@ -80,8 +80,6 @@ public class TekvLSGetNetworkQualityChart {
 		
 		String groupByIndicator = request.getQueryParameters().getOrDefault("groupBy", "hour");
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
-		
-		String testPlans = request.getQueryParameters().getOrDefault("testPlan", Utils.DEFAULT_TEST_PLAN_NAMES);
 
 		String averageFlag = request.getQueryParameters().getOrDefault("average", "");
 		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","");
@@ -136,7 +134,7 @@ public class TekvLSGetNetworkQualityChart {
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-				"AND tp.name in ('" + testPlans + "') AND ms.parameter_name IN ('" + metricsClause + "')";
+				"AND tp.name in ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND ms.parameter_name IN ('" + metricsClause + "')";
 
 		if(!callsFilter.isEmpty()){
 			String filteredCalls = "SELECT sr.id FROM sub_result sr " +
