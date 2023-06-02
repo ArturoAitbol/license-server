@@ -22,6 +22,9 @@ import { Subject } from "rxjs/internal/Subject";
 import { ActivatedRoute } from "@angular/router";
 import { Note } from "../../../model/note.model";
 import { NoteService } from "../../../services/notes.service";
+import { AddNotesComponent } from "../ctaas-notes/add-notes/add-notes.component";
+import { MatDialog } from "@angular/material/dialog";
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -106,6 +109,7 @@ export class SpotlightDashboardComponent implements OnInit{
   // Historical view variables
   isHistoricalView = false;
   note: Note;
+  showNewNoteBtn = false;
 
   @ViewChild('regionInput') regionInput: ElementRef<HTMLInputElement>;
 
@@ -115,7 +119,9 @@ export class SpotlightDashboardComponent implements OnInit{
               private spotlightChartsService: SpotlightChartsService,
               private noteService: NoteService,
               private route: ActivatedRoute,
-              private fb: FormBuilder) {
+              private ftService: FeatureToggleService,
+              private fb: FormBuilder,
+              public dialog: MatDialog) {
     this.vqChartOptions = defaultVqChartOptions;
     this.vqChartOptions.tooltip.custom = ({series, seriesIndex, dataPointIndex, w}) => {
       return `
@@ -159,8 +165,12 @@ export class SpotlightDashboardComponent implements OnInit{
           this.weeklyFilters.get('date').setValue(moment(this.note.openDate).utc());
           this.isHistoricalView = true;
           this.loadCharts();
+          this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
         });
-      } else this.loadCharts();
+      } else {
+        this.loadCharts();
+        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
+      }
     });
   }
 
@@ -215,6 +225,13 @@ export class SpotlightDashboardComponent implements OnInit{
   reloadCharts(){
     if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
       this.isHistoricalView = false;
+    if (this.selectedPeriod == 'daily') {
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
+          && this.filters.get('date').value.isSame(moment().utc(), "day")
+    } else {
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
+          && this.weeklyFilters.get('date').value.isSame(moment().utc(), "day")
+    }
     this.loadCharts();
     this.networkQuality.loadCharts();
   }
@@ -554,5 +571,14 @@ export class SpotlightDashboardComponent implements OnInit{
 
   getSubaccountId(): string {
     return this.subaccountService.getSelectedSubAccount().id;
+  }
+
+  addNote() {
+    const dialogRef = this.dialog.open(AddNotesComponent, {
+      width: '85vw',
+      maxHeight: '90vh',
+      maxWidth: '85vw',
+      disableClose: false
+    });
   }
 }
