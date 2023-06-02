@@ -142,7 +142,11 @@ public class TekvLSGetNetworkQualityChart {
 			String filteredCalls = "SELECT sr.id FROM sub_result sr " +
 					"JOIN test_result_resource trr ON trr.subresultid = sr.id " +
 					"JOIN media_stats ms ON ms.testresultresourceid = trr.id " +
-					"WHERE ms.parameter_name = CAST('"+callsFilter+"' AS VARCHAR) GROUP BY sr.id";
+					"JOIN test_result tr ON sr.testresultid = tr.id " +
+					"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
+					"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
+					"AND sr.startdate >= CAST('"+startDate+"' AS timestamp) AND sr.startdate <= CAST('"+endDate+"' AS timestamp) " +
+					"AND ms.parameter_name = CAST('"+callsFilter+"' AS VARCHAR) GROUP BY sr.id";
 			query+= " AND sr.id IN (" + filteredCalls + ")";
 		}
 
