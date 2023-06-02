@@ -28,6 +28,18 @@
             </button>
         </div>
     </div>
+    <ng-container *ngIf="showNewNoteBtn && !isloading">
+        <ng-container *lcCheckAccessFor="'addSpotlightNote'">
+            <div class="new-note-container">
+                <button mat-fab class="new-note-btn" #tooltip="matTooltip"
+                        matTooltip="Add a new note"
+                        [matTooltipPosition]="'before'"
+                        (click)="addNote()">
+                    <mat-icon>note_add</mat-icon>
+                </button>
+            </div>
+        </ng-container>
+    </ng-container>
     <div class="lights-container" *ngIf="isloading">
         <div>
             <div class="spotlight"></div>
