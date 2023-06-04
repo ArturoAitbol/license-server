@@ -19,6 +19,12 @@ import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
+import { ActivatedRoute } from "@angular/router";
+import { Note } from "../../../model/note.model";
+import { NoteService } from "../../../services/notes.service";
+import { AddNotesComponent } from "../ctaas-notes/add-notes/add-notes.component";
+import { MatDialog } from "@angular/material/dialog";
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -45,6 +51,7 @@ export class SpotlightDashboardComponent implements OnInit{
   // Weekly VQ variables
   weeklyVQ = {timePeriod: '', numberCalls: 0, numberStreams: 0, p2p: 0, onNet: 0, offNet: 0};
   weeklyVQChartOptions: Partial<ChartOptions>;
+  weeklyVqNumericValues = null;
 
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
@@ -97,7 +104,12 @@ export class SpotlightDashboardComponent implements OnInit{
   isRefreshing = false;
   chartsLoaded = 0;
   selectedRegions = [];
-  weeklySelectedRegions = []
+  weeklySelectedRegions = [];
+
+  // Historical view variables
+  isHistoricalView = false;
+  note: Note;
+  showNewNoteBtn = false;
 
   @ViewChild('regionInput') regionInput: ElementRef<HTMLInputElement>;
 
@@ -105,20 +117,61 @@ export class SpotlightDashboardComponent implements OnInit{
 
   constructor(private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
-              private fb: FormBuilder) {
+              private noteService: NoteService,
+              private route: ActivatedRoute,
+              private ftService: FeatureToggleService,
+              private fb: FormBuilder,
+              public dialog: MatDialog) {
     this.vqChartOptions = defaultVqChartOptions;
+    this.vqChartOptions.tooltip.custom = ({series, seriesIndex, dataPointIndex, w}) => {
+      return `
+      <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
+      <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
+        align-items: flex-start;">
+      <div>Percentage of calls streams: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
+      <div>Number of calls streams: <b>${ this.vq.numericValues[dataPointIndex] }</b></div>
+      </div>
+      `;
+    };
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
     this.weeklyCallsStatusChartOptions = defaultWeeklyCallsStatusChartOptions;
     this.weeklyVQChartOptions = defaultWeeklyVQChartOptions;
+    this.weeklyVQChartOptions.tooltip.custom = ({series, seriesIndex, dataPointIndex, w}) => {
+      return `
+      <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
+      <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
+        align-items: flex-start;">
+      <div>Category: <b>${ w.config.series[seriesIndex].name }</b></div>
+      <div>Percentage of calls streams: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
+      <div>Number of calls streams: <b>${ this.weeklyVqNumericValues[seriesIndex][dataPointIndex] }</b></div>
+      </div>
+      `;
+    };
     this.setWeeklyRange();
   }
 
   ngOnInit() {
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
-    this.loadCharts();
+    this.route.queryParams.subscribe(params => {
+      if (params?.noteId) {
+        this.noteService.getNoteList(this.subaccountService.getSelectedSubAccount().id, params.noteId).subscribe(res => {
+          this.note = res.notes[0];
+          this.filters.get('date').setValue(moment(this.note.openDate).utc());
+          this.weeklyFilters.get('date').setValue(moment(this.note.openDate).utc());
+          this.isHistoricalView = true;
+          this.loadCharts();
+          this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
+        });
+      } else {
+        this.loadCharts();
+        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
+      }
+    });
   }
 
   getStartWeekDate(): Moment{
@@ -170,6 +223,15 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   reloadCharts(){
+    if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
+      this.isHistoricalView = false;
+    if (this.selectedPeriod == 'daily') {
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
+          && this.filters.get('date').value.isSame(moment().utc(), "day")
+    } else {
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
+          && this.weeklyFilters.get('date').value.isSame(moment().utc(), "day")
+    }
     this.loadCharts();
     this.networkQuality.loadCharts();
   }
@@ -262,9 +324,9 @@ export class SpotlightDashboardComponent implements OnInit{
     const voiceQualityRes: any = res[1];
     this.vq.calls = voiceQualityRes.summary.calls;
     this.vq.streams = voiceQualityRes.summary.streams;
-    this.vq.p2p = POLQA.p2p;
-    this.vq.onNet = POLQA.onNet;
-    this.vq.offNet = POLQA.offNet;
+    this.vq.p2p = POLQA.callsByType.p2p;
+    this.vq.onNet = POLQA.callsByType.onNet;
+    this.vq.offNet = POLQA.callsByType.offNet;
     this.vqChartOptions.series = [ { name: 'percentages', data: voiceQualityRes.percentages }];
     this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
     this.vq.period = executionTime;
@@ -368,6 +430,7 @@ export class SpotlightDashboardComponent implements OnInit{
       name: 'Bad',
       data: vqData.percentages.bad,
     } ];
+    this.weeklyVqNumericValues = [vqData.numericValues.excellent, vqData.numericValues.good, vqData.numericValues.fair, vqData.numericValues.bad];
 
     if(this.weeklySelectedRegions.length>0)
       this.reloadUserOptions(this.weeklySelectedRegions);
@@ -386,12 +449,15 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   navigateToDetailedTable(reportType?: string) {
+    let regions = ""
     const startDate = this.selectedDate.clone().utc().startOf('day');
     const endDate = this.selectedDate.clone().utc();
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     const reportFilter = reportType? "type=" + reportType : "status=FAILED";
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}`;
+    if(this.selectedRegions.length > 0)
+      regions = JSON.stringify(this.selectedRegions);
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
     window.open(url);
   }
 
@@ -505,5 +571,14 @@ export class SpotlightDashboardComponent implements OnInit{
 
   getSubaccountId(): string {
     return this.subaccountService.getSelectedSubAccount().id;
+  }
+
+  addNote() {
+    const dialogRef = this.dialog.open(AddNotesComponent, {
+      width: '85vw',
+      maxHeight: '90vh',
+      maxWidth: '85vw',
+      disableClose: false
+    });
   }
 }

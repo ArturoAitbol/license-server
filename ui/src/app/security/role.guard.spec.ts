@@ -43,7 +43,7 @@ describe('When roles are loaded for username@test.com', () => {
     });
 
     it('should grant access to existing parent routes', () => {
-        const parentRoutes = ['dashboard', 'customer'];
+        const parentRoutes = ['customers-dashboard', 'customer'];
         parentRoutes.forEach(route => {
             expect(guard.canActivate({url: [{path: route, parameters: {}}]} as ActivatedRouteSnapshot)).toBeTrue();
         });
@@ -79,7 +79,7 @@ describe('When roles are not loaded for username@test.com', () => {
     });
 
     it('should call canActive with no roles', () => {
-        const parentRoutes = ['dashboard', 'customer'];
+        const parentRoutes = ['customers-dashboard', 'customer'];
         parentRoutes.forEach(route => {
             expect(guard.canActivate({url: [{path: route, parameters: {}}]} as ActivatedRouteSnapshot)).toBeFalse();
         });

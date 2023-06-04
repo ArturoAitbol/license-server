@@ -8,6 +8,7 @@ import { DialogServiceMock } from "../../../../../test/mock/services/dialog-serv
 import { TestBedConfigBuilder } from "../../../../../test/mock/TestBedConfigHelper.mock";
 import { CtaasDashboardServiceMock } from "../../../../../test/mock/services/ctaas-dashboard-service.mock";
 import { NoteServiceMock } from "../../../../../test/mock/services/ctaas-note-service.mock";
+import { FeatureToggleServiceMock } from "../../../../../test/mock/services/feature-toggle-service.mock";
 
 let addNotesComponentInstance: AddNotesComponent;
 let fixture : ComponentFixture<AddNotesComponent>;
@@ -74,7 +75,8 @@ describe('addNote', () => {
         spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
         spyOn(CtaasDashboardServiceMock, 'getReports').and.returnValue(null);
         spyOn(SnackBarServiceMock, 'openSnackBar');
-        spyOn(NoteServiceMock, 'createNote');
+        spyOn(NoteServiceMock, 'createNote').and.callThrough();
+        addNotesComponentInstance.nativeHistoricalDashboardActive = false;
 
         addNotesComponentInstance.addNote();
 

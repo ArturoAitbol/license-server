@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -65,7 +65,7 @@ export class NetworkQualityComponent implements OnInit {
   summary = {
     totalCalls: 0,
     aboveThreshold: { jitter: 0, packetLoss: 0, roundTripTime: 0 },
-    overall: { packetLoss: 0, jitter: 0, sendBitrate: 0, roundTripTime: 0, polqa:0 }
+    overall: { packetLoss: 0, jitter: 0, roundTripTime: 0, polqa:0, sendBitrate: 0 }
   };
 
   privateIsLoading = true;
@@ -73,6 +73,10 @@ export class NetworkQualityComponent implements OnInit {
   selectedGraph = 'jitter';
 
   readonly MetricsThresholds = MetricsThresholds;
+
+  @ViewChild('outlet', { read: ViewContainerRef }) outletRef: ViewContainerRef;
+  @ViewChild('chartContent', { read: TemplateRef }) chartContentRef: TemplateRef<any>;
+
 
   constructor(private spotlightChartsService: SpotlightChartsService,
               private subaccountService: SubAccountService,
@@ -179,12 +183,12 @@ export class NetworkQualityComponent implements OnInit {
 
       const summary = res[1];
       this.summary.totalCalls = summary.totalCalls;
-      this.summary.overall.sendBitrate = summary.avgSentBitrate.toFixed(2);
-      this.summary.overall.jitter = summary.maxJitter.toFixed(2);
-      this.summary.overall.roundTripTime = summary.maxRoundTripTime.toFixed(2);
-      this.summary.overall.packetLoss = summary.maxPacketLoss.toFixed(2);
-      this.summary.overall.polqa = summary.minPolqa.toFixed(2);
-      this.summary.aboveThreshold.jitter = summary.jitterAboveThld.toFixed(2);
+      this.summary.overall.packetLoss = summary.maxPacketLoss;
+      this.summary.overall.jitter = summary.maxJitter;
+      this.summary.overall.roundTripTime = summary.maxRoundTripTime;
+      this.summary.overall.polqa = summary.minPolqa;
+      this.summary.overall.sendBitrate = summary.avgSentBitrate;
+      this.summary.aboveThreshold.jitter = summary.jitterAboveThld;
       this.summary.aboveThreshold.packetLoss = summary.packetLossAboveThld;
       this.summary.aboveThreshold.roundTripTime = summary.roundTripTimeAboveThld;
 
@@ -236,36 +240,43 @@ export class NetworkQualityComponent implements OnInit {
   navigateToCallingReliabilityDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
     let startDate: Moment, endDate: Moment;
-    if(this.groupBy==='hour'){
+    if (this.groupBy==='hour') {
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
       endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
-    }else{
-      startDate = moment(category).utc().hour(0);
-      endDate = Utility.setHoursOfDate(moment(category).utc());
+    } else {
+      startDate = moment.utc(category).hour(0);
+      endDate = Utility.setHoursOfDate(moment.utc(category));
     }
-
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    if (this.regions.length > 0)
+      url += "&regions=" + JSON.stringify(this.regions);
+    if (this.selectedUsers.length > 0)
+      url+= "&users=" + this.selectedUsers.join(',');
     window.open(url);
   }
 
   navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
     let startDate: Moment, endDate: Moment;
-    if(this.groupBy==='hour'){
+    if (this.groupBy==='hour') {
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
       endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
-    }else{
-      startDate = moment(category).utc().hour(0);
-      endDate = Utility.setHoursOfDate(moment(category).utc());
+    } else {
+      startDate = moment.utc(category).hour(0);
+      endDate = Utility.setHoursOfDate(moment.utc(category));
     }
    
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    if (this.regions.length > 0)
+      url += "&regions=" + JSON.stringify(this.regions);
+    if (this.selectedUsers.length > 0)
+      url+= "&users=" + this.selectedUsers.join(',');
     window.open(url);
   }
 
@@ -308,6 +319,8 @@ export class NetworkQualityComponent implements OnInit {
       ];
       this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
     }
+    this.outletRef.clear();
+    this.outletRef.createEmbeddedView(this.chartContentRef);
   }
 
   remove(user: string): void {

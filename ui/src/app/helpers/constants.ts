@@ -9,11 +9,14 @@ export class Constants {
     public static readonly TOOLBAR_DETAILS: string = 'toolbarDetails';
     public static readonly CURRENT_REPORTS: string = 'currentReports';
 
+    // relevant URLs
+    public static readonly CUSTOMERS_DASHBOARD_VIEW_PATH: string = '/customers-dashboard';
+    public static readonly STAKEHOLDERS_VIEW_PATH: string = '/spotlight/stakeholders';
+    public static readonly POWERBI_DASHBOARD_PATH: string = '/spotlight/visualization';
+    public static readonly SPOTLIGHT_DASHBOARD_PATH: string = '/spotlight/spotlight-dashboard';
+
     // Session Storage Keys
     public static readonly ACCESS_TOKEN: string = 'access_token';
-
-    // Logout time after inactivity in ms (12Hr x 60 min x 60 seg x 1000 ms)
-    public static readonly LOGOUT_TIME_MS = 12 * 60 * 60 * 1000;
 
     // Tool bar constants
     public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
@@ -39,6 +42,8 @@ export class Constants {
     public static readonly OTHER_DEVICE_TYPE = 'OTHER';
 
     // Timer constants
+    public static readonly LOGOUT_TIME_MS = 12 * 60 * 60 * 1000; // Logout time after inactivity in ms (12Hr x 60 min x 60 seg x 1000 ms)
+    public static readonly TOGGLES_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes * 60 seconds * 1000 milliseconds
     public static readonly DASHBOARD_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes * 60 seconds * 1000 milliseconds
     public static readonly DASHBOARD_NOTE_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
     public static readonly REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS = 30 * 60 * 1000; // 30 minutes * 60 seconds * 1000 milliseconds

@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Logger;
 
 import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
@@ -55,10 +56,14 @@ public class TekvLSGetReportableSubaccounts {
 
         context.getLogger().info("Entering TekvLSGetReportableCustomers Azure function");
 
-        SelectQueryBuilder selectStmnt = new SelectQueryBuilder("SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" " +
-            "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id");
-        selectStmnt.appendCustomCondition("s.services LIKE ?", "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
-        selectStmnt.appendEqualsCondition(" cs.status", Constants.CTaaSSetupStatus.READY.value(), QueryBuilder.DATA_TYPE.VARCHAR);
+        SelectQueryBuilder selectStmnt = new SelectQueryBuilder(
+                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" , sa.subaccount_admin_email AS \"lsSubAccountAdminEmail\""
+                        +
+                        "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id LEFT JOIN subaccount_admin sa ON s.id = sa.subaccount_id");
+        selectStmnt.appendCustomCondition("s.services LIKE ?",
+                "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
+        selectStmnt.appendEqualsCondition(" cs.status", Constants.CTaaSSetupStatus.READY.value(),
+                QueryBuilder.DATA_TYPE.VARCHAR);
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement selectStmt = selectStmnt.build(connection)) {
@@ -67,14 +72,27 @@ public class TekvLSGetReportableSubaccounts {
             ResultSet rs = selectStmt.executeQuery();
             JSONObject json = new JSONObject();
             JSONArray array = new JSONArray();
-            while (rs.next()) {
+            while (rs.next()) {                
                 JSONObject item = new JSONObject();
-                item.put("subAccountId", rs.getString("lsSubAccountId"));
-                item.put("subAccountName", rs.getString("lsSubAccountName"));
-                item.put("customerName", rs.getString("lsCustomerName"));
-                item.put("customerId", rs.getString("lsCustomerId"));
-                array.put(item);
+                int itemIndex = this.arrayContainsSubaccount(array, rs.getString("lsSubAccountId"), context);
+                if (itemIndex != -1) {
+                    JSONObject existingObject = array.getJSONObject(itemIndex);
+                    JSONArray existingMails = existingObject.getJSONArray("emails");
+                    existingMails.put(rs.getString("lsSubAccountAdminEmail"));
+                    existingObject.put("emails", existingMails);
+                    array.put(itemIndex, existingObject);
+                } else {
+                    JSONArray emails = new JSONArray();
+                    item.put("subAccountId", rs.getString("lsSubAccountId"));
+                    item.put("subAccountName", rs.getString("lsSubAccountName"));
+                    item.put("customerName", rs.getString("lsCustomerName"));
+                    item.put("customerId", rs.getString("lsCustomerId"));
+                    emails.put(rs.getString("lsSubAccountAdminEmail"));
+                    item.put("emails", emails);
+                    array.put(item);
+                }
             }
+
             json.put("subaccounts", array);
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
                     .body(json.toString()).build();
@@ -89,6 +107,14 @@ public class TekvLSGetReportableSubaccounts {
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
+    }
 
+    private int arrayContainsSubaccount(JSONArray array, String subaccountId, ExecutionContext context) {
+        int resultIndex = -1;
+        for (int i = 0; i < array.length(); i++) {
+            if (array.getJSONObject(i).getString("subAccountId").equals(subaccountId))
+                resultIndex = i;
+        }
+        return resultIndex;
     }
 }
