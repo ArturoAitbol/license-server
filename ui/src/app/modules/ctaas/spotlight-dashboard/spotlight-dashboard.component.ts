@@ -133,8 +133,7 @@ export class SpotlightDashboardComponent implements OnInit{
         font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
       <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
         align-items: flex-start;">
-      <div>Percentage of calls streams: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
-      <div>Number of calls streams: <b>${ this.vq.numericValues[dataPointIndex] }</b></div>
+      <div>Calls Streams: <b>${ this.vq.numericValues[dataPointIndex] }</b></div>
       </div>
       `;
     };
@@ -150,8 +149,8 @@ export class SpotlightDashboardComponent implements OnInit{
       <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
         align-items: flex-start;">
       <div>Category: <b>${ w.config.series[seriesIndex].name }</b></div>
-      <div>Percentage of calls streams: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
-      <div>Number of calls streams: <b>${ this.weeklyVqNumericValues[seriesIndex][dataPointIndex] }</b></div>
+      <div>Calls Streams: <b>${ this.weeklyVqNumericValues[seriesIndex][dataPointIndex] }</b></div>
+      <div>Percentage: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
       </div>
       `;
     };
@@ -462,13 +461,17 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
-  navigateToDetailedTable(reportType?: string) {
-    let regions = ""
+  navigateToDetailedTable(reportType?: string, status?: string) {
     const startDate = this.selectedDate.clone().utc().startOf('day');
     const endDate = this.selectedDate.clone().utc();
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
-    const reportFilter = reportType? "type=" + reportType : "status=FAILED";
+    let reportFilter = "";
+    if (reportType && reportType != "")
+      reportFilter += "type=" + reportType;
+    if (status && status != "")
+      reportFilter += "status=" + status;
+    let regions = ""
     if(this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;

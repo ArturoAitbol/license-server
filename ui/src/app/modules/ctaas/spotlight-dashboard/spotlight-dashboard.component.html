@@ -163,7 +163,7 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
@@ -216,7 +216,7 @@
                                 </div>
                             </div>
                             <br>
-                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable()">
+                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                 View Detailed Report
                             </button>
                         </div>
