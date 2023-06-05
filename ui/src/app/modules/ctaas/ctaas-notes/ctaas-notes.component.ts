@@ -34,6 +34,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     isRequestCompleted = false;
     toggleStatus = false;
     addNoteDisabled = false;
+    nativeHistoricalDashboardActive = false;
     private subaccountDetails: any;
     private onDestroy: Subject<void> = new Subject<void>();
     readonly CLOSE_NOTE = 'Close Note';
@@ -114,6 +115,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard');
         this.calculateTableHeight();
         this.getActionMenuOptions();
         this.initColumns();
