@@ -447,13 +447,17 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
-  navigateToDetailedTable(reportType?: string) {
-    let regions = ""
+  navigateToDetailedTable(reportType?: string, status?: string) {
     const startDate = this.selectedDate.clone().utc().startOf('day');
     const endDate = this.selectedDate.clone().utc();
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
-    const reportFilter = reportType? "type=" + reportType : "status=FAILED";
+    let reportFilter = "";
+    if (reportType && reportType != "")
+      reportFilter += "type=" + reportType;
+    if (status && status != "")
+      reportFilter += "status=" + status;
+    let regions = ""
     if(this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
