@@ -127,7 +127,7 @@ export class AppComponent implements OnInit, OnDestroy {
         main: [
             {
                 name: 'Home',
-                path: 'dashboard',
+                path: 'customers-dashboard',
                 active: true,
                 materialIcon: 'home',
                 baseUrl: '/',
@@ -185,16 +185,21 @@ export class AppComponent implements OnInit, OnDestroy {
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
+<<<<<<< HEAD
     readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = '/spotlight/visualization';
     readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map-poc';
+=======
+    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/report-dashboards';
+    readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = Constants.POWERBI_DASHBOARD_PATH;
+>>>>>>> 3e9cde40d4317f75885e564ccdb3d724b8684b82
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
-    readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
+    readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = Constants.STAKEHOLDERS_VIEW_PATH;
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
     readonly SPOTLIGHT_NOTES_PATH: string = '/spotlight/notes';
     readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports';
-    readonly MAIN_DASHBOARD = '/dashboard';
+    readonly MAIN_DASHBOARD = Constants.CUSTOMERS_DASHBOARD_VIEW_PATH;
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
-    readonly SPOTLIGHT_DASHBOARD_ROUTE_PATH = '/spotlight/spotlight-dashboard';
+    readonly SPOTLIGHT_DASHBOARD_ROUTE_PATH = Constants.SPOTLIGHT_DASHBOARD_PATH;
     private subaccountId: any;
     readonly DEVICES = '/devices';
     readonly CONSUMPTION_MATRIX = '/consumption-matrix';
@@ -438,7 +443,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
             this.router.navigate(['/']);
         else
-            this.router.navigate(['/dashboard']);
+            this.router.navigate([this.MAIN_DASHBOARD]);
     }
 
     /**
@@ -446,8 +451,9 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     logout() {
         try {
-            this.msalService.logout();
             sessionStorage.clear();
+            this.msalService.logout();
+            localStorage.clear();
         } catch (error) {
             console.error('error while logout: ', error);
         }

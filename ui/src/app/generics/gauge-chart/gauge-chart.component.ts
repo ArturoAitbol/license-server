@@ -28,6 +28,14 @@ export class GaugeChartComponent {
 
   @ViewChild("chart") chart: ChartComponent;
 
+  constructor() {
+    this.chartOptions.tooltip.y = {
+      formatter(val: number, opts?: any): string {
+        return val + "%";
+      },
+    }
+  }
+
   viewDetailedTableClicked() {
     this.viewDetailedTableEvent.emit();
   }

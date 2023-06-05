@@ -10,9 +10,11 @@
         &nbsp;
         <span class="fw-500 p-2" >Closed</span>
         &nbsp;
-        <button *lcCheckAccessFor="'addSpotlightNote'" style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addNote()" [disabled]="addNoteDisabled">
-            Add Note
-        </button>
+        <ng-container *ngIf="!nativeHistoricalDashboardActive">
+            <button *lcCheckAccessFor="'addSpotlightNote'" style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addNote()" [disabled]="addNoteDisabled">
+                Add Note
+            </button>
+        </ng-container>
     </div>
 
 

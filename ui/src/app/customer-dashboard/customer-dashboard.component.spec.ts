@@ -1,6 +1,6 @@
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { DialogService } from '../services/dialog.service';
-import { DashboardComponent } from './customer-dashboard.component';
+import { CustomerDashboardComponent } from './customer-dashboard.component';
 import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from '../modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from '../modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
@@ -20,16 +20,16 @@ import { environment } from 'src/environments/environment';
 import { TestBedConfigBuilder } from '../../test/mock/TestBedConfigHelper.mock';
 import { RouterMock } from '../../test/mock/Router.mock';
 
-let dashboardComponentTestInstance: DashboardComponent;
-let fixture: ComponentFixture<DashboardComponent>;
+let dashboardComponentTestInstance: CustomerDashboardComponent;
+let fixture: ComponentFixture<CustomerDashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
 
 const beforeEachFunction = waitForAsync(
     () => {
-        const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DashboardComponent);
+        const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CustomerDashboardComponent);
         configBuilder.addProvider({ provide: DialogService, useValue: dialogServiceMock });
         TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents().then(() => {
-            fixture = TestBed.createComponent(DashboardComponent);
+            fixture = TestBed.createComponent(CustomerDashboardComponent);
             dashboardComponentTestInstance = fixture.componentInstance;
             dashboardComponentTestInstance.ngOnInit();
         });

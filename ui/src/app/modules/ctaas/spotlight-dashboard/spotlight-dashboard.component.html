@@ -28,6 +28,18 @@
             </button>
         </div>
     </div>
+    <ng-container *ngIf="showNewNoteBtn && !isloading">
+        <ng-container *lcCheckAccessFor="'addSpotlightNote'">
+            <div class="new-note-container">
+                <button mat-fab class="new-note-btn" #tooltip="matTooltip"
+                        matTooltip="Add a new note"
+                        [matTooltipPosition]="'before'"
+                        (click)="addNote()">
+                    <mat-icon>note_add</mat-icon>
+                </button>
+            </div>
+        </ng-container>
+    </ng-container>
     <div class="lights-container" *ngIf="isloading">
         <div>
             <div class="spotlight"></div>
@@ -44,7 +56,7 @@
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}
+                <h1 class="text-center">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
                 </h1>
             </div>
             <div class="date-picker-form">
@@ -238,7 +250,7 @@
     <ng-container *ngIf="selectedPeriod === 'weekly'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MMMM-DD-YYYY')}} – {{selectedRange.end.format('MMMM-DD-YYYY')}}</span></h1>
+                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span></h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="weeklyFilters">
@@ -390,6 +402,7 @@
                                                [title]="weeklyVQChartOptions.title"
                                                [markers]="weeklyVQChartOptions.markers"
                                                [legend]="weeklyVQChartOptions.legend"
+                                               [tooltip]="weeklyVQChartOptions.tooltip"
                                                [colors]="weeklyVQChartOptions.colors">
                                     </apx-chart>
                                 </div>
