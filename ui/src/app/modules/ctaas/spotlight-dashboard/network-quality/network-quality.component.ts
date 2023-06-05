@@ -86,7 +86,7 @@ export class NetworkQualityComponent implements OnInit {
     this.commonChartOptions = trendsChartCommonOptions;
     this.polqaChartOptions = defaultPolqaChartOptions;
     this.polqaChartOptions.chart.events = {
-      markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
+      markerClick: this.navigateToDetailedTableFromPoint.bind(this)
     };
     this.matIconRegistry.addSvgIcon(
         'packetloss',
@@ -233,11 +233,11 @@ export class NetworkQualityComponent implements OnInit {
     this.sentBitrateChartOptions = {...this.commonChartOptions, ...defaultSentBitrateChartOptions };
     this.roundTripChartOptions = {...this.commonChartOptions, ...defaultRoundtripTimeChartOptions };
     this.receivedPacketLossChartOptions.chart.events = {
-      markerClick: this.navigateToCallingReliabilityDetailedTableFromPoint.bind(this)
+      markerClick: this.navigateToDetailedTableFromPoint.bind(this)
     };
   }
 
-  navigateToCallingReliabilityDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
+  navigateToDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
     let startDate: Moment, endDate: Moment;
     if (this.groupBy==='hour') {
@@ -251,28 +251,6 @@ export class NetworkQualityComponent implements OnInit {
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
     let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
-    if (this.regions.length > 0)
-      url += "&regions=" + JSON.stringify(this.regions);
-    if (this.selectedUsers.length > 0)
-      url+= "&users=" + this.selectedUsers.join(',');
-    window.open(url);
-  }
-
-  navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
-    const category = chartContext.opts.xaxis.categories[dataPointIndex];
-    let startDate: Moment, endDate: Moment;
-    if (this.groupBy==='hour') {
-      const [ startTime, endTime ] = category.split('-');
-      startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-      endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
-    } else {
-      startDate = moment.utc(category).hour(0);
-      endDate = Utility.setHoursOfDate(moment.utc(category));
-    }
-   
-    const parsedStartTime = startDate.format('YYMMDDHHmmss');
-    const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
     if (this.regions.length > 0)
       url += "&regions=" + JSON.stringify(this.regions);
     if (this.selectedUsers.length > 0)

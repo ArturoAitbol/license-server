@@ -545,6 +545,11 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
     tooltip: {
         enabled: true,
         fillSeriesColor: false,
+        y:{
+            formatter(val: number, opts?: any): string {
+                return val + "%";
+            },
+        },
     },
     colors: ['#bb2426'],
 };
