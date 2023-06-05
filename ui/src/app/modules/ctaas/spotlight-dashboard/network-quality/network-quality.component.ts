@@ -68,7 +68,7 @@ export class NetworkQualityComponent implements OnInit {
     overall: { packetLoss: 0, jitter: 0, roundTripTime: 0, polqa:0, sendBitrate: 0 }
   };
 
-  privateIsLoading = true;
+  hideChart = true;
   isChartLoading = false;
   selectedGraph = 'jitter';
 
@@ -122,20 +122,19 @@ export class NetworkQualityComponent implements OnInit {
   }
 
   reloadCharts(){
-    this.isChartLoading = true;
-    this.loadCharts(true);
+    this.loadCharts({hideChart:false,showLoading:true});
   }
 
   onChangeValue(event:any){
-    console.log(event)
     if(event === 'Most Representative')
       this.selectedFilter = false;
     if(event === 'Average')
       this.selectedFilter = true;
   }
 
-  loadCharts(isReload?) {
-    if (!isReload) this.privateIsLoading = true;
+  loadCharts(params:{hideChart?:boolean,showLoading?:boolean} = {hideChart:true,showLoading:false}) {
+    this.isChartLoading = params.showLoading;
+    this.hideChart = params.hideChart;
     const obs = [];
     if(this.selectedFilter === false) {
       this.selectedFilter = false;
@@ -214,12 +213,12 @@ export class NetworkQualityComponent implements OnInit {
       ];
 
       this.isChartLoading = false;
-      this.privateIsLoading = false;
+      this.hideChart = false;
       this.chartLoadCompleted();
     }, error => {
       console.error(error);
       this.chartLoadCompleted();
-      this.privateIsLoading = false;
+      this.hideChart = false;
     });
   }
 

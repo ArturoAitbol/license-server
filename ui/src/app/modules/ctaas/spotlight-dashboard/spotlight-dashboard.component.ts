@@ -11,7 +11,7 @@ import {
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
 import moment, { Moment } from "moment";
-import { forkJoin, Observable, interval } from "rxjs";
+import { forkJoin, Observable, interval, Subscription } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
 import { ReportType } from "../../../helpers/report-type";
@@ -22,6 +22,7 @@ import { Subject } from "rxjs/internal/Subject";
 import { ActivatedRoute } from "@angular/router";
 import { Note } from "../../../model/note.model";
 import { NoteService } from "../../../services/notes.service";
+import { Constants } from 'src/app/helpers/constants';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -101,6 +102,9 @@ export class SpotlightDashboardComponent implements OnInit{
   chartsLoaded = 0;
   selectedRegions = [];
   weeklySelectedRegions = [];
+  refreshIntervalSubscription: Subscription;
+  autoRefresh:boolean = false;
+  disableFiltersWhileLoading:boolean = true;
 
   // Historical view variables
   isHistoricalView = false;
@@ -125,6 +129,7 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   ngOnInit() {
+    this.disableFiltersWhileLoading = true;
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
     this.route.queryParams.subscribe(params => {
@@ -137,6 +142,13 @@ export class SpotlightDashboardComponent implements OnInit{
           this.loadCharts();
         });
       } else this.loadCharts();
+    });
+
+    this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
+    .subscribe(() => {
+      this.disableFiltersWhileLoading = false;
+      this.autoRefresh = true;
+      this.reloadCharts(false);
     });
   }
 
@@ -185,22 +197,24 @@ export class SpotlightDashboardComponent implements OnInit{
     if(this.chartsLoaded==2){
       this.stopTimer();
       this.chartsLoaded = 0;
+      this.autoRefresh = false;
     }
   }
 
-  reloadCharts(){
+  reloadCharts(showLoading:boolean=true){
+    this.disableFiltersWhileLoading = showLoading;
     if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
       this.isHistoricalView = false;
-    this.loadCharts();
-    this.networkQuality.loadCharts();
+    this.loadCharts(showLoading);
+    this.networkQuality.loadCharts({showLoading:showLoading});
   }
 
-  loadCharts() {
+  loadCharts(showLoading:boolean = true) {
     this.startTimer();
     this.chartsLoaded = 0;
     this.calls.total = 0;
     this.calls.failed = 0;
-    this.isloading = true;
+    this.isloading = showLoading && true;
     const startTime = performance.now();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
@@ -444,9 +458,11 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   private reloadFilterOptions() {
-    this.weeklyFilters.disable();
-    this.filters.disable();
-    this.networkQuality.filters.disable();
+    if(this.disableFiltersWhileLoading){
+      this.weeklyFilters.disable();
+      this.filters.disable();
+      this.networkQuality.filters.disable();
+    } 
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
@@ -483,9 +499,11 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   private reloadUserOptions(regions?: any) {
-    this.filters.disable();
-    this.weeklyFilters.disable();
-    this.networkQuality.filters.disable();
+    if(this.disableFiltersWhileLoading){
+      this.filters.disable();
+      this.weeklyFilters.disable();
+      this.networkQuality.filters.disable();
+    }
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
