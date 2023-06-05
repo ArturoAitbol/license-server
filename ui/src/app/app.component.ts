@@ -185,13 +185,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
-<<<<<<< HEAD
-    readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = '/spotlight/visualization';
     readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map-poc';
-=======
     readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/report-dashboards';
     readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = Constants.POWERBI_DASHBOARD_PATH;
->>>>>>> 3e9cde40d4317f75885e564ccdb3d724b8684b82
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = Constants.STAKEHOLDERS_VIEW_PATH;
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
