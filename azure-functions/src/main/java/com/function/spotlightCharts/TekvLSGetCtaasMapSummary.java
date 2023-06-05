@@ -162,15 +162,24 @@ public class TekvLSGetCtaasMapSummary {
                 JSONObject res = new JSONObject();
                 JSONArray entryArr = ((JSONArray) entry);
                 JSONObject fromObj = new JSONObject();
-                fromObj.put("city", entryArr.getString(0));
-                fromObj.put("state", entryArr.getString(1));
-                fromObj.put("country", entryArr.getString(2));
-                //fromObj.put("location", MapClient.getMapCoordinates(entryArr.getString(0), entryArr.getString(1), entryArr.getString(2), context));
+                JSONObject fromCoordinates = new JSONObject();
+                JSONObject tooCoordinates = new JSONObject();
+                if(!entryArr.get(0).equals(null)){
+                    fromObj.put("city", entryArr.getString(0));
+                    fromObj.put("state", entryArr.getString(1));
+                    fromObj.put("country", entryArr.getString(2));
+                    fromCoordinates.put("x",entryArr.getString(6).split(",")[0]);
+                    fromCoordinates.put("y",entryArr.getString(6).split(",")[1]);
+                    fromObj.put("location", fromCoordinates);
+                }
                 res.put("from", fromObj);
                 JSONObject toObj = new JSONObject();
                 toObj.put("city", entryArr.getString(3));
                 toObj.put("state", entryArr.getString(4));
-                //toObj.put("country", entryArr.getString(5));    toObj.put("location", MapClient.getMapCoordinates(entryArr.getString(3), entryArr.getString(4), entryArr.getString(5), context));
+                toObj.put("country", entryArr.getString(5));
+                tooCoordinates.put("x",entryArr.getString(7).split(",")[0]);
+                tooCoordinates.put("y",entryArr.getString(7).split(",")[1]);
+                toObj.put("location", tooCoordinates);
                 res.put("to", toObj);
                 res.put("totalCalls", entryArr.get(6));
                 res.put("passed", entryArr.get(7));
