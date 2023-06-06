@@ -164,32 +164,39 @@ public class TekvLSGetCtaasMapSummary {
                 JSONObject fromObj = new JSONObject();
                 JSONObject fromCoordinates = new JSONObject();
                 JSONObject tooCoordinates = new JSONObject();
-                if(!entryArr.get(0).equals(null)){
+                if(!entryArr.get(0).equals(null) && !entryArr.get(1).equals(null)
+                        && !entryArr.get(2).equals(null) && !entryArr.get(6).equals(null)) {
                     fromObj.put("city", entryArr.getString(0));
                     fromObj.put("state", entryArr.getString(1));
                     fromObj.put("country", entryArr.getString(2));
-                    fromCoordinates.put("x",entryArr.getString(6).split(",")[0]);
-                    fromCoordinates.put("y",entryArr.getString(6).split(",")[1]);
+                    fromCoordinates.put("x",Float.parseFloat(entryArr.getString(6).split(",")[0]));
+                    fromCoordinates.put("y",Float.parseFloat(entryArr.getString(6).split(",")[1]));
                     fromObj.put("location", fromCoordinates);
+                    res.put("from", fromObj);
                 }
-                res.put("from", fromObj);
                 JSONObject toObj = new JSONObject();
-                toObj.put("city", entryArr.getString(3));
-                toObj.put("state", entryArr.getString(4));
-                toObj.put("country", entryArr.getString(5));
-                tooCoordinates.put("x",entryArr.getString(7).split(",")[0]);
-                tooCoordinates.put("y",entryArr.getString(7).split(",")[1]);
-                toObj.put("location", tooCoordinates);
-                res.put("to", toObj);
-                res.put("totalCalls", entryArr.get(6));
-                res.put("passed", entryArr.get(7));
-                res.put("failed", entryArr.get(8));
-                res.put("receivedJitter", entryArr.get(9));
-                res.put("receivedPacketLoss", entryArr.get(10));
-                res.put("roundTripTime", entryArr.get(11));
-                res.put("sentBitrate", entryArr.get(12));
-                res.put("polqa", entryArr.get(13));
-                result.put(res);
+                if(!entryArr.get(3).equals(null) && !entryArr.get(4).equals(null)
+                        && !entryArr.get(5).equals(null) && !entryArr.get(7).equals(null)) {
+                    toObj.put("city", entryArr.getString(3));
+                    toObj.put("state", entryArr.getString(4));
+                    toObj.put("country", entryArr.getString(5));
+                    tooCoordinates.put("x", Float.parseFloat(entryArr.getString(7).split(",")[0]));
+                    tooCoordinates.put("y", Float.parseFloat(entryArr.getString(7).split(",")[1]));
+                    toObj.put("location", tooCoordinates);
+                    res.put("to", toObj);
+                }
+                if(!toObj.isEmpty() && !fromObj.isEmpty()) {
+                    context.getLogger().info("hola3: " + entryArr);
+                    res.put("totalCalls", entryArr.get(8));
+                    res.put("passed", entryArr.get(9));
+                    res.put("failed", entryArr.get(10));
+                    res.put("receivedJitter", entryArr.get(11));
+                    res.put("receivedPacketLoss", entryArr.get(12));
+                    res.put("roundTripTime", entryArr.get(13));
+                    res.put("sentBitrate", entryArr.get(14));
+                    res.put("polqa", entryArr.get(15));
+                    result.put(res);
+                }
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(result.toString()).build();
         } catch (SQLException e) {

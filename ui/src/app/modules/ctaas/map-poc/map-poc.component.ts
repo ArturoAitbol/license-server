@@ -7,6 +7,7 @@ import { EsriServicesService } from 'src/app/services/map-poc.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 @Component({
   selector: 'app-map-poc',
   templateUrl: './map-poc.component.html',
@@ -29,13 +30,14 @@ export class MapPocComponent implements OnInit {
   filterForm = this.fb.group({
     // fromRegionFilterControl: [''],
     // toRegionFilterControl: [''],
-    startDateFilterControl: ['',[Validators.required]],
+    startDateFilterControl: [moment.utc(),[Validators.required]],
     endDateFilterControl: [''],
 });
   constructor(private esriService: EsriServicesService, 
     private fb: FormBuilder,
     private subaccountService: SubAccountService,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog, 
+    private snackBarService: SnackBarService ) { }
 
   readonly GOOD_COLOR: string = "#203c66";
   readonly MID_COLOR: string = "orange";
@@ -132,6 +134,8 @@ export class MapPocComponent implements OnInit {
           this.nodesMap[fromRegion].callsOriginated.roundTripTime = this.mapData[index].roundTripTime;
         if(this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
           this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
+        if(this.nodesMap[fromRegion].callsOriginated.polqa === 0)
+          this.nodesMap[fromRegion].callsOriginated.polqa = '–'
         this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
       }
     }
@@ -159,13 +163,15 @@ export class MapPocComponent implements OnInit {
         this.nodesMap[toRegion].callsTerminated.failed += this.mapData[index].failed;
         this.nodesMap[toRegion].callsTerminated.total += this.mapData[index].totalCalls;
         if (this.mapData[index].polqa && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
-          this.nodesMap[toRegion].callsTerminated.callsTerminated.polqa = this.mapData[index].polqa;
+          this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
         if(this.nodesMap[toRegion].callsTerminated.receivedJitter < this.mapData[index].receivedJitter)
           this.nodesMap[toRegion].callsTerminated.receivedJitter = this.mapData[index].receivedJitter;
         if(this.nodesMap[toRegion].callsTerminated.roundTripTime < this.mapData[index].roundTripTime)
           this.nodesMap[toRegion].callsTerminated.roundTripTime = this.mapData[index].roundTripTime;
         if(this.nodesMap[toRegion].callsTerminated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
           this.nodesMap[toRegion].callsTerminated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
+        if(this.nodesMap[toRegion].callsTerminated.polqa === 0)
+          this.nodesMap[toRegion].callsTerminated.polqa = '–';
         if (fromRegion !== toRegion)
           this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
       }
@@ -234,6 +240,7 @@ export class MapPocComponent implements OnInit {
     let customIconUrl = '../../../../assets/images/goodMarker.svg';
     for (const key in this.nodesMap) {
       let failed, polqa;
+      console.log(this.nodesMap[key])
       failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
       polqa = this.nodesMap[key].callsOriginated.polqa;
       if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa)
@@ -251,6 +258,7 @@ export class MapPocComponent implements OnInit {
         this.nodeDetails(key);
       });
       node.addTo(this.map);
+      node.bindTooltip(this.nodesMap[key].region.city + ", " + this.nodesMap[key].region.state);
     }
   }
 
@@ -283,273 +291,33 @@ export class MapPocComponent implements OnInit {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    // this.esriService.getMapSummary(this.startDate,subaccountId).subscribe((res:any)=>{
-    //   if(res){
-    //     let parsedSummaryData = []
-    //     res.map((summaryData, index) => {
-    //       summaryData = {...summaryData, 
-    //       fromLocation: summaryData.from.city + ", " + summaryData.from.state + ", " + summaryData.from.country,
-    //       toLocation: summaryData.to.city + ", " + summaryData.to.state + ", " + summaryData.to.country
-    //     }
-    //     parsedSummaryData[index] = summaryData;
-    //   });
-    //   console.log("test",parsedSummaryData)
-    //     this.mapData = parsedSummaryData
-    //     this.processMapData();
-    //     this.drawNodes();
-    //     this.drawLines();
-    //     this.isLoadingResults = false;
-    //     this.isRequestCompleted = true;
-    //   }
-    // });
-    this.mapData = [
-      {
-          "totalCalls": 178,
-          "receivedPacketLoss": 0.59,
-          "sentBitrate": 40,
-          "polqa": 0,
-          "roundTripTime": 227,
-          "from": {
-              "country": "America",
-              "city": "Plano",
-              "location": {
-                  "x": -96.69924999999995,
-                  "y": 33.020790000000034
-              },
-              "state": "texas"
-          },
-          "receivedJitter": 15.59,
-          "to": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "passed": 178,
-          "failed": 0,
-          "fromLocation": "Plano, texas, America",
-          "toLocation": "Dallas, Texas, America"
-      },
-      {
-          "totalCalls": 2,
-          "receivedPacketLoss": 0,
-          "sentBitrate": 38.857142857142854,
-          "polqa": 0,
-          "roundTripTime": 118,
-          "from": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "receivedJitter": 9.62,
-          "to": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "passed": 2,
-          "failed": 0,
-          "fromLocation": "Dallas, Texas, America",
-          "toLocation": "Dallas, Texas, America"
-      },
-      {
-          "totalCalls": 92,
-          "receivedPacketLoss": 0.59,
-          "sentBitrate": 36.18652849740933,
-          "polqa": 1.89,
-          "roundTripTime": 227,
-          "from": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "receivedJitter": 15.59,
-          "to": {
-              "country": "America",
-              "city": "Plano",
-              "location": {
-                  "x": -96.69924999999995,
-                  "y": 33.020790000000034
-              },
-              "state": "Texas"
-          },
-          "passed": 92,
-          "failed": 0,
-          "fromLocation": "Dallas, Texas, America",
-          "toLocation": "Plano, Texas, America"
-      },
-      {
-          "totalCalls": 9,
-          "receivedPacketLoss": 0.01,
-          "sentBitrate": 36,
-          "polqa": 2.58,
-          "roundTripTime": 202,
-          "from": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "receivedJitter": 8.91,
-          "to": {
-              "country": "US",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "passed": 9,
-          "failed": 0,
-          "fromLocation": "Dallas, Texas, America",
-          "toLocation": "Dallas, Texas, US"
-      },
-      {
-          "totalCalls": 9,
-          "receivedPacketLoss": 0,
-          "sentBitrate": 36,
-          "polqa": 2.49,
-          "roundTripTime": 199,
-          "from": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "receivedJitter": 11.31,
-          "to": {
-              "country": "US",
-              "city": "Plano",
-              "location": {
-                  "x": -96.69924999999995,
-                  "y": 33.020790000000034
-              },
-              "state": "Texas"
-          },
-          "passed": 9,
-          "failed": 0,
-          "fromLocation": "Dallas, Texas, America",
-          "toLocation": "Plano, Texas, US"
-      },
-      {
-          "totalCalls": 91,
-          "receivedPacketLoss": 0.8,
-          "sentBitrate": 36,
-          "polqa": 1.37,
-          "roundTripTime": 226,
-          "from": {
-              "country": "America",
-              "city": "Plano",
-              "location": {
-                  "x": -96.69924999999995,
-                  "y": 33.020790000000034
-              },
-              "state": "Texas"
-          },
-          "receivedJitter": 13.35,
-          "to": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "passed": 88,
-          "failed": 3,
-          "fromLocation": "Plano, Texas, America",
-          "toLocation": "Dallas, Texas, America"
-      },
-      {
-          "totalCalls": 9,
-          "receivedPacketLoss": 0,
-          "sentBitrate": 36,
-          "polqa": 2.53,
-          "roundTripTime": 223,
-          "from": {
-              "country": "US",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "receivedJitter": 12.73,
-          "to": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "passed": 9,
-          "failed": 0,
-          "fromLocation": "Dallas, Texas, US",
-          "toLocation": "Dallas, Texas, America"
-      },
-      {
-          "totalCalls": 10,
-          "receivedPacketLoss": 0,
-          "sentBitrate": 36.232142857142854,
-          "polqa": 2.53,
-          "roundTripTime": 206,
-          "from": {
-              "country": "US",
-              "city": "Plano",
-              "location": {
-                  "x": -96.69924999999995,
-                  "y": 33.020790000000034
-              },
-              "state": "Texas"
-          },
-          "receivedJitter": 11.78,
-          "to": {
-              "country": "America",
-              "city": "Dallas",
-              "location": {
-                  "x": -96.79511999999994,
-                  "y": 32.77822000000003
-              },
-              "state": "Texas"
-          },
-          "passed": 10,
-          "failed": 0,
-          "fromLocation": "Plano, Texas, US",
-          "toLocation": "Dallas, Texas, America"
+    this.esriService.getMapSummary(this.startDate,subaccountId).subscribe((res:any)=>{
+      if(res){
+        let parsedSummaryData = []
+        if( res.length > 0) {
+        res.map((summaryData, index) => {
+            summaryData = {
+            ...summaryData, 
+            fromLocation: summaryData.from.city + ", " + summaryData.from.state + ", " + summaryData.from.country,
+            toLocation: summaryData.to.city + ", " + summaryData.to.state + ", " + summaryData.to.country
+          }
+          parsedSummaryData[index] = summaryData;
+          });
+          this.mapData = parsedSummaryData
+          this.processMapData();
+          this.drawNodes();
+          this.drawLines();
+          this.isLoadingResults = false;
+          this.isRequestCompleted = true;
+        } else {
+          this.isLoadingResults = false;
+          this.isRequestCompleted = true;
+          this.map.setView([39.09973,-94.57857], 5);
+          this.snackBarService.openSnackBar('There is not data to display', '');
+          this.baseMap();
+        }
       }
-    ]
-    this.isLoadingResults = false;
-    this.isRequestCompleted = true;
-    //this.mapData = parsedSummaryData
-    this.processMapData();
-    this.drawNodes();
-    this.drawLines();
+    });
   }
   
   dateFilter(){

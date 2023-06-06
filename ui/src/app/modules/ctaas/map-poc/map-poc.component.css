@@ -51,3 +51,78 @@ ul li {
     display: flex !important;
     white-space: nowrap !important;
 }
+
+.legend {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2%;
+}
+  
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.legend {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+  
+  .color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+  
+.good {
+    background-color: #203c66;
+}
+  
+.fair {
+    background-color: orange;
+}
+  
+.bad {
+    background-color: red;
+}
+
+
+.good:hover {
+    
+}
+  
+.fair:hover {
+   
+}
+  
+.bad:hover {
+    
+}
+
+.legend-item:hover {
+    cursor: pointer;
+}
+  
+.legend-item:hover .color-box {
+    border: 1px solid #000;
+}
+  
+.legend-item:hover .legend-label {
+   
+}
+  

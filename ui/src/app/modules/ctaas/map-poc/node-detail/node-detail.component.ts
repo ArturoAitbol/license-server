@@ -12,6 +12,7 @@ export class NodeDetailComponent implements OnInit {
   originatedCalls: any[] = [];
   terminatedCalls: any[] = [];
   selectedSubaccount: any;
+  parsedPolqaData: any;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<NodeDetailComponent>,
@@ -19,7 +20,6 @@ export class NodeDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedSubaccount = this.subaccountService.getSelectedSubAccount();
-    console.log(this.data)
   }
 
   onCancel(type?: string): void {
