@@ -107,8 +107,9 @@ export class SpotlightDashboardComponent implements OnInit{
   selectedRegions = [];
   weeklySelectedRegions = [];
   refreshIntervalSubscription: Subscription;
-  autoRefresh:boolean = false;
-  disableFiltersWhileLoading:boolean = true;
+  autoRefresh = false;
+  disableFiltersWhileLoading = true;
+  showChildren = false;
 
   // Historical view variables
   isHistoricalView = false;
@@ -165,23 +166,24 @@ export class SpotlightDashboardComponent implements OnInit{
       if (params?.noteId) {
         this.noteService.getNoteList(this.subaccountService.getSelectedSubAccount().id, params.noteId).subscribe(res => {
           this.note = res.notes[0];
-          this.filters.get('date').setValue(moment(this.note.openDate).utc());
-          this.weeklyFilters.get('date').setValue(moment(this.note.openDate).utc());
+          this.filters.get('date').setValue(moment.utc(this.note.openDate));
+          this.weeklyFilters.get('date').setValue(moment.utc(this.note.openDate));
           this.isHistoricalView = true;
           this.loadCharts();
+          this.showChildren = true;
           this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
         });
       } else {
         this.loadCharts();
+        this.showChildren = true;
         this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
+        this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
+            .subscribe(() => {
+              this.disableFiltersWhileLoading = false;
+              this.autoRefresh = true;
+              this.reloadCharts(false);
+            });
       }
-    });
-
-    this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
-    .subscribe(() => {
-      this.disableFiltersWhileLoading = false;
-      this.autoRefresh = true;
-      this.reloadCharts(false);
     });
   }
 
@@ -234,10 +236,15 @@ export class SpotlightDashboardComponent implements OnInit{
     }
   }
 
-  reloadCharts(showLoading:boolean=true){
+  reloadCharts(showLoading = true){
     this.disableFiltersWhileLoading = showLoading;
     if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
       this.isHistoricalView = false;
+    this.loadCharts(showLoading);
+    this.networkQuality.loadCharts({showLoading:showLoading});
+  }
+
+  selectedPeriodChange() {
     if (this.selectedPeriod == 'daily') {
       this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
           && this.filters.get('date').value.isSame(moment().utc(), "day")
@@ -245,11 +252,10 @@ export class SpotlightDashboardComponent implements OnInit{
       this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
           && this.weeklyFilters.get('date').value.isSame(moment().utc(), "day")
     }
-    this.loadCharts(showLoading);
-    this.networkQuality.loadCharts({showLoading:showLoading});
+    this.loadCharts();
   }
 
-  loadCharts(showLoading:boolean = true) {
+  loadCharts(showLoading = true) {
     this.startTimer();
     this.chartsLoaded = 0;
     this.calls.total = 0;
@@ -260,7 +266,7 @@ export class SpotlightDashboardComponent implements OnInit{
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
-      const selectedDate = Utility.setHoursOfDate(this.filters.get('date').value);
+      const selectedDate = this.isHistoricalView ? this.filters.get('date').value : Utility.setHoursOfDate(this.filters.get('date').value);
       this.selectedDate = selectedDate.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
