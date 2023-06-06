@@ -94,6 +94,9 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
                     color: "#7694B7"
                 }
             },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedPacketLoss ? max : MetricsThresholds.receivedPacketLoss
         },
     markers: {
         size: 4,
@@ -158,7 +161,10 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
                 style: {
                     color: "#E66C37"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedJitter ? max : MetricsThresholds.receivedJitter
         },
     markers: {
         size: 4,
@@ -223,7 +229,10 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
                 style: {
                     color: "#079398"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.maxBitrate ? max : MetricsThresholds.maxBitrate
         },
     markers: {
         size: 4,
@@ -289,7 +298,10 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
                 style: {
                     color: "#570798"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.roundTripTime ? max : MetricsThresholds.roundTripTime
         },
     markers: {
         size: 4,
