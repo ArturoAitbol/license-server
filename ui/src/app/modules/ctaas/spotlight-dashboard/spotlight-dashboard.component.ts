@@ -109,7 +109,7 @@ export class SpotlightDashboardComponent implements OnInit{
   refreshIntervalSubscription: Subscription;
   autoRefresh:boolean = false;
   disableFiltersWhileLoading:boolean = true;
-
+  private subaccountDetails: any;
   // Historical view variables
   isHistoricalView = false;
   note: Note;
@@ -158,6 +158,7 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   ngOnInit() {
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.disableFiltersWhileLoading = true;
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
@@ -169,11 +170,11 @@ export class SpotlightDashboardComponent implements OnInit{
           this.weeklyFilters.get('date').setValue(moment(this.note.openDate).utc());
           this.isHistoricalView = true;
           this.loadCharts();
-          this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
+          this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
         });
       } else {
         this.loadCharts();
-        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView;
+        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
       }
     });
 
@@ -239,10 +240,10 @@ export class SpotlightDashboardComponent implements OnInit{
     if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
       this.isHistoricalView = false;
     if (this.selectedPeriod == 'daily') {
-      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView
           && this.filters.get('date').value.isSame(moment().utc(), "day")
     } else {
-      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard') && !this.isHistoricalView
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView
           && this.weeklyFilters.get('date').value.isSame(moment().utc(), "day")
     }
     this.loadCharts(showLoading);
