@@ -17,7 +17,7 @@
     </div>
     <div class="row mt-2">
         <div class="col">
-            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="reloadCharts()">
+            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="selectedPeriodChange()">
                 <mat-button-toggle value="daily">Daily</mat-button-toggle>
                 <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
             </mat-button-toggle-group>
@@ -239,13 +239,15 @@
                 </div>
             </div>
         </ng-container>
-        <app-network-quality #networkQuality
-            [startDate]="this.filters.get('date').value"
-            [endDate]="this.filters.get('date').value"
-            [regions]="this.selectedRegions"
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality>
+        <ng-container *ngIf="showChildren">
+            <app-network-quality #networkQuality
+                                 [startDate]="this.filters.get('date').value"
+                                 [endDate]="this.filters.get('date').value"
+                                 [regions]="this.selectedRegions"
+                                 [users]="this.users" (chartStatus)="chartsStatus($event)"
+                                 [isLoading]="this.isloading">
+            </app-network-quality>
+        </ng-container>
         <br>
     </ng-container>
     <ng-container *ngIf="selectedPeriod === 'weekly'">
@@ -471,14 +473,16 @@
                 </div>
             </div>
         </ng-container>
-        <app-network-quality #networkQuality
-            [startDate]="getStartWeekDate()"
-            [endDate]="getEndWeekDate()"
-            [groupBy]="'day'"
-            [regions]="this.weeklySelectedRegions" 
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality>
+        <ng-container *ngIf="showChildren">
+            <app-network-quality #networkQuality
+                                 [startDate]="getStartWeekDate()"
+                                 [endDate]="getEndWeekDate()"
+                                 [groupBy]="'day'"
+                                 [regions]="this.weeklySelectedRegions"
+                                 [users]="this.users" (chartStatus)="chartsStatus($event)"
+                                 [isLoading]="this.isloading">
+            </app-network-quality>
+        </ng-container>
         <br>
     </ng-container>
 </div>
