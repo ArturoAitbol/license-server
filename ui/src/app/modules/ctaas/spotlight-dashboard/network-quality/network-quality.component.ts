@@ -164,7 +164,7 @@ export class NetworkQualityComponent implements OnInit {
 
       this.initChartOptions();
       this.receivedPacketLossChartOptions.series = [{
-        name: 'Received packet loss',
+        name: 'Packet loss',
         data: trendsData.series['Received packet loss']
       }];
       this.jitterChartOptions.series = [{
@@ -203,7 +203,7 @@ export class NetworkQualityComponent implements OnInit {
 
       this.polqaChartOptions.series = [
         {
-          name: 'Received Jitter',
+          name: 'Jitter',
           data: this.customerNetworkQualityData.series['Received Jitter']
         },
         {
@@ -223,7 +223,7 @@ export class NetworkQualityComponent implements OnInit {
   }
 
   private initChartOptions() {
-    defaultReceivedPacketLossChartOptions.title.text = this.maxLabel + ' Received Packet Loss (%)';
+    defaultReceivedPacketLossChartOptions.title.text = this.maxLabel + ' Packet Loss (%)';
     defaultJitterChartOptions.title.text = this.maxLabel + ' Jitter (ms)';
     defaultSentBitrateChartOptions.title.text =this.avgLabel + ' Sent Bitrate (kbps)';
     defaultRoundtripTimeChartOptions.title.text = this.maxLabel +' Round Trip Time (ms)';
@@ -261,7 +261,7 @@ export class NetworkQualityComponent implements OnInit {
     if (this.selectedGraph === 'jitter') {
       this.polqaChartOptions.series = [
         {
-          name: 'Received Jitter',
+          name: 'Jitter',
           data: this.customerNetworkQualityData.series['Received Jitter']
         },
         {
@@ -273,7 +273,7 @@ export class NetworkQualityComponent implements OnInit {
     } else if (this.selectedGraph === 'packetLoss') {
       this.polqaChartOptions.series = [
         {
-          name: 'Received Packet Loss',
+          name: 'Packet Loss',
           data: this.customerNetworkQualityData.series['Received packet loss']
         },
         {

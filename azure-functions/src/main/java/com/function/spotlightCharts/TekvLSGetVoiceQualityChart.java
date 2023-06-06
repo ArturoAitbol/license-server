@@ -185,7 +185,10 @@ public class TekvLSGetVoiceQualityChart {
 					percentages = new JSONArray("[0,0,0,0]");
 					numericValues = new JSONArray("[0,0,0,0]");
 				}
-				JSONArray categories = new JSONArray("['Excellent [4-5]','Good [3-4)','Fair [2-3)','Poor [0-2)']");
+				JSONArray categories = new JSONArray();
+				for (PERCENTAGE_LABELS percentageLabel: PERCENTAGE_LABELS.values()) {
+					categories.put(percentageLabel.value);
+				}
 				JSONObject summary = new JSONObject();
 				summary.put("streams", streams);
 				summary.put("calls", totalCalls);
@@ -248,15 +251,34 @@ public class TekvLSGetVoiceQualityChart {
 				summary.put("calls", totalCalls);
 				json.put("summary", summary);
 				JSONObject percentages = new JSONObject();
-				percentages.put("excellent", excellent);
-				percentages.put("good", good);
-				percentages.put("fair", fair);
-				percentages.put("bad", bad);
+
+				JSONObject excellentPercentages = new JSONObject();
+				excellentPercentages.put("name",PERCENTAGE_LABELS.EXCELLENT.value);
+				excellentPercentages.put("data",excellent);
+
+				JSONObject goodPercentages = new JSONObject();
+				goodPercentages.put("name",PERCENTAGE_LABELS.GOOD.value);
+				goodPercentages.put("data",good);
+
+				JSONObject fairPercentages = new JSONObject();
+				fairPercentages.put("name",PERCENTAGE_LABELS.FAIR.value);
+				fairPercentages.put("data",fair);
+
+				JSONObject poorPercentages = new JSONObject();
+				poorPercentages.put("name",PERCENTAGE_LABELS.POOR.value);
+				poorPercentages.put("data",bad);
+
+				percentages.put("excellent", excellentPercentages);
+				percentages.put("good", goodPercentages);
+				percentages.put("fair", fairPercentages);
+				percentages.put("poor", poorPercentages);
+
 				JSONObject numericValues = new JSONObject();
 				numericValues.put("excellent", excellentNumeric);
 				numericValues.put("good", goodNumeric);
 				numericValues.put("fair", fairNumeric);
-				numericValues.put("bad", badNumeric);
+				numericValues.put("poor", badNumeric);
+
 				json.put("percentages", percentages);
 				json.put("numericValues", numericValues);
 				json.put("categories", categories);
@@ -283,5 +305,16 @@ public class TekvLSGetVoiceQualityChart {
 			map.put(arr.getString(0), arr);
 		});
 		return map;
+	}
+
+	private enum PERCENTAGE_LABELS {
+		EXCELLENT("Excellent [4-5]"),
+		GOOD("Good [3-4)"),
+		FAIR("Fair [2-3)"),
+		POOR("Poor [0-2)");
+		String value;
+		PERCENTAGE_LABELS(String value){
+			this.value = value;
+		}
 	}
 }

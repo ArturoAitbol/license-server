@@ -437,20 +437,18 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyVQ.onNet = POLQA.onNet;
     this.weeklyVQ.offNet = POLQA.offNet;
     this.weeklyVQChartOptions.xAxis.categories = vqData.categories;
-    this.weeklyVQChartOptions.series = [ {
-      name: 'Excellent',
-      data: vqData.percentages.excellent,
-    }, {
-      name: 'Good',
-      data: vqData.percentages.good,
-    }, {
-      name: 'Fair',
-      data: vqData.percentages.fair,
-    }, {
-      name: 'Bad',
-      data: vqData.percentages.bad,
-    } ];
-    this.weeklyVqNumericValues = [vqData.numericValues.excellent, vqData.numericValues.good, vqData.numericValues.fair, vqData.numericValues.bad];
+    this.weeklyVQChartOptions.series = [
+      vqData.percentages.excellent,
+      vqData.percentages.good,
+      vqData.percentages.fair,
+      vqData.percentages.poor
+    ];
+    this.weeklyVqNumericValues = [
+      vqData.numericValues.excellent, 
+      vqData.numericValues.good, 
+      vqData.numericValues.fair, 
+      vqData.numericValues.poor
+    ];
 
     if(this.weeklySelectedRegions.length>0)
       this.reloadUserOptions(this.weeklySelectedRegions);

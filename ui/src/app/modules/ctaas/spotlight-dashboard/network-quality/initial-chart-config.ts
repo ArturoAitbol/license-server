@@ -45,7 +45,7 @@ const trendsChartCommonOptions: Partial<ChartOptions> = {
 const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
-        id: 'Received Packet Loss',
+        id: 'Packet Loss',
         group: 'network-quality-trends',
         height: 300,
         zoom: {
@@ -56,7 +56,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
         }
     },
     title: {
-        text: "Max. Received Packet Loss (%)",
+        text: "Max. Packet Loss (%)",
         align: "center",
         style: {
             color: '#7694B7'
@@ -65,7 +65,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     colors: ["#7694B7"],
     series: [
         {
-            name: 'Received Packet Loss',
+            name: 'Packet Loss',
             data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
         },
     ],
@@ -89,7 +89,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
                 }
             },
             title: {
-                text: "Received Packet Loss",
+                text: "Packet Loss",
                 style: {
                     color: "#7694B7"
                 }
