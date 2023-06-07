@@ -82,7 +82,7 @@ public class TekvLSGetVoiceQualityChart {
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalresult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-				"AND tp.name='POLQA' AND ms.parameter_name = 'POLQA'";
+				"AND tp.name IN ('"+ Utils.DEFAULT_TEST_PLAN_NAMES +"') AND ms.parameter_name = 'POLQA'";
 
 		if (!users.isEmpty()){
 			innerQuery += " AND trr.did IN ('"+ usersClause +"')";
@@ -164,27 +164,38 @@ public class TekvLSGetVoiceQualityChart {
 			JSONArray resultSet = TAPClient.executeQuery(tapURL,statement,context);
 			if (Objects.equals(reportPeriod, "daily")) {
 				JSONArray percentages;
-				int streams = 0;
+				JSONArray numericValues;
+				float streams = 0;
 				int totalCalls = 0;
 				if(!resultSet.isEmpty() && resultSet.getJSONArray(0).getInt(5) > 0){
 					JSONArray values = resultSet.getJSONArray(0);
 					streams = values.getInt(5);
 					totalCalls = values.getInt(6);
 					percentages = new JSONArray();
+					numericValues = new JSONArray();
 					percentages.put(values.getInt(1) / streams * 100);
 					percentages.put(values.getInt(2) / streams * 100);
 					percentages.put(values.getInt(3) / streams * 100);
 					percentages.put(values.getInt(4) / streams * 100);
+					numericValues.put(values.getInt(1));
+					numericValues.put(values.getInt(2));
+					numericValues.put(values.getInt(3));
+					numericValues.put(values.getInt(4));
 				}else{
 					percentages = new JSONArray("[0,0,0,0]");
+					numericValues = new JSONArray("[0,0,0,0]");
 				}
-				JSONArray categories = new JSONArray("['Excellent [4-5]','Good [3-4)','Fair [2-3)','Poor [0-2)']");
+				JSONArray categories = new JSONArray();
+				for (PERCENTAGE_LABELS percentageLabel: PERCENTAGE_LABELS.values()) {
+					categories.put(percentageLabel.value);
+				}
 				JSONObject summary = new JSONObject();
 				summary.put("streams", streams);
 				summary.put("calls", totalCalls);
 
 				json.put("summary",summary);
 				json.put("percentages",percentages);
+				json.put("numericValues",numericValues);
 				json.put("categories",categories);
 
 			} else if (reportPeriod.equals("weekly")){
@@ -200,11 +211,17 @@ public class TekvLSGetVoiceQualityChart {
 				JSONArray good = new JSONArray();
 				JSONArray fair = new JSONArray();
 				JSONArray bad = new JSONArray();
+				JSONArray excellentNumeric = new JSONArray();
+				JSONArray goodNumeric = new JSONArray();
+				JSONArray fairNumeric = new JSONArray();
+				JSONArray badNumeric = new JSONArray();
 				int totalStreams = 0;
 				int totalCalls = 0;
 				Map<String, JSONArray> percentagesMap = getPercentagesMap(resultSet);
 				for (String date : dates) {
-					categories.put(date);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					LocalDate dateKey = LocalDate.parse(date);
+					categories.put(dateKey.format(formatter));
 					if (percentagesMap.containsKey(date)) {
 						JSONArray values = percentagesMap.get(date);
 						float streams = values.getInt(5);
@@ -212,6 +229,10 @@ public class TekvLSGetVoiceQualityChart {
 						good.put(values.getInt(2) / streams * 100);
 						fair.put(values.getInt(3) / streams * 100);
 						bad.put(values.getInt(4) / streams * 100);
+						excellentNumeric.put(values.getInt(1));
+						goodNumeric.put(values.getInt(2));
+						fairNumeric.put(values.getInt(3));
+						badNumeric.put(values.getInt(4));
 						totalStreams += streams;
 						totalCalls += values.getInt(6);
 					} else {
@@ -219,6 +240,10 @@ public class TekvLSGetVoiceQualityChart {
 						good.put(0);
 						fair.put(0);
 						bad.put(0);
+						excellentNumeric.put(0);
+						goodNumeric.put(0);
+						fairNumeric.put(0);
+						badNumeric.put(0);
 					}
 				}
 				JSONObject summary = new JSONObject();
@@ -226,11 +251,36 @@ public class TekvLSGetVoiceQualityChart {
 				summary.put("calls", totalCalls);
 				json.put("summary", summary);
 				JSONObject percentages = new JSONObject();
-				percentages.put("excellent", excellent);
-				percentages.put("good", good);
-				percentages.put("fair", fair);
-				percentages.put("bad", bad);
+
+				JSONObject excellentPercentages = new JSONObject();
+				excellentPercentages.put("name",PERCENTAGE_LABELS.EXCELLENT.value);
+				excellentPercentages.put("data",excellent);
+
+				JSONObject goodPercentages = new JSONObject();
+				goodPercentages.put("name",PERCENTAGE_LABELS.GOOD.value);
+				goodPercentages.put("data",good);
+
+				JSONObject fairPercentages = new JSONObject();
+				fairPercentages.put("name",PERCENTAGE_LABELS.FAIR.value);
+				fairPercentages.put("data",fair);
+
+				JSONObject poorPercentages = new JSONObject();
+				poorPercentages.put("name",PERCENTAGE_LABELS.POOR.value);
+				poorPercentages.put("data",bad);
+
+				percentages.put("excellent", excellentPercentages);
+				percentages.put("good", goodPercentages);
+				percentages.put("fair", fairPercentages);
+				percentages.put("poor", poorPercentages);
+
+				JSONObject numericValues = new JSONObject();
+				numericValues.put("excellent", excellentNumeric);
+				numericValues.put("good", goodNumeric);
+				numericValues.put("fair", fairNumeric);
+				numericValues.put("poor", badNumeric);
+
 				json.put("percentages", percentages);
+				json.put("numericValues", numericValues);
 				json.put("categories", categories);
 			}
 
@@ -255,5 +305,16 @@ public class TekvLSGetVoiceQualityChart {
 			map.put(arr.getString(0), arr);
 		});
 		return map;
+	}
+
+	private enum PERCENTAGE_LABELS {
+		EXCELLENT("Excellent [4-5]"),
+		GOOD("Good [3-4)"),
+		FAIR("Fair [2-3)"),
+		POOR("Poor [0-2)");
+		String value;
+		PERCENTAGE_LABELS(String value){
+			this.value = value;
+		}
 	}
 }

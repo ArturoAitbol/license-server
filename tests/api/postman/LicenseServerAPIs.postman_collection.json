@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2b199bf1-d263-459b-99fa-1aa0d14168de",
+		"_postman_id": "63317536-40d0-4bad-a582-ef63cb5537b9",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "26252928"
@@ -2524,6 +2524,10 @@
 		},
 		{
 			"key": "todayDate",
+			"value": ""
+		},
+		{
+			"key": "access_token_IGES",
 			"value": ""
 		}
 	]

@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,7 +80,7 @@ public class TekvLSGetCallsStatusHeatMap {
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " + 
-				"AND tp.name IN ('LTS','STS','POLQA')";
+				"AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')";
 
 		// Build region filter if present
 		if (!regions.isEmpty() || !users.isEmpty()) {
@@ -225,7 +226,9 @@ public class TekvLSGetCallsStatusHeatMap {
 					}
 
 					JSONObject statusSeries = new JSONObject();
-					statusSeries.put("name",date);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					LocalDate dateKey = LocalDate.parse(date);
+					statusSeries.put("name",dateKey.format(formatter));
 					statusSeries.put("data",array);
 					statusArray.put(statusSeries);
 				}

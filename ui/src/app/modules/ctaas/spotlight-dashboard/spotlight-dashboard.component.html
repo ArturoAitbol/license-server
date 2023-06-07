@@ -1,8 +1,23 @@
 <app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
+<mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
 <div class="container-fluid">
+    <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
+        <div class="card col-8">
+            <div class="card-body">
+                <span class="light-text">{{note.openDate.replace(" ", "T") | date:"medium"}}</span>
+                <br>
+                <h3 class="mb-0 note-content">
+                    {{note.content}}
+                </h3>
+                <div class="notes-card-footer">
+                    <span id="note-author">{{note.openedBy.split("@")[0]}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row mt-2">
         <div class="col">
-            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="reloadCharts()">
+            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="selectedPeriodChange()">
                 <mat-button-toggle value="daily">Daily</mat-button-toggle>
                 <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
             </mat-button-toggle-group>
@@ -14,6 +29,18 @@
             </button>
         </div>
     </div>
+    <ng-container *ngIf="showNewNoteBtn && !isloading">
+        <ng-container *lcCheckAccessFor="'addSpotlightNote'">
+            <div class="new-note-container">
+                <button mat-fab class="new-note-btn" #tooltip="matTooltip"
+                        matTooltip="Add a new note"
+                        [matTooltipPosition]="'before'"
+                        (click)="addNote()">
+                    <mat-icon>note_add</mat-icon>
+                </button>
+            </div>
+        </ng-container>
+    </ng-container>
     <div class="lights-container" *ngIf="isloading">
         <div>
             <div class="spotlight"></div>
@@ -30,7 +57,7 @@
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}
+                <h1 class="text-center">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
                 </h1>
             </div>
             <div class="date-picker-form">
@@ -50,7 +77,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Region</mat-label>
                                     <input type="text"
-                                    placeholder="Region"
+                                    placeholder="City, State or Country"
                                     matInput
                                     #regionInput
                                     formControlName="region"
@@ -136,7 +163,7 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
@@ -189,7 +216,7 @@
                                 </div>
                             </div>
                             <br>
-                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable()">
+                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                 View Detailed Report
                             </button>
                         </div>
@@ -212,19 +239,21 @@
                 </div>
             </div>
         </ng-container>
-        <app-network-quality #networkQuality
-            [startDate]="this.filters.get('date').value"
-            [endDate]="this.filters.get('date').value"
-            [regions]="this.selectedRegions"
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality>
+        <ng-container *ngIf="showChildren">
+            <app-network-quality #networkQuality
+                                 [startDate]="this.filters.get('date').value"
+                                 [endDate]="this.filters.get('date').value"
+                                 [regions]="this.selectedRegions"
+                                 [users]="this.users" (chartStatus)="chartsStatus($event)"
+                                 [isLoading]="this.isloading">
+            </app-network-quality>
+        </ng-container>
         <br>
     </ng-container>
     <ng-container *ngIf="selectedPeriod === 'weekly'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MMMM-DD-YYYY')}} – {{selectedRange.end.format('MMMM-DD-YYYY')}}</span></h1>
+                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span></h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="weeklyFilters">
@@ -243,7 +272,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Region</mat-label>
                                     <input type="text"
-                                    placeholder="Region"
+                                    placeholder="City, State or Country"
                                     matInput
                                     #regionInput
                                     formControlName="region"
@@ -376,6 +405,7 @@
                                                [title]="weeklyVQChartOptions.title"
                                                [markers]="weeklyVQChartOptions.markers"
                                                [legend]="weeklyVQChartOptions.legend"
+                                               [tooltip]="weeklyVQChartOptions.tooltip"
                                                [colors]="weeklyVQChartOptions.colors">
                                     </apx-chart>
                                 </div>
@@ -443,14 +473,16 @@
                 </div>
             </div>
         </ng-container>
-        <app-network-quality #networkQuality
-            [startDate]="getStartWeekDate()"
-            [endDate]="getEndWeekDate()"
-            [groupBy]="'day'"
-            [regions]="this.weeklySelectedRegions" 
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality>
+        <ng-container *ngIf="showChildren">
+            <app-network-quality #networkQuality
+                                 [startDate]="getStartWeekDate()"
+                                 [endDate]="getEndWeekDate()"
+                                 [groupBy]="'day'"
+                                 [regions]="this.weeklySelectedRegions"
+                                 [users]="this.users" (chartStatus)="chartsStatus($event)"
+                                 [isLoading]="this.isloading">
+            </app-network-quality>
+        </ng-container>
         <br>
     </ng-container>
 </div>

@@ -3,14 +3,13 @@ import { FeatureToggle } from "../model/feature-toggle.model";
 import { HttpBackend, HttpClient, HttpHeaders } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
+import { Constants } from "../helpers/constants";
 
 @Injectable({
     providedIn: 'root'
 })
 export class FeatureToggleService {
-
     private featureToggleMap: Map<string, FeatureToggle>;
-    private refreshInterval = 5 * 60 * 1000;
     private intervalId = null;
     private httpClient: HttpClient;
     private readonly API_URL: string = environment.apiEndpoint + '/featureToggles';
@@ -44,7 +43,7 @@ export class FeatureToggleService {
     private setUpPeriodicRefresh(): void {
         this.intervalId = setInterval(() => {
             this.refreshToggles().subscribe();
-        }, this.refreshInterval);
+        }, Constants.TOGGLES_REFRESH_INTERVAL);
     }
 
     /**

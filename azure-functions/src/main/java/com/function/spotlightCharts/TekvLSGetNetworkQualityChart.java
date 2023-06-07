@@ -80,8 +80,9 @@ public class TekvLSGetNetworkQualityChart {
 		
 		String groupByIndicator = request.getQueryParameters().getOrDefault("groupBy", "hour");
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
-		
-		String testPlans = request.getQueryParameters().getOrDefault("testPlan", "LTS','STS','POLQA");
+
+		String averageFlag = request.getQueryParameters().getOrDefault("average", "");
+		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","");
 
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
 		String metricsClause = metrics.replace(",", "', '");
@@ -90,25 +91,31 @@ public class TekvLSGetNetworkQualityChart {
 		List<String> statisticsLabels = new ArrayList<>();
 		while (metricsArray.hasNext()) {
 			String metric = metricsArray.next();
+			String selector = "avg";
 			switch (metric) {
 				case "Received Jitter":
-					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" ");
+					if (averageFlag.isEmpty()) selector = "max";
+					statistics.append(selector + "(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" ");
 					statisticsLabels.add("Received Jitter");
 					break;
 				case "Received packet loss":
-					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\" ");
+					if (averageFlag.isEmpty()) selector = "max";
+					statistics.append(selector + "(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\" ");
 					statisticsLabels.add("Received packet loss");
 					break;
 				case "Round trip time":
-					statistics.append("max(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Round trip time\" ");
+					if (averageFlag.isEmpty()) selector = "max";
+					statistics.append(selector + "(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Round trip time\" ");
 					statisticsLabels.add("Round trip time");
 					break;
 				case "Sent bitrate":
-					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
+					// here the average is always the most representative value
+					statistics.append(selector + "(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
 					statisticsLabels.add("Sent bitrate");
 					break;
 				case "POLQA":
-					statistics.append("min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as \"POLQA\" ");
+					if (averageFlag.isEmpty()) selector = "min";
+					statistics.append(selector + "(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as \"POLQA\" ");
 					statisticsLabels.add("POLQA");
 					break;
 			}
@@ -117,7 +124,7 @@ public class TekvLSGetNetworkQualityChart {
 			}
 		}
 
-		String query = "SELECT TO_CHAR(ms.last_modified_date,'"+groupByClause+"') as date_hour, " + statistics +
+		String query = "SELECT TO_CHAR(ms.last_modified_date,'" + groupByClause + "') as date_hour, " + statistics +
 				"FROM media_stats ms " +
 				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
 				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
@@ -127,7 +134,19 @@ public class TekvLSGetNetworkQualityChart {
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-				"AND tp.name in ('" + testPlans + "') AND ms.parameter_name IN ('" + metricsClause + "')";
+				"AND tp.name in ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND ms.parameter_name IN ('" + metricsClause + "')";
+
+		if(!callsFilter.isEmpty()){
+			String filteredCalls = "SELECT sr.id FROM sub_result sr " +
+					"JOIN test_result_resource trr ON trr.subresultid = sr.id " +
+					"JOIN media_stats ms ON ms.testresultresourceid = trr.id " +
+					"JOIN test_result tr ON sr.testresultid = tr.id " +
+					"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
+					"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
+					"AND sr.startdate >= CAST('"+startDate+"' AS timestamp) AND sr.startdate <= CAST('"+endDate+"' AS timestamp) " +
+					"AND ms.parameter_name = CAST('"+callsFilter+"' AS VARCHAR) GROUP BY sr.id";
+			query+= " AND sr.id IN (" + filteredCalls + ")";
+		}
 
 		if (!users.isEmpty()){
 			query += " AND trr.did IN ('"+ usersClause +"')";
@@ -242,10 +261,14 @@ public class TekvLSGetNetworkQualityChart {
 			entries.forEach(entry -> {
 				String date = entry.getKey();
 				if(groupByIndicator.equals("day")){
-					datesArray.put(date);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					LocalDate dateKey = LocalDate.parse(date);
+					datesArray.put(dateKey.format(formatter));
 				}else{
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+					LocalDateTime dateKey = LocalDateTime.parse(date.replace(" ", "T"));
 					int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
-					datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
+					datesArray.put(dateKey.format(formatter) + "-" + String.format("%02d", nextHour) +":00");
 				}
 
 

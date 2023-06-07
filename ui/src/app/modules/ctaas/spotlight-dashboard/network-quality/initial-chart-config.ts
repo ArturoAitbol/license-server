@@ -1,3 +1,4 @@
+import { MetricsThresholds } from "src/app/helpers/metrics";
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 
 const trendsChartCommonOptions: Partial<ChartOptions> = {
@@ -44,7 +45,7 @@ const trendsChartCommonOptions: Partial<ChartOptions> = {
 const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
-        id: 'Received Packet Loss',
+        id: 'Packet Loss',
         group: 'network-quality-trends',
         height: 300,
         zoom: {
@@ -55,7 +56,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
         }
     },
     title: {
-        text: "Max. Received Packet Loss (%)",
+        text: "Max. Packet Loss (%)",
         align: "center",
         style: {
             color: '#7694B7'
@@ -64,7 +65,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     colors: ["#7694B7"],
     series: [
         {
-            name: 'Received Packet Loss',
+            name: 'Packet Loss',
             data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
         },
     ],
@@ -88,11 +89,14 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
                 }
             },
             title: {
-                text: "Received Packet Loss",
+                text: "Packet Loss",
                 style: {
                     color: "#7694B7"
                 }
             },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedPacketLoss ? max : MetricsThresholds.receivedPacketLoss
         },
     markers: {
         size: 4,
@@ -100,7 +104,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:2,
+            y: MetricsThresholds.receivedPacketLoss,
             borderColor: '#B80000',
             fillColor: '#B80000',
             strokeDashArray: 8,
@@ -157,7 +161,10 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
                 style: {
                     color: "#E66C37"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedJitter ? max : MetricsThresholds.receivedJitter
         },
     markers: {
         size: 4,
@@ -165,7 +172,7 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:30,
+            y: MetricsThresholds.receivedJitter,
             borderColor: '#B80000',
             fillColor: '#B80000',
             strokeDashArray: 8,
@@ -222,7 +229,10 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
                 style: {
                     color: "#079398"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.maxBitrate ? max : MetricsThresholds.maxBitrate
         },
     markers: {
         size: 4,
@@ -230,8 +240,8 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:25,
-            y2: 125,
+            y: MetricsThresholds.minBitrate,
+            y2: MetricsThresholds.maxBitrate,
             borderColor: '#22b800',
             fillColor: '#22b800',
             strokeDashArray: 8,
@@ -288,7 +298,10 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
                 style: {
                     color: "#570798"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.roundTripTime ? max : MetricsThresholds.roundTripTime
         },
     markers: {
         size: 4,
@@ -296,7 +309,7 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:200,
+            y: MetricsThresholds.roundTripTime,
             borderColor: '#B80000',
             fillColor: '#B80000',
             strokeDashArray: 8,

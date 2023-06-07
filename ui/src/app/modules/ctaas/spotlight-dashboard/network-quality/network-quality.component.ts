@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -18,6 +18,7 @@ import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
+import { MetricsThresholds } from 'src/app/helpers/metrics';
 
 @Component({
   selector: 'app-network-quality',
@@ -47,22 +48,35 @@ export class NetworkQualityComponent implements OnInit {
   selectedUsers = [];
 
   @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
+  
 
- 
-
+  filterNetworkQualityForm: any[] = ['Most Representative', 'Average'];
+  defaultValue: string = this.filterNetworkQualityForm[0];
+  selectedFilter: boolean = false;
+  avgFlag: boolean = false;
+  maxLabel: string = 'Max.';
+  minLabel: string = 'Min.';
+  avgLabel: string = 'Avg.'
     filters = this.fb.group({
-      user: [""]
+      user: [""],
+      selectedValue: [""]
     });
 
   summary = {
     totalCalls: 0,
     aboveThreshold: { jitter: 0, packetLoss: 0, roundTripTime: 0 },
-    overall: { packetLoss: 0, jitter: 0, sendBitrate: 0, roundTripTime: 0, polqa:0 }
+    overall: { packetLoss: 0, jitter: 0, roundTripTime: 0, polqa:0, sendBitrate: 0 }
   };
 
-  privateIsLoading = true;
+  hideChart = true;
   isChartLoading = false;
   selectedGraph = 'jitter';
+
+  readonly MetricsThresholds = MetricsThresholds;
+
+  @ViewChild('outlet', { read: ViewContainerRef }) outletRef: ViewContainerRef;
+  @ViewChild('chartContent', { read: TemplateRef }) chartContentRef: TemplateRef<any>;
+
 
   constructor(private spotlightChartsService: SpotlightChartsService,
               private subaccountService: SubAccountService,
@@ -72,7 +86,7 @@ export class NetworkQualityComponent implements OnInit {
     this.commonChartOptions = trendsChartCommonOptions;
     this.polqaChartOptions = defaultPolqaChartOptions;
     this.polqaChartOptions.chart.events = {
-      markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
+      markerClick: this.navigateToDetailedTableFromPoint.bind(this)
     };
     this.matIconRegistry.addSvgIcon(
         'packetloss',
@@ -108,18 +122,35 @@ export class NetworkQualityComponent implements OnInit {
   }
 
   reloadCharts(){
-    this.isChartLoading = true;
-    this.loadCharts(true);
+    this.loadCharts({hideChart:false,showLoading:true});
   }
 
+  onChangeValue(event:any){
+    if(event === 'Most Representative')
+      this.selectedFilter = false;
+    if(event === 'Average')
+      this.selectedFilter = true;
+  }
 
-  loadCharts(isReload?) {
-    if (!isReload) this.privateIsLoading = true;
+  loadCharts(params:{hideChart?:boolean,showLoading?:boolean} = {hideChart:true,showLoading:false}) {
+    this.isChartLoading = params.showLoading;
+    this.hideChart = params.hideChart;
     const obs = [];
+    if(this.selectedFilter === false) {
+      this.selectedFilter = false;
+      this.maxLabel = "Max."
+      this.minLabel = "Min."
+      this.avgLabel = "Avg."
+    }
+    if(this.selectedFilter === true) {
+      this.maxLabel = ""
+      this.minLabel = ""
+      this.avgLabel = ""
+    }
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.regions, this.selectedUsers, subaccountId, this.groupBy));
-    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter));
+    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId,this.selectedFilter));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
@@ -133,7 +164,7 @@ export class NetworkQualityComponent implements OnInit {
 
       this.initChartOptions();
       this.receivedPacketLossChartOptions.series = [{
-        name: 'Received packet loss',
+        name: 'Packet loss',
         data: trendsData.series['Received packet loss']
       }];
       this.jitterChartOptions.series = [{
@@ -151,11 +182,11 @@ export class NetworkQualityComponent implements OnInit {
 
       const summary = res[1];
       this.summary.totalCalls = summary.totalCalls;
-      this.summary.overall.sendBitrate = summary.avgSentBitrate;
+      this.summary.overall.packetLoss = summary.maxPacketLoss;
       this.summary.overall.jitter = summary.maxJitter;
       this.summary.overall.roundTripTime = summary.maxRoundTripTime;
-      this.summary.overall.packetLoss = summary.maxPacketLoss;
       this.summary.overall.polqa = summary.minPolqa;
+      this.summary.overall.sendBitrate = summary.avgSentBitrate;
       this.summary.aboveThreshold.jitter = summary.jitterAboveThld;
       this.summary.aboveThreshold.packetLoss = summary.packetLossAboveThld;
       this.summary.aboveThreshold.roundTripTime = summary.roundTripTimeAboveThld;
@@ -172,7 +203,7 @@ export class NetworkQualityComponent implements OnInit {
 
       this.polqaChartOptions.series = [
         {
-          name: 'Received Jitter',
+          name: 'Jitter',
           data: this.customerNetworkQualityData.series['Received Jitter']
         },
         {
@@ -182,58 +213,47 @@ export class NetworkQualityComponent implements OnInit {
       ];
 
       this.isChartLoading = false;
-      this.privateIsLoading = false;
+      this.hideChart = false;
       this.chartLoadCompleted();
     }, error => {
       console.error(error);
       this.chartLoadCompleted();
-      this.privateIsLoading = false;
+      this.hideChart = false;
     });
   }
 
   private initChartOptions() {
+    defaultReceivedPacketLossChartOptions.title.text = this.maxLabel + ' Packet Loss (%)';
+    defaultJitterChartOptions.title.text = this.maxLabel + ' Jitter (ms)';
+    defaultSentBitrateChartOptions.title.text =this.avgLabel + ' Sent Bitrate (kbps)';
+    defaultRoundtripTimeChartOptions.title.text = this.maxLabel +' Round Trip Time (ms)';
     this.receivedPacketLossChartOptions = { ...this.commonChartOptions, ...defaultReceivedPacketLossChartOptions };
     this.jitterChartOptions = { ...this.commonChartOptions, ...defaultJitterChartOptions };
     this.sentBitrateChartOptions = {...this.commonChartOptions, ...defaultSentBitrateChartOptions };
     this.roundTripChartOptions = {...this.commonChartOptions, ...defaultRoundtripTimeChartOptions };
     this.receivedPacketLossChartOptions.chart.events = {
-      markerClick: this.navigateToCallingReliabilityDetailedTableFromPoint.bind(this)
+      markerClick: this.navigateToDetailedTableFromPoint.bind(this)
     };
   }
 
-  navigateToCallingReliabilityDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
+  navigateToDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
     let startDate: Moment, endDate: Moment;
-    if(this.groupBy==='hour'){
+    if (this.groupBy==='hour') {
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
       endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
-    }else{
-      startDate = moment(category).utc().hour(0);
-      endDate = Utility.setHoursOfDate(moment(category).utc());
+    } else {
+      startDate = moment.utc(category).hour(0);
+      endDate = Utility.setHoursOfDate(moment.utc(category));
     }
-
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
-    window.open(url);
-  }
-
-  navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
-    const category = chartContext.opts.xaxis.categories[dataPointIndex];
-    let startDate: Moment, endDate: Moment;
-    if(this.groupBy==='hour'){
-      const [ startTime, endTime ] = category.split('-');
-      startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-      endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
-    }else{
-      startDate = moment(category).utc().hour(0);
-      endDate = Utility.setHoursOfDate(moment(category).utc());
-    }
-   
-    const parsedStartTime = startDate.format('YYMMDDHHmmss');
-    const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    if (this.regions.length > 0)
+      url += "&regions=" + JSON.stringify(this.regions);
+    if (this.selectedUsers.length > 0)
+      url+= "&users=" + this.selectedUsers.join(',');
     window.open(url);
   }
 
@@ -241,7 +261,7 @@ export class NetworkQualityComponent implements OnInit {
     if (this.selectedGraph === 'jitter') {
       this.polqaChartOptions.series = [
         {
-          name: 'Received Jitter',
+          name: 'Jitter',
           data: this.customerNetworkQualityData.series['Received Jitter']
         },
         {
@@ -253,7 +273,7 @@ export class NetworkQualityComponent implements OnInit {
     } else if (this.selectedGraph === 'packetLoss') {
       this.polqaChartOptions.series = [
         {
-          name: 'Received Packet Loss',
+          name: 'Packet Loss',
           data: this.customerNetworkQualityData.series['Received packet loss']
         },
         {
@@ -276,6 +296,8 @@ export class NetworkQualityComponent implements OnInit {
       ];
       this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
     }
+    this.outletRef.clear();
+    this.outletRef.createEmbeddedView(this.chartContentRef);
   }
 
   remove(user: string): void {
