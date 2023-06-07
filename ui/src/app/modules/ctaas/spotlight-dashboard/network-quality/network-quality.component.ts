@@ -13,7 +13,6 @@ import { SubAccountService } from "../../../../services/sub-account.service";
 import { FormBuilder } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { environment } from "../../../../../environments/environment";
-import { ReportType } from "../../../../helpers/report-type";
 import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
 import { MatIconRegistry } from "@angular/material/icon";
@@ -154,11 +153,11 @@ export class NetworkQualityComponent implements OnInit {
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
-        this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
+        this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories.map(category => category.split(" ")[1])};
         this.commonChartOptions.xAxis.title.text = 'Hour';
       }
       else{
-        this.commonChartOptions.xAxis.categories = trendsData.categories;
+        this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories};
         this.commonChartOptions.xAxis.title.text = 'Date';
       }
 
@@ -193,11 +192,11 @@ export class NetworkQualityComponent implements OnInit {
 
       this.customerNetworkQualityData = res[2];
       if(this.groupBy==='hour') {
-        this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+        this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1])};
         this.polqaChartOptions.xAxis.title.text = 'Hour';
       }
       else{
-        this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories;
+        this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories };
         this.polqaChartOptions.xAxis.title.text = 'Date';
       }
 
