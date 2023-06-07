@@ -192,7 +192,7 @@ export class SpotlightDashboardComponent implements OnInit{
     return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
   }
   getEndWeekDate(): Moment{
-    return Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
+    return this.isHistoricalView ? this.weeklyFilters.get('date').value : Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
   }
 
   setWeeklyRange(){
