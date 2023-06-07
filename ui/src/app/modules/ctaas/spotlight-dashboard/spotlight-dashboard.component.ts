@@ -603,7 +603,7 @@ export class SpotlightDashboardComponent implements OnInit{
     const dialogRef = this.dialog.open(AddNotesComponent, {
       width: '85vw',
       maxHeight: '90vh',
-      maxWidth: '85vw',
+      maxWidth: '30vw',
       disableClose: false
     });
   }
