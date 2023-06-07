@@ -116,7 +116,8 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard');
+        this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
+        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id);
         this.calculateTableHeight();
         this.getActionMenuOptions();
         this.initColumns();
@@ -205,7 +206,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
                 dialogRef = this.dialog.open(AddNotesComponent, {
                     width: '85vw',
                     maxHeight: '90vh',
-                    maxWidth: '85vw',
+                    maxWidth: this.nativeHistoricalDashboardActive ? '30vw' : '85vw',
                     disableClose: false
                 });
                 break;
