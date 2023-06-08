@@ -364,7 +364,7 @@ export class SpotlightDashboardComponent implements OnInit{
   private processWeeklyData (res: any) {
     // Weekly Feature Functionality
     const weeklyFeatureFunctionalityData = res[0];
-    this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
+    this.weeklyFeatureFunctionalityChartOptions.xAxis = {...this.weeklyFeatureFunctionalityChartOptions.xAxis ,categories:weeklyFeatureFunctionalityData.categories};
     this.weeklyFeatureFunctionalityChartOptions.series = [
       {
         name: "Success %",
@@ -385,7 +385,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
     // Weekly Calling Reliability
     const weeklyCallingReliabilityData = res[1];
-    this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyCallingReliabilityData.categories;
+    this.weeklyCallingReliabilityChartOptions.xAxis = {...this.weeklyCallingReliabilityChartOptions.xAxis,categories:weeklyCallingReliabilityData.categories};
     this.weeklyCallingReliabilityChartOptions.series = [
       {
         name: "Success %",
@@ -436,7 +436,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyVQ.p2p = POLQA.p2p;
     this.weeklyVQ.onNet = POLQA.onNet;
     this.weeklyVQ.offNet = POLQA.offNet;
-    this.weeklyVQChartOptions.xAxis.categories = vqData.categories;
+    this.weeklyVQChartOptions.xAxis = {...this.weeklyVQChartOptions.xAxis,categories:vqData.categories};
     this.weeklyVQChartOptions.series = [
       vqData.percentages.excellent,
       vqData.percentages.good,
