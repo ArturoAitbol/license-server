@@ -180,7 +180,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         this.viewMode.setValue(this.POWERBI_MODE);
         this.viewDashboardByMode();
         // fetch dashboard report for every 15 minutes interval
-        this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
+        this.refreshIntervalSubscription = interval(Constants.LEGACY_DASHBOARD_REFRESH_INTERVAL)
             .subscribe(() => {
                 // Make an http request only in Legacy mode
                 if (!this.powerBiEmbeddingFlag)

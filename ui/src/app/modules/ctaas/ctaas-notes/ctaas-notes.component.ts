@@ -17,6 +17,7 @@ import { Subject } from "rxjs";
 import { Constants } from 'src/app/helpers/constants';
 import { FeatureToggleService } from "../../../services/feature-toggle.service";
 import { Router } from "@angular/router";
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -115,7 +116,8 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard');
+        this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
+        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id);
         this.calculateTableHeight();
         this.getActionMenuOptions();
         this.initColumns();
@@ -160,7 +162,8 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      */
     viewDashboard(note: Note): void{
         if (this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id)) {
-            this.router.navigate(['/spotlight/spotlight-dashboard'], {queryParams: {noteId: note.id}})
+            const featureUrl = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
+            window.open(featureUrl);
         } else
             this.openDialog(this.VIEW_DASHBOARD,note);
     }
@@ -203,7 +206,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
                 dialogRef = this.dialog.open(AddNotesComponent, {
                     width: '85vw',
                     maxHeight: '90vh',
-                    maxWidth: '85vw',
+                    maxWidth: this.nativeHistoricalDashboardActive ? '30vw' : '85vw',
                     disableClose: false
                 });
                 break;

@@ -1,4 +1,4 @@
-<ng-container *ngIf="!isLoading && !privateIsLoading">
+<ng-container *ngIf="!isLoading && !hideChart">
     <div class="col-12 p-0">
         <div class="card text-center mt-2">
             <div class="card-header">
@@ -125,7 +125,7 @@
                                         <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
                                         <p>{{ summary.overall.packetLoss }}</p>
                                     </div>
-                                    <label class="blue-label">{{maxLabel}} Packet Loss Rate (%)</label>
+                                    <label class="blue-label">{{maxLabel}} Packet Loss (%)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
@@ -173,7 +173,7 @@
                                             info_outline
                                         </mat-icon>
                                     </h2>
-                                    <h2 *ngIf="selectedGraph==='roundTripTime'">{{maxLabel}} Round Trip vs {{minLabel}} POLQA 
+                                    <h2 *ngIf="selectedGraph==='roundTripTime'">{{maxLabel}} Round Trip Time vs {{minLabel}} POLQA 
                                         <mat-icon matTooltip="Maximum Round Trip Time versus Minimum POLQA histogram in Voice Quality (POLQA) tests.">
                                             info_outline
                                         </mat-icon>
