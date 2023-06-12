@@ -81,7 +81,7 @@ public class TekvLSGetVoiceQualityChart {
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalresult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
-				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
+				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing' or sr.failingerrortype = 'Teams Client' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
 				"AND tp.name IN ('"+ Utils.DEFAULT_TEST_PLAN_NAMES +"') AND ms.parameter_name = 'POLQA'";
 
 		if (!users.isEmpty()){
