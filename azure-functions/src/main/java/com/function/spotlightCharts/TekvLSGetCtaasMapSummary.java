@@ -164,8 +164,8 @@ public class TekvLSGetCtaasMapSummary {
                 JSONObject fromObj = new JSONObject();
                 JSONObject fromCoordinates = new JSONObject();
                 JSONObject tooCoordinates = new JSONObject();
-                if(!entryArr.get(0).equals(null) && !entryArr.get(1).equals(null)
-                        && !entryArr.get(2).equals(null) && !entryArr.get(6).equals(null)) {
+                if(!entryArr.get(0).equals(null) && !entryArr.get(1).equals(null) && !entryArr.get(2).equals(null) &&
+                        !entryArr.get(6).equals("") && !entryArr.get(6).equals(null)) {
                     fromObj.put("city", entryArr.getString(0));
                     fromObj.put("state", entryArr.getString(1));
                     fromObj.put("country", entryArr.getString(2));
@@ -175,8 +175,8 @@ public class TekvLSGetCtaasMapSummary {
                     res.put("from", fromObj);
                 }
                 JSONObject toObj = new JSONObject();
-                if(!entryArr.get(3).equals(null) && !entryArr.get(4).equals(null)
-                        && !entryArr.get(5).equals(null) && !entryArr.get(7).equals(null)) {
+                if(!entryArr.get(3).equals(null) && !entryArr.get(4).equals(null) && !entryArr.get(5).equals(null) &&
+                        !entryArr.get(7).equals("") && !entryArr.get(6).equals(null)) {
                     toObj.put("city", entryArr.getString(3));
                     toObj.put("state", entryArr.getString(4));
                     toObj.put("country", entryArr.getString(5));

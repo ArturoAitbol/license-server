@@ -24,8 +24,10 @@ export class MapPocComponent implements OnInit {
   nodesMap:any = {};
   linesMap:any = {};
   nodeIcon:any;
-  startDate:any;
-  endDate:any;
+  nodesArray: any = [];
+  linesArray: any = [];
+  startDate: any;
+  endDate: any;
   mapStartView: any[] = [];
   filterForm = this.fb.group({
     // fromRegionFilterControl: [''],
@@ -112,12 +114,12 @@ export class MapPocComponent implements OnInit {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
             total: this.mapData[index].totalCalls, 
-            polqa: 0,
+            polqa: '–',
             receivedJitter: 0,
             roundTripTime: 0,
             receivedPacketLoss: 0
           },
-          callsTerminated: {passed: 0,failed: 0, total: 0, polqa: 0, receivedJitter: 0, roundTripTime: 0, receivedPacketLoss: 0}
+          callsTerminated: {passed: 0,failed: 0, total: 0, polqa: '–', receivedJitter: 0, roundTripTime: 0, receivedPacketLoss: 0}
         }
         if (this.mapData[index].polqa)
           newRegionObj.callsOriginated.polqa = this.mapData[index].polqa;
@@ -126,6 +128,8 @@ export class MapPocComponent implements OnInit {
         this.nodesMap[fromRegion].callsOriginated.passed += this.mapData[index].passed;
         this.nodesMap[fromRegion].callsOriginated.failed += this.mapData[index].failed;
         this.nodesMap[fromRegion].callsOriginated.total += this.mapData[index].totalCalls;
+        if (this.mapData[index].polqa)
+          this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
         if (this.mapData[index].polqa && this.nodesMap[fromRegion].callsOriginated.polqa > this.mapData[index].polqa)
           this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
         if(this.nodesMap[fromRegion].callsOriginated.receivedJitter < this.mapData[index].receivedJitter)
@@ -135,7 +139,7 @@ export class MapPocComponent implements OnInit {
         if(this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
           this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
         if(this.nodesMap[fromRegion].callsOriginated.polqa === 0)
-          this.nodesMap[fromRegion].callsOriginated.polqa = '–'
+          this.nodesMap[fromRegion].callsOriginated.polqa = '–';
         this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
       }
     }
@@ -144,12 +148,12 @@ export class MapPocComponent implements OnInit {
         let newRegionObj = {
           region: this.mapData[index].to,
           totalCalls: this.mapData[index].totalCalls,
-          callsOriginated: {passed: 0,failed: 0, total: 0, polqa: 0, receivedJitter: 0,roundTripTime: 0, receivedPacketLoss: 0},
+          callsOriginated: {passed: 0,failed: 0, total: 0, polqa: '–', receivedJitter: 0,roundTripTime: 0, receivedPacketLoss: 0},
           callsTerminated: {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
             total: this.mapData[index].totalCalls, 
-            polqa: 0,
+            polqa: '–',
             receivedJitter: 0,
             roundTripTime: 0,
             receivedPacketLoss: 0
@@ -162,15 +166,17 @@ export class MapPocComponent implements OnInit {
         this.nodesMap[toRegion].callsTerminated.passed += this.mapData[index].passed;
         this.nodesMap[toRegion].callsTerminated.failed += this.mapData[index].failed;
         this.nodesMap[toRegion].callsTerminated.total += this.mapData[index].totalCalls;
+        if (this.mapData[index].polqa)
+          this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
         if (this.mapData[index].polqa && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
           this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
-        if(this.nodesMap[toRegion].callsTerminated.receivedJitter < this.mapData[index].receivedJitter)
+        if (this.nodesMap[toRegion].callsTerminated.receivedJitter < this.mapData[index].receivedJitter)
           this.nodesMap[toRegion].callsTerminated.receivedJitter = this.mapData[index].receivedJitter;
-        if(this.nodesMap[toRegion].callsTerminated.roundTripTime < this.mapData[index].roundTripTime)
+        if (this.nodesMap[toRegion].callsTerminated.roundTripTime < this.mapData[index].roundTripTime)
           this.nodesMap[toRegion].callsTerminated.roundTripTime = this.mapData[index].roundTripTime;
-        if(this.nodesMap[toRegion].callsTerminated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
+        if (this.nodesMap[toRegion].callsTerminated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
           this.nodesMap[toRegion].callsTerminated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
-        if(this.nodesMap[toRegion].callsTerminated.polqa === 0)
+        if (this.nodesMap[toRegion].callsTerminated.polqa === 0)
           this.nodesMap[toRegion].callsTerminated.polqa = '–';
         if (fromRegion !== toRegion)
           this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
@@ -183,21 +189,23 @@ export class MapPocComponent implements OnInit {
     const toFrom = toRegion + " - " + fromRegion;
     const uniqueKey = this.linesMap[fromTo]? fromTo : toFrom;
 
-    if (!this.linesMap[uniqueKey]){
+    if (!this.linesMap[uniqueKey]) {
       this.linesMap[uniqueKey] = this.mapData[index];
-      this.linesMap[uniqueKey].polqa = 0;
-    }
-    else {
+      if (this.mapData[index].polqa)
+        this.linesMap[uniqueKey].polqa = this.mapData[index].polqa;
+      else if(!this.mapData[index].polqa || this.mapData[index].polqa === 0)
+        this.linesMap[uniqueKey].polqa = '–';
+    } else {
       this.linesMap[uniqueKey].passed += this.mapData[index].passed;
       this.linesMap[uniqueKey].failed += this.mapData[index].failed;
       this.linesMap[uniqueKey].totalCalls += this.mapData[index].totalCalls;
       if (this.linesMap[uniqueKey].polqa && this.linesMap[uniqueKey].polqa > this.mapData[index].polqa)
         this.linesMap[uniqueKey].polqa = this.mapData[index].polqa;
-      if(this.linesMap[uniqueKey].receivedJitter < this.mapData[index].receivedJitter)
+      if (this.linesMap[uniqueKey].receivedJitter < this.mapData[index].receivedJitter)
         this.linesMap[uniqueKey].receivedJitter = this.mapData[index].receivedJitter;
-      if(this.linesMap[uniqueKey].roundTripTime < this.mapData[index].roundTripTime)
+      if (this.linesMap[uniqueKey].roundTripTime < this.mapData[index].roundTripTime)
         this.linesMap[uniqueKey].roundTripTime = this.mapData[index].roundTripTime;
-      if(this.linesMap[uniqueKey].receivedPacketLoss < this.mapData[index].receivedPacketLoss)
+      if (this.linesMap[uniqueKey].receivedPacketLoss < this.mapData[index].receivedPacketLoss)
         this.linesMap[uniqueKey].receivedPacketLoss = this.mapData[index].receivedPacketLoss;
     }
   }
@@ -240,14 +248,13 @@ export class MapPocComponent implements OnInit {
     let customIconUrl = '../../../../assets/images/goodMarker.svg';
     for (const key in this.nodesMap) {
       let failed, polqa;
-      console.log(this.nodesMap[key])
       failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
       polqa = this.nodesMap[key].callsOriginated.polqa;
-      if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa)
+      if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa) 
         polqa = this.nodesMap[key].callsTerminated.polqa;
       if(failed > 1 && failed < 5 || polqa >=2 && polqa < 3)
         customIconUrl = '../../../../assets/images/midMarker.svg';
-      if(failed > 5 || polqa < 2)
+      if(failed >= 5 || polqa < 2)
         customIconUrl = '../../../../assets/images/badMarker.svg';
       let customIcon = L.icon({
         iconUrl: customIconUrl,
@@ -256,8 +263,8 @@ export class MapPocComponent implements OnInit {
       let latlong = new L.LatLng(this.nodesMap[key].region.location.y, this.nodesMap[key].region.location.x)
       let node = L.marker(latlong, {icon:customIcon}).on('click', (e) =>{
         this.nodeDetails(key);
-      });
-      node.addTo(this.map);
+      }).addTo(this.map);
+      this.nodesArray.push(node)
       node.bindTooltip(this.nodesMap[key].region.city + ", " + this.nodesMap[key].region.state);
     }
   }
@@ -268,8 +275,8 @@ export class MapPocComponent implements OnInit {
       let coordinatesArray = [];
       if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa < 3)
         lineState = this.MID_COLOR;
-      if(this.linesMap[key].failed > 5 || this.linesMap[key].polqa < 2)
-        lineState = this.BAD_COLOR
+      if(this.linesMap[key].failed >= 5 || this.linesMap[key].polqa < 2)
+        lineState = this.BAD_COLOR;
       coordinatesArray[0] = new L.LatLng(this.linesMap[key].from.location.y, this.linesMap[key].from.location.x);
       coordinatesArray[1] = new L.LatLng(this.linesMap[key].to.location.y, this.linesMap[key].to.location.x);
       let line = new L.Polyline(coordinatesArray, {
@@ -278,8 +285,9 @@ export class MapPocComponent implements OnInit {
         smoothFactor: this.LINE_SMOOTH_FACTOR
       }).on('click', (e) =>{
         this.lineDetails(key);
-      });
-      line.addTo(this.map);
+      }).addTo(this.map);
+      this.linesArray.push(line);
+      line.bindTooltip(`From: ${this.linesMap[key].from.city}, ${this.linesMap[key].from.state}. To: ${this.linesMap[key].to.city}, ${this.linesMap[key].to.state}`);
     }
   }
 
@@ -322,15 +330,26 @@ export class MapPocComponent implements OnInit {
   
   dateFilter(){
     this.isLoadingResults = true;
+    this.isRequestCompleted = false;
+    if(this.nodesArray.length > 0) {
+      this.nodesArray.forEach((node:any) => {
+        this.map.removeLayer(node);
+      });
+    }
+    if(this.linesArray.length > 0) {
+      this.linesArray.forEach((line:any) => {
+        this.map.removeLayer(line);
+      });
+    }
     if(this.filterForm.get('startDateFilterControl').value !== ''){
       let selectedStartDate = moment.utc(this.filterForm.get('startDateFilterControl').value).format('YYYY-MM-DDT00:00:00')+'Z';
       //let selectedEndDate = moment.utc(this.filterForm.get('endDateFilterControl').value).format('YYYY-MM-DDT23:59:59')+'Z';
       this.startDate = selectedStartDate;
       //this.endDate = selectedEndDate;
       this.getMapSummary();
-      this.isRequestCompleted = false;
+      this.isLoadingResults = false;
+      this.isRequestCompleted = true;
     }
-    this.isRequestCompleted = false;
   }
 
   sortData(option: any){

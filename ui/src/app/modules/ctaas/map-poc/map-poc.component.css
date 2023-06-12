@@ -82,13 +82,18 @@ ul li {
     margin-left: 10px;
 }
   
-  .color-box {
+.color-box {
     width: 20px;
     height: 20px;
     border-radius: 50%;
     margin-right: 5px;
 }
-  
+
+::ng-deep .mat-tooltip {
+    background-color: #7694B7;  /* previus color rgb(22,53,89) */
+    font-size: 14px;
+}
+
 .good {
     background-color: #203c66;
 }
@@ -103,7 +108,7 @@ ul li {
 
 
 .good:hover {
-    
+
 }
   
 .fair:hover {
@@ -121,8 +126,7 @@ ul li {
 .legend-item:hover .color-box {
     border: 1px solid #000;
 }
-  
+
 .legend-item:hover .legend-label {
    
 }
-  
