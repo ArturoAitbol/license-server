@@ -280,6 +280,5 @@ public class TekvLSGetCallsStatusHeatMap {
 				.mapToObj(i->hour.plusHours(i).toString())
 				.forEach(i -> map.put(i,0));
 		return map;
-	}
-	
+	}	
 }
