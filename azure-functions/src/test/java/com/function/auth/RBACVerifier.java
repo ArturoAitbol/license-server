@@ -914,14 +914,14 @@ public class RBACVerifier {
                                 true,
                                 false));
                 verifiers.put(GET_MAP, new ExpectedPermissions(
+                                true,
                                 false,
                                 false,
                                 false,
                                 false,
                                 false,
                                 false,
-                                false,
-                                false,
+                                true,
                                 true,
                                 true,
                                 false));
