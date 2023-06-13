@@ -155,6 +155,9 @@ mat-card {
   .chart-max-size{
     width: 20% !important;
   }
+  .mat-expansion-panel-header {
+    padding: 0px;
+  }
 }
 
 mat-panel-title {
