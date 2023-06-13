@@ -143,25 +143,26 @@ mat-card {
     position: absolute;
     right: 5%;
   }
+  .chart-max-size{
+    width: 20% !important;
+  }
 }
 
 @media (max-width: 780px) {
   .column-content{
     overflow: auto !important;
   }
-  .panel-title-container {
-    /* white-space: nowrap; */
-    /* overflow-x: auto; */
-    /* display: flex; */
-  }
-  /* .custom-col{
+  .table-max-size{
     width: 100% !important;
-  } */
+  }
+  .chart-max-size{
+    width: 20% !important;
+  }
 }
 
 mat-panel-title {
   white-space: nowrap;
-  flex-shrink: 0; /* Evita que los títulos se encojan al reducir el espacio disponible */
+  flex-shrink: 0;
 }
 
 /* @media (max-width: 600px) { 
@@ -228,4 +229,14 @@ mat-panel-title {
 .arrow-button{
   position: absolute;
   right: 5%;
+}
+
+.header-test {
+  width: 100%;
+}
+.fix-header{
+  position: sticky;
+  top: 0;
+  /* width: 100%; */
+  z-index: 20;
 }

@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-4">
+        <div class="col-4 table-max-size">
             <h1 class="text-start font-s">Summary</h1>
             <mat-card class="card summary">
                 <mat-card-content class="summary-card-content">
@@ -43,7 +43,7 @@
                 </mat-card-content>
             </mat-card>
         </div>
-        <div class="col-8">
+        <div class="col-8 table-max-size">
             <h1 class="text-start font-s">Endpoint Resources</h1>
             <section class="table-section">
                 <mat-card class="card">
@@ -62,51 +62,81 @@
 <ng-template #viewTestDetailedReport>
     <section class="table-section">
         <mat-card class="card" style="height: 400px;overflow: auto;">
-            <!-- <mat-card-content class="row">
-                <mat-accordion class="accordian-container">
-                    <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title  class="col-12 col-lg-2 col-md-2 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500; margin-right: 8.5%;"> Test Case
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> Start Date
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500"> From
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> From POLQA
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500"> To
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> To POLQA
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> Status
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> Call Type
-                            </mat-panel-title>
-                            <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500">
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                    </mat-expansion-panel>
-                </mat-accordion>
-            </mat-card-content> -->
+            <!-- <div class="panel-title-container" style="width: 100% !important; margin-right: 0% !important;">
+            <mat-card-content class="row">
+                <div class="">
+                    <mat-accordion class="accordian-container">
+                        <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title  class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500; margin-right: 8.5%;"> Test Case
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 col-xs-2 custom-col" style="color: black;font-weight: 500;"> Start Date
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500"> From
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> From POLQA
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500"> To
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> To POLQA
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> Status
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;"> Call Type
+                                </mat-panel-title>
+                                <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500">
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </div>
+                </mat-card-content>
+            </div> -->
             <div class="panel-title-container">
                 <mat-card-content  class="row">
                 <div>
                     <ng-container class="column-content" *ngIf="detailedTestReport.length > 0" >
-                        <div class="header-container">
+                        <!-- <div class="header-container">
                             <div class="table-header row">
-                                    <div class="table-cell col-12 col-lg-2 col-md-2 col-sm-1 col-xs-1 custom-col">Test Case</div>
-                                    <div class="table-cell col-12 col-lg-2 col-md-2 col-sm-1 col-xs-1 custom-col">Start Date</div>
-                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">From</div>
-                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">From POLQA</div>
-                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">To</div>
-                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">To POLQA</div>
-                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">Status</div>
-                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">Call Type</div>
+                                    <div class="table-cell col-12 col-lg-2 col-md-2 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>Test Case</div>
+                                    <div class="table-cell col-12 col-lg-2 col-md-2 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>Start Date</div>
+                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>From</div>
+                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>From POLQA</div>
+                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>To</div>
+                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>To POLQA</div>
+                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>Status</div>
+                                    <div class="table-cell col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col" style="color: black;font-weight: 500;>Call Type</div>
                                     <div class="last-element"></div>
                                 </div>
+                        </div> -->
+                        <div class="fix-header">
+                            <mat-accordion class="accordian-container">
+                                <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title  class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;"> Test Case
+                                        </mat-panel-title>
+                                        <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;"> Start Date
+                                        </mat-panel-title>
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500"> From
+                                        </mat-panel-title>
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> From POLQA
+                                        </mat-panel-title>
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500"> To
+                                        </mat-panel-title>
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> To POLQA
+                                        </mat-panel-title>
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> Status
+                                        </mat-panel-title>
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> Call Type
+                                        </mat-panel-title>
+                                        <!-- <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500">
+                                        </mat-panel-title> -->
+                                    </mat-expansion-panel-header>
+                                </mat-expansion-panel>
+                            </mat-accordion>
                         </div>
                         <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
-                            class="accordian-container ">
+                            class="accordian-container">
                             <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
                                 <mat-expansion-panel-header>
                                     <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-1 custom-col">
@@ -146,7 +176,7 @@
                                 </mat-expansion-panel-header>
                                 <div style="padding: 1%;">
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-6 chart-max-size">
                                             <table class="table table-hover">
                                                 <tbody>
                                                     <tr *ngFor="let subitems of detailedTestFeatureandCallReliability">
@@ -157,7 +187,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-6" *ngIf="!item.panelOpenState">
+                                        <div class="col-6 chart-max-size" *ngIf="!item.panelOpenState">
                                             <table>
                                                 <tbody>
                                                     <tr>
