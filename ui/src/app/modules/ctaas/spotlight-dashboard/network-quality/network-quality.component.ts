@@ -13,7 +13,6 @@ import { SubAccountService } from "../../../../services/sub-account.service";
 import { FormBuilder } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { environment } from "../../../../../environments/environment";
-import { ReportType } from "../../../../helpers/report-type";
 import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
 import { MatIconRegistry } from "@angular/material/icon";
@@ -71,6 +70,25 @@ export class NetworkQualityComponent implements OnInit {
   hideChart = true;
   isChartLoading = false;
   selectedGraph = 'jitter';
+
+  readonly series = {
+    jitter: {
+      label: "Jitter",
+      value: "Received Jitter"
+    },
+    packetLoss: {
+      label: "Packet loss",
+      value: "Received packet loss"
+    },
+    sentBitrate: {
+      label: "Sent bitrate",
+      value: "Sent bitrate"
+    },
+    roundTripTime: {
+      label: "Round trip time",
+      value: "Round trip time"
+    }
+  }
 
   readonly MetricsThresholds = MetricsThresholds;
 
@@ -154,30 +172,30 @@ export class NetworkQualityComponent implements OnInit {
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
-        this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
+        this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories.map(category => category.split(" ")[1])};
         this.commonChartOptions.xAxis.title.text = 'Hour';
       }
       else{
-        this.commonChartOptions.xAxis.categories = trendsData.categories;
+        this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories};
         this.commonChartOptions.xAxis.title.text = 'Date';
       }
 
       this.initChartOptions();
       this.receivedPacketLossChartOptions.series = [{
-        name: 'Packet loss',
-        data: trendsData.series['Received packet loss']
+        name: this.series.packetLoss.label,
+        data: trendsData.series[this.series.packetLoss.value]
       }];
       this.jitterChartOptions.series = [{
-        name: 'Jitter',
-        data: trendsData.series['Received Jitter']
+        name: this.series.jitter.label,
+        data: trendsData.series[this.series.jitter.value]
       }];
       this.sentBitrateChartOptions.series = [{
-        name: 'Sent bitrate',
-        data: trendsData.series['Sent bitrate']
+        name: this.series.sentBitrate.label,
+        data: trendsData.series[this.series.sentBitrate.value]
       }];
       this.roundTripChartOptions.series = [{
-        name: 'Round trip time',
-        data: trendsData.series['Round trip time']
+        name: this.series.roundTripTime.label,
+        data: trendsData.series[this.series.roundTripTime.value]
       }];
 
       const summary = res[1];
@@ -193,18 +211,18 @@ export class NetworkQualityComponent implements OnInit {
 
       this.customerNetworkQualityData = res[2];
       if(this.groupBy==='hour') {
-        this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+        this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1])};
         this.polqaChartOptions.xAxis.title.text = 'Hour';
       }
       else{
-        this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories;
+        this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories };
         this.polqaChartOptions.xAxis.title.text = 'Date';
       }
 
       this.polqaChartOptions.series = [
         {
-          name: 'Jitter',
-          data: this.customerNetworkQualityData.series['Received Jitter']
+          name: this.series[this.selectedGraph].label,
+          data: this.customerNetworkQualityData.series[this.series[this.selectedGraph].value]
         },
         {
           name: 'POLQA',
@@ -223,10 +241,10 @@ export class NetworkQualityComponent implements OnInit {
   }
 
   private initChartOptions() {
-    defaultReceivedPacketLossChartOptions.title.text = this.maxLabel + ' Packet Loss (%)';
-    defaultJitterChartOptions.title.text = this.maxLabel + ' Jitter (ms)';
-    defaultSentBitrateChartOptions.title.text =this.avgLabel + ' Sent Bitrate (kbps)';
-    defaultRoundtripTimeChartOptions.title.text = this.maxLabel +' Round Trip Time (ms)';
+    defaultReceivedPacketLossChartOptions.title.text = this.maxLabel + ' ' + this.series.packetLoss.label + ' (%)';
+    defaultJitterChartOptions.title.text = this.maxLabel + ' ' + this.series.jitter.label + ' (ms)';
+    defaultSentBitrateChartOptions.title.text =this.avgLabel + ' ' + this.series.sentBitrate.label + ' (kbps)';
+    defaultRoundtripTimeChartOptions.title.text = this.maxLabel + ' ' + this.series.roundTripTime.label + ' (ms)';
     this.receivedPacketLossChartOptions = { ...this.commonChartOptions, ...defaultReceivedPacketLossChartOptions };
     this.jitterChartOptions = { ...this.commonChartOptions, ...defaultJitterChartOptions };
     this.sentBitrateChartOptions = {...this.commonChartOptions, ...defaultSentBitrateChartOptions };
@@ -258,44 +276,17 @@ export class NetworkQualityComponent implements OnInit {
   }
 
   changeGraph() {
-    if (this.selectedGraph === 'jitter') {
-      this.polqaChartOptions.series = [
-        {
-          name: 'Jitter',
-          data: this.customerNetworkQualityData.series['Received Jitter']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        },
-      ];
-      this.polqaChartOptions.yAxis[0].title.text = 'Jitter';
-    } else if (this.selectedGraph === 'packetLoss') {
-      this.polqaChartOptions.series = [
-        {
-          name: 'Packet Loss',
-          data: this.customerNetworkQualityData.series['Received packet loss']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        },
-      ];
-      this.polqaChartOptions.yAxis[0].title.text = 'Packet Loss';
-
-    } else if (this.selectedGraph === 'roundTripTime') {
-      this.polqaChartOptions.series = [
-        {
-          name: 'Round Trip Time',
-          data: this.customerNetworkQualityData.series['Round trip time']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        },
-      ];
-      this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
-    }
+    this.polqaChartOptions.series = [
+      {
+        name: this.series[this.selectedGraph].label,
+        data: this.customerNetworkQualityData.series[this.series[this.selectedGraph].value]
+      },
+      {
+        name: 'POLQA',
+        data: this.customerNetworkQualityData.series['POLQA']
+      },
+    ];
+    this.polqaChartOptions.yAxis[0].title.text = this.series[this.selectedGraph].label;
     this.outletRef.clear();
     this.outletRef.createEmbeddedView(this.chartContentRef);
   }
