@@ -127,7 +127,8 @@ export const permissions = {
             'apps',
             'spotlight',
             'subscriptions-overview',
-            'consumption-matrix'
+            'consumption-matrix',
+            'map-poc'
         ],
         elements: [
             'showBanner'
@@ -176,7 +177,8 @@ export const permissions = {
             'details',
             'reports',
             'consumption-matrix',
-            'spotlight-dashboard'
+            'spotlight-dashboard',
+            'map-poc'
         ],
         elements: [
             'addProject',
@@ -276,7 +278,8 @@ export const permissions = {
             'notes',
             'details',
             'reports',
-            'spotlight-dashboard'
+            'spotlight-dashboard',
+            'map-poc'
         ],
         elements: [
             'view-profile',
@@ -332,7 +335,8 @@ export const permissions = {
             'notes',
             'details',
             'reports',
-            'spotlight-dashboard'
+            'spotlight-dashboard',
+            'map-poc'
         ],
         elements: [
             'view-profile',
@@ -384,6 +388,7 @@ export const permissions = {
             'details',
             'reports',
             'spotlight-dashboard',
+            'map-poc'
         ],
         elements: [
             'view-profile',

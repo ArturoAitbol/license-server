@@ -86,7 +86,8 @@ public class Permissions {
                         GET_SUBSCRIPTIONS_OVERVIEW,
                         GET_CONSUMPTION_MATRIX,
                         GET_ALL_FEATURE_TOGGLES,
-                        GET_CHARTS);
+                        GET_CHARTS,
+                        GET_MAP);
 
         public static final EnumSet<Resource> ConfigTesterPermissions = EnumSet.of(
                         // CREATE
@@ -121,6 +122,7 @@ public class Permissions {
                         GET_CONSUMPTION_MATRIX,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // UPDATE
                         MODIFY_PROJECT,
                         MODIFY_LICENSE_USAGE,

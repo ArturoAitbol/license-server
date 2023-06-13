@@ -39,7 +39,7 @@ public class TekvLSGetCtaasMapSummary {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if (!hasPermission(roles, Resource.GET_CHARTS)) {
+        if (!hasPermission(roles, Resource.GET_MAP)) {
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
