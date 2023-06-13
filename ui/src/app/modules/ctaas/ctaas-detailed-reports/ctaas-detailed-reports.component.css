@@ -130,13 +130,10 @@ mat-card {
 
 @media (max-width: 1281px) {
   .custom-col{
-    /* padding-left: 4%; */
     width: 0% !important;
-    /* display: flex !important; */
   }
   .panel-title-container {
     white-space: nowrap;
-    /* overflow-x: auto; */
     display: flex;
   }
   .arrow-button{
@@ -165,31 +162,16 @@ mat-panel-title {
   flex-shrink: 0;
 }
 
-/* @media (max-width: 600px) { 
-  mat-panel-title {
-    min-width: 200px; 
-    overflow: hidden;
-    text-overflow: ellipsis
-  }
-} */
-
 .panel-title-container {
   white-space: nowrap;
-  /* overflow-x: auto; */
-  /* display: flex; */
 }
 
 .table-header {
-  /* display: flex; */
-  /* align-items: center; */
-  /* width: 100%; */
   padding-left: 25px;
-  /* padding-right: 0%; */
 }
 
 .table-cell {
   flex-shrink: 0;
-  /* padding: 10px; */
   color: black;
   font-weight: 500;
   flex-grow: 1;
@@ -202,7 +184,6 @@ mat-panel-title {
   margin: 0;
   padding-left: 24px;
   padding-right: 24px;
-  /* width: calc(100% - 5%); */
 }
 
 .header-container::after {
@@ -221,19 +202,12 @@ mat-panel-title {
   right: 0;
   background-color: red;
 }
-/* 
-.mat-panel-title {
-  word-wrap: break-word;
-} */
 
 .arrow-button{
   position: absolute;
   right: 5%;
 }
 
-.header-test {
-  width: 100%;
-}
 .fix-header{
   position: sticky;
   top: 0;
