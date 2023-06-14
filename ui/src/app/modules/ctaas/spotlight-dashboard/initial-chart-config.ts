@@ -425,6 +425,10 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
     colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
     dataLabels: {
         enabled: true,
+        textAnchor: "start",
+        style: {
+            colors: ["#424242"]
+        },
         formatter(val: number, opts?: any): string | number {
             return val.toFixed(2) + '%'
         },
