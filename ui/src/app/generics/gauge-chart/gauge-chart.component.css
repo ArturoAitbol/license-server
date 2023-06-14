@@ -5,8 +5,17 @@
 }
 
 .card-header {
-    background: #2d5186;  /* previus color #7694B7; */
+    background: #273176;  /* previus color #7694B7; */
+    /* background: #6E76B4; */
     color: white;
+}
+
+.top-spacing-2 {
+    margin-top: 2em;
+}
+
+.top-spacing-1 {
+    margin-top: 1em;
 }
 
 .card-header h1{

@@ -114,7 +114,7 @@ button:hover {
 }
 .right {
   margin-left: auto;
-  color: #203c66;
+  color: rgb(39, 49, 118);
   font-size: 12px;
   font-weight: 500;
 }
@@ -124,7 +124,7 @@ button:hover {
 }
 .report-title {
   display: inline-block;
-  color: #203c66;
+  color: rgb(39, 49, 118);
   font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
   letter-spacing: normal;
   padding: 6px 6px 6px 12px;
@@ -132,7 +132,7 @@ button:hover {
 }
 .card-title {
   display: inline-block;
-  color: #203c66;
+  color: rgb(39, 49, 118);
   font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
   letter-spacing: normal;
   padding: 10px 0px;

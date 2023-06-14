@@ -5,7 +5,8 @@
 }
 
 .card-header {
-    background: #2d5186;  /* previus color #7694B7; */
+    background: #273176;  /* previus color #7694B7; */
+    /* background: #6E76B4; */
     color: white;
 }
 
@@ -37,7 +38,7 @@
 }
 
 .blue-label {
-    color: #7694B7;
+    color: #273176;  /* previus color #7694B7; */
 }
 
 .red-label {
@@ -229,29 +230,25 @@ mat-form-field {
     height: calc(100% - 8px);
 }
 
-.top-spacing-3 {
-    top: 3.5em;
-}
-
 .top-spacing-1 {
-    top: 1em;
+    margin-top: 1em;
 }
 
 @media only screen and (max-width: 1500px){
     .top-spacing-3{
-        top: 1.5em;
+        margin-top: 1.5em;
     }
     .top-spacing-1 {
-        top: 1em;
+        margin-top: 1em;
     }
 }
 
 @media only screen and (max-width: 1250px){
     .top-spacing-3{
-        top: 0;
+        margin-top: 0;
     }
     .top-spacing-1 {
-        top: 0;
+        margin-top: 0;
     }
 }
 
@@ -303,6 +300,6 @@ mat-form-field {
 }
 
 .new-note-btn {
-    background-color: #2d5186;
+    background-color: #6E76B4;
     color: white;
 }

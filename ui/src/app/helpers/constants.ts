@@ -20,7 +20,7 @@ export class Constants {
 
     // Tool bar constants
     public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
-    public static readonly CTAAS_TOOL_BAR: string = 'Spotlight';
+    public static readonly CTAAS_TOOL_BAR: string = '';
 
 
     // User roles

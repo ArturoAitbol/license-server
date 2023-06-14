@@ -117,7 +117,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6" id="daily-calling-reliability">
+                <div class="col-md-3" id="daily-calling-reliability">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
                                      [description]="'Represents the status of call routing across the selected regions.'"
                                      [timePeriod]="callingReliability.period"
@@ -128,7 +128,7 @@
                                      [seriesName]="'Passed'"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
                 </div>
-                <div class="col-md-6" id="daily-feature-functionality">
+                <div class="col-md-3" id="daily-feature-functionality">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
                                      [description]="'Represents the status of various call features.'"
                                      [timePeriod]="featureFunctionality.period"
@@ -139,9 +139,7 @@
                                      [seriesName]="'Passed'"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
                 </div>
-            </div>
-            <div class="row" >
-                <div class="col-md-6" >
+                <div class="col-md-3" >
                     <div class="card text-center mt-2 full-col" id="daily-voice-quality">
                         <div class="card-header">
                             <h1>Voice Quality (POLQA)<mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm.">info_outline</mat-icon> </h1>
@@ -171,15 +169,12 @@
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
                                 <label class="ps-1"> Number of streams: {{ vq.streams }} | 
-                                    Number of calls: {{ vq.calls }} | 
-                                    P2P: {{vq.p2p}} | 
-                                    On-net: {{vq.onNet}} | 
-                                    Off-net: {{vq.offNet}}</label>
+                                    Number of calls: {{ vq.calls }}</label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="card text-center mt-2 full-col">
                         <div class="card-header">
                             <h1>Failed Calls <mat-icon matTooltip = "Represents the calls failed due to routing, media routing, media quality or client issues.">info_outline</mat-icon></h1>
@@ -216,7 +211,7 @@
                                 </div>
                             </div>
                             <br>
-                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                 View Detailed Report
                             </button>
                         </div>
@@ -415,10 +410,7 @@
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
                                 <label class="ps-1">Number of streams: {{ weeklyVQ.numberStreams }} | 
-                                    Number of calls: {{ weeklyVQ.numberCalls }} | 
-                                    P2P: {{weeklyVQ.p2p}} | 
-                                    On-net: {{weeklyVQ.onNet}} | 
-                                    Off-net: {{weeklyVQ.offNet}}</label>
+                                    Number of calls: {{ weeklyVQ.numberCalls }}</label>
                             </div>
                         </div>
                     </div>
