@@ -96,6 +96,9 @@ export class SpotlightDashboardComponent implements OnInit{
 
   isloading = true;
 
+  currentDate: any;
+  selectedRegion: any;
+  locationFlag: boolean = false;
   startTime = 0;
   milliseconds = 0;
   seconds = 0;
@@ -159,14 +162,12 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.loadChartsWithQueryParams();
+    let currentEndDate
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.disableFiltersWhileLoading = true;
-    this.initAutocompletes();
-    this.initWeeklyAutocompletes();
     this.route.queryParams.subscribe(params => {
       if (params?.noteId) {
-        this.noteService.getNoteList(this.subaccountService.getSelectedSubAccount().id, params.noteId).subscribe(res => {
+        this.noteService.getNoteList(this.subaccountDetails.id, params.noteId).subscribe(res => {
           this.note = res.notes[0];
           this.filters.get('date').setValue(moment.utc(this.note.openDate));
           this.weeklyFilters.get('date').setValue(moment.utc(this.note.openDate));
@@ -180,15 +181,49 @@ export class SpotlightDashboardComponent implements OnInit{
         this.showChildren = true;
         this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
         this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
-            .subscribe(() => {
-              this.disableFiltersWhileLoading = false;
-              this.autoRefresh = true;
-              this.reloadCharts(false);
-            });
+        .subscribe(() => {
+          this.disableFiltersWhileLoading = false;
+          this.autoRefresh = true;
+          this.reloadCharts(false);
+        });
       }
+      if(params.date && this.filters.get('date').value !== "") {
+        let nodeDate = params.date.split('T')[0]
+        this.currentDate = Utility.setHoursOfDate(moment.utc(nodeDate));
+        this.filters.controls['date'].setValue(moment.utc(nodeDate));
+      }
+      if(params.date && this.weeklyFilters.get('date').value !== "") {
+        let parsedDate = params.date.split('T')[0];
+        currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
+        this.weeklyFilters.controls['date'].setValue(currentEndDate);
+      } 
+      if(params.location && this.selectedRegions.length === 0) {
+        this.selectedRegions.push({
+          city:params.location.split(',')[0], 
+          state:params.location.split(', ')[1],
+          country:params.location.split(', ')[2],
+          displayName: params.location
+        });
+        if(params.toLocation){
+          this.selectedRegions.push({
+            city:params.toLocation.split(',')[0], 
+            state:params.toLocation.split(', ')[1],
+            country:params.toLocation.split(', ')[2],
+            displayName: params.toLocation
+          })
+        }
+        this.locationFlag = true;
+        this.weeklySelectedRegions = this.selectedRegions;
+        this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
+        this.filters.controls['region'].setValue(this.selectedRegion);
+      }
+      this.loadCharts();
     });
+    this.loadChartsWithQueryParams();
+    this.initAutocompletes();
+    this.initWeeklyAutocompletes();
   }
-
+  
   getStartWeekDate(): Moment{
     return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
   }
@@ -260,40 +295,11 @@ export class SpotlightDashboardComponent implements OnInit{
 
   loadChartsWithQueryParams() {
     const obs = [];
-    let selectedDate;
-    let selectedRegion;
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-
-    this.route.queryParams.subscribe((params: any) => {
-      if(params.date && this.filters.get('date').value !== "") {
-        let nodeDate = params.date.split('T')[0]
-        selectedDate = Utility.setHoursOfDate(moment.utc(nodeDate));
-        this.filters.controls['date'].setValue(moment.utc(nodeDate));
-      }
-      if(params.location && this.selectedRegions.length === 0) {
-        this.selectedRegions.push({
-          city:params.location.split(',')[0], 
-          state:'Texas',
-          country:params.location.split(', ')[2],
-          displayName: params.location
-        });
-        if(params.toLocation){
-          this.selectedRegions.push({
-            city:params.toLocation.split(',')[0], 
-            state:'Texas',
-            country:params.toLocation.split(', ')[2],
-            displayName: params.toLocation
-          })
-        }
-        this.weeklySelectedRegions = this.selectedRegions;
-        this.weeklyFilters.controls['region'].setValue(selectedRegion)
-        this.filters.controls['region'].setValue(selectedRegion);
-      }
-    });
-    if (this.selectedPeriod == "daily" && selectedDate && this.selectedRegions) {
-      this.selectedDate = selectedDate.clone().utc();
-      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
+    const subaccountId = this.subaccountDetails.id;
+    if (this.selectedPeriod == "daily" && this.currentDate && this.selectedRegions) {
+      this.selectedDate = this.currentDate.clone().utc();
+      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(this.currentDate, this.selectedRegions, subaccountId));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(this.currentDate, this.currentDate, this.selectedRegions, subaccountId));
     }
   }
 
@@ -304,7 +310,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.calls.failed = 0;
     this.isloading = showLoading && true;
     const startTime = performance.now();
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const subaccountId = this.subaccountDetails.id;
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
@@ -530,7 +536,7 @@ export class SpotlightDashboardComponent implements OnInit{
     let regions = ""
     if(this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
     window.open(url);
   }
 
@@ -564,7 +570,7 @@ export class SpotlightDashboardComponent implements OnInit{
       this.filters.disable();
       this.networkQuality.filters.disable();
     } 
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
       startDate = endDate = this.selectedDate;
@@ -605,7 +611,7 @@ export class SpotlightDashboardComponent implements OnInit{
       this.weeklyFilters.disable();
       this.networkQuality.filters.disable();
     }
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
       startDate = endDate = this.selectedDate;
@@ -613,11 +619,9 @@ export class SpotlightDashboardComponent implements OnInit{
       startDate = this.selectedRange.start;
       endDate = this.selectedRange.end;
     }
-    this.route.queryParams.subscribe((params: any) => {
-      if(params.location || params.toLocation) {
-        this.reloadFilterOptions();
-      }
-    })
+    if(this.locationFlag) {
+      this.reloadFilterOptions();
+    }
     this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate,"users",regions ? regions : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();

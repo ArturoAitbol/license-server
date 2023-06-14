@@ -96,12 +96,8 @@ public class TekvLSGetCtaasMapSummary {
                 "         LEFT JOIN project p ON r.projectid = p.id" +
                 "         LEFT JOIN test_plan tp ON p.testplanid = tp.id" +
                 "         LEFT JOIN execution_report er on sr.execution_report_id = er.id " +
-                "WHERE sr.finalResult = true AND tp.name IN ('LTS', 'STS', 'POLQA')" +
+                "  WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')" +
                 "  AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
-                "  AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype) = '' OR sr.failingerrortype = 'Routing Issue' OR" +
-                "       sr.failingerrortype = 'Teams Client Issue' OR sr.failingerrortype = 'Media Quality' OR" +
-                "       sr.failingerrortype = 'Media Routing')" +
-                "  AND tp.name in ('LTS', 'STS', 'POLQA')" +
                 "  AND ms.parameter_name IN ('Received Jitter', 'Received packet loss', 'Round trip time', 'Sent bitrate', 'POLQA')";
 
         SelectQueryBuilder locationsQB = new SelectQueryBuilder(sql, true);
