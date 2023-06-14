@@ -78,7 +78,7 @@
                                     <mat-label>Region</mat-label>
                                     <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
                                     <input type="text"
-                                    placeholder="City or State or Country"
+                                    placeholder="[Country] or [State, Country] or [City, State, Country]"
                                     matInput
                                     #regionInput
                                     formControlName="region"
@@ -274,7 +274,7 @@
                                     <mat-label>Region</mat-label>
                                     <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
                                     <input type="text"
-                                    placeholder="City or State or Country"
+                                    placeholder="[Country] or [State, Country] or [City, State, Country]"
                                     matInput
                                     #regionInput
                                     formControlName="region"
@@ -287,8 +287,8 @@
                                 </mat-form-field>
                             </div>
                         </div>
-                        <div class="align-items-start apply-button" style="padding-left: 22%">
-                            <button class="mt-2" mat-raised-button
+                        <div class="align-items-start weekly-apply-button">
+                            <button class="mt-2 custom-apply-button" mat-raised-button
                                     id="reload-btn-2" (click)="reloadCharts()" [disabled]="weeklyFilters.disabled">Apply</button>
                         </div>
                     </div>
