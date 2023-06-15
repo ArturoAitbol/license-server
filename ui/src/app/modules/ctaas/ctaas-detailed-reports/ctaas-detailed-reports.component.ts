@@ -215,7 +215,6 @@ export class DetailedReportsCompoment implements OnInit {
             obj.tonoDataFoundFlag = false;
             obj.otherPartynoDataFoundFlag = false;
             obj.panelOpenState = true;
-            obj.callType = obj.otherParties.length > 0  ? null : obj.callType
             obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
           this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime;
