@@ -82,7 +82,7 @@ public class TekvLSGetNetworkQualityChart {
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
 
 		String averageFlag = request.getQueryParameters().getOrDefault("average", "");
-		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","");
+		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","POLQA");
 
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
 		String metricsClause = metrics.replace(",", "', '");
