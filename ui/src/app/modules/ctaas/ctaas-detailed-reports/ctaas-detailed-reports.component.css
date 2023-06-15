@@ -217,3 +217,11 @@ mat-panel-title {
   /* width: 100%; */
   z-index: 20;
 }
+
+.small-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #757575;
+}

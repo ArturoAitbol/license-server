@@ -71,28 +71,28 @@
                                 <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
                                     <mat-expansion-panel-header>
                                         <mat-panel-title  class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('testCaseName')"> Test Case
-                                        <span *ngIf="sortColumn === 'testCaseName'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'testCaseName'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('startTime')"> Start Date
-                                        <span *ngIf="sortColumn === 'startTime'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'startTime'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500" (click)="handleSort('from')"> From
-                                        <span *ngIf="sortColumn === 'from'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'from'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('fromPolqaAvg')"> From POLQA
-                                        <span *ngIf="sortColumn === 'fromPolqaAvg'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'fromPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500" (click)="handleSort('to')"> To
-                                        <span *ngIf="sortColumn === 'to'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'to'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('toPolqaAvg')"> To POLQA
-                                        <span *ngIf="sortColumn === 'toPolqaAvg'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'toPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('status')"> Status
-                                        <span *ngIf="sortColumn === 'status'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'status'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('callType')"> Call Type
-                                        <span *ngIf="sortColumn === 'callType'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
+                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'callType'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                     </mat-expansion-panel-header>
                                 </mat-expansion-panel>
