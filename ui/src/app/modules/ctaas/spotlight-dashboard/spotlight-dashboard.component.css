@@ -284,6 +284,14 @@ mat-form-field {
     font-weight: bolder;
 }
 
+.chart-axis-label {
+    font-family: Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    dominant-baseline: auto;
+    font-size: 12px;
+    font-weight: 900;
+}
+
 .tooltip-title {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 12px;
@@ -306,3 +314,4 @@ mat-form-field {
     background-color: #2d5186;
     color: white;
 }
+
