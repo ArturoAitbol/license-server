@@ -174,9 +174,8 @@ export class SpotlightDashboardComponent implements OnInit{
           this.isHistoricalView = true;
           this.loadCharts();
           this.showChildren = true;
-          this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
         });
-      } else if (params.location || params.toLocation) {
+      } else {
         if(params.date && this.filters.get('date').value !== "") {
           let nodeDate = params.date.split('T')[0]
           this.currentDate = Utility.setHoursOfDate(moment.utc(nodeDate));
@@ -207,10 +206,6 @@ export class SpotlightDashboardComponent implements OnInit{
           this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
           this.filters.controls['region'].setValue(this.selectedRegion);
         }
-        this.loadCharts();
-        this.showChildren = true;
-        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
-      } else {
         this.loadCharts();
         this.showChildren = true;
         this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;

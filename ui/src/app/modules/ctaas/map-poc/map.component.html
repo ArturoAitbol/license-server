@@ -1,5 +1,6 @@
 <!-- Load Leaflet from CDN-->
 <app-banner [stylesflag]="'notes'" *lcCheckAccessFor="'showBanner'"></app-banner>
+<mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
 <div style="padding-top: 2%;">
       <mat-button-toggle-group  aria-label="Font Style"
         (change)="onChangeButtonToggle()">
@@ -94,16 +95,16 @@
     <h1 class="text-center">Daily Report</h1>
   </div> 
   <div class="legend" >
-    <div class="legend-item" >
+    <div class="legend-item">
       <div class="color-box good" matTooltip="Number of failed calls < 1 and Voice Quality > 3."></div>
       <span class="legend-label">Good</span>
     </div>
-    <div class="legend-item" >
-      <div class="color-box fair" matTooltip="Number of failed calls > 1 and Voice Quality < 3."></div>
+    <div class="legend-item">
+      <div class="color-box fair" matTooltip="Number of failed calls >= 1 and < 5, or Voice Quality >= 2 and <= 3."></div>
       <span class="legend-label">Fair</span>
     </div>
-    <div class="legend-item" >
-      <div class="color-box bad" matTooltip="Number of failed calls > 5 and Voice Quality < 2."></div>
+    <div class="legend-item">
+      <div class="color-box bad" matTooltip="Number of failed calls >= 5 or Voice Quality < 2."></div>
       <span class="legend-label">Bad</span>
     </div>
   </div>

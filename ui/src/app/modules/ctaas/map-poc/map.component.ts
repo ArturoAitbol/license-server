@@ -8,6 +8,8 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { Constants } from 'src/app/helpers/constants';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -28,7 +30,9 @@ export class MapComponent implements OnInit {
   linesArray: any = [];
   startDate: any;
   endDate: any;
+  autoRefresh = false;
   mapStartView: any[] = [];
+  refreshIntervalSubscription: any;
   filterForm = this.fb.group({
     // fromRegionFilterControl: [''],
     // toRegionFilterControl: [''],
@@ -72,11 +76,14 @@ export class MapComponent implements OnInit {
 
   ngOnInit(): void {
     this.startDate = moment.utc().format("YYYY-MM-DDT00:00:00")+'Z';
-    //this.endDate =  moment.utc().format("YYYY-MM-DDTHH:mm:ss")+'Z'
     this.initColumns();
     this.calculateTableHeight();
     this.map = L.map('map'); 
     this.getMapSummary();
+    this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL).subscribe(() => {
+      this.autoRefresh = true;
+      this.getMapSummary();
+    });
     this.maxDate = moment.utc().format("YYYY-MM-DD[T]HH:mm:ss");
   }
   
@@ -252,7 +259,7 @@ export class MapComponent implements OnInit {
       polqa = this.nodesMap[key].callsOriginated.polqa;
       if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa) 
         polqa = this.nodesMap[key].callsTerminated.polqa;
-      if(failed > 1 && failed < 5 || polqa >=2 && polqa < 3)
+      if(failed >= 1 && failed < 5 || polqa >= 2 && polqa <= 3)
         customIconUrl = '../../../../assets/images/midMarker.svg';
       if(failed >= 5 || polqa < 2)
         customIconUrl = '../../../../assets/images/badMarker.svg';
@@ -274,7 +281,7 @@ export class MapComponent implements OnInit {
       let lineState = this.GOOD_COLOR;
       this.LINE_WEIGHT = 3;
       let coordinatesArray = [];
-      if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa < 3) {
+      if(this.linesMap[key].failed >= 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa <= 3) {
         lineState = this.MID_COLOR;
         this.LINE_WEIGHT = 5;
       }
@@ -329,10 +336,11 @@ export class MapComponent implements OnInit {
           this.snackBarService.openSnackBar('There is not data to display', '');
           this.baseMap();
         }
+        this.autoRefresh = false;
       }
     });
   }
-  
+
   dateFilter(){
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
@@ -348,9 +356,7 @@ export class MapComponent implements OnInit {
     }
     if(this.filterForm.get('startDateFilterControl').value !== ''){
       let selectedStartDate = moment.utc(this.filterForm.get('startDateFilterControl').value).format('YYYY-MM-DDT00:00:00')+'Z';
-      //let selectedEndDate = moment.utc(this.filterForm.get('endDateFilterControl').value).format('YYYY-MM-DDT23:59:59')+'Z';
       this.startDate = selectedStartDate;
-      //this.endDate = selectedEndDate;
       this.getMapSummary();
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
