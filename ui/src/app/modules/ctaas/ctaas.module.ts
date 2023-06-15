@@ -28,9 +28,9 @@ import { NgApexchartsModule } from "ng-apexcharts";
 import { NetworkQualityComponent } from './spotlight-dashboard/network-quality/network-quality.component';
 import { CallbackComponent } from './callback/callback.component';
 import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
-import { NodeDetailComponent } from './map-poc/node-detail/node-detail.component';
-import { LineDetailComponent } from './map-poc/line-detail/line-detail.component';
-import { MapComponent } from './map-poc/map.component';
+import { NodeDetailComponent } from './map/node-detail/node-detail.component';
+import { LineDetailComponent } from './map/line-detail/line-detail.component';
+import { MapComponent } from './map/map.component';
 
 
 @NgModule({
