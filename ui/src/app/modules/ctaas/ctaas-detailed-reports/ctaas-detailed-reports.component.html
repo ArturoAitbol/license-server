@@ -50,7 +50,7 @@
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
                         <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
                             [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
-                            [tableColumns]="endpointDisplayedColumns"></app-data-table>
+                            [tableColumns]="endpointDisplayedColumns" (sort)="sortData($event)"></app-data-table>
                     </mat-card-content>
                 </mat-card>
             </section>
@@ -70,21 +70,29 @@
                             <mat-accordion class="accordian-container">
                                 <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
                                     <mat-expansion-panel-header>
-                                        <mat-panel-title  class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;"> Test Case
+                                        <mat-panel-title  class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('testCaseName')"> Test Case
+                                        <span *ngIf="sortColumn === 'testCaseName'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;"> Start Date
+                                        <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('startTime')"> Start Date
+                                        <span *ngIf="sortColumn === 'startTime'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500"> From
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500" (click)="handleSort('from')"> From
+                                        <span *ngIf="sortColumn === 'from'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> From POLQA
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('fromPolqaAvg')"> From POLQA
+                                        <span *ngIf="sortColumn === 'fromPolqaAvg'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500"> To
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500" (click)="handleSort('to')"> To
+                                        <span *ngIf="sortColumn === 'to'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> To POLQA
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('toPolqaAvg')"> To POLQA
+                                        <span *ngIf="sortColumn === 'toPolqaAvg'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> Status
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('status')"> Status
+                                        <span *ngIf="sortColumn === 'status'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;"> Call Type
+                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('callType')"> Call Type
+                                        <span *ngIf="sortColumn === 'callType'" [innerHTML]="sortAscending ? '&uarr;' : '&darr;'"></span>
                                         </mat-panel-title>
                                     </mat-expansion-panel-header>
                                 </mat-expansion-panel>
