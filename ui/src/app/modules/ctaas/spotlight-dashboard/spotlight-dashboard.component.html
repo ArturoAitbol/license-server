@@ -99,7 +99,7 @@
                 </form>
             </div>
             <div class="row" *ngIf="this.selectedRegions.length>0">
-                <div class="col-md-12">
+                <div class="col-md-6 offset-md-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
                                 <button [disabled]="this.selectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
@@ -468,6 +468,9 @@
                                             [colors]="weeklyCallsStatusChartOptions.colors"
                                             [plotOptions]="weeklyCallsStatusChartOptions.plotOptions"
                                     ></apx-chart>
+                                    <div>
+                                        <label class="chart-axis-label">Hours</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
