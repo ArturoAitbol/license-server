@@ -50,6 +50,9 @@ export class DetailedReportsCompoment implements OnInit {
   otherpartyMediaStat: any;
   sortAscending: boolean = true;
   sortColumn: string = '';
+  clickCount: number = 0;
+  originalDetailedTestReport: any[] = [];
+
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
   constructor(private msalService: MsalService,
@@ -460,11 +463,24 @@ export class DetailedReportsCompoment implements OnInit {
       return this.reportResponse.endpoints;
     }
   }
-  
+
   handleSort(column: string) {
+    if (this.originalDetailedTestReport.length === 0) {
+      this.originalDetailedTestReport = [...this.detailedTestReport];
+    }
     if (this.sortColumn === column) {
-      this.sortAscending = !this.sortAscending;
+      this.clickCount++;
+      if (this.clickCount > 2) {
+        this.sortColumn = '';
+        this.sortAscending = true;
+        this.clickCount = 0;
+        this.detailedTestReport = [...this.originalDetailedTestReport];
+        return;
+      } else {
+        this.sortAscending = !this.sortAscending;
+      }
     } else {
+      this.clickCount = 1;
       this.sortAscending = true;
       this.sortColumn = column;
     }
