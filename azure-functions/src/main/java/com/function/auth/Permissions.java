@@ -56,6 +56,7 @@ public class Permissions {
                         GET_ALL_NOTES,
                         GET_CONSUMPTION_MATRIX,
                         GET_CHARTS,
+                        GET_MAP,
                         // UPDATE
                         MODIFY_CUSTOMER,
                         MODIFY_SUBACCOUNT,
@@ -85,7 +86,8 @@ public class Permissions {
                         GET_SUBSCRIPTIONS_OVERVIEW,
                         GET_CONSUMPTION_MATRIX,
                         GET_ALL_FEATURE_TOGGLES,
-                        GET_CHARTS);
+                        GET_CHARTS,
+                        GET_MAP);
 
         public static final EnumSet<Resource> ConfigTesterPermissions = EnumSet.of(
                         // CREATE
@@ -120,6 +122,7 @@ public class Permissions {
                         GET_CONSUMPTION_MATRIX,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // UPDATE
                         MODIFY_PROJECT,
                         MODIFY_LICENSE_USAGE,
@@ -223,6 +226,7 @@ public class Permissions {
                         GET_ALL_NOTES,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER);
@@ -255,6 +259,7 @@ public class Permissions {
                         GET_ALL_NOTES,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER,
@@ -278,6 +283,7 @@ public class Permissions {
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_AUTH_USER_PROFILE);
             public static final EnumSet<Resource> IGESAdminPermissions = EnumSet.of(                

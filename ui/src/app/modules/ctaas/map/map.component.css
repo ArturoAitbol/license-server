@@ -1,0 +1,132 @@
+#map { 
+    height: 700px; 
+}
+
+.banner-container {
+    background: #7694B7;
+    /* background: lightgrey; */
+    padding: 6px 6px 6px 12px;
+}
+ul {
+    list-style-type: none;
+    /* display: inline-flex; */
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    text-align: center;
+}
+ul li {
+    display: inline-block;
+    color: #203c66;
+    font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+    letter-spacing: normal;
+    /* margin: 0 0 16px; */
+}
+/* ul.breadcrumb li+li:before {
+    color: #203c66;
+    content: "/\00a0";
+} */
+.alignment {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+@media (max-width: 600px) {
+    .banner-container {
+        padding: 0px 2px 0px 6px;
+    }
+    ul li {
+        font-size:calc(5px + 1.7vw);
+    }
+    .date-picker-form {
+        display: inline-block !important;
+        width: 100%;
+        align-items: center !important; 
+        /* white-space: nowrap !important; */
+        position: relative;
+    }
+}
+
+.date-picker-form{
+    display: flex !important;
+    white-space: nowrap !important;
+}
+
+.legend {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2%;
+}
+  
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.legend {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+  
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+::ng-deep .mat-tooltip {
+    background-color: #7694B7;  /* previus color rgb(22,53,89) */
+    font-size: 14px;
+}
+
+.good {
+    background-color: #203c66;
+}
+  
+.fair {
+    background-color: orange;
+}
+  
+.bad {
+    background-color: red;
+}
+
+
+.good:hover {
+
+}
+  
+.fair:hover {
+   
+}
+  
+.bad:hover {
+    
+}
+
+.legend-item:hover {
+    cursor: pointer;
+}
+  
+.legend-item:hover .color-box {
+    border: 1px solid #000;
+}
+
+.legend-item:hover .legend-label {
+   
+}
