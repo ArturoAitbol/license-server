@@ -220,7 +220,7 @@ public class TekvLSGetCallsStatusHeatMap {
 
 						JSONObject data = new JSONObject();
 						LocalTime nextHour = LocalTime.parse(hour).plusHours(1);
-						data.put("x", hour + "-" + nextHour.toString());
+						data.put("x", hour.split(":")[0] + "-" + nextHour.toString().split(":")[0]);
 						data.put("y", value);
 						array.put(data);
 					}
