@@ -176,6 +176,40 @@ export class SpotlightDashboardComponent implements OnInit{
           this.showChildren = true;
           this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
         });
+      } else if (params.location || params.toLocation) {
+        if(params.date && this.filters.get('date').value !== "") {
+          let nodeDate = params.date.split('T')[0]
+          this.currentDate = Utility.setHoursOfDate(moment.utc(nodeDate));
+          this.filters.controls['date'].setValue(moment.utc(nodeDate));
+        }
+        if(params.date && this.weeklyFilters.get('date').value !== "") {
+          let parsedDate = params.date.split('T')[0];
+          currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
+          this.weeklyFilters.controls['date'].setValue(currentEndDate);
+        } 
+        if(params.location && this.selectedRegions.length === 0) {
+          this.selectedRegions.push({
+            city:params.location.split(',')[0], 
+            state:params.location.split(', ')[1],
+            country:params.location.split(', ')[2],
+            displayName: params.location
+          });
+          if(params.toLocation){
+            this.selectedRegions.push({
+              city:params.toLocation.split(',')[0], 
+              state:params.toLocation.split(', ')[1],
+              country:params.toLocation.split(', ')[2],
+              displayName: params.toLocation
+            })
+          }
+          this.locationFlag = true;
+          this.weeklySelectedRegions = this.selectedRegions;
+          this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
+          this.filters.controls['region'].setValue(this.selectedRegion);
+        }
+        this.loadCharts();
+        this.showChildren = true;
+        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
       } else {
         this.loadCharts();
         this.showChildren = true;
@@ -186,37 +220,6 @@ export class SpotlightDashboardComponent implements OnInit{
           this.autoRefresh = true;
           this.reloadCharts(false);
         });
-      }
-      if(params.date && this.filters.get('date').value !== "") {
-        let nodeDate = params.date.split('T')[0]
-        this.currentDate = Utility.setHoursOfDate(moment.utc(nodeDate));
-        this.filters.controls['date'].setValue(moment.utc(nodeDate));
-      }
-      if(params.date && this.weeklyFilters.get('date').value !== "") {
-        let parsedDate = params.date.split('T')[0];
-        currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
-        this.weeklyFilters.controls['date'].setValue(currentEndDate);
-      } 
-      if(params.location && this.selectedRegions.length === 0) {
-        this.selectedRegions.push({
-          city:params.location.split(',')[0], 
-          state:params.location.split(', ')[1],
-          country:params.location.split(', ')[2],
-          displayName: params.location
-        });
-        if(params.toLocation){
-          this.selectedRegions.push({
-            city:params.toLocation.split(',')[0], 
-            state:params.toLocation.split(', ')[1],
-            country:params.toLocation.split(', ')[2],
-            displayName: params.toLocation
-          })
-        }
-        this.locationFlag = true;
-        this.weeklySelectedRegions = this.selectedRegions;
-        this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
-        this.filters.controls['region'].setValue(this.selectedRegion);
-        this.loadCharts();
       }
     });
     this.initAutocompletes();
