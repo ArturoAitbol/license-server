@@ -913,5 +913,17 @@ public class RBACVerifier {
                                 true,
                                 true,
                                 false));
+                verifiers.put(GET_MAP, new ExpectedPermissions(
+                                true,
+                                true,
+                                true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                true,
+                                true,
+                                true,
+                                false));
         }
 }
