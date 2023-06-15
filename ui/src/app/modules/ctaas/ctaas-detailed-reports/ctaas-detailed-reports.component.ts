@@ -6,6 +6,7 @@ import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { Sort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-detailed-reports',
@@ -47,6 +48,11 @@ export class DetailedReportsCompoment implements OnInit {
   fromMediaStats: any;
   toMediaStats: any;
   otherpartyMediaStat: any;
+  sortAscending: boolean = true;
+  sortColumn: string = '';
+  clickCount: number = 0;
+  originalDetailedTestReport: any[] = [];
+
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
   constructor(private msalService: MsalService,
@@ -212,7 +218,6 @@ export class DetailedReportsCompoment implements OnInit {
             obj.tonoDataFoundFlag = false;
             obj.otherPartynoDataFoundFlag = false;
             obj.panelOpenState = true;
-            obj.callType = obj.otherParties.length > 0  ? null : obj.callType
             obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
           this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime;
@@ -449,4 +454,58 @@ export class DetailedReportsCompoment implements OnInit {
    * @returns: string
    */
   getIconByType(flag: boolean): string { return (flag) ? 'keyboard_arrow_down' : 'keyboard_arrow_up'; }
+  
+  sortData(sortParameters: Sort): any[]{
+    const keyName = sortParameters.active
+    if(sortParameters.direction !== '') {
+      this.reportResponse.endpoints =  Utility.sortingDataTable(this.reportResponse.endpoints, keyName, sortParameters.direction);
+    } else {
+      return this.reportResponse.endpoints;
+    }
+  }
+
+  handleSort(column: string) {
+    if (this.originalDetailedTestReport.length === 0) {
+      this.originalDetailedTestReport = [...this.detailedTestReport];
+    }
+    if (this.sortColumn === column) {
+      this.clickCount++;
+      if (this.clickCount > 2) {
+        this.sortColumn = '';
+        this.sortAscending = true;
+        this.clickCount = 0;
+        this.detailedTestReport = [...this.originalDetailedTestReport];
+        return;
+      } else {
+        this.sortAscending = !this.sortAscending;
+      }
+    } else {
+      this.clickCount = 1;
+      this.sortAscending = true;
+      this.sortColumn = column;
+    }
+    const sortedList = [...this.detailedTestReport];
+      sortedList.sort((a, b) => {
+      if (column === 'to') {
+        const numA = parseInt(a['to']['DID']);
+        const numB = parseInt(b['to']['DID']);
+
+        if (numA < numB) return this.sortAscending ? -1 : 1;
+        if (numA > numB) return this.sortAscending ? 1 : -1;
+        return 0;
+      }else if (column === 'from') {
+        const numA = parseInt(a['from']['DID']);
+        const numB = parseInt(b['from']['DID']);
+
+        if (numA < numB) return this.sortAscending ? -1 : 1;
+        if (numA > numB) return this.sortAscending ? 1 : -1;
+        return 0;
+      } else {
+        if (a[column] < b[column]) return this.sortAscending ? -1 : 1;
+        if (a[column] > b[column]) return this.sortAscending ? 1 : -1;
+        return 0;
+      }
+    });
+      this.detailedTestReport = sortedList;
+  }
 }
