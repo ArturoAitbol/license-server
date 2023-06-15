@@ -68,8 +68,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 isPreview: false
             },
             {
-                name: 'Map POC',
-                path: 'map-poc',
+                name: 'Map',
+                path: 'map',
                 active: false,
                 materialIcon: 'public',
                 baseUrl: '/spotlight/',
@@ -185,8 +185,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
-    readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map-poc';
-    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/visualization';
+    readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map';
     readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = Constants.POWERBI_DASHBOARD_PATH;
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = Constants.STAKEHOLDERS_VIEW_PATH;
@@ -401,9 +400,9 @@ export class AppComponent implements OnInit, OnDestroy {
             const { roles } = accountDetails.idTokenClaims; 
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
             let featureToggleProtectedItems = [{
-                toggleName:"mapPocFeature",
+                toggleName:"mapFeature",
                 subaccountId:this.subaccountId,
-                item:"map-poc"
+                item:"map"
             }];
 
             let disabledItems:any[]=[];

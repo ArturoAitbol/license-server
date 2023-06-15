@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class EsriServicesService {  
+export class MapServicesService {  
   private readonly CTAAS_MAP_SUMMARY_API_URL = environment.apiEndpoint + '/spotlighCharts/mapSummary';
 
   constructor(private httpClient: HttpClient) { }

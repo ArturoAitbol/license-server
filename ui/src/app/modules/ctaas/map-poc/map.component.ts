@@ -3,17 +3,17 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 import moment from 'moment';
-import { EsriServicesService } from 'src/app/services/map-poc.service';
+import { MapServicesService } from 'src/app/services/map.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 @Component({
-  selector: 'app-map-poc',
-  templateUrl: './map-poc.component.html',
-  styleUrls: ['./map-poc.component.css']
+  selector: 'app-map',
+  templateUrl: './map.component.html',
+  styleUrls: ['./map.component.css']
 })
-export class MapPocComponent implements OnInit {
+export class MapComponent implements OnInit {
   displayedColumns: any[] = [];
   isLoadingResults = false;
   isRequestCompleted = false;
@@ -35,7 +35,7 @@ export class MapPocComponent implements OnInit {
     startDateFilterControl: [moment.utc(),[Validators.required]],
     endDateFilterControl: [''],
 });
-  constructor(private esriService: EsriServicesService, 
+  constructor(private esriService: MapServicesService, 
     private fb: FormBuilder,
     private subaccountService: SubAccountService,
     public dialog: MatDialog, 
@@ -44,7 +44,7 @@ export class MapPocComponent implements OnInit {
   readonly GOOD_COLOR: string = "#203c66";
   readonly MID_COLOR: string = "orange";
   readonly BAD_COLOR: string = "red";
-  readonly LINE_WEIGHT: number = 3;
+  LINE_WEIGHT: number;
   readonly LINKED: string = 'Linked';
   readonly HEAT: string = 'Heat';
   readonly LINE_SMOOTH_FACTOR: number = 1;
@@ -245,8 +245,8 @@ export class MapPocComponent implements OnInit {
   }
 
   drawNodes():void {
-    let customIconUrl = '../../../../assets/images/goodMarker.svg';
     for (const key in this.nodesMap) {
+      let customIconUrl = '../../../../assets/images/goodMarker.svg';
       let failed, polqa;
       failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
       polqa = this.nodesMap[key].callsOriginated.polqa;
@@ -272,11 +272,16 @@ export class MapPocComponent implements OnInit {
   drawLines() {
     for (const key in this.linesMap) {
       let lineState = this.GOOD_COLOR;
+      this.LINE_WEIGHT = 3;
       let coordinatesArray = [];
-      if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa < 3)
+      if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa < 3) {
         lineState = this.MID_COLOR;
-      if(this.linesMap[key].failed >= 5 || this.linesMap[key].polqa < 2)
+        this.LINE_WEIGHT = 5;
+      }
+      if(this.linesMap[key].failed >= 5 || this.linesMap[key].polqa < 2) {
         lineState = this.BAD_COLOR;
+        this.LINE_WEIGHT = 5;
+      }
       coordinatesArray[0] = new L.LatLng(this.linesMap[key].from.location.y, this.linesMap[key].from.location.x);
       coordinatesArray[1] = new L.LatLng(this.linesMap[key].to.location.y, this.linesMap[key].to.location.x);
       let line = new L.Polyline(coordinatesArray, {

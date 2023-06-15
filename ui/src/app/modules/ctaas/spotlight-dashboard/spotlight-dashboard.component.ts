@@ -216,10 +216,9 @@ export class SpotlightDashboardComponent implements OnInit{
         this.weeklySelectedRegions = this.selectedRegions;
         this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
         this.filters.controls['region'].setValue(this.selectedRegion);
+        this.loadCharts();
       }
-      this.loadCharts();
     });
-    this.loadChartsWithQueryParams();
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
   }
@@ -291,16 +290,6 @@ export class SpotlightDashboardComponent implements OnInit{
           && this.weeklyFilters.get('date').value.isSame(moment().utc(), "day")
     }
     this.loadCharts();
-  }
-
-  loadChartsWithQueryParams() {
-    const obs = [];
-    const subaccountId = this.subaccountDetails.id;
-    if (this.selectedPeriod == "daily" && this.currentDate && this.selectedRegions) {
-      this.selectedDate = this.currentDate.clone().utc();
-      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(this.currentDate, this.selectedRegions, subaccountId));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(this.currentDate, this.currentDate, this.selectedRegions, subaccountId));
-    }
   }
 
   loadCharts(showLoading = true) {
@@ -497,15 +486,6 @@ export class SpotlightDashboardComponent implements OnInit{
       vqData.numericValues.fair, 
       vqData.numericValues.poor
     ];
-
-    let currentEndDate;
-    this.route.queryParams.subscribe((params: any) => {
-      if(params.date && this.weeklyFilters.get('date').value !== "") {
-        let parsedDate = params.date.split('T')[0];
-        currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
-        this.weeklyFilters.controls['date'].setValue(currentEndDate);
-      } 
-    });
      
     if(this.weeklySelectedRegions.length>0)
       this.reloadUserOptions(this.weeklySelectedRegions);

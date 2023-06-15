@@ -1,6 +1,6 @@
 // import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-// import { MapPocComponent } from './map-poc.component';
+// import { MapPocComponent } from './map.component';
 
 // describe('MapPocComponent', () => {
 //   let component: MapPocComponent;
