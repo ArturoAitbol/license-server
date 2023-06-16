@@ -19,7 +19,7 @@ import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute } from '@angular/router';
 import { Note } from "../../../model/note.model";
 import { NoteService } from "../../../services/notes.service";
 import { Constants } from 'src/app/helpers/constants';
@@ -86,6 +86,8 @@ export class SpotlightDashboardComponent implements OnInit{
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
   weeklyFilteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
+  notSelectedFilteredDailyRegions: {country: string, state: string, city: string, displayName: string}[];
+  notSelectedFilteredWeeklyRegions: {country: string, state: string, city: string, displayName: string}[];
   filteredUsers: Observable<string[]>;
   maxDate = moment().utc();
   minDate = moment.utc('0001-01-01');
@@ -96,6 +98,9 @@ export class SpotlightDashboardComponent implements OnInit{
 
   isloading = true;
 
+  currentDate: any;
+  selectedRegion: any;
+  locationFlag: boolean = false;
   startTime = 0;
   milliseconds = 0;
   seconds = 0;
@@ -159,38 +164,69 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   ngOnInit() {
+    let currentEndDate
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.disableFiltersWhileLoading = true;
-    this.initAutocompletes();
-    this.initWeeklyAutocompletes();
     this.route.queryParams.subscribe(params => {
       if (params?.noteId) {
-        this.noteService.getNoteList(this.subaccountService.getSelectedSubAccount().id, params.noteId).subscribe(res => {
+        this.noteService.getNoteList(this.subaccountDetails.id, params.noteId).subscribe(res => {
           this.note = res.notes[0];
           this.filters.get('date').setValue(moment.utc(this.note.openDate));
           this.weeklyFilters.get('date').setValue(moment.utc(this.note.openDate));
           this.isHistoricalView = true;
           this.loadCharts();
           this.showChildren = true;
-          this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
         });
       } else {
+        if(params.date && this.filters.get('date').value !== "") {
+          let nodeDate = params.date.split('T')[0]
+          this.currentDate = Utility.setHoursOfDate(moment.utc(nodeDate));
+          this.filters.controls['date'].setValue(moment.utc(nodeDate));
+        }
+        if(params.date && this.weeklyFilters.get('date').value !== "") {
+          let parsedDate = params.date.split('T')[0];
+          currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
+          this.weeklyFilters.controls['date'].setValue(currentEndDate);
+        } 
+        if(params.location && this.selectedRegions.length === 0) {
+          this.selectedRegions.push({
+            city:params.location.split(',')[0], 
+            state:params.location.split(', ')[1],
+            country:params.location.split(', ')[2],
+            displayName: params.location
+          });
+          if(params.toLocation){
+            this.selectedRegions.push({
+              city:params.toLocation.split(',')[0], 
+              state:params.toLocation.split(', ')[1],
+              country:params.toLocation.split(', ')[2],
+              displayName: params.toLocation
+            })
+          }
+          this.locationFlag = true;
+          this.weeklySelectedRegions = this.selectedRegions;
+          this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
+          this.filters.controls['region'].setValue(this.selectedRegion);
+        }
         this.loadCharts();
         this.showChildren = true;
         this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
         this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
-            .subscribe(() => {
-              this.disableFiltersWhileLoading = false;
-              this.autoRefresh = true;
-              this.reloadCharts(false);
-            });
+        .subscribe(() => {
+          this.disableFiltersWhileLoading = false;
+          this.autoRefresh = true;
+          this.reloadCharts(false);
+        });
       }
     });
+    this.initAutocompletes();
+    this.initWeeklyAutocompletes();
   }
-
+  
   getStartWeekDate(): Moment{
     return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
   }
+  
   getEndWeekDate(): Moment{
     return this.isHistoricalView ? this.weeklyFilters.get('date').value : Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
   }
@@ -205,15 +241,26 @@ export class SpotlightDashboardComponent implements OnInit{
     if (index >= 0) {
       regions.splice(index, 1);
     }
+    this.initAutocompletes();
+    this.initWeeklyAutocompletes();
+  }
+
+  removeRegionFromArray(displayName: string, array: {country: string, state: string, city: string, displayName: string}[]){
+    const index = array.map(e => e.displayName).indexOf(displayName);
+    if (index >= 0) {
+      array.splice(index, 1);
+    }
   }
 
   selected(): void {
     if(this.selectedPeriod==='daily'){
-      this.selectedRegions.push(this.filters.get('region').value);
+      const region = this.filters.get('region').value;
+      this.selectedRegions.push(region);
       this.filters.get('region').setValue("");
       this.initAutocompletes();
     }else{
-      this.weeklySelectedRegions.push(this.weeklyFilters.get('region').value);
+      const region = this.weeklyFilters.get('region').value;
+      this.weeklySelectedRegions.push(region);
       this.weeklyFilters.get('region').setValue("");
       this.initWeeklyAutocompletes();
     }
@@ -221,10 +268,14 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   clearRegionsFilter(){
-    if(this.selectedPeriod==='daily')
-      this.selectedRegions=[];
-    else
-      this.weeklySelectedRegions=[];
+    if(this.selectedPeriod==='daily'){
+      this.selectedRegions = [];
+      this.initAutocompletes();
+    }
+    else {
+      this.weeklySelectedRegions = [];
+      this.initWeeklyAutocompletes();
+    }
   }
 
   chartsStatus(chartCompleted:boolean){
@@ -263,11 +314,12 @@ export class SpotlightDashboardComponent implements OnInit{
     this.calls.failed = 0;
     this.isloading = showLoading && true;
     const startTime = performance.now();
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const subaccountId = this.subaccountDetails.id;
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
       const selectedDate = this.isHistoricalView ? this.filters.get('date').value : Utility.setHoursOfDate(this.filters.get('date').value);
+      this.selectedDate = selectedDate.clone().utc();
       this.selectedDate = selectedDate.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
@@ -297,7 +349,7 @@ export class SpotlightDashboardComponent implements OnInit{
       this.chartsStatus(true);
     });
   }
-  
+
 
   private processDailyData (res: any) {
     const executionTime = this.formatExecutionTime(this.selectedDate,this.selectedDate);
@@ -355,7 +407,7 @@ export class SpotlightDashboardComponent implements OnInit{
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [Number((this.calls.failed / this.calls.total * 100 || 0).toFixed(2))];
 
-    if(this.selectedRegions.length>0)
+    if(this.selectedRegions.length > 0)
       this.reloadUserOptions(this.selectedRegions);
     else
       this.reloadFilterOptions();
@@ -449,7 +501,7 @@ export class SpotlightDashboardComponent implements OnInit{
       vqData.numericValues.fair, 
       vqData.numericValues.poor
     ];
-
+     
     if(this.weeklySelectedRegions.length>0)
       this.reloadUserOptions(this.weeklySelectedRegions);
     else
@@ -479,7 +531,7 @@ export class SpotlightDashboardComponent implements OnInit{
     let regions = ""
     if(this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
     window.open(url);
   }
 
@@ -498,6 +550,12 @@ export class SpotlightDashboardComponent implements OnInit{
         startWith(''),
         map(value => this._filterRegion(value || '')),
     );
+    this.filteredRegions.subscribe((regions) => {
+      this.notSelectedFilteredDailyRegions = regions;
+      this.selectedRegions.forEach(region => {
+        this.removeRegionFromArray(region.displayName, this.notSelectedFilteredDailyRegions);
+      });
+    });
   }
 
   private initWeeklyAutocompletes() {
@@ -505,6 +563,10 @@ export class SpotlightDashboardComponent implements OnInit{
         startWith(''),
         map(value => this._filterRegion(value || '')),
     );
+    this.weeklyFilteredRegions.subscribe((regions) => {this.notSelectedFilteredWeeklyRegions = regions;});
+    this.weeklySelectedRegions.forEach(region => {
+      this.removeRegionFromArray(region.displayName, this.notSelectedFilteredWeeklyRegions);
+    });
   }
 
   private reloadFilterOptions() {
@@ -513,7 +575,7 @@ export class SpotlightDashboardComponent implements OnInit{
       this.filters.disable();
       this.networkQuality.filters.disable();
     } 
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
       startDate = endDate = this.selectedDate;
@@ -554,13 +616,16 @@ export class SpotlightDashboardComponent implements OnInit{
       this.weeklyFilters.disable();
       this.networkQuality.filters.disable();
     }
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
       startDate = endDate = this.selectedDate;
     }else{
       startDate = this.selectedRange.start;
       endDate = this.selectedRange.end;
+    }
+    if(this.locationFlag) {
+      this.reloadFilterOptions();
     }
     this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate,"users",regions ? regions : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);

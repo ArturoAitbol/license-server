@@ -68,6 +68,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 isPreview: false
             },
             {
+                name: 'Map',
+                path: 'map',
+                active: false,
+                materialIcon: 'public',
+                baseUrl: '/spotlight/',
+                isPreview: false
+            },
+            {
                 name: 'Notes',
                 path: 'notes',
                 active: false,
@@ -167,7 +175,7 @@ export class AppComponent implements OnInit, OnDestroy {
     displayedSideBarItems: any[] = [
         {
             name: 'Dashboard',
-            path: 'report-dashboards',
+            path: 'visualization',
             active: true,
             materialIcon: 'dashboard'
         }
@@ -177,7 +185,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
-    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/report-dashboards';
+    readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map';
     readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = Constants.POWERBI_DASHBOARD_PATH;
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = Constants.STAKEHOLDERS_VIEW_PATH;
@@ -289,10 +297,10 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.hideToolbar = true;
                         this.enableSidebar();
                         break;
-                    case this.CTAAS_DASHBOARD_ROUTE_PATH:
                     case this.CTAAS_POWERBI_REPORT_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
+                    case this.CTAAS_MAP_ROUTE_PATH:
                     case this.CTAAS_SETUP_PATH:
                     case this.SPOTLIGHT_NOTES_PATH:
                     case this.SPOTLIGHT_TEST_REPORTS:
@@ -393,11 +401,16 @@ export class AppComponent implements OnInit, OnDestroy {
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
             let featureToggleProtectedItems = [
                 {
+                    toggleName:"mapFeature",
+                    subaccountId:this.subaccountId,
+                    item:"map"
+                }, 
+                {
                     toggleName:"powerbiFeature",
                     subaccountId:this.subaccountId,
                     item:"visualization"
                 }
-            ]
+            ];
 
             let disabledItems:any[]=[];
             featureToggleProtectedItems.forEach(featureToggle => {
