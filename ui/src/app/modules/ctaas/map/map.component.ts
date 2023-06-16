@@ -9,7 +9,7 @@ import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Constants } from 'src/app/helpers/constants';
-import { Subject, interval } from 'rxjs';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
