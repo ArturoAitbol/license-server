@@ -160,7 +160,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertTrue(jsonBody.has("subaccounts"));
 
         JSONArray subaccounts = jsonBody.getJSONArray("subaccounts");
-        assertEquals(3, subaccounts.length());
+        assertEquals(4, subaccounts.length());
 
         String subaccountId;
         List<String> expectedSubaccounts = Arrays.asList("cebe6542-2032-4398-882e-ffb44ade169d",
