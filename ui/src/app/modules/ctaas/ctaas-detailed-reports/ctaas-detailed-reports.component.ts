@@ -500,7 +500,9 @@ export class DetailedReportsCompoment implements OnInit {
         if (numA < numB) return this.sortAscending ? -1 : 1;
         if (numA > numB) return this.sortAscending ? 1 : -1;
         return 0;
-      } else {
+      }else {
+        if (a[column] === undefined || a[column] === null) return this.sortAscending ? 1 : -1;
+        if (b[column] === undefined || b[column] === null) return this.sortAscending ? -1 : 1;
         if (a[column] < b[column]) return this.sortAscending ? -1 : 1;
         if (a[column] > b[column]) return this.sortAscending ? 1 : -1;
         return 0;
