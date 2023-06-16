@@ -1,7 +1,7 @@
 import { ChartOptions } from "../../helpers/chart-options-type";
 
 const defaultGaugeChartOptions: Partial<ChartOptions> = {
-    series: [100],
+    series: [],
     chart: {
         type: "radialBar",
         offsetY: -20,
@@ -76,9 +76,14 @@ const defaultGaugeChartOptions: Partial<ChartOptions> = {
     tooltip: {
         enabled: true,
         fillSeriesColor: false,
+        y:{
+            formatter(val: number, opts?: any): string {
+                return val + "%";
+            },
+        },
     },
     colors: ['#83C96B'],
-    labels: []
+    labels: ['Passed']
 };
 
 export { defaultGaugeChartOptions }

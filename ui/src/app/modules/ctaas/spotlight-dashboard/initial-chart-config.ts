@@ -425,8 +425,12 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
     colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
     dataLabels: {
         enabled: true,
-        formatter(val: string | number | number[], opts?: any): string | number {
-            return val + '%'
+        textAnchor: "start",
+        style: {
+            colors: ["#424242"]
+        },
+        formatter(val: number, opts?: any): string | number {
+            return val.toFixed(2) + '%'
         },
     },
     xAxis: {
@@ -545,6 +549,11 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
     tooltip: {
         enabled: true,
         fillSeriesColor: false,
+        y:{
+            formatter(val: number, opts?: any): string {
+                return val + "%";
+            },
+        },
     },
     colors: ['#bb2426'],
 };
@@ -622,6 +631,9 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
     legend: {
         position: 'top',
         horizontalAlign: 'right',
+    },
+    tooltip: {
+      enabled: true,
     }
 };
 

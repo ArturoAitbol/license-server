@@ -11,7 +11,7 @@ import {
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
 import moment, { Moment } from "moment";
-import { forkJoin, Observable, interval } from "rxjs";
+import { forkJoin, Observable, interval, Subscription } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
 import { ReportType } from "../../../helpers/report-type";
@@ -19,9 +19,13 @@ import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute } from '@angular/router';
 import { Note } from "../../../model/note.model";
 import { NoteService } from "../../../services/notes.service";
+import { Constants } from 'src/app/helpers/constants';
+import { AddNotesComponent } from "../ctaas-notes/add-notes/add-notes.component";
+import { MatDialog } from "@angular/material/dialog";
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -48,6 +52,7 @@ export class SpotlightDashboardComponent implements OnInit{
   // Weekly VQ variables
   weeklyVQ = {timePeriod: '', numberCalls: 0, numberStreams: 0, p2p: 0, onNet: 0, offNet: 0};
   weeklyVQChartOptions: Partial<ChartOptions>;
+  weeklyVqNumericValues = null;
 
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
@@ -93,6 +98,9 @@ export class SpotlightDashboardComponent implements OnInit{
 
   isloading = true;
 
+  currentDate: any;
+  selectedRegion: any;
+  locationFlag: boolean = false;
   startTime = 0;
   milliseconds = 0;
   seconds = 0;
@@ -103,10 +111,15 @@ export class SpotlightDashboardComponent implements OnInit{
   chartsLoaded = 0;
   selectedRegions = [];
   weeklySelectedRegions = [];
-
+  refreshIntervalSubscription: Subscription;
+  autoRefresh = false;
+  disableFiltersWhileLoading = true;
+  showChildren = false;
+  private subaccountDetails: any;
   // Historical view variables
   isHistoricalView = false;
   note: Note;
+  showNewNoteBtn = false;
 
   @ViewChild('regionInput') regionInput: ElementRef<HTMLInputElement>;
 
@@ -116,37 +129,106 @@ export class SpotlightDashboardComponent implements OnInit{
               private spotlightChartsService: SpotlightChartsService,
               private noteService: NoteService,
               private route: ActivatedRoute,
-              private fb: FormBuilder) {
+              private ftService: FeatureToggleService,
+              private fb: FormBuilder,
+              public dialog: MatDialog) {
     this.vqChartOptions = defaultVqChartOptions;
+    this.vqChartOptions.tooltip.custom = ({series, seriesIndex, dataPointIndex, w}) => {
+      return `
+      <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
+      <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
+        align-items: flex-start;">
+      <div>Calls Streams: <b>${ this.vq.numericValues[dataPointIndex] }</b></div>
+      </div>
+      `;
+    };
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
     this.weeklyCallsStatusChartOptions = defaultWeeklyCallsStatusChartOptions;
     this.weeklyVQChartOptions = defaultWeeklyVQChartOptions;
+    this.weeklyVQChartOptions.tooltip.custom = ({series, seriesIndex, dataPointIndex, w}) => {
+      return `
+      <div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
+      <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
+        align-items: flex-start;">
+      <div>Category: <b>${ w.config.series[seriesIndex].name }</b></div>
+      <div>Calls Streams: <b>${ this.weeklyVqNumericValues[seriesIndex][dataPointIndex] }</b></div>
+      <div>Percentage: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
+      </div>
+      `;
+    };
     this.setWeeklyRange();
   }
 
   ngOnInit() {
-    this.initAutocompletes();
-    this.initWeeklyAutocompletes();
+    let currentEndDate
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
       if (params?.noteId) {
-        this.noteService.getNoteList(this.subaccountService.getSelectedSubAccount().id, params.noteId).subscribe(res => {
+        this.noteService.getNoteList(this.subaccountDetails.id, params.noteId).subscribe(res => {
           this.note = res.notes[0];
-          this.filters.get('date').setValue(moment(this.note.openDate).utc());
-          this.weeklyFilters.get('date').setValue(moment(this.note.openDate).utc());
+          this.filters.get('date').setValue(moment.utc(this.note.openDate));
+          this.weeklyFilters.get('date').setValue(moment.utc(this.note.openDate));
           this.isHistoricalView = true;
           this.loadCharts();
+          this.showChildren = true;
         });
-      } else this.loadCharts();
+      } else {
+        if(params.date && this.filters.get('date').value !== "") {
+          let nodeDate = params.date.split('T')[0]
+          this.currentDate = Utility.setHoursOfDate(moment.utc(nodeDate));
+          this.filters.controls['date'].setValue(moment.utc(nodeDate));
+        }
+        if(params.date && this.weeklyFilters.get('date').value !== "") {
+          let parsedDate = params.date.split('T')[0];
+          currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
+          this.weeklyFilters.controls['date'].setValue(currentEndDate);
+        } 
+        if(params.location && this.selectedRegions.length === 0) {
+          this.selectedRegions.push({
+            city:params.location.split(',')[0], 
+            state:params.location.split(', ')[1],
+            country:params.location.split(', ')[2],
+            displayName: params.location
+          });
+          if(params.toLocation){
+            this.selectedRegions.push({
+              city:params.toLocation.split(',')[0], 
+              state:params.toLocation.split(', ')[1],
+              country:params.toLocation.split(', ')[2],
+              displayName: params.toLocation
+            })
+          }
+          this.locationFlag = true;
+          this.weeklySelectedRegions = this.selectedRegions;
+          this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
+          this.filters.controls['region'].setValue(this.selectedRegion);
+        }
+        this.loadCharts();
+        this.showChildren = true;
+        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
+        this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
+        .subscribe(() => {
+          this.disableFiltersWhileLoading = false;
+          this.autoRefresh = true;
+          this.reloadCharts(false);
+        });
+      }
     });
+    this.initAutocompletes();
+    this.initWeeklyAutocompletes();
   }
-
+  
   getStartWeekDate(): Moment{
     return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
   }
+  
   getEndWeekDate(): Moment{
-    return Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
+    return this.isHistoricalView ? this.weeklyFilters.get('date').value : Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
   }
 
   setWeeklyRange(){
@@ -202,28 +284,42 @@ export class SpotlightDashboardComponent implements OnInit{
     if(this.chartsLoaded==2){
       this.stopTimer();
       this.chartsLoaded = 0;
+      this.autoRefresh = false;
     }
   }
 
-  reloadCharts(){
+  reloadCharts(showLoading = true){
+    this.disableFiltersWhileLoading = showLoading;
     if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
       this.isHistoricalView = false;
-    this.loadCharts();
-    this.networkQuality.loadCharts();
+    this.loadCharts(showLoading);
+    this.networkQuality.loadCharts({showLoading:showLoading});
   }
 
-  loadCharts() {
+  selectedPeriodChange() {
+    if (this.selectedPeriod == 'daily') {
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView
+          && this.filters.get('date').value.isSame(moment().utc(), "day")
+    } else {
+      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView
+          && this.weeklyFilters.get('date').value.isSame(moment().utc(), "day")
+    }
+    this.loadCharts();
+  }
+
+  loadCharts(showLoading = true) {
     this.startTimer();
     this.chartsLoaded = 0;
     this.calls.total = 0;
     this.calls.failed = 0;
-    this.isloading = true;
+    this.isloading = showLoading && true;
     const startTime = performance.now();
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const subaccountId = this.subaccountDetails.id;
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
-      const selectedDate = Utility.setHoursOfDate(this.filters.get('date').value);
+      const selectedDate = this.isHistoricalView ? this.filters.get('date').value : Utility.setHoursOfDate(this.filters.get('date').value);
+      this.selectedDate = selectedDate.clone().utc();
       this.selectedDate = selectedDate.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
@@ -253,7 +349,7 @@ export class SpotlightDashboardComponent implements OnInit{
       this.chartsStatus(true);
     });
   }
-  
+
 
   private processDailyData (res: any) {
     const executionTime = this.formatExecutionTime(this.selectedDate,this.selectedDate);
@@ -311,7 +407,7 @@ export class SpotlightDashboardComponent implements OnInit{
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [Number((this.calls.failed / this.calls.total * 100 || 0).toFixed(2))];
 
-    if(this.selectedRegions.length>0)
+    if(this.selectedRegions.length > 0)
       this.reloadUserOptions(this.selectedRegions);
     else
       this.reloadFilterOptions();
@@ -320,7 +416,7 @@ export class SpotlightDashboardComponent implements OnInit{
   private processWeeklyData (res: any) {
     // Weekly Feature Functionality
     const weeklyFeatureFunctionalityData = res[0];
-    this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
+    this.weeklyFeatureFunctionalityChartOptions.xAxis = {...this.weeklyFeatureFunctionalityChartOptions.xAxis ,categories:weeklyFeatureFunctionalityData.categories};
     this.weeklyFeatureFunctionalityChartOptions.series = [
       {
         name: "Success %",
@@ -341,7 +437,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
     // Weekly Calling Reliability
     const weeklyCallingReliabilityData = res[1];
-    this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyCallingReliabilityData.categories;
+    this.weeklyCallingReliabilityChartOptions.xAxis = {...this.weeklyCallingReliabilityChartOptions.xAxis,categories:weeklyCallingReliabilityData.categories};
     this.weeklyCallingReliabilityChartOptions.series = [
       {
         name: "Success %",
@@ -392,21 +488,20 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyVQ.p2p = POLQA.p2p;
     this.weeklyVQ.onNet = POLQA.onNet;
     this.weeklyVQ.offNet = POLQA.offNet;
-    this.weeklyVQChartOptions.xAxis.categories = vqData.categories;
-    this.weeklyVQChartOptions.series = [ {
-      name: 'Excellent',
-      data: vqData.percentages.excellent,
-    }, {
-      name: 'Good',
-      data: vqData.percentages.good,
-    }, {
-      name: 'Fair',
-      data: vqData.percentages.fair,
-    }, {
-      name: 'Bad',
-      data: vqData.percentages.bad,
-    } ];
-
+    this.weeklyVQChartOptions.xAxis = {...this.weeklyVQChartOptions.xAxis,categories:vqData.categories};
+    this.weeklyVQChartOptions.series = [
+      vqData.percentages.excellent,
+      vqData.percentages.good,
+      vqData.percentages.fair,
+      vqData.percentages.poor
+    ];
+    this.weeklyVqNumericValues = [
+      vqData.numericValues.excellent, 
+      vqData.numericValues.good, 
+      vqData.numericValues.fair, 
+      vqData.numericValues.poor
+    ];
+     
     if(this.weeklySelectedRegions.length>0)
       this.reloadUserOptions(this.weeklySelectedRegions);
     else
@@ -423,16 +518,20 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
-  navigateToDetailedTable(reportType?: string) {
-    let regions = ""
+  navigateToDetailedTable(reportType?: string, status?: string) {
     const startDate = this.selectedDate.clone().utc().startOf('day');
     const endDate = this.selectedDate.clone().utc();
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
-    const reportFilter = reportType? "type=" + reportType : "status=FAILED";
+    let reportFilter = "";
+    if (reportType && reportType != "")
+      reportFilter += "type=" + reportType;
+    if (status && status != "")
+      reportFilter += "status=" + status;
+    let regions = ""
     if(this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
     window.open(url);
   }
 
@@ -471,10 +570,12 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   private reloadFilterOptions() {
-    this.weeklyFilters.disable();
-    this.filters.disable();
-    this.networkQuality.filters.disable();
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    if(this.disableFiltersWhileLoading){
+      this.weeklyFilters.disable();
+      this.filters.disable();
+      this.networkQuality.filters.disable();
+    } 
+    const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
       startDate = endDate = this.selectedDate;
@@ -510,16 +611,21 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   private reloadUserOptions(regions?: any) {
-    this.filters.disable();
-    this.weeklyFilters.disable();
-    this.networkQuality.filters.disable();
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    if(this.disableFiltersWhileLoading){
+      this.filters.disable();
+      this.weeklyFilters.disable();
+      this.networkQuality.filters.disable();
+    }
+    const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
       startDate = endDate = this.selectedDate;
     }else{
       startDate = this.selectedRange.start;
       endDate = this.selectedRange.end;
+    }
+    if(this.locationFlag) {
+      this.reloadFilterOptions();
     }
     this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate,"users",regions ? regions : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);
@@ -556,5 +662,14 @@ export class SpotlightDashboardComponent implements OnInit{
 
   getSubaccountId(): string {
     return this.subaccountService.getSelectedSubAccount().id;
+  }
+
+  addNote() {
+    const dialogRef = this.dialog.open(AddNotesComponent, {
+      width: '85vw',
+      maxHeight: '90vh',
+      maxWidth: '30vw',
+      disableClose: false
+    });
   }
 }

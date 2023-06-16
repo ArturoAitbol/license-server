@@ -25,6 +25,7 @@ import java.util.Optional;
 import static com.function.auth.RoleAuthHandler.*;
 import static com.function.auth.Roles.FULL_ADMIN;
 import static com.function.auth.Roles.SUBACCOUNT_ADMIN;
+import static com.function.auth.Roles.CONFIG_TESTER;
 
 public class TekvLSModifyCtaasSetupById {
     /**
@@ -134,7 +135,7 @@ public class TekvLSModifyCtaasSetupById {
                 String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN.getValue()))
                         ? String.valueOf(jobj.getBoolean(param.jsonAttrib))
                         : jobj.getString(param.jsonAttrib);
-                if (param == OPTIONAL_PARAMS.MAINTENANCE && !currentRole.equals(FULL_ADMIN)) {
+                if (param == OPTIONAL_PARAMS.MAINTENANCE && !currentRole.equals(FULL_ADMIN) && !currentRole.equals(CONFIG_TESTER)) {
                     // Skip maintenance update if the user doesn't have the FULL_ADMIN role
                     continue;
                 }

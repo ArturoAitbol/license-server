@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import javax.net.ssl.*;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -76,12 +77,10 @@ public class TAPClient {
     static public JSONObject getDetailedReport(final String tapURL, String token, String types, String startDate, 
         String endDate, String status, String regions, String users, ExecutionContext context) throws Exception {
         String url = tapURL + "/" + Constants.SPOTLIGHT_API_PATH;
-        if (!types.contains(",") && status.isEmpty())
-            url += "/" + types;
         url = String.format("%s/report?startDate=%s&endDate=%s", url, startDate, endDate);
         if (!types.isEmpty()) url += "&types=" + types;
         if (!status.isEmpty()) url += "&status=" + status;
-        if (!regions.isEmpty()) url += "&regions=" + regions;
+        if (!regions.isEmpty()) url += "&regions=" + URLEncoder.encode(regions, StandardCharsets.UTF_8.toString());
         if (!users.isEmpty()) url += "&users=" + users;
         context.getLogger().info("TAP detailed report endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
@@ -91,7 +90,7 @@ public class TAPClient {
         JSONObject response = HttpClient.get(url, headers);
         if (response != null && (response.has("error"))) {
             context.getLogger().severe("Error while retrieving detailed test report from Automation Platform: " + response);
-            throw new Exception("Error retrieving " + types + " detailed report from Automation Platform");
+            throw new Exception("Error retrieving " + types + " detailed report from Automation Platform: " + response);
         }
         context.getLogger().info("Received detailed test report response from Automation Platform");
         return response;
@@ -123,7 +122,7 @@ public class TAPClient {
         JSONObject response = HttpClient.get(url, headers);
         if (response.has("error")) {
             context.getLogger().severe("Error while retrieving data query from Automation Platform: " + response);
-            throw new SQLException("Error retrieving data query from Automation Platform");
+            throw new SQLException("Error retrieving data query from Automation Platform: " + response);
         }
         context.getLogger().info("Data were retrieved from the Automation Platform successfully");
         return response.getJSONArray("resultSet");

@@ -68,6 +68,7 @@ public enum Resource {
         GET_ALL_NOTES, //TeTekvLSGetAllNotes
         GET_CONSUMPTION_MATRIX, //TekvLSGetConsumptionMatrix
         GET_CHARTS,//PermissionForAllChartAPIs
+        GET_MAP,//TekvLSGetMapCoordinates
 
         //UPDATE
         MODIFY_CUSTOMER,//TekvLSModifyCustomerById

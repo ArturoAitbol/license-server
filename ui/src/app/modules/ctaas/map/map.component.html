@@ -1,0 +1,116 @@
+<!-- Load Leaflet from CDN-->
+<app-banner [stylesflag]="'notes'" *lcCheckAccessFor="'showBanner'"></app-banner>
+<mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
+<div style="padding-top: 2%;">
+      <mat-button-toggle-group  aria-label="Font Style"
+        (change)="onChangeButtonToggle()">
+        <mat-button-toggle [value]="LINKED">{{LINKED | titlecase}}</mat-button-toggle>
+        <mat-button-toggle [value]="HEAT">{{HEAT | titlecase}}</mat-button-toggle>
+      </mat-button-toggle-group>
+</div>
+<div [formGroup]="filterForm">
+  <div class="date-picker-form justify-content-center mt-2 mb-2">
+    <div class="container-reverse">
+        <div class="date-field">
+          <!-- <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+            <mat-label id="date-label">Start Date Range Filter</mat-label>
+            <mat-date-range-input #rangeFilter [disabled]="filterForm.disabled" [max]="maxDate" [rangePicker]="picker">
+                <input matStartDate formControlName="startDateFilterControl" placeholder="Start date">
+                <input matEndDate formControlName="endDateFilterControl" placeholder="End date">
+            </mat-date-range-input>
+            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+            <button *ngIf="filterForm.get('startDateFilterControl').value || filterForm.get('endDateFilterControl').value"
+                matSuffix mat-icon-button aria-label="Clear"
+                (click)="filterForm.get('startDateFilterControl').setValue(''); filterForm.get('endDateFilterControl').setValue(''); 
+                setCustomerOverviewFilters('startDateFilter',''); setCustomerOverviewFilters('endDateFilter','')"> 
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field> -->
+        <mat-form-field  style="margin-bottom: -1.25em" class="col" appearance="outline">
+          <mat-label>Date</mat-label>
+          <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="startDateFilterControl">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+          <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field> 
+        </div>
+    </div>
+    <div class="align-items-start apply-button" style="padding-left: 3%;">
+        <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
+                id="add-customer-button" (click)="dateFilter()" [disabled]="!filterForm.valid">Apply</button>
+    </div>
+</div>
+  <!-- <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+    <mat-label id="date-label">Select date range</mat-label>
+    <mat-date-range-input #rangeFilter [disabled]="filterForm.disabled" [rangePicker]="picker">
+        <input matStartDate formControlName="startDateFilterControl" placeholder="Start date"  >
+        <input matEndDate formControlName="endDateFilterControl" placeholder="End date"  >
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+    <button *ngIf="filterForm.get('startDateFilterControl').value || filterForm.get('endDateFilterControl').value"
+        matSuffix mat-icon-button aria-label="Clear"> 
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-form-field> -->
+  <!-- <mat-form-field  style="margin-bottom: -1.25em" class="col" appearance="outline">
+    <mat-label>Date</mat-label>
+    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="startDateFilterControl">
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker #dp></mat-datepicker>
+  </mat-form-field> -->
+  <!-- <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+    <mat-label id="from-region-label">From region</mat-label>
+    <mat-select formControlName="fromRegionFilterControl" >
+        <mat-option>None</mat-option>
+        <mat-option *ngFor="let fromRegion of fromRegions" [value]="fromRegion">
+            {{fromRegion}}
+        </mat-option>
+    </mat-select>
+    <button *ngIf="filterForm.get('fromRegionFilterControl').value" matSuffix mat-icon-button
+            aria-label="Clear">
+        <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+  <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+      <mat-label id="to-region-label">To region</mat-label>
+      <mat-select formControlName="toRegionFilterControl" >
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let toRegion of toRegions" [value]="toRegion">
+              {{toRegion}}
+          </mat-option>
+      </mat-select>
+      <button *ngIf="filterForm.get('toRegionFilterControl').value" matSuffix mat-icon-button
+              aria-label="Clear">
+          <mat-icon>close</mat-icon>
+      </button>
+  </mat-form-field> -->
+</div>
+<div>
+  <div class="row justify-content-center" style="padding-top: 2%;">
+    <h1 class="text-center">Daily Report</h1>
+  </div> 
+  <div class="legend" >
+    <div class="legend-item">
+      <div class="color-box good" matTooltip="Number of failed calls < 1 and Voice Quality > 3."></div>
+      <span class="legend-label">Good</span>
+    </div>
+    <div class="legend-item">
+      <div class="color-box fair" matTooltip="Number of failed calls >= 1 and < 5, or Voice Quality >= 2 and <= 3."></div>
+      <span class="legend-label">Fair</span>
+    </div>
+    <div class="legend-item">
+      <div class="color-box bad" matTooltip="Number of failed calls >= 5 or Voice Quality < 2."></div>
+      <span class="legend-label">Bad</span>
+    </div>
+  </div>
+  <div id="map">
+    <div class="loading-shade" *ngIf="isLoadingResults">
+      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+    </div>
+  </div>
+</div>

@@ -283,3 +283,35 @@ mat-form-field {
 #note-author{
     font-weight: bolder;
 }
+
+.chart-axis-label {
+    font-family: Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    dominant-baseline: auto;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.tooltip-title {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+.tooltip-body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    display: flex !important;
+}
+
+.new-note-container {
+    position: fixed;
+    top: 180px;
+    right: 40px;
+    z-index: 999;
+}
+
+.new-note-btn {
+    background-color: #2d5186;
+    color: white;
+}
+
