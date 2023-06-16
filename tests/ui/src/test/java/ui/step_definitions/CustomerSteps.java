@@ -13,9 +13,7 @@ import org.aeonbits.owner.ConfigFactory;
 import ui.core.DriverManager;
 import ui.pages.*;
 import ui.pages.customer.*;
-import ui.pages.spotlight.Dashboard;
 import ui.pages.subaccounts.SubaccountForm;
-import ui.pages.subaccounts.SubaccountRow;
 import ui.utils.Environment;
 
 import java.util.Map;
@@ -32,7 +30,6 @@ public class CustomerSteps {
     private String timeStamp = DriverManager.getInstance().getTimeStamp();
     private String customerAdminEmail, subAdminEmail, adminEmail="";
     private SubaccountForm subaccountForm;
-    private SubaccountRow subaccountRow;
 
 
     public CustomerSteps(Customers customers) {

@@ -14,7 +14,7 @@ import moment, { Moment } from "moment";
 import { forkJoin, Observable, interval, Subscription } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
-import { ReportType } from "../../../helpers/report-type";
+import { ReportName, ReportType } from "../../../helpers/report-type";
 import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
@@ -120,6 +120,9 @@ export class SpotlightDashboardComponent implements OnInit{
   isHistoricalView = false;
   note: Note;
   showNewNoteBtn = false;
+
+  readonly ReportType = ReportType;
+  readonly callingReliabilityTestPlans = ReportName.TAP_CALLING_RELIABILITY + "," + ReportName.TAP_VQ;
 
   @ViewChild('regionInput') regionInput: ElementRef<HTMLInputElement>;
 
@@ -367,7 +370,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.callingReliability.period = executionTime;
     
     this.calls.total += this.callingReliability.total;
-    this.calls.failed += dailyCallingReliabiltyRes.callsByStatus.FAILED;
+    this.calls.failed += failedCalls;
     this.calls.p2pCalls += this.callingReliability.p2p;
     this.calls.onNetCalls += this.callingReliability.onNet;
     this.calls.offNetCalls += this.callingReliability.offNet;
@@ -519,15 +522,24 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   navigateToDetailedTable(reportType?: string, status?: string) {
-    const startDate = this.selectedDate.clone().utc().startOf('day');
-    const endDate = this.selectedDate.clone().utc();
-    const startTime = Utility.parseReportDate(startDate);
-    const endTime = Utility.parseReportDate(endDate);
     let reportFilter = "";
     if (reportType && reportType != "")
       reportFilter += "type=" + reportType;
     if (status && status != "")
       reportFilter += "status=" + status;
+    this.goToDetailedReportView(reportFilter);
+  }
+
+  navigateToPOLQACallsDetailedTable() {
+    let reportFilter = "polqaCalls=true";
+    this.goToDetailedReportView(reportFilter);
+  }
+
+  private goToDetailedReportView(reportFilter: string) {
+    const startDate = this.selectedDate.clone().utc().startOf('day');
+    const endDate = this.selectedDate.clone().utc();
+    const startTime = Utility.parseReportDate(startDate);
+    const endTime = Utility.parseReportDate(endDate);
     let regions = ""
     if(this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
@@ -636,9 +648,6 @@ export class SpotlightDashboardComponent implements OnInit{
       this.networkQuality.filters.enable();
     })
   }
-
-  readonly ReportType = ReportType;
-
 
   startTimer() {
     if(!this.timerIsRunning){
