@@ -25,6 +25,7 @@ export class DetailedReportsCompoment implements OnInit {
   endDateStr: string = '';
   regionsStr: string = '';
   usersStr:string = '';
+  polqaCalls: boolean = false;
   loggedInUserRoles: string[] = [];
   private subaccountDetails: any;
   hasDashboardDetails: boolean = false;
@@ -79,6 +80,7 @@ export class DetailedReportsCompoment implements OnInit {
       if (params.status) this.status = params.status;
       if (params.regions && params.regions != '') this.regionsStr = params.regions;
       if (params.users && params.users != '') this.usersStr = params.users;
+      if (params.polqaCalls && params.polqaCalls != '') this.polqaCalls = true;
       this.startDateStr = params.start;
       this.endDateStr = params.end;
       this.parseTitle();
@@ -139,7 +141,7 @@ export class DetailedReportsCompoment implements OnInit {
     this.isLoadingResults = true;
     const PARSED_REPORT_TYPE = this.parseTestPlanNames();
     this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status,
-      this.regionsStr, this.usersStr).subscribe((res: any) => {
+      this.regionsStr, this.usersStr, this.polqaCalls).subscribe((res: any) => {
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         if (res.response.report && res.response.reportType) {
