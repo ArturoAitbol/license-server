@@ -124,7 +124,7 @@ public class TekvLSGetNetworkQualityChart {
 			}
 		}
 
-		String query = "SELECT TO_CHAR(ms.last_modified_date,'" + groupByClause + "') as date_hour, " + statistics +
+		String query = "SELECT TO_CHAR(sr.startdate,'" + groupByClause + "') as date_hour, " + statistics +
 				"FROM media_stats ms " +
 				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
 				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
@@ -132,19 +132,17 @@ public class TekvLSGetNetworkQualityChart {
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
-				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing' or sr.failingerrortype = 'Teams Client' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-				"AND tp.name in ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND ms.parameter_name IN ('" + metricsClause + "')";
+				"WHERE sr.finalResult = true AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
+				" AND tp.name in ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND ms.parameter_name IN ('" + metricsClause + "')";
 
 		if(!callsFilter.isEmpty()){
 			String filteredCalls = "SELECT sr.id FROM sub_result sr " +
 					"JOIN test_result_resource trr ON trr.subresultid = sr.id " +
 					"JOIN media_stats ms ON ms.testresultresourceid = trr.id " +
 					"JOIN test_result tr ON sr.testresultid = tr.id " +
-					"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
-					"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing' or sr.failingerrortype = 'Teams Client' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-					"AND sr.startdate >= CAST('"+startDate+"' AS timestamp) AND sr.startdate <= CAST('"+endDate+"' AS timestamp) " +
-					"AND ms.parameter_name = CAST('"+callsFilter+"' AS VARCHAR) GROUP BY sr.id";
+					"WHERE sr.finalResult = true AND " + Utils.CONSIDERED_STATUS_SUBQUERY + "  AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
+					" AND sr.startdate >= CAST('"+startDate+"' AS timestamp) AND sr.startdate <= CAST('"+endDate+"' AS timestamp)" +
+					" AND ms.parameter_name = CAST('"+callsFilter+"' AS VARCHAR) GROUP BY sr.id";
 			query+= " AND sr.id IN (" + filteredCalls + ")";
 		}
 

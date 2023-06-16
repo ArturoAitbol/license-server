@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 public class Utils {
     public static String DEFAULT_TEST_PLAN_NAMES = "LTS','STS','POLQA"; // Feature Functionality, Calling Reliability and Voice Quality (POLQA)
+    public static String CONSIDERED_FAILURES_SUBQUERY = "(sr.failingerrortype IS NULL OR trim(sr.failingerrortype) = '' OR sr.failingerrortype = 'Routing' OR sr.failingerrortype = 'Teams Client' OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')"; 
+    public static String CONSIDERED_STATUS_SUBQUERY = "(sr.status = 'PASSED' OR sr.status = 'FAILED')"; 
     public static StringBuilder getRegionSQLCondition(String regions){
         JSONArray regionsArray = new JSONArray(regions);
         StringBuilder regionCondition = null;
