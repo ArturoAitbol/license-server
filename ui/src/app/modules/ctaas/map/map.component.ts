@@ -251,16 +251,16 @@ export class MapComponent implements OnInit {
 
   drawNodes():void {
     for (const key in this.nodesMap) {
-      let customIconUrl = '../../../../assets/images/goodMarker.svg';
+      let customIconUrl = "assets/images/goodMarker.svg";
       let failed, polqa;
       failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
       polqa = this.nodesMap[key].callsOriginated.polqa;
       if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa) 
         polqa = this.nodesMap[key].callsTerminated.polqa;
       if(failed >= 1 && failed < 5 || polqa >= 2 && polqa <= 3)
-        customIconUrl = '../../../../assets/images/midMarker.svg';
+        customIconUrl = "assets/images/midMarker.svg";
       if(failed >= 5 || polqa < 2)
-        customIconUrl = '../../../../assets/images/badMarker.svg';
+        customIconUrl = "assets/images/badMarker.svg";
       let customIcon = L.icon({
         iconUrl: customIconUrl,
         iconAnchor: [25, 29]

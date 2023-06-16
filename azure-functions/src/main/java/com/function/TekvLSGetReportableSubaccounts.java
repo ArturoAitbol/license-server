@@ -56,7 +56,7 @@ public class TekvLSGetReportableSubaccounts {
         context.getLogger().info("Entering TekvLSGetReportableCustomers Azure function");
 
         SelectQueryBuilder selectStmnt = new SelectQueryBuilder(
-                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" , sa.subaccount_admin_email AS \"lsSubAccountAdminEmail\""
+                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" , sa.subaccount_admin_email AS \"lsSubAccountAdminEmail\" , cs.maintenance "
                         +
                         "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id LEFT JOIN subaccount_admin sa ON s.id = sa.subaccount_id");
         selectStmnt.appendCustomCondition("s.services LIKE ?",
@@ -71,7 +71,7 @@ public class TekvLSGetReportableSubaccounts {
             ResultSet rs = selectStmt.executeQuery();
             JSONObject json = new JSONObject();
             JSONArray array = new JSONArray();
-            while (rs.next()) {                
+            while (rs.next()) {
                 JSONObject item = new JSONObject();
                 int itemIndex = this.arrayContainsSubaccount(array, rs.getString("lsSubAccountId"), context);
                 if (itemIndex != -1) {
@@ -86,6 +86,7 @@ public class TekvLSGetReportableSubaccounts {
                     item.put("subAccountName", rs.getString("lsSubAccountName"));
                     item.put("customerName", rs.getString("lsCustomerName"));
                     item.put("customerId", rs.getString("lsCustomerId"));
+                    item.put("maintenance", rs.getBoolean("maintenance"));
                     emails.put(rs.getString("lsSubAccountAdminEmail"));
                     item.put("emails", emails);
                     array.put(item);
