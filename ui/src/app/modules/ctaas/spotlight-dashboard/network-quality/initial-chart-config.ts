@@ -85,7 +85,9 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
                 },
                 minWidth: 40,
                 formatter(val: number, opts?: any): string | string[] {
-                    return val + '%'
+                    if (val !== null && val !== undefined)
+                        return val + "%";
+                    return "";
                 }
             },
             title: {
