@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.getCustomerRoleVerificationQuery;
 
 public class TekvLSGetFilterOptions {
 
@@ -59,17 +58,25 @@ public class TekvLSGetFilterOptions {
         String endDate = request.getQueryParameters().getOrDefault("endDate","");
 
         // Build SQL statements to get filter options
-        SelectQueryBuilder regionsQueryBuilder = new SelectQueryBuilder("SELECT country, state, city FROM test_result_resource trr JOIN sub_result sr ON trr.subresultid = sr.id");
+        String basicQueryConditions = "FROM test_result_resource trr " + 
+                "   LEFT JOIN sub_result sr ON trr.subresultid = sr.id" +
+                "   LEFT JOIN test_result tr ON sr.testresultid = tr.id" +
+                "   LEFT JOIN run_instance r ON tr.runinstanceid = r.id" +
+                "   LEFT JOIN project p ON r.projectid = p.id" +
+                "   LEFT JOIN test_plan tp ON p.testplanid = tp.id" +
+                " WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')" +
+                "   AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY; 
+        SelectQueryBuilder regionsQueryBuilder = new SelectQueryBuilder("SELECT trr.country, trr.state, trr.city " + basicQueryConditions, true);
 
-        String userQuery = "SELECT did FROM test_result_resource trr JOIN sub_result sr ON trr.subresultid = sr.id";
+        String userQuery = "SELECT trr.did " + basicQueryConditions;
         SelectQueryBuilder usersQueryBuilder;
         if(!regions.isEmpty()){
             StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
             if(regionCondition != null)
-                userQuery += " WHERE " + regionCondition;
-            usersQueryBuilder = new SelectQueryBuilder(userQuery,true);
+                userQuery += " AND " + regionCondition;
+            usersQueryBuilder = new SelectQueryBuilder(userQuery, true);
         }else{
-            usersQueryBuilder = new SelectQueryBuilder(userQuery);
+            usersQueryBuilder = new SelectQueryBuilder(userQuery, true);
         }
 
 
@@ -81,8 +88,8 @@ public class TekvLSGetFilterOptions {
             usersQueryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
         }
         
-        usersQueryBuilder.appendGroupBy("did");
-        regionsQueryBuilder.appendGroupByMany("country, state, city");
+        usersQueryBuilder.appendGroupBy("trr.did");
+        regionsQueryBuilder.appendGroupByMany("trr.country, trr.state, trr.city");
 
         // Build SQL statement to get the TAP URL
         SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -132,7 +139,7 @@ public class TekvLSGetFilterOptions {
             // Retrieve all data.
             if(filter.isEmpty() || filter.equals("regions")){
                 String regionsQuery = regionsQueryBuilder.getQuery();
-                context.getLogger().info("Execute SQL statement: " + regionsQuery);
+                context.getLogger().info("Execute Regions SQL statement: " + regionsQuery);
                 JSONArray regionsRs = TAPClient.executeQuery(tapURL, regionsQuery, context);
                 JSONArray regionsJson = new JSONArray();
 
@@ -149,7 +156,7 @@ public class TekvLSGetFilterOptions {
 
             if(filter.isEmpty() || filter.equals("users")){
                 String usersQuery = usersQueryBuilder.getQuery();
-                context.getLogger().info("Execute SQL statement: " + usersQuery);
+                context.getLogger().info("Execute Users SQL statement: " + usersQuery);
                 JSONArray usersRs = TAPClient.executeQuery(tapURL, usersQuery, context);
                 json.put("users", usersRs);
             }

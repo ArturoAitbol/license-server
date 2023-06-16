@@ -61,7 +61,7 @@ export class CtaasDashboardService {
    * @param reportType: string 
    * @returns: Observable<any>  
    */
-  public getCtaasDashboardDetailedReport(subaccountId: string, reportType: string, startDateStr: string, endDateStr: string, status: string, regions: string, users: string): Observable<any> {
+  public getCtaasDashboardDetailedReport(subaccountId: string, reportType: string, startDateStr: string, endDateStr: string, status: string, regions: string, users: string, polqaCalls: boolean): Observable<any> {
     const url = this.FETCH_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId);
     let params = new HttpParams()
       .set('startDate', startDateStr)
@@ -70,6 +70,7 @@ export class CtaasDashboardService {
     if (status != '') params = params.set('status', status);
     if (regions != '') params = params.set('regions', regions);
     if (users != '') params = params.set('users', users);
+    if (polqaCalls) params = params.set('polqaCalls', 'true');
     return this.httpClient.get(url, { params });
   }
   /**

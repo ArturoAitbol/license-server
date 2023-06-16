@@ -80,9 +80,8 @@ public class TekvLSGetVoiceQualityChart {
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-				"WHERE sr.finalresult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
-				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing' or sr.failingerrortype = 'Teams Client' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-				"AND tp.name IN ('"+ Utils.DEFAULT_TEST_PLAN_NAMES +"') AND ms.parameter_name = 'POLQA'";
+				"WHERE sr.finalresult = true AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
+				" AND tp.name IN ('"+ Utils.DEFAULT_TEST_PLAN_NAMES +"') AND ms.parameter_name = 'POLQA'";
 
 		if (!users.isEmpty()){
 			innerQuery += " AND trr.did IN ('"+ usersClause +"')";
@@ -91,7 +90,7 @@ public class TekvLSGetVoiceQualityChart {
 		if(!regions.isEmpty()){
 			StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
 			if(regionCondition != null)
-				innerQuery += "AND " + regionCondition;
+				innerQuery += " AND " + regionCondition;
 		}
 
 		// Build SQL statement
