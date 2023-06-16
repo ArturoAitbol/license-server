@@ -84,7 +84,7 @@
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
                                     <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
-                                        <mat-option *ngFor="let region of filteredRegions | async" [value]="region">
+                                        <mat-option *ngFor="let region of notSelectedFilteredDailyRegions" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
                                     </mat-autocomplete>
@@ -280,7 +280,7 @@
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
                                     <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
-                                        <mat-option *ngFor="let region of weeklyFilteredRegions | async" [value]="region">
+                                        <mat-option *ngFor="let region of notSelectedFilteredWeeklyRegions" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
                                     </mat-autocomplete>
@@ -295,7 +295,7 @@
                 </form>
             </div>
             <div class="row" *ngIf="this.weeklySelectedRegions.length>0">
-                <div class="col-md-12">
+                <div class="col-md-6 offset-md-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
                                 <button [disabled]="this.weeklySelectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>

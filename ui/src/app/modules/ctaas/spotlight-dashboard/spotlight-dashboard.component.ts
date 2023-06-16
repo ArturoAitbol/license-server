@@ -86,6 +86,8 @@ export class SpotlightDashboardComponent implements OnInit{
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
   weeklyFilteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
+  notSelectedFilteredDailyRegions: {country: string, state: string, city: string, displayName: string}[];
+  notSelectedFilteredWeeklyRegions: {country: string, state: string, city: string, displayName: string}[];
   filteredUsers: Observable<string[]>;
   maxDate = moment().utc();
   minDate = moment.utc('0001-01-01');
@@ -242,15 +244,26 @@ export class SpotlightDashboardComponent implements OnInit{
     if (index >= 0) {
       regions.splice(index, 1);
     }
+    this.initAutocompletes();
+    this.initWeeklyAutocompletes();
+  }
+
+  removeRegionFromArray(displayName: string, array: {country: string, state: string, city: string, displayName: string}[]){
+    const index = array.map(e => e.displayName).indexOf(displayName);
+    if (index >= 0) {
+      array.splice(index, 1);
+    }
   }
 
   selected(): void {
     if(this.selectedPeriod==='daily'){
-      this.selectedRegions.push(this.filters.get('region').value);
+      const region = this.filters.get('region').value;
+      this.selectedRegions.push(region);
       this.filters.get('region').setValue("");
       this.initAutocompletes();
     }else{
-      this.weeklySelectedRegions.push(this.weeklyFilters.get('region').value);
+      const region = this.weeklyFilters.get('region').value;
+      this.weeklySelectedRegions.push(region);
       this.weeklyFilters.get('region').setValue("");
       this.initWeeklyAutocompletes();
     }
@@ -258,10 +271,14 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   clearRegionsFilter(){
-    if(this.selectedPeriod==='daily')
-      this.selectedRegions=[];
-    else
-      this.weeklySelectedRegions=[];
+    if(this.selectedPeriod==='daily'){
+      this.selectedRegions = [];
+      this.initAutocompletes();
+    }
+    else {
+      this.weeklySelectedRegions = [];
+      this.initWeeklyAutocompletes();
+    }
   }
 
   chartsStatus(chartCompleted:boolean){
@@ -545,6 +562,12 @@ export class SpotlightDashboardComponent implements OnInit{
         startWith(''),
         map(value => this._filterRegion(value || '')),
     );
+    this.filteredRegions.subscribe((regions) => {
+      this.notSelectedFilteredDailyRegions = regions;
+      this.selectedRegions.forEach(region => {
+        this.removeRegionFromArray(region.displayName, this.notSelectedFilteredDailyRegions);
+      });
+    });
   }
 
   private initWeeklyAutocompletes() {
@@ -552,6 +575,10 @@ export class SpotlightDashboardComponent implements OnInit{
         startWith(''),
         map(value => this._filterRegion(value || '')),
     );
+    this.weeklyFilteredRegions.subscribe((regions) => {this.notSelectedFilteredWeeklyRegions = regions;});
+    this.weeklySelectedRegions.forEach(region => {
+      this.removeRegionFromArray(region.displayName, this.notSelectedFilteredWeeklyRegions);
+    });
   }
 
   private reloadFilterOptions() {
