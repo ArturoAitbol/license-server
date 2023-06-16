@@ -49,8 +49,6 @@ export class MapComponent implements OnInit {
   readonly MID_COLOR: string = "orange";
   readonly BAD_COLOR: string = "red";
   LINE_WEIGHT: number;
-  readonly LINKED: string = 'Linked';
-  readonly HEAT: string = 'Heat';
   readonly LINE_SMOOTH_FACTOR: number = 1;
  
   private calculateTableHeight() {
