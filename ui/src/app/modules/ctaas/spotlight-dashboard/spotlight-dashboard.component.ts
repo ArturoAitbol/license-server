@@ -353,7 +353,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.callingReliability.period = executionTime;
     
     this.calls.total += this.callingReliability.total;
-    this.calls.failed += dailyCallingReliabiltyRes.callsByStatus.FAILED;
+    this.calls.failed += failedCalls;
     this.calls.p2pCalls += this.callingReliability.p2p;
     this.calls.onNetCalls += this.callingReliability.onNet;
     this.calls.offNetCalls += this.callingReliability.offNet;
@@ -505,15 +505,24 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   navigateToDetailedTable(reportType?: string, status?: string) {
-    const startDate = this.selectedDate.clone().utc().startOf('day');
-    const endDate = this.selectedDate.clone().utc();
-    const startTime = Utility.parseReportDate(startDate);
-    const endTime = Utility.parseReportDate(endDate);
     let reportFilter = "";
     if (reportType && reportType != "")
       reportFilter += "type=" + reportType;
     if (status && status != "")
       reportFilter += "status=" + status;
+    this.goToDetailedReportView(reportFilter);
+  }
+
+  navigateToPOLQACallsDetailedTable() {
+    let reportFilter = "polqaCalls=true";
+    this.goToDetailedReportView(reportFilter);
+  }
+
+  private goToDetailedReportView(reportFilter: string) {
+    const startDate = this.selectedDate.clone().utc().startOf('day');
+    const endDate = this.selectedDate.clone().utc();
+    const startTime = Utility.parseReportDate(startDate);
+    const endTime = Utility.parseReportDate(endDate);
     let regions = ""
     if(this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
