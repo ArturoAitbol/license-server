@@ -1,13 +1,6 @@
 <!-- Load Leaflet from CDN-->
 <app-banner [stylesflag]="'notes'" *lcCheckAccessFor="'showBanner'"></app-banner>
 <mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
-<div style="padding-top: 2%;">
-      <mat-button-toggle-group  aria-label="Font Style"
-        (change)="onChangeButtonToggle()">
-        <mat-button-toggle [value]="LINKED">{{LINKED | titlecase}}</mat-button-toggle>
-        <mat-button-toggle [value]="HEAT">{{HEAT | titlecase}}</mat-button-toggle>
-      </mat-button-toggle-group>
-</div>
 <div [formGroup]="filterForm">
   <div class="date-picker-form justify-content-center mt-2 mb-2">
     <div class="container-reverse">

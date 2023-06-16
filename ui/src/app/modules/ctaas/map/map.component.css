@@ -50,6 +50,7 @@ ul li {
 .date-picker-form{
     display: flex !important;
     white-space: nowrap !important;
+    padding-top: 3%;
 }
 
 .legend {
