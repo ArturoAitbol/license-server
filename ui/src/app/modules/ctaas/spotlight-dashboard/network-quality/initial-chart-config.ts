@@ -87,7 +87,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
                 formatter(val: number, opts?: any): string | string[] {
                     if (val !== null && val !== undefined)
                         return val + "%";
-                    return "";
+                    return "--";
                 }
             },
             title: {
@@ -156,7 +156,12 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
                 style: {
                     colors: "#E66C37",
                 },
-                minWidth: 40
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
             },
             title: {
                 text: "Jitter",
@@ -224,7 +229,12 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
                 style: {
                     colors: "#079398",
                 },
-                minWidth: 40
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
             },
             title: {
                 text: "Sent Bitrate",
@@ -293,7 +303,12 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
                 style: {
                     colors: "#570798",
                 },
-                minWidth: 40
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
             },
             title: {
                 text: "Round Trip Time",

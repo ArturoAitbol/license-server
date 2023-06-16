@@ -151,7 +151,7 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
             if (opts.seriesIndex === 0) {
                 if (val !== null && val !== undefined)
                     return val + "%";
-                return "";
+                return "--";
             } else return val;
         }
     },
@@ -281,7 +281,7 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
             if (opts.seriesIndex === 0) {
                 if (val !== null && val !== undefined)
                     return val + "%";
-                return "";
+                return "--";
             } else return val;
         }
     },
@@ -557,7 +557,7 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
             formatter(val: number, opts?: any): string {
                 if (val !== null && val !== undefined)
                     return val + "%";
-                return "";
+                return "--";
             },
         },
     },
@@ -586,7 +586,7 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
         formatter(val: number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (val !== null && val !== undefined)
                 return val.toFixed(2) + "%"
-            return "";
+            return "--";
         }
     },
     grid: {
