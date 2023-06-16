@@ -163,7 +163,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertEquals(4, subaccounts.length());
 
         String subaccountId;
-        List<String> expectedSubaccounts = Arrays.asList("cebe6542-2032-4398-882e-ffb44ade169d",
+        List<String> expectedSubaccounts = Arrays.asList("cebe6542-2032-4398-882e-ffb44ade169d","b5b91753-4c2b-43f5-afa0-feb00cefa981",
                                                         "96234b32-32d3-45a4-af26-4c912c0d6a06","8acb6997-4d6a-4427-ba2c-7bf463fa08ec");
         for (int i = 0; i < subaccounts.length();i++){
             subaccountId = subaccounts.getJSONObject(i).getString("id");
