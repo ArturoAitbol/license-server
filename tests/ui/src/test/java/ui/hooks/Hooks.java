@@ -1,6 +1,5 @@
 package ui.hooks;
 
-import org.openqa.selenium.JavascriptExecutor;
 import ui.core.DriverManager;
 import io.cucumber.java.After;
 import io.cucumber.java.Scenario;

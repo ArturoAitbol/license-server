@@ -439,7 +439,6 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
                         if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.selectedSubaccount.id))
                             routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
                         const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
-                        console.log(routePath);
                         window.open(url);
                     } else this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
                     break;

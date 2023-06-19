@@ -56,6 +56,7 @@ public class TekvLSGetReportableSubaccountsTest extends TekvLSTest {
         assertTrue(subaccount.has("subAccountName"));
         assertTrue(subaccount.has("customerName"));
         assertTrue(subaccount.has("customerId"));
+        assertTrue(subaccount.has("maintenance"));
     }
 
     @Tag("security")

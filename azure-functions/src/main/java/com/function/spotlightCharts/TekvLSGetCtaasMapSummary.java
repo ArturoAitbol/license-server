@@ -75,7 +75,7 @@ public class TekvLSGetCtaasMapSummary {
 
         String sql = "SELECT er.fromcity as from_city, er.fromstate as from_state, er.fromcountry as from_country," +
                 "       er.tocity as to_city, er.tostate as to_state, er.tocountry as to_country, er.fromcoordinates as from_coordinates, er.tocoordinates as to_coordinates," +
-        "               count(distinct sr.id) as total_calls,\n" +
+                "       count(distinct sr.id) as total_calls,\n" +
                 "       count(distinct sr.id) FILTER (WHERE sr.status = 'PASSED') as passed,\n" +
                 "       count(distinct sr.id) FILTER (WHERE sr.status = 'FAILED') as failed," +
                 "       max(case" +
@@ -99,8 +99,8 @@ public class TekvLSGetCtaasMapSummary {
                 "         LEFT JOIN project p ON r.projectid = p.id" +
                 "         LEFT JOIN test_plan tp ON p.testplanid = tp.id" +
                 "         LEFT JOIN execution_report er on sr.execution_report_id = er.id " +
-                "  WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')" +
-                "  AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
+                "WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')" +
+                "  AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
                 "  AND ms.parameter_name IN ('Received Jitter', 'Received packet loss', 'Round trip time', 'Sent bitrate', 'POLQA')";
 
         if (!regions.isEmpty()) {
