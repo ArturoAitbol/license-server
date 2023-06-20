@@ -442,6 +442,9 @@ export class MapComponent implements OnInit {
     let nodeData = {...this.nodesMap[key], date: this.startDate};
     this.dialog.open(NodeDetailComponent, {
       width: '800px',
+      height: '79vh',
+      maxHeight: '100vh',
+      autoFocus: false,
       disableClose: true,
       data: nodeData
     });
@@ -449,9 +452,12 @@ export class MapComponent implements OnInit {
 
   lineDetails(key:any){
     let lineData = {...this.linesMap[key], date: this.startDate};
-    this.dialog.open(LineDetailComponent, {
-      width: '500px',
+    let dialogRef = this.dialog.open(LineDetailComponent, {
+      width: '505px',
+      height: '80vh',
+      maxHeight: '100vh',
       disableClose: true,
+      autoFocus: false,
       data: lineData
     });
   }
