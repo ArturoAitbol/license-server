@@ -1,129 +1,132 @@
 <div class="row">
     <div class="col-12">
         <h1 class="text-start font-s">{{data.region.city}}, {{data.region.state}}, {{data.region.country}}</h1>
-        <mat-card class="card summary">
-            <mat-card-content class="summary-card-content">
-                <table class="table">
-                    <tbody class="row-auto">
-                        <div class="row-auto">
-                            <div class="col-5" style="margin-left: 4%;">
-                                <th class="total-calls-data">Total Calls</th>
-                                <td class="total-calls-data">{{data.totalCalls}}</td>
-                            </div>
-                        </div>
-                        <tr class="col-6 originated-column-data">
+        <div>
+
+            <mat-card class="card summary">
+                <mat-card-content class="summary-card-content">
+                    <table class="table">
+                        <tbody class="row-auto">
                             <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Originated calls</th>
-                                    <td>{{data.callsOriginated.total}}</td>
+                                <div class="col-5" style="margin-left: 4%;">
+                                    <th class="total-calls-data">Total Calls</th>
+                                    <td class="total-calls-data">{{data.totalCalls}}</td>
                                 </div>
                             </div>
-                            <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Originiated calls passed</th>
-                                    <td>{{data.callsOriginated.passed}}</td>
+                            <tr class="col-6 originated-column-data">
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Originated calls</th>
+                                        <td>{{data.callsOriginated.total}}</td>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row-auto">
-                                 <div class="col-12">
-                                     <th>Originated calls failed</th>
-                                     <td>{{data.callsOriginated.failed}}</td>
-                                 </div>
-                            </div>
-                            <div class="row-auto">
-                                 <div class="col-12">
-                                     <th>POLQA</th>
-                                     <td>Min: {{data.callsOriginated.polqa.min}}, Avg: {{data.callsOriginated.polqa.avg.toFixed(2)}}</td>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Originiated calls passed</th>
+                                        <td>{{data.callsOriginated.passed}}</td>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Jitter (ms)</th>
-                                    <td>Max: {{data.callsOriginated.receivedJitter.max}}, Avg: {{data.callsOriginated.receivedJitter.avg.toFixed(2)}}</td>
+                                <div class="row-auto">
+                                     <div class="col-12">
+                                         <th>Originated calls failed</th>
+                                         <td>{{data.callsOriginated.failed}}</td>
+                                     </div>
+                                </div>
+                                <div class="row-auto">
+                                     <div class="col-12">
+                                         <th>POLQA</th>
+                                         <td>Min: {{data.callsOriginated.polqa.min}}, Avg: {{data.callsOriginated.polqa.avg.toFixed(2)}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Jitter (ms)</th>
+                                        <td>Max: {{data.callsOriginated.receivedJitter.max}}, Avg: {{data.callsOriginated.receivedJitter.avg.toFixed(2)}}</td>
+                                   </div>
                                </div>
-                           </div>
-                           <div class="row-auto">
-                            <div class="col-12">
-                                    <th>Round trip time (ms)</th>
-                                    <td>Max: {{data.callsOriginated.roundTripTime.max}}, Avg: {{data.callsOriginated.roundTripTime.avg.toFixed(2)}}</td>
+                               <div class="row-auto">
+                                <div class="col-12">
+                                        <th>Round trip time (ms)</th>
+                                        <td>Max: {{data.callsOriginated.roundTripTime.max}}, Avg: {{data.callsOriginated.roundTripTime.avg.toFixed(2)}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Packet Lost (%)</th>
+                                        <td>Max: {{data.callsOriginated.receivedPacketLoss.max}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg.toFixed(2)}}</td>
+                                   </div>
+                               </div>
+                               <div class="row-auto">
+                                   <div class="col-12">
+                                       <th>Bitrate (kbps)</th>
+                                       <td>Avg: {{data.callsOriginated.sentBitrate}}</td>
+                                   </div>
+                               </div>
+                            </tr>
+                            <tr class="col-6 terminated-column-data">
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Terminated calls</th>     
+                                        <td>{{data.callsTerminated.total}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                       <th>Terminated calls passed</th>
+                                       <td>{{data.callsTerminated.passed}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Terminated calls failed</th>
+                                        <td>{{data.callsTerminated.failed}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>POLQA</th>
+                                        <td>Min: {{data.callsTerminated.polqa.min}}, Avg: {{data.callsTerminated.polqa.avg.toFixed(2)}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                   <div class="col-12">
+                                       <th>Jitter (ms)</th>
+                                       <td>Max: {{data.callsTerminated.receivedJitter.max}}, Avg: {{data.callsTerminated.receivedJitter.avg.toFixed(2)}}</td>
+                                  </div>
+                            </div>
+                            <div class="row-auto">
+                                <div class="col-12">
+                                       <th>Round trip time (ms)</th>
+                                       <td>Max: {{data.callsTerminated.roundTripTime.max}}, Avg: {{data.callsTerminated.roundTripTime.avg.toFixed(2)}}</td>
+                                  </div>
+                                </div>
+                            <div class="row-auto">
+                                <div class="col-12">
+                                    <th>Packet Lost</th>
+                                    <td>Max: {{data.callsTerminated.receivedPacketLoss.max}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg.toFixed(2)}}</td>
                                 </div>
                             </div>
                             <div class="row-auto">
                                 <div class="col-12">
-                                    <th>Packet Lost (%)</th>
-                                    <td>Max: {{data.callsOriginated.receivedPacketLoss.max}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg.toFixed(2)}}</td>
-                               </div>
-                           </div>
-                           <div class="row-auto">
-                               <div class="col-12">
-                                   <th>Bitrate (kbps)</th>
-                                   <td>Avg: {{data.callsOriginated.sentBitrate}}</td>
+                                    <th>Bitrate (kbps)</th>
+                                    <td>Avg: {{data.callsTerminated.sentBitrate}}</td>
+                                </div>
                               </div>
-                          </div>
-                        </tr>
-                        <tr class="col-6 terminated-column-data">
-                            <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Terminated calls</th>     
-                                    <td>{{data.callsTerminated.total}}</td>
-                               </div>
-                           </div>
-                           <div class="row-auto">
-                                <div class="col-12">
-                                   <th>Terminated calls passed</th>
-                                   <td>{{data.callsTerminated.passed}}</td>
-                               </div>
-                           </div>
-                            <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Terminated calls failed</th>
-                                    <td>{{data.callsTerminated.failed}}</td>
-                               </div>
-                           </div>
-                           <div class="row-auto">
-                                <div class="col-12">
-                                    <th>POLQA</th>
-                                    <td>Min: {{data.callsTerminated.polqa.min}}, Avg: {{data.callsTerminated.polqa.avg.toFixed(2)}}</td>
-                               </div>
-                           </div>
-                           <div class="row-auto">
-                               <div class="col-12">
-                                   <th>Jitter (ms)</th>
-                                   <td>Max: {{data.callsTerminated.receivedJitter.max}}, Avg: {{data.callsTerminated.receivedJitter.avg.toFixed(2)}}</td>
-                              </div>
-                          </div>
-                          <div class="row-auto">
-                           <div class="col-12">
-                                   <th>Round trip time (ms)</th>
-                                   <td>Max: {{data.callsTerminated.roundTripTime.max}}, Avg: {{data.callsTerminated.roundTripTime.avg.toFixed(2)}}</td>
-                               </div>
-                           </div>
-                           <div class="row-auto">
-                               <div class="col-12">
-                                   <th>Packet Lost (%)</th>
-                                   <td>Max: {{data.callsTerminated.receivedPacketLoss.max}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg.toFixed(2)}}</td>
-                              </div>
-                          </div>
-                          <div class="row-auto">
-                              <div class="col-12">
-                                  <th>Bitrate (kbps)</th>
-                                  <td>Avg: {{data.callsTerminated.sentBitrate}}</td>
-                             </div>
-                         </div>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row justify-content-center">
-                    <button  class="viewDetail-button" mat-raised-button (click)="openNaviteDashboardWithSelectedData()">Go to
-                        Dashboard
-                    </button>
-                </div>
-            </mat-card-content>
-        </mat-card>
-        <div class="row justify-content-end" style="padding-top: 3%;">
-            <div class="col-auto">
-                <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Close</button>
-            </div>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row justify-content-center">
+                        <button  class="viewDetail-button" mat-raised-button (click)="openNaviteDashboardWithSelectedData()">Go to
+                            Dashboard
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+    <div class="row justify-content-end" style="margin-top: 3%;">
+        <div class="col-auto">
+            <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Close</button>
         </div>
     </div>
 </div>
