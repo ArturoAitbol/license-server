@@ -12,16 +12,16 @@
                         <tbody>
                             <tr>
                                 <div class="row-auto">
-                                     <div class="col-12">
-                                         <th style="width: max-content;">Region 1</th>
-                                         <td style="text-align: end; width: 82%;">{{data.from.city}}, {{data.from.state}}, {{data.from.country}}</td>
-                                     </div>
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Region 1</th>
+                                        <td style="width: 81.75%;">{{data.from.city}}, {{data.from.state}}, {{data.from.country}}</td>
+                                    </div>
                                 </div>
                                 <div class="row-auto">
-                                     <div class="col-12">
-                                         <th style="width: max-content;">Region 2</th>
-                                         <td style="text-align: end; width: 82%;">{{data.to.city}}, {{data.to.state}}, {{data.to.country}}</td>
-                                     </div>
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Region 2</th>
+                                        <td style="width: 81.75%;">{{data.to.city}}, {{data.to.state}}, {{data.to.country}}</td>
+                                    </div>
                                 </div>
                                 <div class="row-auto">
                                     <div class="col-12">
@@ -30,45 +30,45 @@
                                     </div>
                                 </div>
                                 <div class="row-auto">
-                                     <div class="col-12">
+                                    <div class="col-12">
                                         <th>Calls passed</th>
                                         <td>{{data.passed}}</td>
-                                     </div>
-                                </div>
-                                <div class="row-auto">
-                                     <div class="col-12">
-                                         <th>Calls failed</th>
-                                         <td>{{data.failed}}</td>
-                                     </div>
-                                </div>
-                                <div class="row-auto">
-                                     <div class="col-12">
-                                         <th>POLQA</th>
-                                         <td>Min: {{data.polqa.min}}, Avg: {{data.polqa.avg.toFixed(2)}}</td>
                                     </div>
                                 </div>
                                 <div class="row-auto">
                                     <div class="col-12">
-                                        <th>Jitter (ms)</th>
-                                        <td>Max: {{data.receivedJitter.max}}, Avg: {{data.receivedJitter.avg.toFixed(2)}}</td>
-                                   </div>
-                               </div>
-                               <div class="row-auto">
-                                <div class="col-12">
-                                        <th>Round trip time (ms)</th>
-                                        <td>Max: {{data.roundTripTime.max}}, Avg: {{data.roundTripTime.avg.toFixed(2)}}</td>
+                                        <th>Calls failed</th>
+                                        <td>{{data.failed}}</td>
                                     </div>
                                 </div>
                                 <div class="row-auto">
                                     <div class="col-12">
-                                        <th>Packet Lost (%)</th>
-                                        <td>Max: {{data.receivedPacketLoss.max}}, Avg: {{data.receivedPacketLoss.avg.toFixed(2)}}</td>
-                                   </div>
+                                        <th style="width: max-content;">POLQA</th>
+                                        <td style="width: 85%;">Min: {{data.polqa.min | na}}, Avg: {{data.polqa.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Jitter (ms)</th>
+                                        <td style="width: 78.75%;">Max: {{data.receivedJitter.max | na}}, Avg: {{data.receivedJitter.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Round trip time (ms)</th>
+                                        <td style="width: 61.5%;">Max: {{data.roundTripTime.max | na}}, Avg: {{data.roundTripTime.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Packet Loss (%)</th>
+                                        <td style="width: 69.5%;">Max: {{data.receivedPacketLoss.max | na}}, Avg: {{data.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
+                                    </div>
                                </div>
                                <div class="row-auto">
-                                   <div class="col-12">
-                                       <th>Bitrate (kbps)</th>
-                                       <td>Avg: {{data.sentBitrate}}</td>
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Bitrate (kbps)</th>
+                                        <td style="width: 73.5%;">Avg: {{data.sentBitrate.avg | number:'.0-2' | na}}</td>
                                     </div>
                                 </div>
                             </tr>

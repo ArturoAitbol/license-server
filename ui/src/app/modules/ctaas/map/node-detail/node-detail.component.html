@@ -2,7 +2,6 @@
     <div class="col-12">
         <h1 class="text-start font-s">{{data.region.city}}, {{data.region.state}}, {{data.region.country}}</h1>
         <div>
-
             <mat-card class="card summary">
                 <mat-card-content class="summary-card-content">
                     <table class="table">
@@ -34,32 +33,32 @@
                                 </div>
                                 <div class="row-auto">
                                      <div class="col-12">
-                                         <th>POLQA</th>
-                                         <td>Min: {{data.callsOriginated.polqa.min}}, Avg: {{data.callsOriginated.polqa.avg.toFixed(2)}}</td>
+                                        <th style="width: max-content;">POLQA</th>
+                                        <td style="width: 85%;">Min: {{data.callsOriginated.polqa.min | na}}, Avg: {{data.callsOriginated.polqa.avg | number:'.0-2' | na}}</td>
                                     </div>
                                 </div>
                                 <div class="row-auto">
                                     <div class="col-12">
-                                        <th>Jitter (ms)</th>
-                                        <td>Max: {{data.callsOriginated.receivedJitter.max}}, Avg: {{data.callsOriginated.receivedJitter.avg.toFixed(2)}}</td>
-                                   </div>
-                               </div>
-                               <div class="row-auto">
-                                <div class="col-12">
-                                        <th>Round trip time (ms)</th>
-                                        <td>Max: {{data.callsOriginated.roundTripTime.max}}, Avg: {{data.callsOriginated.roundTripTime.avg.toFixed(2)}}</td>
+                                        <th style="width: max-content;">Jitter (ms)</th>
+                                        <td style="width: 72.75%;">Max: {{data.callsOriginated.receivedJitter.max | na}}, Avg: {{data.callsOriginated.receivedJitter.avg | number:'.0-2' | na}}</td>
                                     </div>
                                 </div>
                                 <div class="row-auto">
                                     <div class="col-12">
-                                        <th>Packet Lost (%)</th>
-                                        <td>Max: {{data.callsOriginated.receivedPacketLoss.max}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg.toFixed(2)}}</td>
-                                   </div>
+                                        <th style="width: max-content;">Round trip time (ms)</th>
+                                        <td style="width: 53.6%;">Max: {{data.callsOriginated.roundTripTime.max | na}}, Avg: {{data.callsOriginated.roundTripTime.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Packet Loss (%)</th>
+                                        <td style="width: 62.3%;">Max: {{data.callsOriginated.receivedPacketLoss.max | na}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
+                                    </div>
                                </div>
                                <div class="row-auto">
-                                   <div class="col-12">
-                                       <th>Bitrate (kbps)</th>
-                                       <td>Avg: {{data.callsOriginated.sentBitrate}}</td>
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Bitrate (kbps)</th>
+                                        <td style="width: 66.85%;">Avg: {{data.callsOriginated.sentBitrate.avg | number:'.0-2' | na}}</td>
                                    </div>
                                </div>
                             </tr>
@@ -84,32 +83,32 @@
                                 </div>
                                 <div class="row-auto">
                                     <div class="col-12">
-                                        <th>POLQA</th>
-                                        <td>Min: {{data.callsTerminated.polqa.min}}, Avg: {{data.callsTerminated.polqa.avg.toFixed(2)}}</td>
-                                   </div>
+                                        <th style="width: max-content;">POLQA</th>
+                                        <td style="width: 85%;">Min: {{data.callsTerminated.polqa.min | na}}, Avg: {{data.callsTerminated.polqa.avg | number:'.0-2'}}</td>
+                                    </div>
                                 </div>
                                 <div class="row-auto">
-                                   <div class="col-12">
-                                       <th>Jitter (ms)</th>
-                                       <td>Max: {{data.callsTerminated.receivedJitter.max}}, Avg: {{data.callsTerminated.receivedJitter.avg.toFixed(2)}}</td>
-                                  </div>
-                            </div>
-                            <div class="row-auto">
-                                <div class="col-12">
-                                       <th>Round trip time (ms)</th>
-                                       <td>Max: {{data.callsTerminated.roundTripTime.max}}, Avg: {{data.callsTerminated.roundTripTime.avg.toFixed(2)}}</td>
-                                  </div>
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Jitter (ms)</th>
+                                        <td style="width: 72.75%;">Max: {{data.callsTerminated.receivedJitter.max | na}}, Avg: {{data.callsTerminated.receivedJitter.avg | number:'.0-2' | na}}</td>
+                                    </div>
                                 </div>
-                            <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Packet Lost</th>
-                                    <td>Max: {{data.callsTerminated.receivedPacketLoss.max}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg.toFixed(2)}}</td>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Round trip time (ms)</th>
+                                        <td style="width: 53.6%;">Max: {{data.callsTerminated.roundTripTime.max | na}}, Avg: {{data.callsTerminated.roundTripTime.avg | number:'.0-2' | na}}</td>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Bitrate (kbps)</th>
-                                    <td>Avg: {{data.callsTerminated.sentBitrate}}</td>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Packet Loss (%)</th>
+                                        <td style="width: 62.3%;">Max: {{data.callsTerminated.receivedPacketLoss.max | na}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                               </div>
+                               <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Bitrate (kbps)</th>
+                                        <td style="width: 66.85%;">Avg: {{data.callsTerminated.sentBitrate.avg | number:'.0-2' | na}}</td>
                                 </div>
                               </div>
                             </tr>
