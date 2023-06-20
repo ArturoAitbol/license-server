@@ -319,6 +319,8 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   applyFilters(){
+    if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
+      this.isHistoricalView = false;
     if(this.selectedPeriod==="daily"){
       this.selectedRegions = [...this.preselectedRegions];
       this.setDate();
@@ -332,8 +334,6 @@ export class SpotlightDashboardComponent implements OnInit{
 
   reloadCharts(showLoading = true){
     this.disableFiltersWhileLoading = showLoading;
-    if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
-      this.isHistoricalView = false;
     this.loadCharts(showLoading);
   }
 
