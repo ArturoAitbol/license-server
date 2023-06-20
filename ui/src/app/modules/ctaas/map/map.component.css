@@ -1,5 +1,5 @@
 #map { 
-    height: 700px; 
+    height: 800px; 
 }
 
 .banner-container {
@@ -7,6 +7,7 @@
     /* background: lightgrey; */
     padding: 6px 6px 6px 12px;
 }
+
 ul {
     list-style-type: none;
     /* display: inline-flex; */
@@ -15,6 +16,23 @@ ul {
     justify-content: center;
     text-align: center;
 }
+
+.region-field{
+    display: inline-block !important; 
+    width: 80%;
+    padding-right: 5%;
+}
+
+.apply-button {
+    padding-left: 2%;
+}
+
+.date-field{
+    display: inline-block !important; 
+    width: 40%;
+    padding-right: 5%;
+}
+
 ul li {
     display: inline-block;
     color: #203c66;
@@ -50,13 +68,13 @@ ul li {
 .date-picker-form{
     display: flex !important;
     white-space: nowrap !important;
-    padding-top: 3%;
+    padding-top: 1%;
 }
 
 .legend {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 2%;
+    margin-bottom: 1%;
 }
   
 .legend-item {
@@ -107,6 +125,10 @@ ul li {
     background-color: red;
 }
 
+.clear-button{
+    height: auto;
+    padding: 0px;
+}
 
 .good:hover {
 

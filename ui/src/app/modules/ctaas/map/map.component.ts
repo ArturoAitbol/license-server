@@ -10,6 +10,7 @@ import { LineDetailComponent } from './line-detail/line-detail.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Constants } from 'src/app/helpers/constants';
 import { interval } from 'rxjs';
+import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -32,14 +33,19 @@ export class MapComponent implements OnInit {
   endDate: any;
   autoRefresh = false;
   mapStartView: any[] = [];
+  subaccountId: string;
+  regions: { country: string, state: string, city: string, displayName: string }[] = [];
   refreshIntervalSubscription: any;
+  disableFiltersWhileLoading = true;
+  selectedRegions = [];
   filterForm = this.fb.group({
-    // fromRegionFilterControl: [''],
+    region: [''],
     // toRegionFilterControl: [''],
     startDateFilterControl: [moment.utc(),[Validators.required]],
     endDateFilterControl: [''],
 });
-  constructor(private esriService: MapServicesService, 
+  constructor(private mapService: MapServicesService,
+    private spotlightChartsService: SpotlightChartsService, 
     private fb: FormBuilder,
     private subaccountService: SubAccountService,
     public dialog: MatDialog, 
@@ -73,12 +79,15 @@ export class MapComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.startDate = moment.utc().format("YYYY-MM-DDT00:00:00")+'Z';
+    this.disableFiltersWhileLoading = true;
     this.initColumns();
     this.calculateTableHeight();
     this.map = L.map('map'); 
     this.getMapSummary();
     this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL).subscribe(() => {
+      this.disableFiltersWhileLoading = false;
       this.autoRefresh = true;
       this.getMapSummary();
     });
@@ -297,7 +306,7 @@ export class MapComponent implements OnInit {
         this.lineDetails(key);
       }).addTo(this.map);
       this.linesArray.push(line);
-      line.bindTooltip(`From: ${this.linesMap[key].from.city}, ${this.linesMap[key].from.state}. To: ${this.linesMap[key].to.city}, ${this.linesMap[key].to.state}`);
+      line.bindTooltip(`<p>${this.linesMap[key].from.city}, ${this.linesMap[key].from.state}  &#8646 ${this.linesMap[key].to.city}, ${this.linesMap[key].to.state}</p>`);
     }
   }
 
@@ -308,8 +317,7 @@ export class MapComponent implements OnInit {
     this.nodesMap = {};
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.esriService.getMapSummary(this.startDate,subaccountId).subscribe((res:any)=>{
+    this.mapService.getMapSummary(this.startDate,this.subaccountId, this.selectedRegions).subscribe((res:any)=>{
       if(res){
         let parsedSummaryData = []
         if( res.length > 0) {
@@ -337,6 +345,10 @@ export class MapComponent implements OnInit {
         this.autoRefresh = false;
       }
     });
+  if(this.selectedRegions.length > 0)
+    this.reloadUserOptions(this.selectedRegions);
+  else
+    this.reloadFilterOptions();
   }
 
   dateFilter(){
@@ -361,12 +373,64 @@ export class MapComponent implements OnInit {
     }
   }
 
-  sortData(option: any){
-
+  selected() {
+    this.selectedRegions.push(this.filterForm.get('region').value);
+    this.filterForm.get('region').setValue("");
   }
 
-  onChangeButtonToggle(){
-   
+  remove(region: string) {
+    const regions = this.selectedRegions;
+    const index = regions.indexOf(region);
+    if ( index >= 0)
+      regions.splice(index, 1); 
+  }
+
+  clearRegionsFilter() {
+    this.selectedRegions=[];
+  }
+
+  regionDisplayFn(region: any) {
+    return region.displayName;
+  }
+
+  private reloadFilterOptions() {
+    if(this.disableFiltersWhileLoading)
+      this.filterForm.disable();
+
+    let startDate, endDate;
+    startDate = endDate = moment.utc(this.filterForm.get('startDateFilterControl').value);
+
+    this.spotlightChartsService.getFilterOptions(this.subaccountId,startDate,endDate).subscribe((res: any) => {
+      const regions = [];
+      res.regions.map(region => {
+        if (region.country !== null){
+          regions.push({country: region.country, state: null, city: null, displayName: region.country});
+          if (region.state && region.country) regions.push({country: region.country, state: region.state, city: null, displayName: `${region.state}, ${region.country}`});
+          if (region.state && region.country && region.city) regions.push({country: region.country, state: region.state, city: region.city, displayName: `${region.city}, ${region.state}, ${region.country}`});
+        }
+      });
+      const flags = new Set();
+      this.regions = regions.filter(entry => {
+        if (flags.has(entry.displayName) || !entry.displayName.trim().length) {
+          return false;
+        }
+        flags.add(entry.displayName);
+        return true;
+      }).sort();
+      this.filterForm.enable();
+    })
+  }
+
+  private reloadUserOptions(regions?: any) {
+    if(this.disableFiltersWhileLoading)
+      this.filterForm.disable();
+    
+    let startDate, endDate;
+      startDate = endDate = moment.utc(this.filterForm.get('startDateFilterControl').value);
+
+    this.spotlightChartsService.getFilterOptions(this.subaccountId,startDate,endDate,"users",regions ? regions : null).subscribe((res: any) => {
+      this.filterForm.enable();
+    })
   }
 
   ngOnDestroy(): void {

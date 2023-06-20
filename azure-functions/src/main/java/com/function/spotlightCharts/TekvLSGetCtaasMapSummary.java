@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import java.sql.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -52,6 +54,7 @@ public class TekvLSGetCtaasMapSummary {
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
         String from = request.getQueryParameters().getOrDefault("from", "");
         String to = request.getQueryParameters().getOrDefault("to", "");
+        String regions = request.getQueryParameters().getOrDefault("regions", "");
 
         if (subaccountId.isEmpty()) {
             JSONObject json = new JSONObject();
@@ -99,6 +102,22 @@ public class TekvLSGetCtaasMapSummary {
                 "WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')" +
                 "  AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
                 "  AND ms.parameter_name IN ('Received Jitter', 'Received packet loss', 'Round trip time', 'Sent bitrate', 'POLQA')";
+
+        if (!regions.isEmpty()) {
+            StringBuilder innerQueryBuilder = new StringBuilder("SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE ");
+            List<String> conditions = new ArrayList<>();
+            if (!regions.isEmpty()){
+                StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
+                if(regionCondition != null)
+                    conditions.add(regionCondition.toString());
+            }
+            for (int i=0;i<conditions.size();i++){
+                if(i!=0)
+                    innerQueryBuilder.append(" AND ");
+                innerQueryBuilder.append(conditions.get(i));
+            }
+            sql += " AND sr.id IN (" + innerQueryBuilder + ")";
+        }
 
         SelectQueryBuilder locationsQB = new SelectQueryBuilder(sql, true);
         locationsQB.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
