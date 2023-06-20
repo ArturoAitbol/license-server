@@ -119,6 +119,7 @@ export class MapComponent implements OnInit {
   }
 
   private getNodeData(index, fromRegion, toRegion) {
+    const thereIsPolqaForIndex = this.mapData[index].polqa !== null && this.mapData[index].polqa !== undefined && this.mapData[index].polqa !== "";
     if(fromRegion) {
       if (!this.nodesMap[fromRegion]) {
         let newRegionObj = {
@@ -128,23 +129,21 @@ export class MapComponent implements OnInit {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
             total: this.mapData[index].totalCalls, 
-            polqa: '–',
+            polqa: "--",
             receivedJitter: 0,
             roundTripTime: 0,
             receivedPacketLoss: 0
           },
-          callsTerminated: {passed: 0,failed: 0, total: 0, polqa: '–', receivedJitter: 0, roundTripTime: 0, receivedPacketLoss: 0}
+          callsTerminated: {passed: 0,failed: 0, total: 0, polqa: "--", receivedJitter: 0, roundTripTime: 0, receivedPacketLoss: 0}
         }
-        if (this.mapData[index].polqa)
+        if (thereIsPolqaForIndex)
           newRegionObj.callsOriginated.polqa = this.mapData[index].polqa;
         this.nodesMap[fromRegion] = newRegionObj;
       } else {
         this.nodesMap[fromRegion].callsOriginated.passed += this.mapData[index].passed;
         this.nodesMap[fromRegion].callsOriginated.failed += this.mapData[index].failed;
         this.nodesMap[fromRegion].callsOriginated.total += this.mapData[index].totalCalls;
-        if (this.mapData[index].polqa)
-          this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
-        if (this.mapData[index].polqa && this.nodesMap[fromRegion].callsOriginated.polqa > this.mapData[index].polqa)
+        if (thereIsPolqaForIndex && this.nodesMap[fromRegion].callsOriginated.polqa > this.mapData[index].polqa)
           this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
         if(this.nodesMap[fromRegion].callsOriginated.receivedJitter < this.mapData[index].receivedJitter)
           this.nodesMap[fromRegion].callsOriginated.receivedJitter = this.mapData[index].receivedJitter;
@@ -153,7 +152,7 @@ export class MapComponent implements OnInit {
         if(this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
           this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
         if(this.nodesMap[fromRegion].callsOriginated.polqa === 0)
-          this.nodesMap[fromRegion].callsOriginated.polqa = '–';
+          this.nodesMap[fromRegion].callsOriginated.polqa = "--";
         this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
       }
     }
@@ -162,27 +161,25 @@ export class MapComponent implements OnInit {
         let newRegionObj = {
           region: this.mapData[index].to,
           totalCalls: this.mapData[index].totalCalls,
-          callsOriginated: {passed: 0,failed: 0, total: 0, polqa: '–', receivedJitter: 0,roundTripTime: 0, receivedPacketLoss: 0},
+          callsOriginated: {passed: 0,failed: 0, total: 0, polqa: "--", receivedJitter: 0,roundTripTime: 0, receivedPacketLoss: 0},
           callsTerminated: {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
             total: this.mapData[index].totalCalls, 
-            polqa: '–',
+            polqa: "--",
             receivedJitter: 0,
             roundTripTime: 0,
             receivedPacketLoss: 0
           }
         }
-        if (this.mapData[index].polqa)
+        if (thereIsPolqaForIndex)
           newRegionObj.callsTerminated.polqa = this.mapData[index].polqa;
         this.nodesMap[toRegion] = newRegionObj;
       } else {
         this.nodesMap[toRegion].callsTerminated.passed += this.mapData[index].passed;
         this.nodesMap[toRegion].callsTerminated.failed += this.mapData[index].failed;
         this.nodesMap[toRegion].callsTerminated.total += this.mapData[index].totalCalls;
-        if (this.mapData[index].polqa)
-          this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
-        if (this.mapData[index].polqa && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
+        if (thereIsPolqaForIndex && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
           this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
         if (this.nodesMap[toRegion].callsTerminated.receivedJitter < this.mapData[index].receivedJitter)
           this.nodesMap[toRegion].callsTerminated.receivedJitter = this.mapData[index].receivedJitter;
@@ -191,7 +188,7 @@ export class MapComponent implements OnInit {
         if (this.nodesMap[toRegion].callsTerminated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
           this.nodesMap[toRegion].callsTerminated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
         if (this.nodesMap[toRegion].callsTerminated.polqa === 0)
-          this.nodesMap[toRegion].callsTerminated.polqa = '–';
+          this.nodesMap[toRegion].callsTerminated.polqa = "--";
         if (fromRegion !== toRegion)
           this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
       }
@@ -205,10 +202,10 @@ export class MapComponent implements OnInit {
 
     if (!this.linesMap[uniqueKey]) {
       this.linesMap[uniqueKey] = this.mapData[index];
-      if (this.mapData[index].polqa)
+      if (this.mapData[index].polqa !== null && this.mapData[index].polqa !== undefined && this.mapData[index].polqa !== "")
         this.linesMap[uniqueKey].polqa = this.mapData[index].polqa;
-      else if(!this.mapData[index].polqa || this.mapData[index].polqa === 0)
-        this.linesMap[uniqueKey].polqa = '–';
+      else
+        this.linesMap[uniqueKey].polqa = "--";
     } else {
       this.linesMap[uniqueKey].passed += this.mapData[index].passed;
       this.linesMap[uniqueKey].failed += this.mapData[index].failed;
