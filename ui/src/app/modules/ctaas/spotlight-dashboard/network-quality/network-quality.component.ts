@@ -45,13 +45,14 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
   commonChartOptions: Partial<ChartOptions>;
   filteredUsers: Observable<string[]>;
   selectedUsers = [];
-
+  preselectedUsers = [];
   @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
   
 
   filterNetworkQualityForm: any[] = ['Most Representative', 'Average'];
   defaultValue: string = this.filterNetworkQualityForm[0];
   selectedFilter: boolean = false;
+  preselectedFilter:string = 'Most Representative';
   avgFlag: boolean = false;
   maxLabel: string = 'Max.';
   minLabel: string = 'Min.';
@@ -144,15 +145,15 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
     return this.users.filter(option => option.toLowerCase().includes(filterValue));
   }
 
-  reloadCharts(){
+  applyFilters(){
+    this.selectedUsers = [...this.preselectedUsers];
+    this.selectedUsers = [...this.preselectedUsers];
+    this.selectedFilter = this.evaluateFilter();
     this.loadCharts({hideChart:false,showLoading:true});
   }
 
   onChangeValue(event:any){
-    if(event === 'Most Representative')
-      this.selectedFilter = false;
-    if(event === 'Average')
-      this.selectedFilter = true;
+    this.preselectedFilter = event;
   }
 
   loadCharts(params:{hideChart?:boolean,showLoading?:boolean} = {hideChart:true,showLoading:false}) {
@@ -297,21 +298,36 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
   }
 
   remove(user: string): void {
-    const index = this.selectedUsers.indexOf(user);
+    const index = this.preselectedUsers.indexOf(user);
     if (index >= 0) {
-      this.selectedUsers.splice(index, 1);
+      this.preselectedUsers.splice(index, 1);
     }
   }
 
   selected(): void {
-    this.selectedUsers.push(this.filters.get('user').value);
+    this.preselectedUsers.push(this.filters.get('user').value);
     this.userInput.nativeElement.value = '';
     this.filters.get('user').setValue("");
     this.initAutocompletes();
   }
 
   clearUsersFilter(){
-    this.selectedUsers=[];
+    this.preselectedUsers=[];
+  }
+
+  userHasChanged(){
+    return JSON.stringify(this.preselectedUsers)!==JSON.stringify(this.selectedUsers);
+  }
+  
+  metricValueHasChanged(){
+    return this.selectedFilter !== this.evaluateFilter();
+  }
+
+  evaluateFilter():boolean{
+    if(this.preselectedFilter === 'Most Representative')
+      return false;
+    if(this.preselectedFilter === 'Average')
+      return true;
   }
 
 }
