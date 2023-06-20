@@ -286,15 +286,15 @@ export class MapComponent implements OnInit {
   drawLines() {
     for (const key in this.linesMap) {
       let lineState = this.GOOD_COLOR;
-      this.LINE_WEIGHT = 3;
+      this.LINE_WEIGHT = 5;
       let coordinatesArray = [];
       if(this.linesMap[key].failed >= 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa <= 3) {
         lineState = this.MID_COLOR;
-        this.LINE_WEIGHT = 5;
+        this.LINE_WEIGHT = 7;
       }
       if(this.linesMap[key].failed >= 5 || this.linesMap[key].polqa < 2) {
         lineState = this.BAD_COLOR;
-        this.LINE_WEIGHT = 5;
+        this.LINE_WEIGHT = 7;
       }
       coordinatesArray[0] = new L.LatLng(this.linesMap[key].from.location.y, this.linesMap[key].from.location.x);
       coordinatesArray[1] = new L.LatLng(this.linesMap[key].to.location.y, this.linesMap[key].to.location.x);
