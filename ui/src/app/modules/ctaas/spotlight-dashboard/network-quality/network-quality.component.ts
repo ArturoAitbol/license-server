@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -24,7 +24,7 @@ import { MetricsThresholds } from 'src/app/helpers/metrics';
   templateUrl: './network-quality.component.html',
   styleUrls: ['./network-quality.component.css']
 })
-export class NetworkQualityComponent implements OnInit {
+export class NetworkQualityComponent implements OnInit, OnChanges {
 
   @Input() startDate: Moment;
   @Input() endDate: Moment;
@@ -115,10 +115,15 @@ export class NetworkQualityComponent implements OnInit {
         this.domSanitzer.bypassSecurityTrustResourceUrl('assets/images/icons/jitter.svg')
     );
   }
-  
 
   ngOnInit(): void {
     this.loadCharts();
+  }
+
+  ngOnChanges(changes: SimpleChanges){
+    if(!changes.regions.firstChange || !changes.startDate.firstChange || !changes.endDate.firstChange){
+      this.loadCharts();
+    }
   }
 
   chartLoadCompleted() {
