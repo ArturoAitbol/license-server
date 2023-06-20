@@ -52,8 +52,6 @@ public class TekvLSGetCtaasMapSummary {
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-        String from = request.getQueryParameters().getOrDefault("from", "");
-        String to = request.getQueryParameters().getOrDefault("to", "");
         String regions = request.getQueryParameters().getOrDefault("regions", "");
 
         if (subaccountId.isEmpty()) {
