@@ -37,25 +37,31 @@
                             <div class="row-auto">
                                  <div class="col-12">
                                      <th>POLQA</th>
-                                     <td>{{data.polqa}}</td>
-                                 </div>
-                                </div>
-                            <div class="row-auto">
-                                <div class="col-12">
-                                    <th>Packet loss</th>     
-                                    <td>{{data.receivedPacketLoss}}</td>
+                                     <td>Min: {{data.polqa.min}}, Avg: {{data.polqa.avg.toFixed(2)}}</td>
                                 </div>
                             </div>
                             <div class="row-auto">
                                 <div class="col-12">
-                                    <th>Jitter</th>     
-                                    <td>{{data.receivedJitter}}</td>
+                                    <th>Jitter (ms)</th>
+                                    <td>Max: {{data.receivedJitter.max}}, Avg: {{data.receivedJitter.avg.toFixed(2)}}</td>
+                               </div>
+                           </div>
+                           <div class="row-auto">
+                            <div class="col-12">
+                                    <th>Round trip time (ms)</th>
+                                    <td>Max: {{data.roundTripTime.max}}, Avg: {{data.roundTripTime.avg.toFixed(2)}}</td>
                                 </div>
                             </div>
                             <div class="row-auto">
                                 <div class="col-12">
-                                    <th>Round trip time (ms)</th>     
-                                    <td>{{data.roundTripTime}}</td>
+                                    <th>Packet Lost (%)</th>
+                                    <td>Max: {{data.receivedPacketLoss.max}}, Avg: {{data.receivedPacketLoss.avg.toFixed(2)}}</td>
+                               </div>
+                           </div>
+                           <div class="row-auto">
+                               <div class="col-12">
+                                   <th>Bitrate (kbps)</th>
+                                   <td>Avg: {{data.sentBitrate}}</td>
                                 </div>
                             </div>
                             <div class="row-auto">

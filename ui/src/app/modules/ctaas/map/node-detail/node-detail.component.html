@@ -33,27 +33,33 @@
                             <div class="row-auto">
                                  <div class="col-12">
                                      <th>POLQA</th>
-                                     <td>{{data.callsOriginated.polqa}}</td>
+                                     <td>Min: {{data.callsOriginated.polqa.min}}, Avg: {{data.callsOriginated.polqa.avg.toFixed(2)}}</td>
                                 </div>
                             </div>
                             <div class="row-auto">
                                 <div class="col-12">
-                                    <th>Jitter</th>
-                                    <td>{{data.callsOriginated.receivedJitter}}</td>
+                                    <th>Jitter (ms)</th>
+                                    <td>Max: {{data.callsOriginated.receivedJitter.max}}, Avg: {{data.callsOriginated.receivedJitter.avg.toFixed(2)}}</td>
                                </div>
                            </div>
                            <div class="row-auto">
                             <div class="col-12">
                                     <th>Round trip time (ms)</th>
-                                    <td>{{data.callsOriginated.roundTripTime}}</td>
+                                    <td>Max: {{data.callsOriginated.roundTripTime.max}}, Avg: {{data.callsOriginated.roundTripTime.avg.toFixed(2)}}</td>
                                 </div>
                             </div>
                             <div class="row-auto">
                                 <div class="col-12">
-                                    <th>Packet Lost</th>
-                                    <td>{{data.callsOriginated.receivedPacketLoss}}</td>
+                                    <th>Packet Lost (%)</th>
+                                    <td>Max: {{data.callsOriginated.receivedPacketLoss.max}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg.toFixed(2)}}</td>
                                </div>
                            </div>
+                           <div class="row-auto">
+                               <div class="col-12">
+                                   <th>Bitrate (kbps)</th>
+                                   <td>Avg: {{data.callsOriginated.sentBitrate}}</td>
+                              </div>
+                          </div>
                         </tr>
                         <tr class="col-6 terminated-column-data">
                             <div class="row-auto">
@@ -77,27 +83,33 @@
                            <div class="row-auto">
                                 <div class="col-12">
                                     <th>POLQA</th>
-                                    <td>{{data.callsTerminated.polqa}}</td>
+                                    <td>Min: {{data.callsTerminated.polqa.min}}, Avg: {{data.callsTerminated.polqa.avg.toFixed(2)}}</td>
                                </div>
                            </div>
                            <div class="row-auto">
                                <div class="col-12">
-                                   <th>Jitter</th>
-                                   <td>{{data.callsTerminated.receivedJitter}}</td>
+                                   <th>Jitter (ms)</th>
+                                   <td>Max: {{data.callsTerminated.receivedJitter.max}}, Avg: {{data.callsTerminated.receivedJitter.avg.toFixed(2)}}</td>
                               </div>
                           </div>
                           <div class="row-auto">
                            <div class="col-12">
                                    <th>Round trip time (ms)</th>
-                                   <td>{{data.callsTerminated.roundTripTime}}</td>
+                                   <td>Max: {{data.callsTerminated.roundTripTime.max}}, Avg: {{data.callsTerminated.roundTripTime.avg.toFixed(2)}}</td>
                                </div>
                            </div>
                            <div class="row-auto">
                                <div class="col-12">
-                                   <th>Packet Lost</th>
-                                   <td>{{data.callsTerminated.receivedPacketLoss}}</td>
+                                   <th>Packet Lost (%)</th>
+                                   <td>Max: {{data.callsTerminated.receivedPacketLoss.max}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg.toFixed(2)}}</td>
                               </div>
                           </div>
+                          <div class="row-auto">
+                              <div class="col-12">
+                                  <th>Bitrate (kbps)</th>
+                                  <td>Avg: {{data.callsTerminated.sentBitrate}}</td>
+                             </div>
+                         </div>
                         </tr>
                     </tbody>
                 </table>
