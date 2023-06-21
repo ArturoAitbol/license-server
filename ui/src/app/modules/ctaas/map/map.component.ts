@@ -97,8 +97,8 @@ export class MapComponent implements OnInit {
   processMapData(){
     for(let i=0 ; i < this.mapData.length; i++){
       try {
-        let fromRegion; 
-        let toRegion;
+        let fromRegion: string; 
+        let toRegion: string;
         if(this.mapData[i].from.location) {
           fromRegion = this.mapData[i].from.location?.y + ", " + this.mapData[i].from.location?.x;
           this.mapStartView.push([this.mapData[i].from.location.y,this.mapData[i].from.location.x]);
@@ -118,7 +118,8 @@ export class MapComponent implements OnInit {
     this.baseMap();
   }
 
-  private getNodeData(index, fromRegion, toRegion) {
+  private getNodeData(index: number, fromRegion: string, toRegion: string) {
+    const thereIsPolqaForIndex = this.mapData[index].polqa !== null && this.mapData[index].polqa !== undefined && this.mapData[index].polqa.count > 0;
     if(fromRegion) {
       if (!this.nodesMap[fromRegion]) {
         let newRegionObj = {
@@ -128,32 +129,26 @@ export class MapComponent implements OnInit {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
             total: this.mapData[index].totalCalls, 
-            polqa: '–',
-            receivedJitter: 0,
-            roundTripTime: 0,
-            receivedPacketLoss: 0
+            polqa: { count: 0, min: "", avg: "" },
+            receivedJitter: this.mapData[index].receivedJitter,
+            roundTripTime: this.mapData[index].roundTripTime,
+            receivedPacketLoss: this.mapData[index].receivedPacketLoss,
+            sentBitrate: this.mapData[index].sentBitrate
           },
-          callsTerminated: {passed: 0,failed: 0, total: 0, polqa: '–', receivedJitter: 0, roundTripTime: 0, receivedPacketLoss: 0}
+          callsTerminated: {
+            passed: 0,failed: 0, total: 0, 
+            polqa: { count: 0, min: "", avg: "" }, 
+            receivedJitter: { count: 0, max: "", avg: "" }, 
+            roundTripTime: { count: 0, max: "", avg: "" }, 
+            receivedPacketLoss: { count: 0, max: "", avg: "" }, 
+            sentBitrate: { count: 0, avg: "" }
+          }
         }
-        if (this.mapData[index].polqa)
+        if (thereIsPolqaForIndex)
           newRegionObj.callsOriginated.polqa = this.mapData[index].polqa;
         this.nodesMap[fromRegion] = newRegionObj;
       } else {
-        this.nodesMap[fromRegion].callsOriginated.passed += this.mapData[index].passed;
-        this.nodesMap[fromRegion].callsOriginated.failed += this.mapData[index].failed;
-        this.nodesMap[fromRegion].callsOriginated.total += this.mapData[index].totalCalls;
-        if (this.mapData[index].polqa)
-          this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
-        if (this.mapData[index].polqa && this.nodesMap[fromRegion].callsOriginated.polqa > this.mapData[index].polqa)
-          this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
-        if(this.nodesMap[fromRegion].callsOriginated.receivedJitter < this.mapData[index].receivedJitter)
-          this.nodesMap[fromRegion].callsOriginated.receivedJitter = this.mapData[index].receivedJitter;
-        if(this.nodesMap[fromRegion].callsOriginated.roundTripTime < this.mapData[index].roundTripTime)
-          this.nodesMap[fromRegion].callsOriginated.roundTripTime = this.mapData[index].roundTripTime;
-        if(this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
-          this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
-        if(this.nodesMap[fromRegion].callsOriginated.polqa === 0)
-          this.nodesMap[fromRegion].callsOriginated.polqa = '–';
+        this.updateRegionInformation(index, fromRegion, "callsOriginated", thereIsPolqaForIndex);
         this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
       }
     }
@@ -162,65 +157,138 @@ export class MapComponent implements OnInit {
         let newRegionObj = {
           region: this.mapData[index].to,
           totalCalls: this.mapData[index].totalCalls,
-          callsOriginated: {passed: 0,failed: 0, total: 0, polqa: '–', receivedJitter: 0,roundTripTime: 0, receivedPacketLoss: 0},
+          callsOriginated: {
+            passed: 0,failed: 0, total: 0, 
+            polqa: { count: 0, min: "", avg: "" }, 
+            receivedJitter: { count: 0, max: "", avg: "" },
+            roundTripTime: { count: 0, max: "", avg: "" }, 
+            receivedPacketLoss: { count: 0, max: "", avg: "" }, 
+            sentBitrate: { count: 0, avg: "" }
+          },
           callsTerminated: {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
             total: this.mapData[index].totalCalls, 
-            polqa: '–',
-            receivedJitter: 0,
-            roundTripTime: 0,
-            receivedPacketLoss: 0
+            polqa: { count: 0, min: "", avg: "" },
+            receivedJitter: this.mapData[index].receivedJitter,
+            roundTripTime: this.mapData[index].roundTripTime,
+            receivedPacketLoss: this.mapData[index].receivedPacketLoss,
+            sentBitrate: this.mapData[index].sentBitrate
           }
         }
-        if (this.mapData[index].polqa)
+        if (thereIsPolqaForIndex)
           newRegionObj.callsTerminated.polqa = this.mapData[index].polqa;
         this.nodesMap[toRegion] = newRegionObj;
       } else {
-        this.nodesMap[toRegion].callsTerminated.passed += this.mapData[index].passed;
-        this.nodesMap[toRegion].callsTerminated.failed += this.mapData[index].failed;
-        this.nodesMap[toRegion].callsTerminated.total += this.mapData[index].totalCalls;
-        if (this.mapData[index].polqa)
-          this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
-        if (this.mapData[index].polqa && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
-          this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
-        if (this.nodesMap[toRegion].callsTerminated.receivedJitter < this.mapData[index].receivedJitter)
-          this.nodesMap[toRegion].callsTerminated.receivedJitter = this.mapData[index].receivedJitter;
-        if (this.nodesMap[toRegion].callsTerminated.roundTripTime < this.mapData[index].roundTripTime)
-          this.nodesMap[toRegion].callsTerminated.roundTripTime = this.mapData[index].roundTripTime;
-        if (this.nodesMap[toRegion].callsTerminated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
-          this.nodesMap[toRegion].callsTerminated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
-        if (this.nodesMap[toRegion].callsTerminated.polqa === 0)
-          this.nodesMap[toRegion].callsTerminated.polqa = '–';
+        this.updateRegionInformation(index, toRegion, "callsTerminated", thereIsPolqaForIndex);
         if (fromRegion !== toRegion)
           this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
       }
     }
   }
 
-  private getLineData(index, fromRegion, toRegion) {
+  private updateRegionInformation(index: number, region: string, callsOrientation: string, thereIsPolqaForIndex: boolean) {
+    this.nodesMap[region][callsOrientation].passed += this.mapData[index].passed;
+    this.nodesMap[region][callsOrientation].failed += this.mapData[index].failed;
+    this.nodesMap[region][callsOrientation].total += this.mapData[index].totalCalls;
+    
+    if (thereIsPolqaForIndex) {
+      this.nodesMap[region][callsOrientation].polqa.avg = 
+          (this.nodesMap[region][callsOrientation].polqa.avg * this.nodesMap[region][callsOrientation].polqa.count + 
+          this.mapData[index].polqa.avg * this.mapData[index].polqa.count) /
+          (this.nodesMap[region][callsOrientation].polqa.count + this.mapData[index].polqa.count);
+      this.nodesMap[region][callsOrientation].polqa.count += this.mapData[index].polqa.count;
+      if (this.nodesMap[region][callsOrientation].polqa.min > this.mapData[index].polqa.min)
+        this.nodesMap[region][callsOrientation].polqa.min = this.mapData[index].polqa.min;
+    }
+    
+    this.nodesMap[region][callsOrientation].receivedJitter.avg = 
+        (this.nodesMap[region][callsOrientation].receivedJitter.avg * this.nodesMap[region][callsOrientation].receivedJitter.count + 
+        this.mapData[index].receivedJitter.avg * this.mapData[index].receivedJitter.count) /
+        (this.nodesMap[region][callsOrientation].receivedJitter.count + this.mapData[index].receivedJitter.count);
+    this.nodesMap[region][callsOrientation].receivedJitter.count += this.mapData[index].receivedJitter.count;
+    if (this.nodesMap[region][callsOrientation].receivedJitter.max < this.mapData[index].receivedJitter.max)
+      this.nodesMap[region][callsOrientation].receivedJitter.max = this.mapData[index].receivedJitter.max;
+    
+    this.nodesMap[region][callsOrientation].roundTripTime.avg = 
+        (this.nodesMap[region][callsOrientation].roundTripTime.avg * this.nodesMap[region][callsOrientation].roundTripTime.count + 
+        this.mapData[index].roundTripTime.avg * this.mapData[index].roundTripTime.count) /
+        (this.nodesMap[region][callsOrientation].roundTripTime.count + this.mapData[index].roundTripTime.count);
+    this.nodesMap[region][callsOrientation].roundTripTime.count += this.mapData[index].roundTripTime.count;
+    if (this.nodesMap[region][callsOrientation].roundTripTime.max < this.mapData[index].roundTripTime.max)
+      this.nodesMap[region][callsOrientation].roundTripTime.max = this.mapData[index].roundTripTime.max;
+    
+    this.nodesMap[region][callsOrientation].receivedPacketLoss.avg = 
+        (this.nodesMap[region][callsOrientation].receivedPacketLoss.avg * this.nodesMap[region][callsOrientation].receivedPacketLoss.count + 
+        this.mapData[index].receivedPacketLoss.avg * this.mapData[index].receivedPacketLoss.count) /
+        (this.nodesMap[region][callsOrientation].receivedPacketLoss.count + this.mapData[index].receivedPacketLoss.count);
+    this.nodesMap[region][callsOrientation].receivedPacketLoss.count += this.mapData[index].receivedPacketLoss.count;
+    if (this.nodesMap[region][callsOrientation].receivedPacketLoss.max < this.mapData[index].receivedPacketLoss.max)
+      this.nodesMap[region][callsOrientation].receivedPacketLoss.max = this.mapData[index].receivedPacketLoss.max;
+
+    this.nodesMap[region][callsOrientation].sentBitrate.avg = 
+        (this.nodesMap[region][callsOrientation].sentBitrate.avg * this.nodesMap[region][callsOrientation].sentBitrate.count + 
+        this.mapData[index].sentBitrate.avg * this.mapData[index].sentBitrate.count) /
+        (this.nodesMap[region][callsOrientation].sentBitrate.count + this.mapData[index].sentBitrate.count);
+    this.nodesMap[region][callsOrientation].sentBitrate.count += this.mapData[index].sentBitrate.count;
+  }
+
+  private getLineData(index: number, fromRegion: string, toRegion: string) {
     const fromTo = fromRegion + " - " + toRegion;
     const toFrom = toRegion + " - " + fromRegion;
     const uniqueKey = this.linesMap[fromTo]? fromTo : toFrom;
+    const thereIsPolqaForIndex = this.mapData[index].polqa !== null && this.mapData[index].polqa !== undefined && this.mapData[index].polqa.count > 0;
 
     if (!this.linesMap[uniqueKey]) {
       this.linesMap[uniqueKey] = this.mapData[index];
-      if (this.mapData[index].polqa)
+      if (thereIsPolqaForIndex)
         this.linesMap[uniqueKey].polqa = this.mapData[index].polqa;
-      else if(!this.mapData[index].polqa || this.mapData[index].polqa === 0)
-        this.linesMap[uniqueKey].polqa = '–';
+      else
+        this.linesMap[uniqueKey].polqa = { count: 0, min: "", avg: "" };
     } else {
       this.linesMap[uniqueKey].passed += this.mapData[index].passed;
       this.linesMap[uniqueKey].failed += this.mapData[index].failed;
       this.linesMap[uniqueKey].totalCalls += this.mapData[index].totalCalls;
-      if (this.linesMap[uniqueKey].polqa && this.linesMap[uniqueKey].polqa > this.mapData[index].polqa)
-        this.linesMap[uniqueKey].polqa = this.mapData[index].polqa;
-      if (this.linesMap[uniqueKey].receivedJitter < this.mapData[index].receivedJitter)
-        this.linesMap[uniqueKey].receivedJitter = this.mapData[index].receivedJitter;
-      if (this.linesMap[uniqueKey].roundTripTime < this.mapData[index].roundTripTime)
-        this.linesMap[uniqueKey].roundTripTime = this.mapData[index].roundTripTime;
-      if (this.linesMap[uniqueKey].receivedPacketLoss < this.mapData[index].receivedPacketLoss)
-        this.linesMap[uniqueKey].receivedPacketLoss = this.mapData[index].receivedPacketLoss;
+
+      if (thereIsPolqaForIndex) {
+        this.linesMap[uniqueKey].polqa.avg = 
+            (this.linesMap[uniqueKey].polqa.avg * this.linesMap[uniqueKey].polqa.count + 
+            this.mapData[index].polqa.avg * this.mapData[index].polqa.count) /
+            (this.linesMap[uniqueKey].polqa.count + this.mapData[index].polqa.count);
+        this.linesMap[uniqueKey].polqa.count += this.mapData[index].polqa.count;
+        if (this.linesMap[uniqueKey].polqa.min > this.mapData[index].polqa.min)
+          this.linesMap[uniqueKey].polqa.min = this.mapData[index].polqa.min;
+      }
+      
+      this.linesMap[uniqueKey].receivedJitter.avg = 
+          (this.linesMap[uniqueKey].receivedJitter.avg * this.linesMap[uniqueKey].receivedJitter.count + 
+          this.mapData[index].receivedJitter.avg * this.mapData[index].receivedJitter.count) /
+          (this.linesMap[uniqueKey].receivedJitter.count + this.mapData[index].receivedJitter.count);
+      this.linesMap[uniqueKey].receivedJitter.count += this.mapData[index].receivedJitter.count;
+      if (this.linesMap[uniqueKey].receivedJitter.max < this.mapData[index].receivedJitter.max)
+        this.linesMap[uniqueKey].receivedJitter.max = this.mapData[index].receivedJitter.max;
+      
+      this.linesMap[uniqueKey].roundTripTime.avg = 
+          (this.linesMap[uniqueKey].roundTripTime.avg * this.linesMap[uniqueKey].roundTripTime.count + 
+          this.mapData[index].roundTripTime.avg * this.mapData[index].roundTripTime.count) /
+          (this.linesMap[uniqueKey].roundTripTime.count + this.mapData[index].roundTripTime.count);
+      this.linesMap[uniqueKey].roundTripTime.count += this.mapData[index].roundTripTime.count;
+      if (this.linesMap[uniqueKey].roundTripTime.max < this.mapData[index].roundTripTime.max)
+        this.linesMap[uniqueKey].roundTripTime.max = this.mapData[index].roundTripTime.max;
+      
+      this.linesMap[uniqueKey].receivedPacketLoss.avg = 
+          (this.linesMap[uniqueKey].receivedPacketLoss.avg * this.linesMap[uniqueKey].receivedPacketLoss.count + 
+          this.mapData[index].receivedPacketLoss.avg * this.mapData[index].receivedPacketLoss.count) /
+          (this.linesMap[uniqueKey].receivedPacketLoss.count + this.mapData[index].receivedPacketLoss.count);
+      this.linesMap[uniqueKey].receivedPacketLoss.count += this.mapData[index].receivedPacketLoss.count;
+      if (this.linesMap[uniqueKey].receivedPacketLoss.max < this.mapData[index].receivedPacketLoss.max)
+        this.linesMap[uniqueKey].receivedPacketLoss.max = this.mapData[index].receivedPacketLoss.max;
+  
+      this.linesMap[uniqueKey].sentBitrate.avg = 
+          (this.linesMap[uniqueKey].sentBitrate.avg * this.linesMap[uniqueKey].sentBitrate.count + 
+          this.mapData[index].sentBitrate.avg * this.mapData[index].sentBitrate.count) /
+          (this.linesMap[uniqueKey].sentBitrate.count + this.mapData[index].sentBitrate.count);
+      this.linesMap[uniqueKey].sentBitrate.count += this.mapData[index].sentBitrate.count;
     }
   }
 
@@ -261,14 +329,13 @@ export class MapComponent implements OnInit {
   drawNodes():void {
     for (const key in this.nodesMap) {
       let customIconUrl = "assets/images/goodMarker.svg";
-      let failed, polqa;
-      failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
-      polqa = this.nodesMap[key].callsOriginated.polqa;
-      if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa) 
-        polqa = this.nodesMap[key].callsTerminated.polqa;
-      if(failed >= 1 && failed < 5 || polqa >= 2 && polqa <= 3)
+      let failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
+      let polqa = this.nodesMap[key].callsOriginated.polqa.count > 0 ? this.nodesMap[key].callsOriginated.polqa.avg : 5;
+      if (this.nodesMap[key].callsTerminated.polqa.count > 0 && polqa > this.nodesMap[key].callsTerminated.polqa.avg) 
+        polqa = this.nodesMap[key].callsTerminated.polqa.avg;
+      if (failed >= 1 && failed < 5 || polqa >= 2 && polqa <= 3)
         customIconUrl = "assets/images/midMarker.svg";
-      if(failed >= 5 || polqa < 2)
+      if (failed >= 5 || polqa < 2)
         customIconUrl = "assets/images/badMarker.svg";
       let customIcon = L.icon({
         iconUrl: customIconUrl,
@@ -286,15 +353,17 @@ export class MapComponent implements OnInit {
   drawLines() {
     for (const key in this.linesMap) {
       let lineState = this.GOOD_COLOR;
-      this.LINE_WEIGHT = 3;
+      this.LINE_WEIGHT = 5;
       let coordinatesArray = [];
-      if(this.linesMap[key].failed >= 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa <= 3) {
+      let failed = this.linesMap[key].failed;
+      let polqa = this.linesMap[key].polqa.count > 0 ? this.linesMap[key].polqa.avg : 5;
+      if ((failed >= 1 && failed < 5) || (polqa >= 2  && polqa <= 3)) {
         lineState = this.MID_COLOR;
-        this.LINE_WEIGHT = 5;
+        this.LINE_WEIGHT = 7;
       }
-      if(this.linesMap[key].failed >= 5 || this.linesMap[key].polqa < 2) {
+      if (failed >= 5 || polqa < 2) {
         lineState = this.BAD_COLOR;
-        this.LINE_WEIGHT = 5;
+        this.LINE_WEIGHT = 7;
       }
       coordinatesArray[0] = new L.LatLng(this.linesMap[key].from.location.y, this.linesMap[key].from.location.x);
       coordinatesArray[1] = new L.LatLng(this.linesMap[key].to.location.y, this.linesMap[key].to.location.x);
@@ -441,7 +510,10 @@ export class MapComponent implements OnInit {
   nodeDetails(key:any){
     let nodeData = {...this.nodesMap[key], date: this.startDate};
     this.dialog.open(NodeDetailComponent, {
-      width: '800px',
+      width: '900px',
+      height: '79vh',
+      maxHeight: '100vh',
+      autoFocus: false,
       disableClose: true,
       data: nodeData
     });
@@ -449,9 +521,12 @@ export class MapComponent implements OnInit {
 
   lineDetails(key:any){
     let lineData = {...this.linesMap[key], date: this.startDate};
-    this.dialog.open(LineDetailComponent, {
-      width: '500px',
+    let dialogRef = this.dialog.open(LineDetailComponent, {
+      width: '505px',
+      height: '80vh',
+      maxHeight: '100vh',
       disableClose: true,
+      autoFocus: false,
       data: lineData
     });
   }
