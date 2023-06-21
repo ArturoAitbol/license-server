@@ -298,8 +298,8 @@ export class DetailedReportsCompoment implements OnInit {
 
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
-    this.detailedTestReport[index].from.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timestamp');
-    this.detailedTestReport[index].to.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].to.mediaStats, 'timestamp');
+    this.detailedTestReport[index].from.mediaStats = Utility.sortListInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timeStampIndex', true);
+    this.detailedTestReport[index].to.mediaStats = Utility.sortListInAscendingOrder(this.detailedTestReport[index].to.mediaStats, 'timeStampIndex', true);
     if (this.detailedTestReport[index].otherParties) // check for null / undefined values
       this.setOtherPartiesPanelStatus(this.detailedTestReport[index].otherParties);
   }
