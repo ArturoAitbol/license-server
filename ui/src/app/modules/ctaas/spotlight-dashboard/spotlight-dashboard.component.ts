@@ -82,6 +82,7 @@ export class SpotlightDashboardComponent implements OnInit{
     region: [""]
   });
 
+  date: Moment;
   regions: { country: string, state: string, city: string, displayName: string }[] = [];
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
@@ -109,7 +110,9 @@ export class SpotlightDashboardComponent implements OnInit{
   timerIsRunning = false;
   isRefreshing = false;
   chartsLoaded = 0;
+  preselectedRegions = [];
   selectedRegions = [];
+  weeklyPreselectedRegions = [];
   weeklySelectedRegions = [];
   refreshIntervalSubscription: Subscription;
   autoRefresh = false;
@@ -163,7 +166,6 @@ export class SpotlightDashboardComponent implements OnInit{
       </div>
       `;
     };
-    this.setWeeklyRange();
   }
 
   ngOnInit() {
@@ -177,6 +179,8 @@ export class SpotlightDashboardComponent implements OnInit{
           this.filters.get('date').setValue(moment.utc(this.note.openDate));
           this.weeklyFilters.get('date').setValue(moment.utc(this.note.openDate));
           this.isHistoricalView = true;
+          this.setWeeklyRange();
+          this.setDate();
           this.loadCharts();
           this.showChildren = true;
         });
@@ -208,9 +212,13 @@ export class SpotlightDashboardComponent implements OnInit{
           }
           this.locationFlag = true;
           this.weeklySelectedRegions = this.selectedRegions;
+          this.preselectedRegions = [...this.selectedRegions];
+          this.weeklyPreselectedRegions = [...this.selectedRegions];
           this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
           this.filters.controls['region'].setValue(this.selectedRegion);
         }
+        this.setWeeklyRange();
+        this.setDate();
         this.loadCharts();
         this.showChildren = true;
         this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
@@ -219,11 +227,24 @@ export class SpotlightDashboardComponent implements OnInit{
           this.disableFiltersWhileLoading = false;
           this.autoRefresh = true;
           this.reloadCharts(false);
+          this.networkQuality.loadCharts({showLoading:false});
         });
       }
     });
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
+  }
+
+  dateHasChanged():boolean{
+    if(this.selectedPeriod==="daily")
+      return this.filters.get('date').value.format("MM-DD-YYYY") !== this.date.format("MM-DD-YYYY");
+    return this.weeklyFilters.get('date').value.format("MM-DD-YYYY") !== this.selectedRange.end.format("MM-DD-YYYY");
+  }
+
+  regionsHaveChanged():boolean{
+    if(this.selectedPeriod==="daily")
+      return JSON.stringify(this.preselectedRegions) !== JSON.stringify(this.selectedRegions);
+    return JSON.stringify(this.weeklyPreselectedRegions) !== JSON.stringify(this.weeklySelectedRegions);
   }
   
   getStartWeekDate(): Moment{
@@ -231,15 +252,21 @@ export class SpotlightDashboardComponent implements OnInit{
   }
   
   getEndWeekDate(): Moment{
-    return this.isHistoricalView ? this.weeklyFilters.get('date').value : Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
+    const date = this.weeklyFilters.get('date').value.clone();
+    return this.isHistoricalView ? date : Utility.setHoursOfDate(date);
   }
 
   setWeeklyRange(){
     this.selectedRange = { start: this.getStartWeekDate(), end: this.getEndWeekDate() };
   }
+
+  setDate(){
+    const date = this.filters.get('date').value.clone();
+    this.date = this.isHistoricalView ? date : Utility.setHoursOfDate(date);
+  }
   
-  remove(region: string): void {
-    const regions = this.selectedPeriod==='daily'? this.selectedRegions : this.weeklySelectedRegions;
+  removeRegion(region: string): void {
+    const regions = this.selectedPeriod==='daily'? this.preselectedRegions : this.weeklyPreselectedRegions;
     const index = regions.indexOf(region);
     if (index >= 0) {
       regions.splice(index, 1);
@@ -255,28 +282,28 @@ export class SpotlightDashboardComponent implements OnInit{
     }
   }
 
-  selected(): void {
+  addRegion(): void {
     if(this.selectedPeriod==='daily'){
       const region = this.filters.get('region').value;
-      this.selectedRegions.push(region);
+      this.preselectedRegions.push(region);
       this.filters.get('region').setValue("");
       this.initAutocompletes();
     }else{
       const region = this.weeklyFilters.get('region').value;
-      this.weeklySelectedRegions.push(region);
+      this.weeklyPreselectedRegions.push(region);
       this.weeklyFilters.get('region').setValue("");
       this.initWeeklyAutocompletes();
     }
-    this.regionInput.nativeElement.value = ''; 
+    this.regionInput.nativeElement.value = '';
   }
 
   clearRegionsFilter(){
     if(this.selectedPeriod==='daily'){
-      this.selectedRegions = [];
+      this.preselectedRegions=[];
       this.initAutocompletes();
     }
     else {
-      this.weeklySelectedRegions = [];
+      this.weeklyPreselectedRegions = [];
       this.initWeeklyAutocompletes();
     }
   }
@@ -291,12 +318,23 @@ export class SpotlightDashboardComponent implements OnInit{
     }
   }
 
-  reloadCharts(showLoading = true){
-    this.disableFiltersWhileLoading = showLoading;
+  applyFilters(){
     if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
       this.isHistoricalView = false;
+    if(this.selectedPeriod==="daily"){
+      this.selectedRegions = [...this.preselectedRegions];
+      this.setDate();
+    }
+    else{
+      this.weeklySelectedRegions = [...this.weeklyPreselectedRegions];
+      this.setWeeklyRange();
+    }
+    this.reloadCharts();
+  }
+
+  reloadCharts(showLoading = true){
+    this.disableFiltersWhileLoading = showLoading;
     this.loadCharts(showLoading);
-    this.networkQuality.loadCharts({showLoading:showLoading});
   }
 
   selectedPeriodChange() {
@@ -321,13 +359,10 @@ export class SpotlightDashboardComponent implements OnInit{
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
-      const selectedDate = this.isHistoricalView ? this.filters.get('date').value : Utility.setHoursOfDate(this.filters.get('date').value);
-      this.selectedDate = selectedDate.clone().utc();
-      this.selectedDate = selectedDate.clone().utc();
-      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
+      this.selectedDate = this.date.clone().utc();
+      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(this.date, this.selectedRegions, subaccountId));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(this.date, this.date, this.selectedRegions, subaccountId));
     } else {
-      this.setWeeklyRange();
       const selectedStartDate: Moment = this.selectedRange.start.clone();
       const selectedEndDate: Moment = this.selectedRange.end.clone();
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions));
@@ -564,7 +599,7 @@ export class SpotlightDashboardComponent implements OnInit{
     );
     this.filteredRegions.subscribe((regions) => {
       this.notSelectedFilteredDailyRegions = regions;
-      this.selectedRegions.forEach(region => {
+      this.preselectedRegions.forEach(region => {
         this.removeRegionFromArray(region.displayName, this.notSelectedFilteredDailyRegions);
       });
     });

@@ -50,6 +50,10 @@ mat-form-field {
     right: -10px;
 }
 
+.apply-flag{
+    color: #7694B7;
+}
+
 @media (max-width: 600px) {
     .metrics-values mat-icon{
         align-items: center;
