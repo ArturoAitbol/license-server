@@ -404,7 +404,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.nodesMap = {};
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.mapService.getMapSummary(this.filteredDate,this.subaccountId, this.preselectedRegions).subscribe((res:any)=>{
+    this.mapSubscription = this.mapService.getMapSummary(this.filteredDate,this.subaccountId, this.preselectedRegions).subscribe((res:any)=>{
       if(res){
         let parsedSummaryData = []
         if( res.length > 0) {
@@ -431,10 +431,7 @@ export class MapComponent implements OnInit, OnDestroy {
         }
         this.autoRefresh = false;
       }
-  });
-  if(this.selectedRegions.length > 0)
-    this.reloadUserOptions(this.selectedRegions);
-  else
+    });
     this.reloadFilterOptions();
   }
 
@@ -512,7 +509,7 @@ export class MapComponent implements OnInit, OnDestroy {
     if(this.disableFiltersWhileLoading)
       this.filterForm.disable();
 
-    this.spotlightChartsService.getFilterOptions(this.subaccountId,this.filteredDate,this.filteredDate).subscribe((res: any) => {
+    this.filtersSubscription = this.spotlightChartsService.getFilterOptions(this.subaccountId,this.filteredDate,this.filteredDate).subscribe((res: any) => {
       const regions = [];
       res.regions.map(region => {
         if (region.country !== null){
@@ -531,15 +528,6 @@ export class MapComponent implements OnInit, OnDestroy {
       }).sort();
       this.filterForm.enable();
       this.initAutocompletes();
-    })
-  }
-
-  private reloadUserOptions(regions?: any) {
-    if(this.disableFiltersWhileLoading)
-      this.filterForm.disable();
-
-    this.spotlightChartsService.getFilterOptions(this.subaccountId,this.filteredDate,this.filteredDate,"users",regions ? regions : null).subscribe((res: any) => {
-      this.filterForm.enable();
     })
   }
 
