@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../helpers/chart-options-type";
 import {
   defaultFailedCallsChartOptions,
@@ -11,12 +11,12 @@ import {
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
 import moment, { Moment } from "moment";
-import { forkJoin, Observable, interval, Subscription } from "rxjs";
+import { forkJoin, Observable, interval, Subscription, of } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
 import { ReportName, ReportType } from "../../../helpers/report-type";
 import { FormBuilder } from "@angular/forms";
-import { map, startWith } from "rxjs/operators";
+import { catchError, map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
 import { ActivatedRoute } from '@angular/router';
@@ -32,8 +32,9 @@ import { FeatureToggleService } from "../../../services/feature-toggle.service";
   styleUrls: ['./spotlight-dashboard.component.css']
 })
 
-export class SpotlightDashboardComponent implements OnInit{
+export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   vqChartOptions: Partial<ChartOptions>;
+  chartsSubscription:Subscription;
 
   // Weekly Feature Functionality variables
   weeklyFeatureFunctionality = {timePeriod: '', numberCalls: 0, p2pCalls: 0, onNetCalls: 0, offNetCalls: 0};
@@ -349,6 +350,8 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   loadCharts(showLoading = true) {
+    if(this.chartsSubscription)
+      this.chartsSubscription.unsubscribe();
     this.startTimer();
     this.chartsLoaded = 0;
     this.calls.total = 0;
@@ -365,13 +368,14 @@ export class SpotlightDashboardComponent implements OnInit{
     } else {
       const selectedStartDate: Moment = this.selectedRange.start.clone();
       const selectedEndDate: Moment = this.selectedRange.end.clone();
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions));
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', this.weeklySelectedRegions));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, this.weeklySelectedRegions));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', this.weeklySelectedRegions).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, this.weeklySelectedRegions).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true).pipe(catchError(e => of(e))));
     }
-    forkJoin(obs).subscribe((res: any) => {
+
+    this.chartsSubscription = forkJoin(obs).subscribe((res: any) => {
       if (this.selectedPeriod == "daily")
         this.processDailyData(res);
       else
@@ -382,7 +386,8 @@ export class SpotlightDashboardComponent implements OnInit{
       this.isloading = false;
       this.chartsStatus(true);
     }, error => {
-      console.error(error);
+      console.error("SPDS ERROR: ",error);
+      // console.error(error);
       this.isloading = false;
       this.chartsStatus(true);
     });
@@ -715,5 +720,12 @@ export class SpotlightDashboardComponent implements OnInit{
       maxWidth: '30vw',
       disableClose: false
     });
+  }
+
+  ngOnDestroy(): void {
+    if(this.chartsSubscription)
+      this.chartsSubscription.unsubscribe();
+    if(this.refreshIntervalSubscription)
+      this.refreshIntervalSubscription.unsubscribe();
   }
 }

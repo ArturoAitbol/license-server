@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -8,10 +8,10 @@ import {
 } from "./initial-chart-config";
 import { SpotlightChartsService } from "../../../../services/spotlight-charts.service";
 import moment, { Moment } from "moment";
-import { forkJoin, Observable } from "rxjs";
+import { forkJoin, Observable, of, Subscription } from "rxjs";
 import { SubAccountService } from "../../../../services/sub-account.service";
 import { FormBuilder } from '@angular/forms';
-import { map, startWith } from 'rxjs/operators';
+import { catchError, map, startWith } from 'rxjs/operators';
 import { environment } from "../../../../../environments/environment";
 import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
@@ -24,7 +24,7 @@ import { MetricsThresholds } from 'src/app/helpers/metrics';
   templateUrl: './network-quality.component.html',
   styleUrls: ['./network-quality.component.css']
 })
-export class NetworkQualityComponent implements OnInit, OnChanges {
+export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() startDate: Moment;
   @Input() endDate: Moment;
@@ -36,6 +36,7 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
 
   polqaChartOptions: Partial<ChartOptions>;
   customerNetworkQualityData = null;
+  qualitySubscriber:Subscription
 
   // Customer Network Trends variables
   receivedPacketLossChartOptions: Partial<ChartOptions>;
@@ -157,6 +158,8 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
   }
 
   loadCharts(params:{hideChart?:boolean,showLoading?:boolean} = {hideChart:true,showLoading:false}) {
+    if(this.qualitySubscriber)
+      this.qualitySubscriber.unsubscribe();
     this.isChartLoading = params.showLoading;
     this.hideChart = params.hideChart;
     const obs = [];
@@ -172,10 +175,10 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
       this.avgLabel = ""
     }
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter));
-    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId,this.selectedFilter));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter));
-    forkJoin(obs).subscribe((res: any) => {
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter).pipe(catchError(e => of(e))));
+    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.selectedFilter).pipe(catchError(e => of(e))));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter).pipe(catchError(e => of(e))));
+    this.qualitySubscriber =  forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
         this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories.map(category => category.split(" ")[1])};
@@ -328,6 +331,11 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
       return false;
     if(this.preselectedFilter === 'Average')
       return true;
+  }
+
+  ngOnDestroy(): void {
+    if(this.qualitySubscriber)
+      this.qualitySubscriber.unsubscribe();
   }
 
 }
