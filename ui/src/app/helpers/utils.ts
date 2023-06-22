@@ -178,6 +178,23 @@ export class Utility {
     }
     
     /**
+     * get worst case selector based on metric name
+     * @param metric: string 
+     * @returns: string 
+     */
+
+    public static worstCaseSelectorBasedOnMetric(metric: string): string {
+        switch (metric) {
+        case "sentBitrate":
+            return "";
+        case "polqa":
+            return "min";
+        default:
+            // receivedJitter, roundTripTime, receivedPacketLoss
+            return "max";
+        }
+    }
+    /**
      * get report name by report type
      * @param reportType: string 
      * @returns: string 
