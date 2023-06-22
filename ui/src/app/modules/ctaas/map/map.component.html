@@ -24,8 +24,8 @@
                 #regionInput
                 formControlName="region"
                 [matAutocomplete]="regionAuto">
-                <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="selected()">
-                    <mat-option *ngFor="let region of regions" [value]="region">
+                <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="addRegion()">
+                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region">
                         {{region.displayName}}
                     </mat-option>
                 </mat-autocomplete>
@@ -40,30 +40,30 @@
     <div class="col-4 justify-content-end">
       <div class="legend">
         <div class="legend-item">
-          <div class="color-box good" matTooltip="Number of failed calls < 1 and Voice Quality > 3."></div>
-          <span class="legend-label" matTooltip="Number of failed calls < 1 and Voice Quality > 3.">Good</span>
+          <div class="color-box good" matTooltip="Number of failed calls < 1 and Average POLQA > 3."></div>
+          <span class="legend-label" matTooltip="Number of failed calls < 1 and Average POLQA > 3.">Good</span>
         </div>
         <div class="legend-item">
-          <div class="color-box fair" matTooltip="Number of failed calls >= 1 and < 5, or Voice Quality >= 2 and <= 3."></div>
-          <span class="legend-label" matTooltip="Number of failed calls >= 1 and < 5, or Voice Quality >= 2 and <= 3.">Fair</span>
+          <div class="color-box fair" matTooltip="Number of failed calls >= 1 and < 5, or Average POLQA >= 2 and <= 3."></div>
+          <span class="legend-label" matTooltip="Number of failed calls >= 1 and < 5, or Average POLQA >= 2 and <= 3.">Fair</span>
         </div>
         <div class="legend-item">
-          <div class="color-box bad" matTooltip="Number of failed calls >= 5 or Voice Quality < 2."></div>
-          <span class="legend-label" matTooltip="Number of failed calls >= 5 or Voice Quality < 2.">Bad</span>
+          <div class="color-box bad" matTooltip="Number of failed calls >= 5 or Average POLQA < 2."></div>
+          <span class="legend-label" matTooltip="Number of failed calls >= 5 or Average POLQA < 2.">Bad</span>
         </div>
       </div>
     </div>
   </div>
-  <div class="row" *ngIf="this.selectedRegions.length>0">
+  <div class="row" *ngIf="this.preselectedRegions.length>0">
     <div class="col-md-6 offset-md-3">
             <div class="d-flex align-items-center justify-content-between mb-2">
                     <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
-                    <button [disabled]="this.selectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                    <button [disabled]="this.preselectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
             </div>
             <mat-chip-list aria-label="Region selection">
                 <mat-chip
-                  *ngFor="let region of selectedRegions"
-                  (removed)="remove(region)">
+                  *ngFor="let region of preselectedRegions"
+                  (removed)="removeRegion(region)">
                   {{region.displayName}}
                   <button matChipRemove>
                     <mat-icon>cancel</mat-icon>
@@ -75,7 +75,6 @@
   </div>
 </div>
 <div>
-  
   <div id="map">
     <div class="loading-shade" *ngIf="isLoadingResults">
       <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
