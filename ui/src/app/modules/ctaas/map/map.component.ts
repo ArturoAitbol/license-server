@@ -9,8 +9,9 @@ import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Constants } from 'src/app/helpers/constants';
-import { interval } from 'rxjs';
+import { Observable, interval } from 'rxjs';
 import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
+import { map, startWith } from 'rxjs/operators';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -38,6 +39,9 @@ export class MapComponent implements OnInit {
   refreshIntervalSubscription: any;
   disableFiltersWhileLoading = true;
   selectedRegions = [];
+  filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
+  notSelectedFilteredRegions: {country: string, state: string, city: string, displayName: string}[];
+  preselectedRegions = [];
   filterForm = this.fb.group({
     region: [''],
     // toRegionFilterControl: [''],
@@ -91,9 +95,14 @@ export class MapComponent implements OnInit {
       this.autoRefresh = true;
       this.getMapSummary();
     });
+    this.initAutocompletes();
     this.maxDate = moment.utc().format("YYYY-MM-DD[T]HH:mm:ss");
   }
-  
+
+  regionsHaveChanged():boolean{
+    return JSON.stringify(this.preselectedRegions) !== JSON.stringify(this.selectedRegions);
+  }
+
   processMapData(){
     for(let i=0 ; i < this.mapData.length; i++){
       try {
@@ -386,24 +395,24 @@ export class MapComponent implements OnInit {
     this.nodesMap = {};
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.mapService.getMapSummary(this.startDate,this.subaccountId, this.selectedRegions).subscribe((res:any)=>{
+    this.mapService.getMapSummary(this.startDate,this.subaccountId, this.preselectedRegions).subscribe((res:any)=>{
       if(res){
         let parsedSummaryData = []
         if( res.length > 0) {
         res.map((summaryData, index) => {
-            summaryData = {
-            ...summaryData, 
-            fromLocation: summaryData.from.city + ", " + summaryData.from.state + ", " + summaryData.from.country,
-            toLocation: summaryData.to.city + ", " + summaryData.to.state + ", " + summaryData.to.country
-          }
+          summaryData = {
+          ...summaryData, 
+          fromLocation: summaryData.from.city + ", " + summaryData.from.state + ", " + summaryData.from.country,
+          toLocation: summaryData.to.city + ", " + summaryData.to.state + ", " + summaryData.to.country
+        }
           parsedSummaryData[index] = summaryData;
           });
           this.mapData = parsedSummaryData
           this.processMapData();
           this.drawNodes();
           this.drawLines();
-          this.isLoadingResults = false;
           this.isRequestCompleted = true;
+          this.isLoadingResults = false;
         } else {
           this.isLoadingResults = false;
           this.isRequestCompleted = true;
@@ -421,8 +430,6 @@ export class MapComponent implements OnInit {
   }
 
   dateFilter(){
-    this.isLoadingResults = true;
-    this.isRequestCompleted = false;
     if(this.nodesArray.length > 0) {
       this.nodesArray.forEach((node:any) => {
         this.map.removeLayer(node);
@@ -437,29 +444,59 @@ export class MapComponent implements OnInit {
       let selectedStartDate = moment.utc(this.filterForm.get('startDateFilterControl').value).format('YYYY-MM-DDT00:00:00')+'Z';
       this.startDate = selectedStartDate;
       this.getMapSummary();
-      this.isLoadingResults = false;
-      this.isRequestCompleted = true;
+      this.selectedRegions = [...this.preselectedRegions];
     }
   }
 
-  selected() {
-    this.selectedRegions.push(this.filterForm.get('region').value);
+  addRegion() {
+    const region = this.filterForm.get('region').value;
+    this.preselectedRegions.push(region);
     this.filterForm.get('region').setValue("");
+    this.initAutocompletes();
   }
 
-  remove(region: string) {
-    const regions = this.selectedRegions;
+  removeRegion(region: string): void {
+    const regions = this.preselectedRegions;
     const index = regions.indexOf(region);
-    if ( index >= 0)
-      regions.splice(index, 1); 
+    if (index >= 0) {
+      regions.splice(index, 1);
+    }
+    this.initAutocompletes();
   }
 
   clearRegionsFilter() {
-    this.selectedRegions=[];
+    this.preselectedRegions = [];
+    this.initAutocompletes();
   }
 
   regionDisplayFn(region: any) {
     return region.displayName;
+  }
+
+  private initAutocompletes() {
+    this.filteredRegions = this.filterForm.get('region').valueChanges.pipe(
+        startWith(''),
+        map(value => this._filterRegion(value || '')),
+    );
+    this.filteredRegions.subscribe((regions) => {
+      this.notSelectedFilteredRegions = regions;
+      this.preselectedRegions.forEach(region => {
+        this.removeRegionFromArray(region.displayName, this.notSelectedFilteredRegions);
+      });
+    });
+  }
+
+  removeRegionFromArray(displayName: string, array: {country: string, state: string, city: string, displayName: string}[]){
+    const index = array.map(e => e.displayName).indexOf(displayName);
+    if (index >= 0) {
+      array.splice(index, 1);
+    }
+  }
+
+  private _filterRegion(value: string): { country: string; state: string; city: string; displayName: string }[] {
+    const filterValue = value.toLowerCase();
+
+    return this.regions.filter(option => option.displayName.toLowerCase().includes(filterValue));
   }
 
   private reloadFilterOptions() {
@@ -487,6 +524,7 @@ export class MapComponent implements OnInit {
         return true;
       }).sort();
       this.filterForm.enable();
+      this.initAutocompletes();
     })
   }
 
@@ -495,7 +533,7 @@ export class MapComponent implements OnInit {
       this.filterForm.disable();
     
     let startDate, endDate;
-      startDate = endDate = moment.utc(this.filterForm.get('startDateFilterControl').value);
+    startDate = endDate = moment.utc(this.filterForm.get('startDateFilterControl').value);
 
     this.spotlightChartsService.getFilterOptions(this.subaccountId,startDate,endDate,"users",regions ? regions : null).subscribe((res: any) => {
       this.filterForm.enable();
@@ -511,7 +549,7 @@ export class MapComponent implements OnInit {
     let nodeData = {...this.nodesMap[key], date: this.startDate};
     this.dialog.open(NodeDetailComponent, {
       width: '900px',
-      height: '79vh',
+      height: '82vh',
       maxHeight: '100vh',
       autoFocus: false,
       disableClose: true,
@@ -523,7 +561,7 @@ export class MapComponent implements OnInit {
     let lineData = {...this.linesMap[key], date: this.startDate};
     let dialogRef = this.dialog.open(LineDetailComponent, {
       width: '505px',
-      height: '80vh',
+      height: '82vh',
       maxHeight: '100vh',
       disableClose: true,
       autoFocus: false,
