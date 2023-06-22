@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
@@ -9,7 +9,7 @@ import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Constants } from 'src/app/helpers/constants';
-import { Observable, interval } from 'rxjs';
+import { Observable, Subscription, interval } from 'rxjs';
 import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
 import { map, startWith } from 'rxjs/operators';
 import { Utility } from 'src/app/helpers/utils';
@@ -18,7 +18,7 @@ import { Utility } from 'src/app/helpers/utils';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   displayedColumns: any[] = [];
   isLoadingResults = false;
   isRequestCompleted = false;
@@ -31,7 +31,7 @@ export class MapComponent implements OnInit {
   nodeIcon:any;
   nodesArray: any = [];
   linesArray: any = [];
-  startDate: any;
+  filteredDate: any;
   endDate: any;
   autoRefresh = false;
   mapStartView: any[] = [];
@@ -83,9 +83,12 @@ export class MapComponent implements OnInit {
     ];
   }
 
+  mapSubscription: Subscription;
+  filtersSubscription: Subscription;
+
   ngOnInit(): void {
     this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.startDate = moment.utc().format("YYYY-MM-DDT00:00:00")+'Z';
+    this.filteredDate = moment.utc();
     this.disableFiltersWhileLoading = true;
     this.initColumns();
     this.calculateTableHeight();
@@ -307,10 +310,6 @@ export class MapComponent implements OnInit {
     this.linesMap[key][metric].count += this.mapData[index][metric].count;
   }
 
-  private validLinesMapMetricCount(key: string, metric: string): boolean {
-    return this.linesMap[key][metric]?.count > 0;
-  }
-
   baseMap(): void {
     var Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png', {
       attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -405,7 +404,7 @@ export class MapComponent implements OnInit {
     this.nodesMap = {};
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.mapService.getMapSummary(this.startDate,this.subaccountId, this.preselectedRegions).subscribe((res:any)=>{
+    this.mapService.getMapSummary(this.filteredDate,this.subaccountId, this.preselectedRegions).subscribe((res:any)=>{
       if(res){
         let parsedSummaryData = []
         if( res.length > 0) {
@@ -432,7 +431,7 @@ export class MapComponent implements OnInit {
         }
         this.autoRefresh = false;
       }
-    });
+  });
   if(this.selectedRegions.length > 0)
     this.reloadUserOptions(this.selectedRegions);
   else
@@ -450,9 +449,9 @@ export class MapComponent implements OnInit {
         this.map.removeLayer(line);
       });
     }
-    if(this.filterForm.get('startDateFilterControl').value !== ''){
-      let selectedStartDate = moment.utc(this.filterForm.get('startDateFilterControl').value).format('YYYY-MM-DDT00:00:00')+'Z';
-      this.startDate = selectedStartDate;
+    if(this.filterForm.get('startDateFilterControl').value !== '') {
+      let selectedStartDate = this.filterForm.get('startDateFilterControl').value.clone();
+      this.filteredDate = Utility.setHoursOfDate(selectedStartDate);
       this.getMapSummary();
       this.selectedRegions = [...this.preselectedRegions];
     }
@@ -513,10 +512,7 @@ export class MapComponent implements OnInit {
     if(this.disableFiltersWhileLoading)
       this.filterForm.disable();
 
-    let startDate, endDate;
-    startDate = endDate = moment.utc(this.filterForm.get('startDateFilterControl').value);
-
-    this.spotlightChartsService.getFilterOptions(this.subaccountId,startDate,endDate).subscribe((res: any) => {
+    this.spotlightChartsService.getFilterOptions(this.subaccountId,this.filteredDate,this.filteredDate).subscribe((res: any) => {
       const regions = [];
       res.regions.map(region => {
         if (region.country !== null){
@@ -541,22 +537,14 @@ export class MapComponent implements OnInit {
   private reloadUserOptions(regions?: any) {
     if(this.disableFiltersWhileLoading)
       this.filterForm.disable();
-    
-    let startDate, endDate;
-    startDate = endDate = moment.utc(this.filterForm.get('startDateFilterControl').value);
 
-    this.spotlightChartsService.getFilterOptions(this.subaccountId,startDate,endDate,"users",regions ? regions : null).subscribe((res: any) => {
+    this.spotlightChartsService.getFilterOptions(this.subaccountId,this.filteredDate,this.filteredDate,"users",regions ? regions : null).subscribe((res: any) => {
       this.filterForm.enable();
     })
   }
 
-  ngOnDestroy(): void {
-    if(this.refreshIntervalSubscription) 
-      this.refreshIntervalSubscription.unsubscribe();
-  }
-
   nodeDetails(key:any){
-    let nodeData = {...this.nodesMap[key], date: this.startDate};
+    let nodeData = {...this.nodesMap[key], date: this.filteredDate};
     this.dialog.open(NodeDetailComponent, {
       width: '900px',
       height: '82vh',
@@ -566,9 +554,9 @@ export class MapComponent implements OnInit {
       data: nodeData
     });
   }
-
+  
   lineDetails(key:any){
-    let lineData = {...this.linesMap[key], date: this.startDate};
+    let lineData = {...this.linesMap[key], date: this.filteredDate};
     let dialogRef = this.dialog.open(LineDetailComponent, {
       width: '505px',
       height: '82vh',
@@ -577,5 +565,14 @@ export class MapComponent implements OnInit {
       autoFocus: false,
       data: lineData
     });
+  }
+
+  ngOnDestroy(): void {
+    if(this.refreshIntervalSubscription) 
+      this.refreshIntervalSubscription.unsubscribe();
+    if (this.mapSubscription)
+      this.mapSubscription.unsubscribe();
+    if (this.filtersSubscription)
+      this.filtersSubscription.unsubscribe();
   }
 }

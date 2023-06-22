@@ -131,7 +131,6 @@
                 <div class="col-md-6" id="daily-calling-reliability">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
                                      [description]="'Represents the status of call routing across the selected regions.'"
-                                     [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
@@ -142,7 +141,6 @@
                 <div class="col-md-6" id="daily-feature-functionality">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
                                      [description]="'Represents the status of various call features.'"
-                                     [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"

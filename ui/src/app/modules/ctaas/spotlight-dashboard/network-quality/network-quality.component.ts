@@ -50,10 +50,10 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
   
 
-  filterNetworkQualityForm: any[] = ['Most Representative', 'Average'];
+  filterNetworkQualityForm: any[] = ['Worst Case', 'Average'];
   defaultValue: string = this.filterNetworkQualityForm[0];
-  selectedFilter: boolean = false;
-  preselectedFilter:string = 'Most Representative';
+  averageSelected: boolean = false;
+  preselectedFilter:string = 'Worst Case';
   avgFlag: boolean = false;
   maxLabel: string = 'Max.';
   minLabel: string = 'Min.';
@@ -149,7 +149,7 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
   applyFilters(){
     this.selectedUsers = [...this.preselectedUsers];
     this.selectedUsers = [...this.preselectedUsers];
-    this.selectedFilter = this.evaluateFilter();
+    this.averageSelected = this.evaluateFilter();
     this.loadCharts({hideChart:false,showLoading:true});
   }
 
@@ -163,21 +163,19 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
     this.isChartLoading = params.showLoading;
     this.hideChart = params.hideChart;
     const obs = [];
-    if(this.selectedFilter === false) {
-      this.selectedFilter = false;
+    if (!this.averageSelected) {
       this.maxLabel = "Max."
       this.minLabel = "Min."
       this.avgLabel = "Avg."
-    }
-    if(this.selectedFilter === true) {
+    } else {
       this.maxLabel = ""
       this.minLabel = ""
       this.avgLabel = ""
     }
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter).pipe(catchError(e => of(e))));
-    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.selectedFilter).pipe(catchError(e => of(e))));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter).pipe(catchError(e => of(e))));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.averageSelected).pipe(catchError(e => of(e))));
+    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.averageSelected).pipe(catchError(e => of(e))));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.averageSelected).pipe(catchError(e => of(e))));
     this.qualitySubscriber =  forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
@@ -323,14 +321,11 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
   }
   
   metricValueHasChanged(){
-    return this.selectedFilter !== this.evaluateFilter();
+    return this.averageSelected !== this.evaluateFilter();
   }
 
   evaluateFilter():boolean{
-    if(this.preselectedFilter === 'Most Representative')
-      return false;
-    if(this.preselectedFilter === 'Average')
-      return true;
+    return this.preselectedFilter === 'Average';
   }
 
   ngOnDestroy(): void {
