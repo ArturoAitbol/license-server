@@ -41,7 +41,7 @@
         </div>
       </div>
       <div class="align-items-start apply-button-container" [ngClass]="{'apply-button-container-enable':(!dateHasChanged() && !regionsHasChanged())}">
-          <button class="mt-2 apply-button" mat-raised-button [ngClass]="{'apply-button-enable':(!dateHasChanged() || !regionsHasChanged())}"
+          <button class="mt-2 apply-button" mat-raised-button
                   id="add-customer-button" (click)="dateFilter()" [disabled]="!filterForm.valid || (!dateHasChanged() && !regionsHasChanged())">Apply</button>
       </div>
     </div>
