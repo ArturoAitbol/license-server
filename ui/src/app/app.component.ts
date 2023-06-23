@@ -83,14 +83,15 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/spotlight/',
                 isPreview: false
             },
-            {
-                name: 'Test Suites',
-                path: 'test-suites',
-                active: false,
-                materialIcon: 'folder_open',
-                baseUrl: '/spotlight/',
-                isPreview: false
-            },
+            // Hiding this for now until Test Suites is enhanced
+            // {
+            //     name: 'Test Suites',
+            //     path: 'test-suites',
+            //     active: false,
+            //     materialIcon: 'folder_open',
+            //     baseUrl: '/spotlight/',
+            //     isPreview: false
+            // },
             {
                 name: 'Stakeholders',
                 path: 'stakeholders',

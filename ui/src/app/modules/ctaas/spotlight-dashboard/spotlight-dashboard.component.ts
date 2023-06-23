@@ -26,6 +26,8 @@ import { Constants } from 'src/app/helpers/constants';
 import { AddNotesComponent } from "../ctaas-notes/add-notes/add-notes.component";
 import { MatDialog } from "@angular/material/dialog";
 import { FeatureToggleService } from "../../../services/feature-toggle.service";
+import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
+import { BannerService } from 'src/app/services/alert-banner.service';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -132,11 +134,15 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   @ViewChild('networkQuality') networkQuality: NetworkQualityComponent;
 
+  private onDestroy: Subject<void> = new Subject<void>();
+
   constructor(private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
               private noteService: NoteService,
               private route: ActivatedRoute,
               private ftService: FeatureToggleService,
+              private ctaasSetupService: CtaasSetupService,
+              private bannerService: BannerService,
               private fb: FormBuilder,
               public dialog: MatDialog) {
     this.vqChartOptions = defaultVqChartOptions;
@@ -172,6 +178,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let currentEndDate
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.checkMaintenanceMode();
     this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
       if (params?.noteId) {
@@ -705,10 +712,21 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  private checkMaintenanceMode() {
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
+        const ctaasSetupDetails = res['ctaasSetups'][0];
+        if (ctaasSetupDetails.maintenance) {
+            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+        }
+    });
+  }
+
   ngOnDestroy(): void {
     if(this.chartsSubscription)
       this.chartsSubscription.unsubscribe();
     if(this.refreshIntervalSubscription)
       this.refreshIntervalSubscription.unsubscribe();
+    this.onDestroy.next();
+    this.onDestroy.complete();
   }
 }

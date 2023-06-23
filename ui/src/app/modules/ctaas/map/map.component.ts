@@ -9,10 +9,12 @@ import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Constants } from 'src/app/helpers/constants';
-import { Observable, Subscription, interval } from 'rxjs';
+import { Observable, Subject, Subscription, interval } from 'rxjs';
 import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
 import { map, startWith } from 'rxjs/operators';
 import { Utility } from 'src/app/helpers/utils';
+import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
+import { BannerService } from 'src/app/services/alert-banner.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -48,11 +50,15 @@ export class MapComponent implements OnInit, OnDestroy {
     // toRegionFilterControl: [''],
     startDateFilterControl: [moment.utc(),[Validators.required]],
     endDateFilterControl: [''],
-});
+  });
+  private onDestroy: Subject<void> = new Subject<void>();
+
   constructor(private mapService: MapServicesService,
     private spotlightChartsService: SpotlightChartsService, 
     private fb: FormBuilder,
     private subaccountService: SubAccountService,
+    private ctaasSetupService: CtaasSetupService,
+    private bannerService: BannerService,
     public dialog: MatDialog, 
     private snackBarService: SnackBarService ) { }
 
@@ -88,10 +94,12 @@ export class MapComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    this.checkMaintenanceMode();
     this.filteredDate = moment.utc();
     this.disableFiltersWhileLoading = true;
     this.initColumns();
     this.calculateTableHeight();
+    this.setDate();
     this.map = L.map('map'); 
     this.getMapSummary();
     this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL).subscribe(() => {
@@ -103,7 +111,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.maxDate = moment.utc().format("YYYY-MM-DD[T]HH:mm:ss");
   }
 
-  regionsHaveChanged():boolean{
+  regionsHasChanged():boolean{
     return JSON.stringify(this.preselectedRegions) !== JSON.stringify(this.selectedRegions);
   }
 
@@ -431,6 +439,10 @@ export class MapComponent implements OnInit, OnDestroy {
         }
         this.autoRefresh = false;
       }
+    }, err => {
+      console.debug('error', err);
+      this.isLoadingResults = false;
+      this.isRequestCompleted = true;
     });
     this.reloadFilterOptions();
   }
@@ -454,6 +466,15 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  dateHasChanged():boolean{
+    return this.filterForm.get('startDateFilterControl').value.format("MM-DD-YYYY") !== this.filteredDate.format("MM-DD-YYYY");
+  }
+
+  setDate(){
+    const date = this.filterForm.get('startDateFilterControl').value.clone();
+    this.filteredDate = Utility.setHoursOfDate(date);
+  }
+  
   addRegion() {
     const region = this.filterForm.get('region').value;
     this.preselectedRegions.push(region);
@@ -555,6 +576,15 @@ export class MapComponent implements OnInit, OnDestroy {
     });
   }
 
+  private checkMaintenanceMode() {
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId).subscribe(res => {
+        const ctaasSetupDetails = res['ctaasSetups'][0];
+        if (ctaasSetupDetails.maintenance) {
+            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+        }
+    });
+  }
+
   ngOnDestroy(): void {
     if(this.refreshIntervalSubscription) 
       this.refreshIntervalSubscription.unsubscribe();
@@ -562,5 +592,7 @@ export class MapComponent implements OnInit, OnDestroy {
       this.mapSubscription.unsubscribe();
     if (this.filtersSubscription)
       this.filtersSubscription.unsubscribe();
+    this.onDestroy.next();
+    this.onDestroy.complete();
   }
 }
