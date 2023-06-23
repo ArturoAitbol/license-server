@@ -581,7 +581,7 @@ ngx-intl-tel-input input:hover {
 
 ngx-intl-tel-input input:focus {
 	outline: none !important;
-	border-color: #3f51b5;
+	border-color: #6E76B4;
   border-width: 2px;
 	box-shadow: 0 0 0 0 #000;
 }

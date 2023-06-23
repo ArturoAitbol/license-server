@@ -52,7 +52,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-    readonly VIEW_CTAAS_DASHBOARD: string = 'View UCaaS Continuous Testing Dashboard';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View UCaaS Continuous Testing';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
     readonly CUSTOMER_FILTER: string = 'customer';

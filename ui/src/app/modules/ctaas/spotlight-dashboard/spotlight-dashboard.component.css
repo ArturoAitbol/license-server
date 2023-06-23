@@ -25,7 +25,7 @@
 
 .card-footer {
     background: #F2F3F4;
-    color: #243C66;
+    color: #273176;
 }
 
 .timer {
@@ -74,7 +74,7 @@ mat-form-field {
 }
 
 .viewDetail-button {
-    color: #243C66;
+    color: #273176;
 }
 .viewDetail-button:hover{
     color: white;
@@ -233,6 +233,10 @@ mat-form-field {
     display: flex;
     flex-flow: column;
     height: calc(100% - 8px);
+}
+
+.top-spacing-3 {
+    margin-top: 3.5em;
 }
 
 .top-spacing-1 {
