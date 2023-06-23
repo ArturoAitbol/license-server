@@ -45,7 +45,7 @@ public class LoginForm extends AbstractPageObject {
         By stayedSigned = By.cssSelector(".win-button#idBtn_Back");
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
-        assertTrue(this.action.checkTitle("tekVizion 360 Portal"));
+        assertTrue(this.action.checkTitle("TekVizion 360 Portal"));
         return new Customers();
     }
 }

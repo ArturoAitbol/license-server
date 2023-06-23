@@ -81,7 +81,7 @@ export class CallbackComponent implements OnInit {
     } else {
       this.dialogService.acceptDialog({
         title: 'Incomplete personal information',
-        message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
+        message: 'Please contact your Subaccount Administrator or TekVizion to fill this user’s info.',
         confirmCaption: 'Ok',
       });
     }

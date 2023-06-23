@@ -55,7 +55,7 @@ export class RedirectPageComponent implements OnInit {
     }
   }
   /**
-   * get all available tekVizion services
+   * get all available TekVizion 360 services
    * @returns: IService[] 
    */
   private getAvailableServices() {
@@ -98,7 +98,7 @@ export class RedirectPageComponent implements OnInit {
     return this.msalService.instance.getActiveAccount() || null;
   }
   /**
-   * navigate to Dashboard page if roles has tekVizion FullAdmin/ConfigTester/Distributor
+   * navigate to Dashboard page if roles has tekVizion.FullAdmin/ConfigTester/Distributor
    */
   private navigateToDashboard(): void { this.router.navigate([this.DASHBOARD_ROUTE_PATH]); }
   /**

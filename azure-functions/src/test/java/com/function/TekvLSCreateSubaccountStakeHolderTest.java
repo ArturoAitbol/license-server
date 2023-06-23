@@ -56,7 +56,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -86,7 +86,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
         		"'name': 'test-customer-subaccount-stakeholder'," +
         		  "'notifications': 'email,text'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -262,7 +262,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
               "'notifications': 'email,text'," +
               "'name': 'test-customer-subaccount-stakeholder'," +
               "'jobTitle': 'Software Engineer'," +
-              "'companyName': 'tekVizion'," +
+              "'companyName': 'TekVizion'," +
               "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -285,7 +285,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
@@ -320,7 +320,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

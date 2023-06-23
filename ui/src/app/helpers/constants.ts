@@ -19,7 +19,7 @@ export class Constants {
     public static readonly ACCESS_TOKEN: string = 'access_token';
 
     // Tool bar constants
-    public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
+    public static readonly TEK_TOKEN_TOOL_BAR: string = 'TekVizion 360 Portal';
     public static readonly CTAAS_TOOL_BAR: string = '';
 
 
@@ -32,7 +32,7 @@ export class Constants {
     public static readonly STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
 
     // Alert messages
-    public static readonly MAINTENANCE_MODE_ALERT = "The UCaaS Continuous Testing service is currently experiencing limited functionality due to ongoing maintenance. " +
+    public static readonly MAINTENANCE_MODE_ALERT = "The UCaaS Continuous Testing Service is currently experiencing limited functionality due to ongoing maintenance. " +
         "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
 
     // Types contants

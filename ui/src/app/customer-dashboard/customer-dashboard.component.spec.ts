@@ -246,7 +246,7 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing service is not available for this Subaccount', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Service is not available for this Subaccount', '');
     });
 });
 

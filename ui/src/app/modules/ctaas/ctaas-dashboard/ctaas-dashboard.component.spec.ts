@@ -120,7 +120,7 @@ describe('ctaas-dashboard - fetch the details', () => {
 //         fixture.detectChanges();
 //         expect(ctaasDashboardTestInstance.isLoadingResults).toBeFalse();
 //         expect(console.error).toHaveBeenCalledWith('Error loading dashboard reports | ', e.error);
-//         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please connect tekVizion admin', 'Ok');
+//         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
 //     });
 // });
 

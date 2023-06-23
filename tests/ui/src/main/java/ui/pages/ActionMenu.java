@@ -25,7 +25,7 @@ public class ActionMenu extends AbstractPageObject {
     WebElement closeButton;
     @FindBy(xpath = "//button[@id='View Projects List']")
     WebElement projectsButton;
-    @FindBy(xpath = "//button[@id='View tekVizion 360 Subscriptions']")
+    @FindBy(xpath = "//button[@id='View TekVizion 360 Subscriptions']")
     WebElement subscriptionsButton;
     @FindBy(xpath = "//button[@id='View tekToken Consumption']")
     WebElement consumptionsButton;

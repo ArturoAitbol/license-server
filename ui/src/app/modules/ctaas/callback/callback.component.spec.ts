@@ -18,7 +18,7 @@ const user ={
     "role": "customer.SubaccountAdmin",
     "phoneNumber": "+1111111111",
     "jobTitle": "Subaccount Admin",
-    "companyName": "tekVizion",
+    "companyName": "TekVizion",
     "name": "TestSub",
     "email": "test-customer-subaccount-admin@tekvizionlabs.com",
     "notifications": "TYPE:Detailed,DAILY_REPORTS"

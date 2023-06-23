@@ -41,8 +41,8 @@ Feature: OnBoard
   Scenario: Test tekToken Usage Navigation
     Given I am on the apps view
     When I click on "tekToken Usage" button
-    And I should see the "tekVizion 360 Portal" view
-    And I click on "tekVizion" button
+    And I should see the "TekVizion 360 Portal" view
+    And I click on "TekVizion" button
     Then I am on the apps view
 
   @spotLightNavigation

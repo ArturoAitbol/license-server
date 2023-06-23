@@ -47,7 +47,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
-    readonly VIEW_LICENSES: string = 'View tekVizion 360 Subscriptions';
+    readonly VIEW_LICENSES: string = 'View TekVizion 360 Subscriptions';
     readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
@@ -440,7 +440,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
                             routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
                         const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
                         window.open(url);
-                    } else this.snackBarService.openSnackBar('UCaaS Continuous Testing service is not available for this Subaccount', '');
+                    } else this.snackBarService.openSnackBar('UCaaS Continuous Testing Service is not available for this Subaccount', '');
                     break;
                 case this.MODIFY_ACCOUNT:
                     this.openDialog(object.selectedOption, object.selectedRow);

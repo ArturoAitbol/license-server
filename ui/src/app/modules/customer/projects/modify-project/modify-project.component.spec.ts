@@ -52,7 +52,7 @@ describe('UI verification test for modify component', () => {
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectLicenseLable.textContent).toBe('tekVizion 360 Subscription');
+        expect(projectLicenseLable.textContent).toBe('TekVizion 360 Subscription');
         expect(projectStatusLable.textContent).toBe('Status');
         expect(closeButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');

@@ -22,7 +22,7 @@ public class EmailClient {
             context.getLogger().info("Loading spotlight invitation html");
             if (html != null) {
                 html = html.replace("%CUSTOMER_NAME%", customerName);
-                sendEmail(toEmail,"Welcome to tekVizion UCaaS Continuous Testing", html, context);
+                sendEmail(toEmail,"Welcome to TekVizion 360 UCaaS Continuous Testing", html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send UCaaS Continuous Testing welcome email: " + e);
@@ -37,7 +37,7 @@ public class EmailClient {
                 html = html.replace("%CUSTOMER_NAME%", customerName);
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
-                sendEmail(toEmail,"Welcome to tekVizion UCaaS Continuous Testing", html, context);
+                sendEmail(toEmail,"Welcome to TekVizion 360 UCaaS Continuous Testing", html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send UCaaS Continuous Testing welcome email: " + e);
@@ -53,7 +53,7 @@ public class EmailClient {
                 html = html.replace("%STAKE_HOLDER_NAME%", stakeholderName);
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
-                sendEmail(toEmail,"Welcome to tekVizion UCaaS Continuous Testing", html, context);
+                sendEmail(toEmail,"Welcome to TekVizion 360 UCaaS Continuous Testing", html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send Stakeholder welcome email: " + e);
@@ -68,7 +68,7 @@ public class EmailClient {
                 html = html.replace("%CUSTOMER_NAME%", customerName);
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
-                sendEmail(toEmail,"Welcome to tekVizion 360 Portal", html, context);
+                sendEmail(toEmail,"Welcome to TekVizion 360 Portal", html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send admin welcome email: " + e);
