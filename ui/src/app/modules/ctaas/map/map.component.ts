@@ -92,6 +92,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.disableFiltersWhileLoading = true;
     this.initColumns();
     this.calculateTableHeight();
+    this.setDate();
     this.map = L.map('map'); 
     this.getMapSummary();
     this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL).subscribe(() => {
@@ -103,7 +104,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.maxDate = moment.utc().format("YYYY-MM-DD[T]HH:mm:ss");
   }
 
-  regionsHaveChanged():boolean{
+  regionsHasChanged():boolean{
     return JSON.stringify(this.preselectedRegions) !== JSON.stringify(this.selectedRegions);
   }
 
@@ -431,6 +432,10 @@ export class MapComponent implements OnInit, OnDestroy {
         }
         this.autoRefresh = false;
       }
+    }, err => {
+      console.debug('error', err);
+      this.isLoadingResults = false;
+      this.isRequestCompleted = true;
     });
     this.reloadFilterOptions();
   }
@@ -454,6 +459,15 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  dateHasChanged():boolean{
+    return this.filterForm.get('startDateFilterControl').value.format("MM-DD-YYYY") !== this.filteredDate.format("MM-DD-YYYY");
+  }
+
+  setDate(){
+    const date = this.filterForm.get('startDateFilterControl').value.clone();
+    this.filteredDate = Utility.setHoursOfDate(date);
+  }
+  
   addRegion() {
     const region = this.filterForm.get('region').value;
     this.preselectedRegions.push(region);
