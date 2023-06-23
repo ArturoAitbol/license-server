@@ -338,7 +338,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String actualResponse = jsonBody.getString("error");
-        String expectedResponse = "Spotlight Setup does not exist or is not ready";
+        String expectedResponse = "UCaaS Continuous Testing Setup does not exist or is not ready";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 }

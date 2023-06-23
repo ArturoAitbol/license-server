@@ -33,7 +33,7 @@ public class ActionMenu extends AbstractPageObject {
     WebElement customerAdminButton;
     @FindBy(xpath = "//button[@id='View Subaccount Admin Emails']")
     WebElement subaccountAdminButton;
-    @FindBy(xpath = "//button[@id='View Spotlight Dashboard']")
+    @FindBy(xpath = "//button[@id='View UCaaS Continuous Testing Dashboard']")
     WebElement spotlightDashboardButton;
     @FindBy(xpath = "//button[@id='Delete Account']")
     WebElement spotlightStakeholderButton;
@@ -90,7 +90,7 @@ public class ActionMenu extends AbstractPageObject {
         executor.executeScript("arguments[0].click();", this.spotlightDashboardButton);
         By messageSelector = By.xpath("//simple-snack-bar");
         this.action.waitSpinner(messageSelector);
-        //Switch to new Spotlight Dashboard tab
+        //Switch to new UCaaS Continuous Testing Dashboard tab
         ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
         driver.switchTo().window(tabs.get(1));
         return new Dashboard();

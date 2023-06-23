@@ -22,10 +22,10 @@ public class EmailClient {
             context.getLogger().info("Loading spotlight invitation html");
             if (html != null) {
                 html = html.replace("%CUSTOMER_NAME%", customerName);
-                sendEmail(toEmail,"Welcome to tekVizion Spotlight", html, context);
+                sendEmail(toEmail,"Welcome to tekVizion UCaaS Continuous Testing", html, context);
             }
         } catch (Exception e) {
-            context.getLogger().severe("Could not send Spotlight welcome email: " + e);
+            context.getLogger().severe("Could not send UCaaS Continuous Testing welcome email: " + e);
         }
     }
 
@@ -37,10 +37,10 @@ public class EmailClient {
                 html = html.replace("%CUSTOMER_NAME%", customerName);
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
-                sendEmail(toEmail,"Welcome to tekVizion Spotlight", html, context);
+                sendEmail(toEmail,"Welcome to tekVizion UCaaS Continuous Testing", html, context);
             }
         } catch (Exception e) {
-            context.getLogger().severe("Could not send Spotlight welcome email: " + e);
+            context.getLogger().severe("Could not send UCaaS Continuous Testing welcome email: " + e);
         }
     }
 
@@ -53,7 +53,7 @@ public class EmailClient {
                 html = html.replace("%STAKE_HOLDER_NAME%", stakeholderName);
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
-                sendEmail(toEmail,"Welcome to tekVizion Spotlight", html, context);
+                sendEmail(toEmail,"Welcome to tekVizion UCaaS Continuous Testing", html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send Stakeholder welcome email: " + e);
@@ -81,7 +81,7 @@ public class EmailClient {
             context.getLogger().info("Loading maintenance enabled alert html");
             if (html != null) {
                 html = html.replace("%CUSTOMER_NAME%", customerName);
-                String subject = "Spotlight Service for " + customerName + " is under maintenance.";
+                String subject = "UCaaS Continuous Testing Service for " + customerName + " is under maintenance.";
                 sendEmail(emailList,subject, html, context);
             }
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public class EmailClient {
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
                 html = html.replace("%CUSTOMER_NAME%", customerName);
-                String subject = "Maintenance of Spotlight Service for " + customerName + " is complete and is now fully operational.";
+                String subject = "Maintenance of UCaaS Continuous Testing Service for " + customerName + " is complete and is now fully operational.";
                 sendEmail(emailList,subject, html, context);
             }
         } catch (Exception e) {

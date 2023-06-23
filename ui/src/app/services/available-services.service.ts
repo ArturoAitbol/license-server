@@ -18,7 +18,7 @@ export class AvailableServicesService {
       "tabName": "tekVizion 360 Portal"
     },
     {
-      "label": "Spotlight",
+      "label": "UCaaS Continuous Testing",
       "value": tekVizionServices.SpotLight,
       "enabled": true,
       "access": false,

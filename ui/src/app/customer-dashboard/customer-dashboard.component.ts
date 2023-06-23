@@ -52,7 +52,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-    readonly VIEW_CTAAS_DASHBOARD: string = 'View Spotlight Dashboard';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View UCaaS Continuous Testing Dashboard';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
     readonly CUSTOMER_FILTER: string = 'customer';
@@ -440,7 +440,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
                             routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
                         const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
                         window.open(url);
-                    } else this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
+                    } else this.snackBarService.openSnackBar('UCaaS Continuous Testing service is not available for this Subaccount', '');
                     break;
                 case this.MODIFY_ACCOUNT:
                     this.openDialog(object.selectedOption, object.selectedRow);

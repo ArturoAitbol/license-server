@@ -58,7 +58,7 @@ export class CallbackComponent implements OnInit {
             this.snackBarService.openSnackBar('Call request has been made!', '');
             this.dialogService.acceptDialog({
                 title: 'Done!',
-                message: 'Thanks for your request, one of our Spotlight experts will reach out to you shortly.',
+                message: 'Thanks for your request, one of our UCaaS Continuous Testing experts will reach out to you shortly.',
                 confirmCaption: 'Ok',
             });
         } else {

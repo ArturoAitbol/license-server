@@ -48,8 +48,8 @@ Feature: OnBoard
   @spotLightNavigation
   Scenario: Test SpotLight Navigation
     Given I am on the apps view
-    When I click on "Spotlight" button
-    Then I should see the "Spotlight" view
+    When I click on "UCaaS Continuous Testing" button
+    Then I should see the "UCaaS Continuous Testing" view
     And I should see the following buttons
       | Dashboard     |
       | Notes         |

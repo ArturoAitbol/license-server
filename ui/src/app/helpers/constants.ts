@@ -32,7 +32,7 @@ export class Constants {
     public static readonly STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
 
     // Alert messages
-    public static readonly MAINTENANCE_MODE_ALERT = "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+    public static readonly MAINTENANCE_MODE_ALERT = "The UCaaS Continuous Testing service is currently experiencing limited functionality due to ongoing maintenance. " +
         "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
 
     // Types contants
