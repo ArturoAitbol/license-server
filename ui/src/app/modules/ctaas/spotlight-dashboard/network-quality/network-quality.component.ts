@@ -45,17 +45,18 @@ export class NetworkQualityComponent implements OnInit {
   commonChartOptions: Partial<ChartOptions>;
   filteredUsers: Observable<string[]>;
   selectedUsers = [];
+  usersForDropdown: string[] = [];
 
   @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
   
 
   filterNetworkQualityForm: any[] = ['Most Representative', 'Average'];
   defaultValue: string = this.filterNetworkQualityForm[0];
-  selectedFilter: boolean = false;
-  avgFlag: boolean = false;
-  maxLabel: string = 'Max.';
-  minLabel: string = 'Min.';
-  avgLabel: string = 'Avg.'
+  selectedFilter = false;
+  avgFlag = false;
+  maxLabel = 'Max.';
+  minLabel = 'Min.';
+  avgLabel = 'Avg.'
     filters = this.fb.group({
       user: [""],
       selectedValue: [""]
@@ -131,6 +132,14 @@ export class NetworkQualityComponent implements OnInit {
         startWith(''),
         map(value =>  this._filterUser(value || '')),
     );
+
+    this.usersForDropdown = [...this.users];
+    this.selectedUsers.forEach(user => {
+      const index = this.usersForDropdown.indexOf(user);
+      if (index !== -1)
+        this.usersForDropdown.splice(index, 1);
+      this.filters.enable();
+    });
   }
 
   private _filterUser(value: string): string[] {
@@ -141,6 +150,7 @@ export class NetworkQualityComponent implements OnInit {
 
   reloadCharts(){
     this.loadCharts({hideChart:false,showLoading:true});
+    this.initAutocompletes();
   }
 
   onChangeValue(event:any){
@@ -296,6 +306,7 @@ export class NetworkQualityComponent implements OnInit {
     if (index >= 0) {
       this.selectedUsers.splice(index, 1);
     }
+    this.initAutocompletes();
   }
 
   selected(): void {
@@ -307,6 +318,7 @@ export class NetworkQualityComponent implements OnInit {
 
   clearUsersFilter(){
     this.selectedUsers=[];
+    this.initAutocompletes();
   }
 
 }
