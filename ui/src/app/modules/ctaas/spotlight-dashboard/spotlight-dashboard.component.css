@@ -134,7 +134,7 @@ mat-form-field {
 }
 .weekly-date-field {
     display: inline-block !important;
-    width: 55%;
+    width: 37%;
     padding-right: 5%;
 }
 .date-field{
@@ -146,11 +146,16 @@ mat-form-field {
     display: inline-block !important; 
     width: 70%;
     padding-right: 5%;
+    align-items: center;
 }
 .apply-button {
-    display: inline-block !important; 
+    /* display: inline-block !important;  */
     padding-left: 5%;
+    padding-bottom: 5px;
     width: 27%;
+}
+.apply-button-enable{
+    padding-bottom: 25px;
 }
 .metric-header {
     display: flex;
@@ -281,6 +286,14 @@ mat-form-field {
     font-weight: bolder;
 }
 
+.chart-axis-label {
+    font-family: Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    dominant-baseline: auto;
+    font-size: 12px;
+    font-weight: 900;
+}
+
 .tooltip-title {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 12px;
@@ -302,4 +315,15 @@ mat-form-field {
 .new-note-btn {
     background-color: #6E76B4;
     color: white;
+}
+.apply-flag{
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #7694B7;
+}
+.apply-flag mat-icon{
+    padding-top: 6px;
+    padding-left: 10px;
+    font-size: 12px;
 }

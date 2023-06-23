@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.Roles.FULL_ADMIN;
 import static com.function.auth.Roles.SUBACCOUNT_ADMIN;
 
 public class TekvLSModifyCtaasSetupById {
@@ -86,7 +85,7 @@ public class TekvLSModifyCtaasSetupById {
                 json.put("error", "error: licenseId is missing.");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
-            if (!jobj.has("subaccountId")) {
+            if (!jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
                 context.getLogger().info("error: subaccountId is missing.");
                 JSONObject json = new JSONObject();
                 json.put("error", "error: subaccountId is missing.");
@@ -108,7 +107,7 @@ public class TekvLSModifyCtaasSetupById {
         // Build SQL query for customer & subAccount details
         SelectQueryBuilder customerAndSubQueryBuilder = null;
 
-        if (jobj.has("licenseId") && jobj.has("subaccountId")) {
+        if (jobj.has("licenseId") && jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
             verificationBuilder = new SelectQueryBuilder("SELECT * FROM license");
             verificationBuilder.appendEqualsCondition(
                     OPTIONAL_PARAMS.SUBACCOUNT_ID.columnName,
@@ -116,7 +115,7 @@ public class TekvLSModifyCtaasSetupById {
                     QueryBuilder.DATA_TYPE.UUID);
         }
 
-        if (jobj.has("subaccountId")) {
+        if (jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
             customerAndSubQueryBuilder = new SelectQueryBuilder(
                     "SELECT subaccount.id AS \"lsSubAccountId\", subaccount.name AS \"lsSubAccountName\", customer.id AS \"lsCustomerId\", customer.name AS \"lsCustomerName\" FROM subaccount INNER JOIN customer ON subaccount.customer_id = customer.id");
             customerAndSubQueryBuilder.appendEqualsCondition(
@@ -125,7 +124,6 @@ public class TekvLSModifyCtaasSetupById {
                     QueryBuilder.DATA_TYPE.UUID);
         }
 
-        String currentRole = evaluateRoles(roles);
         // Build the sql query for SpotLight setup
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
         int optionalParamsFound = 0;
@@ -134,10 +132,6 @@ public class TekvLSModifyCtaasSetupById {
                 String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN.getValue()))
                         ? String.valueOf(jobj.getBoolean(param.jsonAttrib))
                         : jobj.getString(param.jsonAttrib);
-                if (param == OPTIONAL_PARAMS.MAINTENANCE && !currentRole.equals(FULL_ADMIN)) {
-                    // Skip maintenance update if the user doesn't have the FULL_ADMIN role
-                    continue;
-                }
                 queryBuilder.appendValueModification(param.columnName, jsonAttribValue, param.dataType);
                 optionalParamsFound++;
             } catch (Exception e) {
@@ -163,10 +157,10 @@ public class TekvLSModifyCtaasSetupById {
                 PreparedStatement statement = queryBuilder.build(connection);
                 PreparedStatement projectStatement = connection.prepareStatement(sql);
                 PreparedStatement ctaasDeviceStatement = connection.prepareStatement(deviceSql);
-                PreparedStatement customerAndSubAccountDetails = customerAndSubQueryBuilder == null ? null
-                        : customerAndSubQueryBuilder.build(connection);
-                PreparedStatement licenseVerificationStatement = verificationBuilder == null ? null
-                        : verificationBuilder.build(connection)) {
+                PreparedStatement customerAndSubAccountDetails = customerAndSubQueryBuilder == null ? 
+                    null : customerAndSubQueryBuilder.build(connection);
+                PreparedStatement licenseVerificationStatement = verificationBuilder == null ? 
+                    null : verificationBuilder.build(connection)) {
 
             JSONObject json = new JSONObject();
 
@@ -218,7 +212,7 @@ public class TekvLSModifyCtaasSetupById {
                  * Add SpotLight project
                  */
                 // Set statement parameters
-                projectStatement.setString(1, jobj.getString("subaccountId"));
+                projectStatement.setString(1, jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib));
                 projectStatement.setString(2, today + " - " + id);
                 projectStatement.setString(3, Constants.DEFAULT_CTAAS_PROJECT_NAME);
                 projectStatement.setString(4, Constants.DEFAULT_CTAAS_PROJECT_STATUS);
@@ -237,7 +231,7 @@ public class TekvLSModifyCtaasSetupById {
                  * Add License consumption for SpotLight project
                  */
                 JSONObject ctaasDevice = new JSONObject();
-                ctaasDevice.put("subaccountId", jobj.getString("subaccountId"));
+                ctaasDevice.put("subaccountId", jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib));
                 ctaasDevice.put("projectId", rs.getString("id"));
                 ctaasDevice.put("consumptionDate", today);
                 ctaasDevice.put("type", Constants.DEFAULT_CONSUMPTION_TYPE);

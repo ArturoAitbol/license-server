@@ -6,7 +6,6 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 import ui.core.DriverManager;
 import ui.pages.subaccounts.SubaccountForm;
-import ui.pages.subaccounts.SubaccountRow;
 
 public class Customers extends AbstractPageObject {
     @FindBy(css = "#page-title")

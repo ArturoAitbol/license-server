@@ -7,6 +7,7 @@ import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -150,7 +151,8 @@ public class TekvLSModifySubaccountById {
 					rs.next();
 					final String adminEmail = rs.getString("subaccount_admin_email");
 
-					EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
+					if (FeatureToggleService.isFeatureActiveBySubaccountId("welcomeEmail", id))
+						EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
 				}
 				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + customerDetailStatement);
 				ResultSet customerAndSubQueryResult = customerDetailStatement.executeQuery();

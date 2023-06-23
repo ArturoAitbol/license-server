@@ -3,25 +3,25 @@
         <h1>{{title}} <mat-icon [matTooltip]="description">info_outline</mat-icon></h1>
     </div>
     <div class="card-body container-fluid">
-        <div class="row top-spacing-1">
-            <ng-container *ngIf="this.chartOptions.series[0] === 100">
+        <div class="row">
+            <ng-container *ngIf="chartOptions.series[0] === 100">
                 <div class="col">
                     <label class="chart-label">Great! You had no failures</label>
                 </div>
             </ng-container>
-            <ng-container *ngIf="this.chartOptions.series[0] < 100 && this.chartOptions.series[0] > 0">
+            <ng-container *ngIf="chartOptions.series[0] < 100 && numberCalls > 0">
                 <div class="col">
                     <label class="chart-label fail">Oops! There were some failures</label>
                 </div>
             </ng-container>
-            <ng-container *ngIf="this.chartOptions.series[0] === 0">
+            <ng-container *ngIf="numberCalls === 0">
                 <div class="col">
                     <label class="chart-label fail">No Tests Done</label>
                 </div>
             </ng-container>
         </div>
         <div class="row">
-            <div class="col top-spacing-2" style="transform: scale(1.4);">
+            <div class="col">
                 <apx-chart #chart
                            [series]="chartOptions.series"
                            [chart]="chartOptions.chart"

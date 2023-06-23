@@ -177,10 +177,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
         // load the view based on the route
-        if (this.router.url.includes('/report-dashboards') || this.openedAsModal)
-            this.viewMode.setValue(this.LEGACY_MODE);
-        else
-            this.viewMode.setValue(this.POWERBI_MODE);
+        this.viewMode.setValue(this.POWERBI_MODE);
         this.viewDashboardByMode();
         // fetch dashboard report for every 15 minutes interval
         this.refreshIntervalSubscription = interval(Constants.LEGACY_DASHBOARD_REFRESH_INTERVAL)

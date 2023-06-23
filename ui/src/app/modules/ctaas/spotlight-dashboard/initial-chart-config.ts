@@ -149,7 +149,9 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
         },
         formatter(val: string | number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (opts.seriesIndex === 0) {
-                return val + "%"
+                if (val !== null && val !== undefined)
+                    return val + "%";
+                return "--";
             } else return val;
         }
     },
@@ -277,7 +279,9 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
         },
         formatter(val: string | number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (opts.seriesIndex === 0) {
-                return val + "%"
+                if (val !== null && val !== undefined)
+                    return val + "%";
+                return "--";
             } else return val;
         }
     },
@@ -425,6 +429,10 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
     colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
     dataLabels: {
         enabled: true,
+        textAnchor: "start",
+        style: {
+            colors: ["#424242"]
+        },
         formatter(val: number, opts?: any): string | number {
             return val.toFixed(2) + '%'
         },
@@ -547,7 +555,9 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
         fillSeriesColor: false,
         y:{
             formatter(val: number, opts?: any): string {
-                return val + "%";
+                if (val !== null && val !== undefined)
+                    return val + "%";
+                return "--";
             },
         },
     },
@@ -574,7 +584,9 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
             colors: ["#000000", "#FFFFFF", "#FFFFFF"]
         },
         formatter(val: number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
-            return val.toFixed(2) + "%"
+            if (val !== null && val !== undefined)
+                return val.toFixed(2) + "%"
+            return "--";
         }
     },
     grid: {

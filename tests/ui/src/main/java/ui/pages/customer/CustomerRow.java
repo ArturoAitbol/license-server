@@ -2,7 +2,6 @@ package ui.pages.customer;
 
 import org.openqa.selenium.By;
 import ui.core.AbstractPageObject;
-import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 
 public class CustomerRow extends AbstractPageObject {

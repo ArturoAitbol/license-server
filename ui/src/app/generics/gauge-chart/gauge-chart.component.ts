@@ -16,7 +16,6 @@ export class GaugeChartComponent {
   @Input() p2pCalls: number;
   @Input() onNetCalls: number;
   @Input() offNetCalls: number;
-  @Input() timePeriod: string;
   @Input() description: string;
   @Input() set seriesName(value: string){
     this.chartOptions.labels = [value];
@@ -31,7 +30,9 @@ export class GaugeChartComponent {
   constructor() {
     this.chartOptions.tooltip.y = {
       formatter(val: number, opts?: any): string {
-        return val + "%";
+        if (val !== null && val !== undefined)
+            return val + "%";
+        return "";
       },
     }
   }

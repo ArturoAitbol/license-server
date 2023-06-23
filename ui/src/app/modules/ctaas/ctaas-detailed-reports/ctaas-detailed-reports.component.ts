@@ -6,6 +6,7 @@ import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { Sort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-detailed-reports',
@@ -24,6 +25,7 @@ export class DetailedReportsCompoment implements OnInit {
   endDateStr: string = '';
   regionsStr: string = '';
   usersStr:string = '';
+  polqaCalls: boolean = false;
   loggedInUserRoles: string[] = [];
   private subaccountDetails: any;
   hasDashboardDetails: boolean = false;
@@ -47,6 +49,11 @@ export class DetailedReportsCompoment implements OnInit {
   fromMediaStats: any;
   toMediaStats: any;
   otherpartyMediaStat: any;
+  sortAscending: boolean = true;
+  sortColumn: string = '';
+  clickCount: number = 0;
+  originalDetailedTestReport: any[] = [];
+
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
   constructor(private msalService: MsalService,
@@ -73,6 +80,7 @@ export class DetailedReportsCompoment implements OnInit {
       if (params.status) this.status = params.status;
       if (params.regions && params.regions != '') this.regionsStr = params.regions;
       if (params.users && params.users != '') this.usersStr = params.users;
+      if (params.polqaCalls && params.polqaCalls != '') this.polqaCalls = true;
       this.startDateStr = params.start;
       this.endDateStr = params.end;
       this.parseTitle();
@@ -133,7 +141,7 @@ export class DetailedReportsCompoment implements OnInit {
     this.isLoadingResults = true;
     const PARSED_REPORT_TYPE = this.parseTestPlanNames();
     this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status,
-      this.regionsStr, this.usersStr).subscribe((res: any) => {
+      this.regionsStr, this.usersStr, this.polqaCalls).subscribe((res: any) => {
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         if (res.response.report && res.response.reportType) {
@@ -212,7 +220,6 @@ export class DetailedReportsCompoment implements OnInit {
             obj.tonoDataFoundFlag = false;
             obj.otherPartynoDataFoundFlag = false;
             obj.panelOpenState = true;
-            obj.callType = obj.otherParties.length > 0  ? null : obj.callType
             obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
           this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime;
@@ -291,8 +298,8 @@ export class DetailedReportsCompoment implements OnInit {
 
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
-    this.detailedTestReport[index].from.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timestamp');
-    this.detailedTestReport[index].to.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].to.mediaStats, 'timestamp');
+    this.detailedTestReport[index].from.mediaStats = Utility.sortListInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timeStampIndex', true);
+    this.detailedTestReport[index].to.mediaStats = Utility.sortListInAscendingOrder(this.detailedTestReport[index].to.mediaStats, 'timeStampIndex', true);
     if (this.detailedTestReport[index].otherParties) // check for null / undefined values
       this.setOtherPartiesPanelStatus(this.detailedTestReport[index].otherParties);
   }
@@ -449,4 +456,60 @@ export class DetailedReportsCompoment implements OnInit {
    * @returns: string
    */
   getIconByType(flag: boolean): string { return (flag) ? 'keyboard_arrow_down' : 'keyboard_arrow_up'; }
+  
+  sortData(sortParameters: Sort): any[]{
+    const keyName = sortParameters.active
+    if(sortParameters.direction !== '') {
+      this.reportResponse.endpoints =  Utility.sortingDataTable(this.reportResponse.endpoints, keyName, sortParameters.direction);
+    } else {
+      return this.reportResponse.endpoints;
+    }
+  }
+
+  handleSort(column: string) {
+    if (this.originalDetailedTestReport.length === 0) {
+      this.originalDetailedTestReport = [...this.detailedTestReport];
+    }
+    if (this.sortColumn === column) {
+      this.clickCount++;
+      if (this.clickCount > 2) {
+        this.sortColumn = '';
+        this.sortAscending = true;
+        this.clickCount = 0;
+        this.detailedTestReport = [...this.originalDetailedTestReport];
+        return;
+      } else {
+        this.sortAscending = !this.sortAscending;
+      }
+    } else {
+      this.clickCount = 1;
+      this.sortAscending = true;
+      this.sortColumn = column;
+    }
+    const sortedList = [...this.detailedTestReport];
+      sortedList.sort((a, b) => {
+      if (column === 'to') {
+        const numA = parseInt(a['to']['DID']);
+        const numB = parseInt(b['to']['DID']);
+
+        if (numA < numB) return this.sortAscending ? -1 : 1;
+        if (numA > numB) return this.sortAscending ? 1 : -1;
+        return 0;
+      }else if (column === 'from') {
+        const numA = parseInt(a['from']['DID']);
+        const numB = parseInt(b['from']['DID']);
+
+        if (numA < numB) return this.sortAscending ? -1 : 1;
+        if (numA > numB) return this.sortAscending ? 1 : -1;
+        return 0;
+      }else {
+        if (a[column] === undefined || a[column] === null) return this.sortAscending ? 1 : -1;
+        if (b[column] === undefined || b[column] === null) return this.sortAscending ? -1 : 1;
+        if (a[column] < b[column]) return this.sortAscending ? -1 : 1;
+        if (a[column] > b[column]) return this.sortAscending ? 1 : -1;
+        return 0;
+      }
+    });
+      this.detailedTestReport = sortedList;
+  }
 }
