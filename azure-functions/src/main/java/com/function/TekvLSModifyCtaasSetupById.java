@@ -79,7 +79,7 @@ public class TekvLSModifyCtaasSetupById {
                 && jobj.getString(OPTIONAL_PARAMS.STATUS.jsonAttrib)
                 .equalsIgnoreCase(Constants.CTaaSSetupStatus.READY.value());
         if (isSetupReady) {
-            if (!jobj.has(OPTIONAL_PARAMS.LICENSE_ID.jsonAttrib)) {
+            if (!jobj.has("licenseId")) {
                 context.getLogger().info("error: licenseId is missing.");
                 JSONObject json = new JSONObject();
                 json.put("error", "error: licenseId is missing.");
@@ -107,7 +107,7 @@ public class TekvLSModifyCtaasSetupById {
         // Build SQL query for customer & subAccount details
         SelectQueryBuilder customerAndSubQueryBuilder = null;
 
-        if (jobj.has(OPTIONAL_PARAMS.LICENSE_ID.jsonAttrib) && jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
+        if (jobj.has("licenseId") && jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
             verificationBuilder = new SelectQueryBuilder("SELECT * FROM license");
             verificationBuilder.appendEqualsCondition(
                     OPTIONAL_PARAMS.SUBACCOUNT_ID.columnName,
@@ -218,7 +218,7 @@ public class TekvLSModifyCtaasSetupById {
                 projectStatement.setString(4, Constants.DEFAULT_CTAAS_PROJECT_STATUS);
                 projectStatement.setString(5, today);
                 projectStatement.setString(6, Constants.DEFAULT_CTAAS_PROJECT_OWNER);
-                projectStatement.setString(7, jobj.getString(OPTIONAL_PARAMS.LICENSE_ID.jsonAttrib));
+                projectStatement.setString(7, jobj.getString("licenseId"));
                 // Insert
                 context.getLogger().info("Execute SQL projectStatement (User: " + userId + "): " + projectStatement);
                 ResultSet rs = projectStatement.executeQuery();
@@ -341,7 +341,6 @@ public class TekvLSModifyCtaasSetupById {
 
     private enum OPTIONAL_PARAMS {
         SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
-        LICENSE_ID("licenseId", "license_id", QueryBuilder.DATA_TYPE.UUID),
         AZURE_RESOURCE_GROUP("azureResourceGroup", "azure_resource_group", QueryBuilder.DATA_TYPE.VARCHAR),
         TAP_URL("tapUrl", "tap_url", QueryBuilder.DATA_TYPE.VARCHAR),
         STATUS("status", "status", QueryBuilder.DATA_TYPE.VARCHAR),
