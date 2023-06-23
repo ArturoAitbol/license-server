@@ -146,7 +146,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         font-size: 12px;" xmlns="http://www.w3.org/1999/html"><span>${ w.config.xaxis.categories[dataPointIndex] }</span></div>
       <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
         align-items: flex-start;">
-      <div>Calls Streams: <b>${ this.vq.numericValues[dataPointIndex] }</b></div>
+      <div>Call streams: <b>${ this.vq.numericValues[dataPointIndex] }</b></div>
       </div>
       `;
     };
@@ -162,7 +162,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       <div class="apexcharts-tooltip-series-group" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;display: flex !important; flex-direction: column;
         align-items: flex-start;">
       <div>Category: <b>${ w.config.series[seriesIndex].name }</b></div>
-      <div>Calls Streams: <b>${ this.weeklyVqNumericValues[seriesIndex][dataPointIndex] }</b></div>
+      <div>Call streams: <b>${ this.weeklyVqNumericValues[seriesIndex][dataPointIndex] }</b></div>
       <div>Percentage: <b>${ series[seriesIndex][dataPointIndex].toFixed(2) }%</b></div>
       </div>
       `;
