@@ -325,7 +325,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             this.hasDashboardDetails = this.checkForDashboardDetails();
             this.isLoadingResults = false;
             console.error('Error loading dashboard reports | ', e.error);
-            this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+            this.snackBarService.openSnackBar('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
         });
     }
 
@@ -390,7 +390,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.isLoadingResults = false;
                     console.error('Error while loading embedded powerbi report: ', err);
                     this.setPbiReportDetailsInSubaccountDetails(null);
-                    this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+                    this.snackBarService.openSnackBar('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
                     reject("API request is failed!");
                 });
         });

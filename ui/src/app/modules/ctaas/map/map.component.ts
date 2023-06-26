@@ -62,9 +62,9 @@ export class MapComponent implements OnInit, OnDestroy {
     public dialog: MatDialog, 
     private snackBarService: SnackBarService ) { }
 
-  readonly GOOD_COLOR: string = "#203c66";
-  readonly MID_COLOR: string = "orange";
-  readonly BAD_COLOR: string = "red";
+  readonly GOOD_COLOR: string = "#273176";
+  readonly MID_COLOR: string = "#EC7C56";
+  readonly BAD_COLOR: string = "#bb2426";
   LINE_WEIGHT: number;
   readonly LINE_SMOOTH_FACTOR: number = 1;
  
