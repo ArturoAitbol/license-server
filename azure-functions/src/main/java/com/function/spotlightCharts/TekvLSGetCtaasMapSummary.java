@@ -52,8 +52,6 @@ public class TekvLSGetCtaasMapSummary {
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-        String from = request.getQueryParameters().getOrDefault("from", "");
-        String to = request.getQueryParameters().getOrDefault("to", "");
         String regions = request.getQueryParameters().getOrDefault("regions", "");
 
         if (subaccountId.isEmpty()) {
@@ -78,19 +76,27 @@ public class TekvLSGetCtaasMapSummary {
                 "       count(distinct sr.id) as total_calls,\n" +
                 "       count(distinct sr.id) FILTER (WHERE sr.status = 'PASSED') as passed,\n" +
                 "       count(distinct sr.id) FILTER (WHERE sr.status = 'FAILED') as failed," +
-                "       max(case" +
-                "               when ms.parameter_name = 'Received Jitter'" +
-                "                   then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as \"Received Jitter\"," +
-                "       max(case" +
-                "               when ms.parameter_name = 'Received packet loss'" +
-                "                   then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as \"Received packet loss\"," +
-                "       max(case" +
-                "               when ms.parameter_name = 'Round trip time'" +
-                "                   then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as \"Round trip time\"," +
-                "       avg(case" +
-                "               when ms.parameter_name = 'Sent bitrate'" +
-                "                   then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as \"Sent bitrate\"," +
-                "       min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as \"POLQA\"" +
+                "       count(case when ms.parameter_name = 'Received Jitter' then ms.parameter_name end) as count_jitter," +
+                "       max(case when ms.parameter_name = 'Received Jitter'" +
+                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_jitter," +
+                "       avg(case when ms.parameter_name = 'Received Jitter'" +
+                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_jitter," +
+                "       count(case when ms.parameter_name = 'Received packet loss' then ms.parameter_name end) as count_packet_loss," +
+                "       max(case when ms.parameter_name = 'Received packet loss'" +
+                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_packet_loss," +
+                "       avg(case when ms.parameter_name = 'Received packet loss'" +
+                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_packet_loss," +
+                "       count(case when ms.parameter_name = 'Round trip time' then ms.parameter_name end) as count_round_trip," +
+                "       max(case when ms.parameter_name = 'Round trip time'" +
+                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_round_trip," +
+                "       avg(case when ms.parameter_name = 'Round trip time'" +
+                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_round_trip," +
+                "       count(case when ms.parameter_name = 'Sent bitrate' then ms.parameter_name end) as count_bitrate," +
+                "       avg(case when ms.parameter_name = 'Sent bitrate'" +
+                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate," +
+                "       count(case when ms.parameter_name = 'POLQA' then ms.parameter_name end) as count_polqa," +
+                "       min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as min_polqa," +
+                "       avg(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as avg_polqa " +
                 "FROM media_stats ms" +
                 "         LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id" +
                 "         LEFT JOIN sub_result sr ON trr.subresultid = sr.id" +
@@ -156,7 +162,7 @@ public class TekvLSGetCtaasMapSummary {
             }
 
             // Retrieve tap URL
-            context.getLogger().info("Execute SQL statement: " + selectStmtTapUrl);
+            context.getLogger().info("Execute TAP url SQL statement: " + selectStmtTapUrl);
             rs = selectStmtTapUrl.executeQuery();
             String tapURL = null;
             if (rs.next()) {
@@ -170,7 +176,7 @@ public class TekvLSGetCtaasMapSummary {
             context.getLogger().info("TAP URL for data query: " + tapURL);
 
             String locationsSql = locationsQB.getQuery();
-            context.getLogger().info("Execute SQL statement: " + locationsSql);
+            context.getLogger().info("Execute map SQL statement: " + locationsSql);
             JSONArray resultSet = TAPClient.executeQuery(tapURL, locationsSql, context);
             JSONArray result = new JSONArray();
             for (Object entry : resultSet) {
@@ -201,15 +207,33 @@ public class TekvLSGetCtaasMapSummary {
                     res.put("to", toObj);
                 }
                 if(!toObj.isEmpty() && !fromObj.isEmpty()) {
-                    context.getLogger().info("hola3: " + entryArr);
                     res.put("totalCalls", entryArr.get(8));
                     res.put("passed", entryArr.get(9));
                     res.put("failed", entryArr.get(10));
-                    res.put("receivedJitter", entryArr.get(11));
-                    res.put("receivedPacketLoss", entryArr.get(12));
-                    res.put("roundTripTime", entryArr.get(13));
-                    res.put("sentBitrate", entryArr.get(14));
-                    res.put("polqa", entryArr.get(15));
+                    JSONObject jitter = new JSONObject();
+                    jitter.put("count", entryArr.get(11));
+                    jitter.put("max", entryArr.get(12));
+                    jitter.put("avg", entryArr.get(13));
+                    res.put("receivedJitter", jitter);
+                    JSONObject packetLoss = new JSONObject();
+                    packetLoss.put("count", entryArr.get(14));
+                    packetLoss.put("max", entryArr.get(15));
+                    packetLoss.put("avg", entryArr.get(16));
+                    res.put("receivedPacketLoss", packetLoss);
+                    JSONObject roundTrip = new JSONObject();
+                    roundTrip.put("count", entryArr.get(17));
+                    roundTrip.put("max", entryArr.get(18));
+                    roundTrip.put("avg", entryArr.get(19));
+                    res.put("roundTripTime", roundTrip);
+                    JSONObject bitRate = new JSONObject();
+                    bitRate.put("count", entryArr.get(20));
+                    bitRate.put("avg", entryArr.get(21));
+                    res.put("sentBitrate", bitRate);
+                    JSONObject polqa = new JSONObject();
+                    polqa.put("count", entryArr.get(22));
+                    polqa.put("min", entryArr.get(23));
+                    polqa.put("avg", entryArr.get(24));
+                    res.put("polqa", polqa);
                     result.put(res);
                 }
             }

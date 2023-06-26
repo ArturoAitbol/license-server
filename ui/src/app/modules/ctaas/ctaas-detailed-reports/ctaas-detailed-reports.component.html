@@ -101,9 +101,9 @@
                         <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                             class="accordian-container">
                             <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
-                                <mat-expansion-panel-header>
+                                <mat-expansion-panel-header class="text-container">
                                     <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-1 custom-col">
-                                        <span class="testcasename " [title]="item.testCaseName">
+                                        <span class="testcasename" [title]="item.testCaseName">
                                             {{item.testCaseName | na}}
                                         </span>
                                     </mat-panel-title>

@@ -135,8 +135,8 @@ public class TekvLSModifyCtaasSetupById {
                 String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN.getValue()))
                         ? String.valueOf(jobj.getBoolean(param.jsonAttrib))
                         : jobj.getString(param.jsonAttrib);
-                if (param == OPTIONAL_PARAMS.MAINTENANCE && !currentRole.equals(FULL_ADMIN) && !currentRole.equals(CONFIG_TESTER)) {
-                    // Skip maintenance update if the user doesn't have the FULL_ADMIN role
+                if (param == OPTIONAL_PARAMS.MAINTENANCE && (!currentRole.equals(FULL_ADMIN) || !currentRole.equals(CONFIG_TESTER))) {
+                    // Skip maintenance update if the user doesn't have the FULL_ADMIN or CONFIG_TESTER role
                     continue;
                 }
                 queryBuilder.appendValueModification(param.columnName, jsonAttribValue, param.dataType);
@@ -299,6 +299,7 @@ public class TekvLSModifyCtaasSetupById {
             throws SQLException {
         if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib)) {
             final String subaccountId = jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib);
+            context.getLogger().info("@@@DEV1: " + FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId));
             if (FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId)) {
                 String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
                 String customerAdminEmailsSql = null;

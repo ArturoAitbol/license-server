@@ -21,6 +21,9 @@
                                                 {{value}}
                                             </mat-option>
                                         </mat-select>
+                                        <mat-hint *ngIf="metricValueHasChanged()" align="end" class="apply-flag">
+                                            <mat-icon>error_outline</mat-icon> Not applied
+                                        </mat-hint>
                                     </mat-form-field>
                                 </div>
                                 <div class="col-auto">
@@ -32,6 +35,9 @@
                                                #userInput
                                                formControlName="user"
                                                [matAutocomplete]="userAuto">
+                                        <mat-hint *ngIf="userHasChanged()" align="end" class="apply-flag">
+                                            <mat-icon>error_outline</mat-icon> Not applied
+                                        </mat-hint>
                                         <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete" (optionSelected)="selected()">
                                             <mat-option *ngFor="let user of usersForDropdown" [value]="user">
                                                 {{user}}
@@ -42,7 +48,7 @@
                                 <div class="col-auto">
                                     <div style="display: inline-block; padding-right: 15px; margin-top: 16px;">
                                         <button class="apply-bttn" mat-raised-button
-                                                id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">
+                                                id="add-customer-button" (click)="applyFilters()" [disabled]="filters.disabled">
                                             Apply
                                         </button>
                                     </div>
@@ -51,17 +57,15 @@
                         </div>
                     </div>
                 </form>
-                <div class="row" *ngIf="this.selectedUsers.length>0">
+                <div class="row" *ngIf="this.preselectedUsers.length>0">
                     <div class="col-md-6 offset-md-3">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                     <h2 class="mb-0">Selected User(s)&nbsp;</h2>
-                                    <button [disabled]="this.selectedUsers.length===0" (click)="clearUsersFilter()" class="clear-button text-center" mat-raised-button>
-                                        <small>Clear All</small>
-                                    </button>
+                                    <button [disabled]="this.preselectedUsers.length===0" (click)="clearUsersFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
                             </div>
                             <mat-chip-list #chipList aria-label="Region selection">
                                 <mat-chip
-                                  *ngFor="let user of selectedUsers"
+                                  *ngFor="let user of preselectedUsers"
                                   (removed)="remove(user)">
                                   {{user}}
                                   <button matChipRemove>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../helpers/chart-options-type";
 import {
   defaultFailedCallsChartOptions,
@@ -11,12 +11,12 @@ import {
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
 import moment, { Moment } from "moment";
-import { forkJoin, Observable, interval, Subscription } from "rxjs";
+import { forkJoin, Observable, interval, Subscription, of } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
 import { ReportName, ReportType } from "../../../helpers/report-type";
 import { FormBuilder } from "@angular/forms";
-import { map, startWith } from "rxjs/operators";
+import { catchError, map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
 import { ActivatedRoute } from '@angular/router';
@@ -32,15 +32,16 @@ import { FeatureToggleService } from "../../../services/feature-toggle.service";
   styleUrls: ['./spotlight-dashboard.component.css']
 })
 
-export class SpotlightDashboardComponent implements OnInit{
+export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   vqChartOptions: Partial<ChartOptions>;
+  chartsSubscription:Subscription;
 
   // Weekly Feature Functionality variables
-  weeklyFeatureFunctionality = {timePeriod: '', numberCalls: 0, p2pCalls: 0, onNetCalls: 0, offNetCalls: 0};
+  weeklyFeatureFunctionality = {numberCalls: 0, p2pCalls: 0, onNetCalls: 0, offNetCalls: 0};
   weeklyFeatureFunctionalityChartOptions: Partial<ChartOptions>;
 
   // Weekly Calling Reliability variables
-  weeklyCallingReliability = {timePeriod: '', numberCalls: 0, p2pCalls: 0, onNetCalls: 0, offNetCalls: 0};
+  weeklyCallingReliability = {numberCalls: 0, p2pCalls: 0, onNetCalls: 0, offNetCalls: 0};
   weeklyCallingReliabilityChartOptions: Partial<ChartOptions>;
   weeklyCallsStatusChartOptions: Partial<ChartOptions>;
 
@@ -50,22 +51,22 @@ export class SpotlightDashboardComponent implements OnInit{
   selectedStatus = 'total';
 
   // Weekly VQ variables
-  weeklyVQ = {timePeriod: '', numberCalls: 0, numberStreams: 0, p2p: 0, onNet: 0, offNet: 0};
+  weeklyVQ = {numberCalls: 0, numberStreams: 0, p2p: 0, onNet: 0, offNet: 0};
   weeklyVQChartOptions: Partial<ChartOptions>;
   weeklyVqNumericValues = null;
 
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
-  calls = {timePeriod: '', total: 0, failed: 0, onNetCalls:0, offNetCalls:0, p2pCalls: 0 };
+  calls = {total: 0, failed: 0, onNetCalls:0, offNetCalls:0, p2pCalls: 0 };
 
   // Daily Calling Reliabilty gaguge variables
-  callingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
+  callingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0 };
 
   // Daily Feature Functionality gaguge variables
-  featureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0,  period: '' };
+  featureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0 };
 
   // Daily Feature Functionality gaguge variables
-  vq = { period: '', calls: 0, streams: 0, numericValues: [], p2p: 0, onNet: 0, offNet: 0};
+  vq = { calls: 0, streams: 0, numericValues: [], p2p: 0, onNet: 0, offNet: 0};
 
   //Selected graphs variables
   selectedPeriod = 'daily';
@@ -82,6 +83,7 @@ export class SpotlightDashboardComponent implements OnInit{
     region: [""]
   });
 
+  date: Moment;
   regions: { country: string, state: string, city: string, displayName: string }[] = [];
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
@@ -109,7 +111,9 @@ export class SpotlightDashboardComponent implements OnInit{
   timerIsRunning = false;
   isRefreshing = false;
   chartsLoaded = 0;
+  preselectedRegions = [];
   selectedRegions = [];
+  weeklyPreselectedRegions = [];
   weeklySelectedRegions = [];
   refreshIntervalSubscription: Subscription;
   autoRefresh = false;
@@ -163,7 +167,6 @@ export class SpotlightDashboardComponent implements OnInit{
       </div>
       `;
     };
-    this.setWeeklyRange();
   }
 
   ngOnInit() {
@@ -177,6 +180,8 @@ export class SpotlightDashboardComponent implements OnInit{
           this.filters.get('date').setValue(moment.utc(this.note.openDate));
           this.weeklyFilters.get('date').setValue(moment.utc(this.note.openDate));
           this.isHistoricalView = true;
+          this.setWeeklyRange();
+          this.setDate();
           this.loadCharts();
           this.showChildren = true;
         });
@@ -208,9 +213,13 @@ export class SpotlightDashboardComponent implements OnInit{
           }
           this.locationFlag = true;
           this.weeklySelectedRegions = this.selectedRegions;
+          this.preselectedRegions = [...this.selectedRegions];
+          this.weeklyPreselectedRegions = [...this.selectedRegions];
           this.weeklyFilters.controls['region'].setValue(this.selectedRegion)
           this.filters.controls['region'].setValue(this.selectedRegion);
         }
+        this.setWeeklyRange();
+        this.setDate();
         this.loadCharts();
         this.showChildren = true;
         this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView;
@@ -219,11 +228,24 @@ export class SpotlightDashboardComponent implements OnInit{
           this.disableFiltersWhileLoading = false;
           this.autoRefresh = true;
           this.reloadCharts(false);
+          this.networkQuality.loadCharts({showLoading:false});
         });
       }
     });
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
+  }
+
+  dateHasChanged():boolean{
+    if(this.selectedPeriod==="daily")
+      return this.filters.get('date').value.format("MM-DD-YYYY") !== this.date.format("MM-DD-YYYY");
+    return this.weeklyFilters.get('date').value.format("MM-DD-YYYY") !== this.selectedRange.end.format("MM-DD-YYYY");
+  }
+
+  regionsHaveChanged():boolean{
+    if(this.selectedPeriod==="daily")
+      return JSON.stringify(this.preselectedRegions) !== JSON.stringify(this.selectedRegions);
+    return JSON.stringify(this.weeklyPreselectedRegions) !== JSON.stringify(this.weeklySelectedRegions);
   }
   
   getStartWeekDate(): Moment{
@@ -231,15 +253,21 @@ export class SpotlightDashboardComponent implements OnInit{
   }
   
   getEndWeekDate(): Moment{
-    return this.isHistoricalView ? this.weeklyFilters.get('date').value : Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
+    const date = this.weeklyFilters.get('date').value.clone();
+    return this.isHistoricalView ? date : Utility.setHoursOfDate(date);
   }
 
   setWeeklyRange(){
     this.selectedRange = { start: this.getStartWeekDate(), end: this.getEndWeekDate() };
   }
+
+  setDate(){
+    const date = this.filters.get('date').value.clone();
+    this.date = this.isHistoricalView ? date : Utility.setHoursOfDate(date);
+  }
   
-  remove(region: string): void {
-    const regions = this.selectedPeriod==='daily'? this.selectedRegions : this.weeklySelectedRegions;
+  removeRegion(region: string): void {
+    const regions = this.selectedPeriod==='daily'? this.preselectedRegions : this.weeklyPreselectedRegions;
     const index = regions.indexOf(region);
     if (index >= 0) {
       regions.splice(index, 1);
@@ -255,28 +283,28 @@ export class SpotlightDashboardComponent implements OnInit{
     }
   }
 
-  selected(): void {
+  addRegion(): void {
     if(this.selectedPeriod==='daily'){
       const region = this.filters.get('region').value;
-      this.selectedRegions.push(region);
+      this.preselectedRegions.push(region);
       this.filters.get('region').setValue("");
       this.initAutocompletes();
     }else{
       const region = this.weeklyFilters.get('region').value;
-      this.weeklySelectedRegions.push(region);
+      this.weeklyPreselectedRegions.push(region);
       this.weeklyFilters.get('region').setValue("");
       this.initWeeklyAutocompletes();
     }
-    this.regionInput.nativeElement.value = ''; 
+    this.regionInput.nativeElement.value = '';
   }
 
   clearRegionsFilter(){
     if(this.selectedPeriod==='daily'){
-      this.selectedRegions = [];
+      this.preselectedRegions=[];
       this.initAutocompletes();
     }
     else {
-      this.weeklySelectedRegions = [];
+      this.weeklyPreselectedRegions = [];
       this.initWeeklyAutocompletes();
     }
   }
@@ -291,12 +319,23 @@ export class SpotlightDashboardComponent implements OnInit{
     }
   }
 
-  reloadCharts(showLoading = true){
-    this.disableFiltersWhileLoading = showLoading;
+  applyFilters(){
     if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
       this.isHistoricalView = false;
+    if(this.selectedPeriod==="daily"){
+      this.selectedRegions = [...this.preselectedRegions];
+      this.setDate();
+    }
+    else{
+      this.weeklySelectedRegions = [...this.weeklyPreselectedRegions];
+      this.setWeeklyRange();
+    }
+    this.reloadCharts();
+  }
+
+  reloadCharts(showLoading = true){
+    this.disableFiltersWhileLoading = showLoading;
     this.loadCharts(showLoading);
-    this.networkQuality.loadCharts({showLoading:showLoading});
   }
 
   selectedPeriodChange() {
@@ -311,6 +350,8 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   loadCharts(showLoading = true) {
+    if(this.chartsSubscription)
+      this.chartsSubscription.unsubscribe();
     this.startTimer();
     this.chartsLoaded = 0;
     this.calls.total = 0;
@@ -321,22 +362,20 @@ export class SpotlightDashboardComponent implements OnInit{
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
-      const selectedDate = this.isHistoricalView ? this.filters.get('date').value : Utility.setHoursOfDate(this.filters.get('date').value);
-      this.selectedDate = selectedDate.clone().utc();
-      this.selectedDate = selectedDate.clone().utc();
-      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
+      this.selectedDate = this.date.clone().utc();
+      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(this.date, this.selectedRegions, subaccountId));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(this.date, this.date, this.selectedRegions, subaccountId));
     } else {
-      this.setWeeklyRange();
       const selectedStartDate: Moment = this.selectedRange.start.clone();
       const selectedEndDate: Moment = this.selectedRange.end.clone();
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions));
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', this.weeklySelectedRegions));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, this.weeklySelectedRegions));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', this.weeklySelectedRegions).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, this.weeklySelectedRegions).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true).pipe(catchError(e => of(e))));
     }
-    forkJoin(obs).subscribe((res: any) => {
+
+    this.chartsSubscription = forkJoin(obs).subscribe((res: any) => {
       if (this.selectedPeriod == "daily")
         this.processDailyData(res);
       else
@@ -347,7 +386,8 @@ export class SpotlightDashboardComponent implements OnInit{
       this.isloading = false;
       this.chartsStatus(true);
     }, error => {
-      console.error(error);
+      console.error("SPDS ERROR: ",error);
+      // console.error(error);
       this.isloading = false;
       this.chartsStatus(true);
     });
@@ -355,7 +395,6 @@ export class SpotlightDashboardComponent implements OnInit{
 
 
   private processDailyData (res: any) {
-    const executionTime = this.formatExecutionTime(this.selectedDate,this.selectedDate);
     // Daily Calling reliability
     const dailyCallingReliabiltyRes: any = res[0].callingReliability;
     const POLQA = res[0].POLQA;
@@ -366,16 +405,12 @@ export class SpotlightDashboardComponent implements OnInit{
     this.callingReliability.onNet = dailyCallingReliabiltyRes.callsByType.onNet + POLQA.callsByType.onNet;
     this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet + POLQA.callsByType.offNet;
     this.callingReliability.value = (passedCalls / this.callingReliability.total) * 100 || 0;
-
-    this.callingReliability.period = executionTime;
     
     this.calls.total += this.callingReliability.total;
     this.calls.failed += failedCalls;
     this.calls.p2pCalls += this.callingReliability.p2p;
     this.calls.onNetCalls += this.callingReliability.onNet;
     this.calls.offNetCalls += this.callingReliability.offNet;
-
-    this.calls.timePeriod = executionTime;
 
     // Daily Feature Functionality
     const dailyFeatureFunctionalityRes: any = res[0].featureFunctionality;
@@ -386,8 +421,6 @@ export class SpotlightDashboardComponent implements OnInit{
     this.featureFunctionality.onNet = dailyFeatureFunctionalityRes.callsByType.onNet;
     this.featureFunctionality.offNet = dailyFeatureFunctionalityRes.callsByType.offNet;
     this.featureFunctionality.value = (passedCalls / this.featureFunctionality.total) * 100 || 0;
-
-    this.featureFunctionality.period = executionTime;
     
     this.calls.total += this.featureFunctionality.total;
     this.calls.failed += dailyFeatureFunctionalityRes.callsByStatus.FAILED;
@@ -404,7 +437,6 @@ export class SpotlightDashboardComponent implements OnInit{
     this.vq.offNet = POLQA.callsByType.offNet;
     this.vqChartOptions.series = [ { name: 'percentages', data: voiceQualityRes.percentages }];
     this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
-    this.vq.period = executionTime;
     this.vq.numericValues = voiceQualityRes.numericValues;
 
     // Daily Failed Calls Chart
@@ -479,13 +511,8 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallingReliability.numberCalls = weeklyCallStatus.callingReliability.callsByStatus.PASSED + weeklyCallStatus.callingReliability.callsByStatus.FAILED
         + POLQA.callsByStatus.PASSED + POLQA.callsByStatus.FAILED;
 
-    const timePeriod = this.formatExecutionTime(this.selectedRange.start,this.selectedRange.end);
-    this.weeklyFeatureFunctionality.timePeriod = timePeriod;
-    this.weeklyCallingReliability.timePeriod = timePeriod;
-
     // Weekly VQ chart
     const vqData = res[4];
-    this.weeklyVQ.timePeriod = timePeriod;
     this.weeklyVQ.numberStreams = vqData.summary.streams;
     this.weeklyVQ.numberCalls = vqData.summary.calls;
     this.weeklyVQ.p2p = POLQA.p2p;
@@ -509,10 +536,6 @@ export class SpotlightDashboardComponent implements OnInit{
       this.reloadUserOptions(this.weeklySelectedRegions);
     else
       this.reloadFilterOptions();
-  }
-
-  formatExecutionTime(startDate: Moment,endDate): string{
-    return startDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + endDate.format("MM-DD-YYYY HH:mm:ss A") + " UTC";
   }
 
   changeHeatMapData(){
@@ -564,7 +587,7 @@ export class SpotlightDashboardComponent implements OnInit{
     );
     this.filteredRegions.subscribe((regions) => {
       this.notSelectedFilteredDailyRegions = regions;
-      this.selectedRegions.forEach(region => {
+      this.preselectedRegions.forEach(region => {
         this.removeRegionFromArray(region.displayName, this.notSelectedFilteredDailyRegions);
       });
     });
@@ -680,5 +703,12 @@ export class SpotlightDashboardComponent implements OnInit{
       maxWidth: '30vw',
       disableClose: false
     });
+  }
+
+  ngOnDestroy(): void {
+    if(this.chartsSubscription)
+      this.chartsSubscription.unsubscribe();
+    if(this.refreshIntervalSubscription)
+      this.refreshIntervalSubscription.unsubscribe();
   }
 }

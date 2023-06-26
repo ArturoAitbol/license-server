@@ -2,50 +2,68 @@
 <app-banner [stylesflag]="'notes'" *lcCheckAccessFor="'showBanner'"></app-banner>
 <mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
 <div [formGroup]="filterForm">
-  <div class="date-picker-form justify-content-center mt-2 mb-2">
-    <div class="container-reverse">
-        <div class="date-field">
-          <mat-form-field  style="margin-bottom: -1.25em" class="col" appearance="outline">
-            <mat-label>Date</mat-label>
-            <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="startDateFilterControl">
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-            <mat-datepicker #dp></mat-datepicker>
-          </mat-form-field> 
+  <div class="row">
+    <div class="col-8 date-picker-form justify-content-end mt-2 mb-2">
+      <div class="container-reverse">
+          <div class="date-field">
+            <mat-form-field  style="margin-bottom: -1.25em" class="col" appearance="outline">
+              <mat-label>Date</mat-label>
+              <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="startDateFilterControl">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+              <mat-datepicker #dp></mat-datepicker>
+            </mat-form-field> 
+          </div>
+          <div class="region-field">
+            <mat-form-field appearance="outline" style="width: 80%;">
+                <mat-label>Region</mat-label>
+                <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
+                <input type="text"
+                placeholder="City or State or Country"
+                matInput
+                #regionInput
+                formControlName="region"
+                [matAutocomplete]="regionAuto">
+                <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="addRegion()">
+                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region">
+                        {{region.displayName}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
         </div>
-        <div class="region-field">
-          <mat-form-field appearance="outline" style="width: 80%;">
-              <mat-label>Region</mat-label>
-              <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
-              <input type="text"
-              placeholder="City or State or Country"
-              matInput
-              #regionInput
-              formControlName="region"
-              [matAutocomplete]="regionAuto">
-              <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="selected()">
-                  <mat-option *ngFor="let region of regions" [value]="region">
-                      {{region.displayName}}
-                  </mat-option>
-              </mat-autocomplete>
-          </mat-form-field>
+      </div>
+      <div class="align-items-start apply-button">
+          <button class="mt-2" mat-raised-button
+                  id="add-customer-button" (click)="dateFilter()" [disabled]="!filterForm.valid">Apply</button>
       </div>
     </div>
-    <div class="align-items-start apply-button">
-        <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
-                id="add-customer-button" (click)="dateFilter()" [disabled]="!filterForm.valid">Apply</button>
+    <div class="col-4 justify-content-end">
+      <div class="legend">
+        <div class="legend-item">
+          <div class="color-box good" matTooltip="Number of failed calls < 1 and Average POLQA > 3."></div>
+          <span class="legend-label" matTooltip="Number of failed calls < 1 and Average POLQA > 3.">Good</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box fair" matTooltip="Number of failed calls >= 1 and < 5, or Average POLQA >= 2 and <= 3."></div>
+          <span class="legend-label" matTooltip="Number of failed calls >= 1 and < 5, or Average POLQA >= 2 and <= 3.">Fair</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box bad" matTooltip="Number of failed calls >= 5 or Average POLQA < 2."></div>
+          <span class="legend-label" matTooltip="Number of failed calls >= 5 or Average POLQA < 2.">Bad</span>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="row" *ngIf="this.selectedRegions.length>0">
+  <div class="row" *ngIf="this.preselectedRegions.length>0">
     <div class="col-md-6 offset-md-3">
             <div class="d-flex align-items-center justify-content-between mb-2">
                     <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
-                    <button [disabled]="this.selectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                    <button [disabled]="this.preselectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
             </div>
             <mat-chip-list aria-label="Region selection">
                 <mat-chip
-                  *ngFor="let region of selectedRegions"
-                  (removed)="remove(region)">
+                  *ngFor="let region of preselectedRegions"
+                  (removed)="removeRegion(region)">
                   {{region.displayName}}
                   <button matChipRemove>
                     <mat-icon>cancel</mat-icon>
@@ -54,72 +72,9 @@
             </mat-chip-list>
         <hr>
     </div>
-  <!-- <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-    <mat-label id="date-label">Select date range</mat-label>
-    <mat-date-range-input #rangeFilter [disabled]="filterForm.disabled" [rangePicker]="picker">
-        <input matStartDate formControlName="startDateFilterControl" placeholder="Start date"  >
-        <input matEndDate formControlName="endDateFilterControl" placeholder="End date"  >
-    </mat-date-range-input>
-    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-    <button *ngIf="filterForm.get('startDateFilterControl').value || filterForm.get('endDateFilterControl').value"
-        matSuffix mat-icon-button aria-label="Clear"> 
-        <mat-icon>close</mat-icon>
-    </button>
-</mat-form-field> -->
-  <!-- <mat-form-field  style="margin-bottom: -1.25em" class="col" appearance="outline">
-    <mat-label>Date</mat-label>
-    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="startDateFilterControl">
-    <mat-hint>MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-    <mat-datepicker #dp></mat-datepicker>
-  </mat-form-field> -->
-  <!-- <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-    <mat-label id="from-region-label">From region</mat-label>
-    <mat-select formControlName="fromRegionFilterControl" >
-        <mat-option>None</mat-option>
-        <mat-option *ngFor="let fromRegion of fromRegions" [value]="fromRegion">
-            {{fromRegion}}
-        </mat-option>
-    </mat-select>
-    <button *ngIf="filterForm.get('fromRegionFilterControl').value" matSuffix mat-icon-button
-            aria-label="Clear">
-        <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
-  <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-      <mat-label id="to-region-label">To region</mat-label>
-      <mat-select formControlName="toRegionFilterControl" >
-          <mat-option>None</mat-option>
-          <mat-option *ngFor="let toRegion of toRegions" [value]="toRegion">
-              {{toRegion}}
-          </mat-option>
-      </mat-select>
-      <button *ngIf="filterForm.get('toRegionFilterControl').value" matSuffix mat-icon-button
-              aria-label="Clear">
-          <mat-icon>close</mat-icon>
-      </button>
-  </mat-form-field> -->
+  </div>
 </div>
 <div>
-  <div class="row justify-content-center" style="padding-top: 1%;">
-    <h1 class="text-center">Daily Report</h1>
-  </div> 
-  <div class="legend" >
-    <div class="legend-item">
-      <div class="color-box good" matTooltip="Number of failed calls < 1 and Voice Quality > 3."></div>
-      <span class="legend-label" matTooltip="Number of failed calls < 1 and Voice Quality > 3.">Good</span>
-    </div>
-    <div class="legend-item">
-      <div class="color-box fair" matTooltip="Number of failed calls >= 1 and < 5, or Voice Quality >= 2 and <= 3."></div>
-      <span class="legend-label" matTooltip="Number of failed calls >= 1 and < 5, or Voice Quality >= 2 and <= 3.">Fair</span>
-    </div>
-    <div class="legend-item">
-      <div class="color-box bad" matTooltip="Number of failed calls >= 5 or Voice Quality < 2."></div>
-      <span class="legend-label" matTooltip="Number of failed calls >= 5 or Voice Quality < 2.">Bad</span>
-    </div>
-  </div>
   <div id="map">
     <div class="loading-shade" *ngIf="isLoadingResults">
       <mat-spinner *ngIf="isLoadingResults"></mat-spinner>

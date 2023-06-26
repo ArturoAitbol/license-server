@@ -4,17 +4,17 @@
     </div>
     <div class="card-body container-fluid">
         <div class="row">
-            <ng-container *ngIf="this.chartOptions.series[0] === 100">
+            <ng-container *ngIf="chartOptions.series[0] === 100">
                 <div class="col">
                     <label class="chart-label">Great! You had no failures</label>
                 </div>
             </ng-container>
-            <ng-container *ngIf="this.chartOptions.series[0] < 100 && this.chartOptions.series[0] > 0">
+            <ng-container *ngIf="chartOptions.series[0] < 100 && numberCalls > 0">
                 <div class="col">
                     <label class="chart-label fail">Oops! There were some failures</label>
                 </div>
             </ng-container>
-            <ng-container *ngIf="this.chartOptions.series[0] === 0">
+            <ng-container *ngIf="numberCalls === 0">
                 <div class="col">
                     <label class="chart-label fail">No Tests Done</label>
                 </div>

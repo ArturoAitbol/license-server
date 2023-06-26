@@ -133,7 +133,7 @@ mat-card {
     width: 0% !important;
   }
   .panel-title-container {
-    white-space: nowrap;
+    white-space: wrap;
     display: flex;
   }
   .arrow-button{
@@ -161,12 +161,12 @@ mat-card {
 }
 
 mat-panel-title {
-  white-space: nowrap;
+  white-space: wrap;
   flex-shrink: 0;
 }
 
 .panel-title-container {
-  white-space: nowrap;
+  white-space: wrap;
 }
 
 .table-header {
@@ -224,4 +224,11 @@ mat-panel-title {
   align-items: center;
   justify-content: center;
   color: #757575;
+}
+
+.text-container{
+  height: auto; 
+  min-height: 40px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }

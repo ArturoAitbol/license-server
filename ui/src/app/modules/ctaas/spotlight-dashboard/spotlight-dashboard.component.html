@@ -65,6 +65,10 @@
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
                         <div class="container-reverse">
                             <div class="date-field">
+                                <span *ngIf="dateHasChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
                                     <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
@@ -74,6 +78,10 @@
                                 </mat-form-field>
                             </div>
                             <div class="region-field">
+                                <span *ngIf="regionsHaveChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Region</mat-label>
                                     <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
@@ -83,7 +91,7 @@
                                     #regionInput
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
-                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
+                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="addRegion()">
                                         <mat-option *ngFor="let region of notSelectedFilteredDailyRegions" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
@@ -91,23 +99,25 @@
                                 </mat-form-field>
                             </div>
                         </div>
-                        <div class="align-items-start apply-button">
+                        <div class="d-flex align-items-center apply-button" [ngClass]="{'apply-button-enable':(!dateHasChanged() && !regionsHaveChanged())}">
                             <button class="mt-2" mat-raised-button
-                                    id="reload-btn" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                                    id="reload-btn" (click)="applyFilters()" [disabled]="filters.disabled || (!dateHasChanged() && !regionsHaveChanged())">Apply</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="row" *ngIf="this.selectedRegions.length>0">
+            <div class="row" *ngIf="this.preselectedRegions.length>0">
                 <div class="col-md-6 offset-md-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                                <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
-                                <button [disabled]="this.selectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                            <div class="d-flex justify-content-start">
+                                <h2 class="mb-0">Selected Region(s)</h2>
+                            </div>
+                            <button [disabled]="this.preselectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
                         </div>
                         <mat-chip-list aria-label="Region selection">
                             <mat-chip
-                              *ngFor="let region of selectedRegions"
-                              (removed)="remove(region)">
+                              *ngFor="let region of preselectedRegions"
+                              (removed)="removeRegion(region)">
                               {{region.displayName}}
                               <button matChipRemove>
                                 <mat-icon>cancel</mat-icon>
@@ -121,7 +131,6 @@
                 <div class="col-md-6" id="daily-calling-reliability">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
                                      [description]="'Represents the status of call routing across the selected regions.'"
-                                     [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
@@ -132,7 +141,6 @@
                 <div class="col-md-6" id="daily-feature-functionality">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
                                      [description]="'Represents the status of various call features.'"
-                                     [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"
@@ -242,8 +250,8 @@
         </ng-container>
         <ng-container *ngIf="showChildren">
             <app-network-quality #networkQuality
-                                 [startDate]="this.filters.get('date').value"
-                                 [endDate]="this.filters.get('date').value"
+                                 [startDate]="this.date"
+                                 [endDate]="this.date"
                                  [regions]="this.selectedRegions"
                                  [users]="this.users" (chartStatus)="chartsStatus($event)"
                                  [isLoading]="this.isloading">
@@ -261,6 +269,10 @@
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
                         <div class="container-reverse">
                             <div class="weekly-date-field">
+                                <span *ngIf="dateHasChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
                                     <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
@@ -270,6 +282,10 @@
                                 </mat-form-field>
                             </div>
                             <div class="region-field">
+                                <span *ngIf="regionsHaveChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Region</mat-label>
                                     <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
@@ -279,7 +295,7 @@
                                     #regionInput
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
-                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
+                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="addRegion()">
                                         <mat-option *ngFor="let region of notSelectedFilteredWeeklyRegions" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
@@ -287,23 +303,23 @@
                                 </mat-form-field>
                             </div>
                         </div>
-                        <div class="align-items-start apply-button" style="padding-left: 22%">
+                        <div class="d-flex align-items-center apply-button" [ngClass]="{'apply-button-enable':(!dateHasChanged() && !regionsHaveChanged())}">
                             <button class="mt-2" mat-raised-button
-                                    id="reload-btn-2" (click)="reloadCharts()" [disabled]="weeklyFilters.disabled">Apply</button>
+                                    id="reload-btn-2" (click)="applyFilters()" [disabled]="weeklyFilters.disabled || (!dateHasChanged() && !regionsHaveChanged())">Apply</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="row" *ngIf="this.weeklySelectedRegions.length>0">
+            <div class="row" *ngIf="this.weeklyPreselectedRegions.length>0">
                 <div class="col-md-6 offset-md-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
-                                <button [disabled]="this.weeklySelectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                                <button [disabled]="this.weeklyPreselectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
                         </div>
                         <mat-chip-list aria-label="Region selection">
                             <mat-chip
-                              *ngFor="let region of weeklySelectedRegions"
-                              (removed)="remove(region)">
+                              *ngFor="let region of weeklyPreselectedRegions"
+                              (removed)="removeRegion(region)">
                               {{region.displayName}}
                               <button matChipRemove>
                                 <mat-icon>cancel</mat-icon>
@@ -480,8 +496,8 @@
         </ng-container>
         <ng-container *ngIf="showChildren">
             <app-network-quality #networkQuality
-                                 [startDate]="getStartWeekDate()"
-                                 [endDate]="getEndWeekDate()"
+                                 [startDate]="this.selectedRange.start"
+                                 [endDate]="this.selectedRange.end"
                                  [groupBy]="'day'"
                                  [regions]="this.weeklySelectedRegions"
                                  [users]="this.users" (chartStatus)="chartsStatus($event)"
