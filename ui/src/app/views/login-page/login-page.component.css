@@ -110,6 +110,17 @@
   box-shadow: 0px 0px 10px 1px rgba(0, 198, 255, 0.7);
   -moz-animation: fullexpand 5s;
   -webkit-animation: fullexpand 5s;
+  animation: fullexpand 5s;
+}
+
+@keyframes fullexpand {
+  0% {
+    width: 0px;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 @-moz-keyframes fullexpand {

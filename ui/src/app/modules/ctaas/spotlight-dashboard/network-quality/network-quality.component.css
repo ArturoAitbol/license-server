@@ -1,5 +1,5 @@
 .card-header {
-    background: #273176;  /* previus color #7694B7; */
+    background: #273176;  /* previus color #6E76B4; */
     /* background: #6E76B4; */
     color: white;
 }
@@ -33,7 +33,7 @@
 }
 
 .blue-label {
-    color: #273176;  /* previus color #7694B7; */
+    color: #273176;  /* previus color #6E76B4; */
 }
 
 mat-form-field {
@@ -52,7 +52,7 @@ mat-form-field {
 }
 
 .apply-flag{
-    color: #7694B7;
+    color: #6E76B4;
 }
 
 @media (max-width: 600px) {
