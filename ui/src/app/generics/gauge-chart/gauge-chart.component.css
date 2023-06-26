@@ -5,8 +5,17 @@
 }
 
 .card-header {
-    background: #2d5186;  /* previus color #7694B7; */
+    background: #273176;  /* previus color #6E76B4; */
+    /* background: #6E76B4; */
     color: white;
+}
+
+.top-spacing-2 {
+    margin-top: 2em;
+}
+
+.top-spacing-1 {
+    margin-top: 1em;
 }
 
 .card-header h1{
@@ -24,11 +33,11 @@
 
 .card-footer {
     background: #F2F3F4;
-    color: #243C66;
+    color: #273176;
 }
 
 .fail {
-    color: #B80000;
+    color: #bb2426;
 }
 .footer-text {
     display: flex;
@@ -41,9 +50,9 @@
 }
 
 .viewDetail-button {
-    color: #243C66;
+    color: #273176;
 }
 .viewDetail-button:hover{
     color: white;
-    background-color: rgb(176, 194, 210);
+    background-color: #6E76B4;
 }

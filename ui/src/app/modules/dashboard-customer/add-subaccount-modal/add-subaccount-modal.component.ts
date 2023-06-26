@@ -19,7 +19,7 @@ export class AddSubaccountModalComponent implements OnInit {
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
   });
   services: any = [
-    {name: tekVizionServices.SpotLight, value: "Spotlight", used: false},
+    {name: tekVizionServices.SpotLight, value: "UCaaS Continuous Testing", used: false},
     {name: tekVizionServices.tekTokenConstumption, value: "tekToken Consumption", used: true}
   ];
   isDataLoading = false;

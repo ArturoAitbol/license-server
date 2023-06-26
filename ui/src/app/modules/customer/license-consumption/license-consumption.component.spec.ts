@@ -89,7 +89,7 @@ describe('license-consumption - UI verification test', () => {
         //Buttons
         const addLicenseButton = fixture.nativeElement.querySelector('#add-license-button');
         const addLicenseConsumptionButton = fixture.nativeElement.querySelector('#add-license-consumption');
-        expect(addLicenseButton.textContent).toContain('Add tekVizion 360 Subscription');
+        expect(addLicenseButton.textContent).toContain('Add TekVizion 360 Subscription');
         expect(addLicenseConsumptionButton.textContent).toContain('Add tekToken Consumption');
 
         const cloneConsumptionButton: HTMLElement = fixture.nativeElement.querySelector('#clone-consumption');
@@ -106,7 +106,7 @@ describe('license-consumption - UI verification test', () => {
         const projectForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#project-form" }));
         const dateForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#date-form" }));
         expect(await consumptionTypeForm.getLabel()).toContain('Consumption Type');
-        expect(await licensePeriodForm.getLabel()).toContain('tekVizion 360 Subscription');
+        expect(await licensePeriodForm.getLabel()).toContain('TekVizion 360 Subscription');
         expect(await projectForm.getLabel()).toContain('Project');
         expect(await dateForm.getLabel()).toContain(licenseConsumptionComponentTestInstance.getDatePickerLabel());
 
