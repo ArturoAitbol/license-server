@@ -50,7 +50,7 @@ class TekvLSGetAllDeviceVendorsTest extends TekvLSTest {
         List<String> supportVendors = jsonBody.getJSONArray("supportVendors").toList().stream().map(object -> (String) object).collect(Collectors.toList());
 
         assertTrue(vendors.size() > 0);
-        assertTrue(vendors.contains("TekVizion"));
+        assertTrue(vendors.contains("tekVizion"));
         assertTrue(supportVendors.size() > 0);
         assertTrue(supportVendors.contains("HylaFAX"));
     }
