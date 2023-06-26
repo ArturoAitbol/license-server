@@ -205,7 +205,7 @@
 
 .ng-valid[required],
 .ng-valid.required {
-  border-left: 5px solid #42a948;
+  border-left: 5px solid #76BD83;
 }
 
 .form-control.is-invalid,

@@ -191,17 +191,17 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#6E76B4"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#6E76B4"
+                    colors: "#000000"
                 }
             },
             title: {
                 text: "Success %",
                 style: {
-                    color: "#6E76B4"
+                    color: "#000000"
                 }
             },
             min: 0,
@@ -213,11 +213,11 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#6E76B4"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#6E76B4"
+                    colors: "#000000"
                 }
             },
             title: {
@@ -387,7 +387,7 @@ const defaultWeeklyCallsStatusChartOptions: Partial<ChartOptions> = {
     dataLabels: {
         enabled: true
     },
-    colors: [ "#5089c7" ],
+    colors: [ "#6E76B4" ],
     plotOptions: {
         heatmap: {
             shadeIntensity: 0.3,
@@ -395,7 +395,7 @@ const defaultWeeklyCallsStatusChartOptions: Partial<ChartOptions> = {
                 ranges: [
                     {
                         from: 0,
-                        color: "#5089c7",
+                        color: "#6E76B4",
                         foreColor: "#000000"
                     }
                 ]
@@ -634,7 +634,7 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
     ],
     markers: {
         size: 4,
-        colors: [ "#5089c7"],
+        colors: [ "#6E76B4"],
     },
     legend: {
         position: 'top',
