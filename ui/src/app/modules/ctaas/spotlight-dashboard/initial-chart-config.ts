@@ -145,7 +145,7 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     dataLabels: {
         enabled: true,
         style: {
-            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+            colors: ["#000000", "#000000", "#FFFFFF"]
         },
         formatter(val: string | number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (opts.seriesIndex === 0) {
@@ -271,11 +271,11 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
             show: false
         }
     },
-    colors: [ "#6E76B4", "#76BD83", "#bb2426" ],
+    colors: [ "#6E76B4", "#9ad5a5", "#bb2426" ],
     dataLabels: {
         enabled: true,
         style: {
-            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+            colors: ["#000000", "#000000", "#FFFFFF"]
         },
         formatter(val: string | number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (opts.seriesIndex === 0) {
@@ -321,17 +321,17 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#6E76B4"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#6E76B4"
+                    colors: "#000000"
                 }
             },
             title: {
                 text: "Success %",
                 style: {
-                    color: "#6E76B4"
+                    color: "#000000"
                 }
             },
             min: 0,
@@ -343,11 +343,11 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#6E76B4"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#6E76B4"
+                    colors: "#000000"
                 }
             },
             title: {
@@ -581,7 +581,7 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
     dataLabels: {
         enabled: true,
         style: {
-            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+            colors: ["#000000", "#000000", "#000000", "#FFFFFF"]
         },
         formatter(val: number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (val !== null && val !== undefined)
