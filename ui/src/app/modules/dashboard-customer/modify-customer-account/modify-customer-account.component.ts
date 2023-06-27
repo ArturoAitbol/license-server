@@ -26,7 +26,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
 
   types: string[] = ['MSP', 'Reseller'];
   servicesList = {
-    spotlight: "Spotlight",
+    spotlight: "UCaaS Continuous Testing",
     tokenConsumption: "tekToken Consumption"
   };
   private previousFormValue: any;

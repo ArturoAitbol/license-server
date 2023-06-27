@@ -16,7 +16,6 @@ export class GaugeChartComponent {
   @Input() p2pCalls: number;
   @Input() onNetCalls: number;
   @Input() offNetCalls: number;
-  @Input() timePeriod: string;
   @Input() description: string;
   @Input() set seriesName(value: string){
     this.chartOptions.labels = [value];

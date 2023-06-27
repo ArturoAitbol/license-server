@@ -52,7 +52,7 @@
     <figure *ngIf="isloading" class="reportLoading">
         <img class="spinner" height="80" width="80" src="assets/images/spinner.gif"
         alt="loading spinner gif">
-        <figcaption class= "loadingMessage">Please wait while we prepare your Spotlight Dashboard.</figcaption>
+        <figcaption class= "loadingMessage">Please wait while we prepare your UCaaS Continuous Testing Dashboard.</figcaption>
     </figure>
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
@@ -131,7 +131,6 @@
                 <div class="col-md-6" id="daily-calling-reliability">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
                                      [description]="'Represents the status of call routing across the selected regions.'"
-                                     [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
@@ -142,7 +141,6 @@
                 <div class="col-md-6" id="daily-feature-functionality">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
                                      [description]="'Represents the status of various call features.'"
-                                     [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"
@@ -151,7 +149,7 @@
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
                 </div>
             </div>
-            <div class="row" >
+            <div class="row">
                 <div class="col-md-6" >
                     <div class="card text-center mt-2 full-col" id="daily-voice-quality">
                         <div class="card-header">
@@ -174,18 +172,19 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
+                            <button class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
                         <div class="card-footer" id="daily-voice-quality-footer">
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1"> Number of streams: {{ vq.streams }} | 
-                                    Number of calls: {{ vq.calls }} | 
+                                <label class="ps-1"> Number of call streams: {{ vq.streams }} | 
+                                    Number of calls: {{ vq.calls }} </label>
+                                    <!-- Number of calls: {{ vq.calls }} | 
                                     P2P: {{vq.p2p}} | 
                                     On-net: {{vq.onNet}} | 
-                                    Off-net: {{vq.offNet}}</label>
+                                    Off-net: {{vq.offNet}}</label> -->
                             </div>
                         </div>
                     </div>
@@ -227,7 +226,7 @@
                                 </div>
                             </div>
                             <br>
-                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                            <button class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                 View Detailed Report
                             </button>
                         </div>
@@ -434,11 +433,12 @@
                         <div class="card-footer">
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1">Number of streams: {{ weeklyVQ.numberStreams }} | 
-                                    Number of calls: {{ weeklyVQ.numberCalls }} | 
+                                <label class="ps-1">Number of call streams: {{ weeklyVQ.numberStreams }} | 
+                                    Number of calls: {{ weeklyVQ.numberCalls }} </label>
+                                    <!-- Number of calls: {{ weeklyVQ.numberCalls }} | 
                                     P2P: {{weeklyVQ.p2p}} | 
                                     On-net: {{weeklyVQ.onNet}} | 
-                                    Off-net: {{weeklyVQ.offNet}}</label>
+                                    Off-net: {{weeklyVQ.offNet}}</label> -->
                             </div>
                         </div>
                     </div>

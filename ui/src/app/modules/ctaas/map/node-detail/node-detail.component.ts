@@ -27,7 +27,7 @@ export class NodeDetailComponent implements OnInit {
   }
 
   openNaviteDashboardWithSelectedData(){
-    const startDate = this.data.date;
+    const startDate = this.data.date.format("YYYY-MM-DD HH:mm:ss");
     const location = this.data.region.city + ", " + this.data.region.state + ", " + this.data.region.country;
     const url = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.selectedSubaccount.id}&location=${location}&date=${startDate}`;
     window.open(url);

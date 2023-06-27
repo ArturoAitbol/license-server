@@ -86,12 +86,12 @@ export class Utility {
                     case 'unavailable':
                     case 'rebooting':
                     case 'inactive':
-                        return '#7694B7';
+                        return '#6E76B4';
                     default:
-                        return 'red';
+                        return '#bb2426';
                 }
             } catch (e: any) {
-                return 'red';
+                return '#bb2426';
             }
         }
     }
@@ -177,6 +177,23 @@ export class Utility {
         return parsedDate;
     }
     
+    /**
+     * get worst case selector based on metric name
+     * @param metric: string 
+     * @returns: string 
+     */
+
+    public static worstCaseSelectorBasedOnMetric(metric: string): string {
+        switch (metric) {
+        case "sentBitrate":
+            return "";
+        case "polqa":
+            return "min";
+        default:
+            // receivedJitter, roundTripTime, receivedPacketLoss
+            return "max";
+        }
+    }
     /**
      * get report name by report type
      * @param reportType: string 

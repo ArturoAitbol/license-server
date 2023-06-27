@@ -37,7 +37,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
 	        String bodyRequest = "{'notifications': 'email,text'," +
 	        		 "'name': 'test-customer-subaccount-stakeholder'," +
 	                 "'jobTitle': 'Software Engineer'," +
-	                 "'companyName': 'tekVizion'," +
+	                 "'companyName': 'TekVizion'," +
 	                 "'phoneNumber': '+12142425968'}";
 	        doReturn(Optional.of(bodyRequest)).when(request).getBody();
 	        HttpResponseMessage response = tekvLSModifyAuthUserProfile.run(this.request,this.context);
@@ -56,7 +56,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
         String bodyRequest = "{'notifications': 'email,text'," +
                  "'name': 'test-customer-subaccount-stakeholder'," +
                  "'jobTitle': 'Software Engineer'," +
-                 "'companyName': 'tekVizion'," +
+                 "'companyName': 'TekVizion'," +
                  "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         //When
@@ -76,7 +76,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
         String bodyRequest = "{'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         //When
@@ -213,7 +213,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
     	String bodyRequest = "{'notifications': 'email,text'," +
        		 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);

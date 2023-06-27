@@ -1,4 +1,4 @@
-@CTaaSFeature @functional-test-suitesTest
+@CTaaSFeature @functional-test-suitesTest @feature-toggle
 Feature: TestSuites
   Background: Login successfully with valid credentials
     Given I am on the landing page
