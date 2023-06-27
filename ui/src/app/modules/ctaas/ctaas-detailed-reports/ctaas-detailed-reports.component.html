@@ -76,22 +76,22 @@
                                         <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('startTime')"> Start Date
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'startTime'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500" (click)="handleSort('from')"> From
+                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('from')"> From
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'from'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('fromPolqaAvg')"> From POLQA
+                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('fromPolqaAvg')"> From POLQA
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'fromPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500" (click)="handleSort('to')"> To
+                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('to')"> To
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'to'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('toPolqaAvg')"> To POLQA
+                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('toPolqaAvg')"> To POLQA
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'toPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                         <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('status')"> Status
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'status'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('callType')"> Call Type
+                                        <mat-panel-title class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('callType')"> Call Type
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'callType'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                     </mat-expansion-panel-header>
@@ -102,7 +102,7 @@
                             class="accordian-container">
                             <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
                                 <mat-expansion-panel-header class="text-container">
-                                    <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-1 custom-col">
+                                    <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
                                         <span class="testcasename" [title]="item.testCaseName">
                                             {{item.testCaseName | na}}
                                         </span>
@@ -110,22 +110,28 @@
                                     <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-1 custom-col">
                                         {{item.startTime | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
+                                    <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
                                         {{item.from?.DID | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
-                                        {{item.fromPolqaAvg | na}}
+                                    <mat-panel-title class="average-col col-xl-1 col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
+                                        Min: 
+                                        <ng-container *ngIf="item.fromPolqaAvg === undefined">N/A</ng-container>
+                                        <ng-container *ngIf="item.fromPolqaAvg !== undefined">{{item.fromPolqaMin}}</ng-container>
+                                        - Avg: {{item.fromPolqaAvg | na }}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
+                                    <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
                                         {{item.to?.DID | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
-                                        {{item.toPolqaAvg | na}}
+                                    <mat-panel-title class="average-col col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col">
+                                        Min: 
+                                        <ng-container *ngIf="item.toPolqaAvg === undefined">N/A</ng-container>
+                                        <ng-container *ngIf="item.toPolqaAvg !== undefined">{{item.toPolqaMin}}</ng-container>
+                                        - Avg: {{item.toPolqaAvg | na }}
                                     </mat-panel-title>
                                     <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
                                         {{item.status | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
+                                    <mat-panel-title class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col">
                                         {{item.callType | na}}
                                     </mat-panel-title>
                                     <mat-icon class="arrow-button col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">
