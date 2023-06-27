@@ -232,3 +232,7 @@ mat-panel-title {
   padding-top: 3px;
   padding-bottom: 3px;
 }
+
+.average-col{
+  white-space: wrap;
+}
