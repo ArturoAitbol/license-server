@@ -109,7 +109,7 @@ const NETWORK_QUALITY_DATA = {
   ],
 };
 
-const NETWORK_TRENDS_DATA = {
+const NETWORK_TRENDS_DATA_HOURLY = {
   series: {
     "Received packet loss": [
       0,
@@ -214,7 +214,25 @@ const NETWORK_TRENDS_DATA = {
   ],
 };
 
-const NETWORK_SUMMARY_DATA = {
+const NETWORK_TRENDS_DATA_DAILY = {
+  series: {
+    "Received packet loss": [0, 0, 0, 0, 0, 0, 0],
+    "Sent bitrate": [40, 40, 40, 40, 40, 40, 40],
+    "Received Jitter": [10.79, 10.71, 10.79, 11.31, 10.6, 10.71, 11.05],
+    "Round trip time": [1, 2, 1, 1, 2, 6, 1],
+  },
+  categories: [
+    "06-15-2023",
+    "06-16-2023",
+    "06-17-2023",
+    "06-18-2023",
+    "06-19-2023",
+    "06-20-2023",
+    "06-21-2023",
+  ],
+};
+
+const NETWORK_SUMMARY_DATA_REPRESENTATIVE = {
   totalCalls: 59,
   maxPacketLoss: 0,
   avgSentBitrate: 40,
@@ -224,6 +242,18 @@ const NETWORK_SUMMARY_DATA = {
   minPolqa: 2.37,
   roundTripTimeAboveThld: 0,
   maxRoundTripTime: 1,
+};
+
+const NETWORK_SUMMARY_DATA_AVERAGE = {
+  totalCalls: 68,
+  maxPacketLoss: 0,
+  avgSentBitrate: 40,
+  maxJitter: 2.29,
+  jitterAboveThld: 0,
+  packetLossAboveThld: 0,
+  minPolqa: 4.04,
+  roundTripTimeAboveThld: 0,
+  maxRoundTripTime: 1.11,
 };
 
 export class SpotlightChartsServiceMock {
@@ -256,15 +286,27 @@ export class SpotlightChartsServiceMock {
     groupBy: string,
     selectedFilter: boolean
   ) {
-    return new Observable((observer) => {
-      observer.next(NETWORK_TRENDS_DATA);
-      observer.complete();
-      return {
-        unsubscribe() {
-          return;
-        },
-      };
-    });
+    if (groupBy === "hour") {
+      return new Observable((observer) => {
+        observer.next(NETWORK_TRENDS_DATA_HOURLY);
+        observer.complete();
+        return {
+          unsubscribe() {
+            return;
+          },
+        };
+      });
+    } else {
+      return new Observable((observer) => {
+        observer.next(NETWORK_TRENDS_DATA_DAILY);
+        observer.complete();
+        return {
+          unsubscribe() {
+            return;
+          },
+        };
+      });
+    }
   }
 
   getNetworkQualitySummary(
@@ -275,8 +317,9 @@ export class SpotlightChartsServiceMock {
     subaccountId: string,
     selectedFilter: boolean
   ) {
-    return new Observable((observer) => {
-        observer.next(NETWORK_SUMMARY_DATA);
+    if (selectedFilter === true) {
+      return new Observable((observer) => {
+        observer.next(NETWORK_SUMMARY_DATA_AVERAGE);
         observer.complete();
         return {
           unsubscribe() {
@@ -284,6 +327,17 @@ export class SpotlightChartsServiceMock {
           },
         };
       });
+    } else {
+      return new Observable((observer) => {
+        observer.next(NETWORK_SUMMARY_DATA_REPRESENTATIVE);
+        observer.complete();
+        return {
+          unsubscribe() {
+            return;
+          },
+        };
+      });
+    }
   }
 
   //TODO: mock other public service functions

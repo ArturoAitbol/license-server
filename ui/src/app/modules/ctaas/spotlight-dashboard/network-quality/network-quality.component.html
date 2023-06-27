@@ -34,7 +34,8 @@
                                                matInput
                                                #userInput
                                                formControlName="user"
-                                               [matAutocomplete]="userAuto">
+                                               [matAutocomplete]="userAuto"
+                                               id="userInput">
                                         <mat-hint *ngIf="userHasChanged()" align="end" class="apply-flag">
                                             <mat-icon>error_outline</mat-icon> Not applied
                                         </mat-hint>
@@ -68,7 +69,7 @@
                                   *ngFor="let user of preselectedUsers"
                                   (removed)="remove(user)">
                                   {{user}}
-                                  <button matChipRemove>
+                                  <button matChipRemove id="delete-icon">
                                     <mat-icon>cancel</mat-icon>
                                   </button>
                                 </mat-chip>

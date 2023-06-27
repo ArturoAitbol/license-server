@@ -141,6 +141,8 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
 
   private _filterUser(value: string): string[] {
     const filterValue = value.toLowerCase();
+    console.log("class variable: " + this.filters.get('user').value);
+    console.log("passed in:" + filterValue);
 
     return this.users.filter(option => option.toLowerCase().includes(filterValue));
   }
@@ -309,6 +311,7 @@ export class NetworkQualityComponent implements OnInit, OnChanges {
     this.userInput.nativeElement.value = '';
     this.filters.get('user').setValue("");
     this.initAutocompletes();
+    console.log(this.preselectedUsers);
   }
 
   clearUsersFilter(){
