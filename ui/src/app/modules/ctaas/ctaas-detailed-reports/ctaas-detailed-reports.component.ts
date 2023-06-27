@@ -173,8 +173,22 @@ export class DetailedReportsCompoment implements OnInit {
             let fromCount = 0;
             let toCount = 0;
             let fromSumarize = 0, toSumarize = 0;
+            let minFromPOLQA = 100;
+            let minToPOLQA = 100;
             if(obj.from?.mediaStats){
               for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
+                if(obj.from?.mediaStats[i]?.data?.POLQA !== undefined && obj.from?.mediaStats[i]?.data?.POLQA !== null ){
+                  if (obj.from?.mediaStats[i]?.data?.POLQA < minFromPOLQA  && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
+                    minFromPOLQA = obj.from?.mediaStats[i]?.data?.POLQA;
+                    obj.fromPolqaMin = minFromPOLQA;
+                  }
+                }
+                if(obj.to?.mediaStats[i]?.data?.POLQA !== undefined && obj.to?.mediaStats[i]?.data?.POLQA !== null ){
+                  if (obj.to?.mediaStats[i]?.data?.POLQA < minToPOLQA  && obj.to?.mediaStats[i]?.data?.POLQA !== 0 ) {
+                    minToPOLQA = obj.to?.mediaStats[i]?.data?.POLQA;
+                    obj.toPolqaMin = minToPOLQA;
+                  }
+                }
                 if(obj.from?.mediaStats[i]?.data?.POLQA && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
                   let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
                   fromSumarize += fromPolqaSum;
