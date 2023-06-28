@@ -82,20 +82,20 @@ public class TekvLSGetCtaasMapSummary {
 
         String sqlStats = "SELECT er.fromcity, er.fromstate, er.fromcountry, er.tocity, er.tostate, er.tocountry, er.fromcoordinates, er.tocoordinates,\n" +
             "	null as total_calls, null as passed, null as failed,\n" +
-            "	count(case when ms.parameter_name = 'Received Jitter' then ms.parameter_name end) as count_jitter,\n" +
-            "	max(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_jitter,\n" +
-            "	avg(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_jitter,\n" +
-            "	count(case when ms.parameter_name = 'Received packet loss' then ms.parameter_name end) as count_packet_loss,\n" +
-            "	max(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_packet_loss,\n" +
-            "	avg(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_packet_loss,\n" +
-            "	count(case when ms.parameter_name = 'Round trip time' then ms.parameter_name end) as count_round_trip,\n" +
-            "	max(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_round_trip,\n" +
-            "	avg(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_round_trip,\n" +
-            "	count(case when ms.parameter_name = 'Sent bitrate' then ms.parameter_name end) as count_bitrate,\n" +
-            "	avg(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate,\n" +
-            "	count(case when ms.parameter_name = 'POLQA' then ms.parameter_name end) as count_polqa,\n" +
-            "	min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as min_polqa,\n" +
-            "	avg(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as avg_polqa\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then ms.parameter_name end) as count_jitter,\n" +
+            "	max(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_jitter,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_jitter,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then ms.parameter_name end) as count_packet_loss,\n" +
+            "	max(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_packet_loss,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_packet_loss,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then ms.parameter_name end) as count_round_trip,\n" +
+            "	max(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_round_trip,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_round_trip,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "' then ms.parameter_name end) as count_bitrate,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then ms.parameter_name end) as count_polqa,\n" +
+            "	min(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as min_polqa,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as avg_polqa\n" +
             "FROM media_stats ms\n" +
             "	LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id\n" +
             "	LEFT JOIN sub_result sr ON trr.subresultid = sr.id\n" +
@@ -106,7 +106,7 @@ public class TekvLSGetCtaasMapSummary {
             "	LEFT JOIN execution_report er on sr.execution_report_id = er.id\n" +
             "WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND " + Utils.CONSIDERED_STATUS_SUBQUERY + "\n" +
             "	AND " + Utils.CONSIDERED_FAILURES_SUBQUERY + "\n" +
-            "	AND ms.parameter_name IN ('Received Jitter', 'Received packet loss', 'Round trip time', 'Sent bitrate', 'POLQA')\n";
+            "	AND ms.parameter_name IN ('" + Utils.DEFAULT_METRICS + "')\n";
 
         String sqlTestResults = "SELECT er.fromcity, er.fromstate, er.fromcountry,\n" +
             "	er.tocity, er.tostate, er.tocountry,\n" +

@@ -82,10 +82,10 @@ public class TekvLSGetCollectionChart {
 			"WHERE sr.finalResult = true AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY;
 		switch (reportType) {
 			case "FeatureFunctionality":
-				query += " AND tp.name='LTS'";
+				query += " AND tp.name='" + Utils.TEST_PLAN_NAMES.FEATURE_FUNCTIONALITY.value() + "'";
 				break;
 			case "CallingReliability":
-				query += " AND (tp.name='STS' OR tp.name='POLQA')";
+				query += " AND (tp.name='" + Utils.TEST_PLAN_NAMES.CALLING_RELIABILITY.value() + "' OR tp.name='" + Utils.TEST_PLAN_NAMES.POLQA.value() + "')";
 				break;
 			default:
 				query += " AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')";
