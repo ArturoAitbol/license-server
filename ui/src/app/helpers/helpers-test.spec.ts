@@ -8,7 +8,7 @@ describe('testing changing utils', () => {
         let color;
         spyOn(Utility, 'getColorCode').and.callThrough();
         color = Utility.getColorCode('')
-        expect(color).toBe('red');
+        expect(color).toBe('#bb2426');
 
         color = Utility.getColorCode('available');
         expect(color).toBe('#0E8B18');
@@ -22,15 +22,15 @@ describe('testing changing utils', () => {
         expect(color).toBe('#0E8B18');
 
         color = Utility.getColorCode('initiated');
-        expect(color).toBe('#7694B7');
+        expect(color).toBe('#6E76B4');
         color = Utility.getColorCode('inprogress');
-        expect(color).toBe('#7694B7');
+        expect(color).toBe('#6E76B4');
         color = Utility.getColorCode('unavailable');
-        expect(color).toBe('#7694B7');
+        expect(color).toBe('#6E76B4');
         color = Utility.getColorCode('rebooting');
-        expect(color).toBe('#7694B7');
+        expect(color).toBe('#6E76B4');
         color = Utility.getColorCode('inactive');
-        expect(color).toBe('#7694B7');
+        expect(color).toBe('#6E76B4');
 
         color = Utility.getColorCode('offline');
         expect(color).toBe('#CB3333');
@@ -109,7 +109,7 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions(['tekvizion.FullAdmin'], [{
             "name": "Dashboard",
-            "path": "report-dashboards",
+            "path": "visualization",
             "active": true,
             "materialIcon": "dashboard"
         }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");
@@ -121,7 +121,7 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions([null], [{
             "name": "Dashboard",
-            "path": "report-dashboards",
+            "path": "visualization",
             "active": true,
             "materialIcon": "dashboard"
         }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");

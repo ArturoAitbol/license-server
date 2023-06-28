@@ -19,8 +19,8 @@ export class Constants {
     public static readonly ACCESS_TOKEN: string = 'access_token';
 
     // Tool bar constants
-    public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
-    public static readonly CTAAS_TOOL_BAR: string = 'Spotlight';
+    public static readonly TEK_TOKEN_TOOL_BAR: string = 'TekVizion 360 Portal';
+    public static readonly CTAAS_TOOL_BAR: string = 'UCaaS Continuous Testing';
 
 
     // User roles
@@ -32,9 +32,8 @@ export class Constants {
     public static readonly STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
 
     // Alert messages
-    public static readonly MAINTENANCE_MODE_ALERT = "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
-        "Please note that during this maintenance period, the dashboard's daily report, adding new notes and detailed test reports are not available. " +
-        "However, users can still view the dashboard's weekly report and historical visuals related to notes.";
+    public static readonly MAINTENANCE_MODE_ALERT = "The UCaaS Continuous Testing Service is currently experiencing limited functionality due to ongoing maintenance. " +
+        "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
 
     // Types contants
     public static readonly SANDBOX_DEVICE_TYPE = 'Sandbox';
@@ -44,7 +43,8 @@ export class Constants {
     // Timer constants
     public static readonly LOGOUT_TIME_MS = 12 * 60 * 60 * 1000; // Logout time after inactivity in ms (12Hr x 60 min x 60 seg x 1000 ms)
     public static readonly TOGGLES_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes * 60 seconds * 1000 milliseconds
-    public static readonly DASHBOARD_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes * 60 seconds * 1000 milliseconds
+    public static readonly LEGACY_DASHBOARD_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes * 60 seconds * 1000 milliseconds
+    public static readonly DASHBOARD_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
     public static readonly DASHBOARD_NOTE_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
     public static readonly REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS = 30 * 60 * 1000; // 30 minutes * 60 seconds * 1000 milliseconds
 

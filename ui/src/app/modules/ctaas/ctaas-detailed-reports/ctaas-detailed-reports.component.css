@@ -31,6 +31,7 @@ table {
 
 .table-section {
   /* margin-top: 5%; */
+  overflow-x: auto;
 }
 
 th.mat-sort-header-sorted {
@@ -129,12 +130,109 @@ mat-card {
 
 @media (max-width: 1281px) {
   .custom-col{
-    padding-left: 4%;
+    width: 0% !important;
+  }
+  .panel-title-container {
+    white-space: wrap;
+    display: flex;
+  }
+  .arrow-button{
+    position: absolute;
+    right: 5%;
+  }
+  .chart-max-size{
+    width: 20% !important;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 780px) {
   .column-content{
     overflow: auto !important;
   }
+  .table-max-size{
+    width: 100% !important;
+  }
+  .chart-max-size{
+    width: 20% !important;
+  }
+  .mat-expansion-panel-header {
+    padding: 0px;
+  }
+}
+
+mat-panel-title {
+  white-space: wrap;
+  flex-shrink: 0;
+}
+
+.panel-title-container {
+  white-space: wrap;
+}
+
+.table-header {
+  padding-left: 25px;
+}
+
+.table-cell {
+  flex-shrink: 0;
+  color: black;
+  font-weight: 500;
+  flex-grow: 1;
+  margin-right: 16px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.header-container{
+  margin: 0;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.header-container::after {
+  content: "";
+  display: inline-block;
+  width: 5%;
+}
+
+.header-container > * {
+  width: calc(100% - 5%);
+}
+
+.last-element{
+  position: absolute;
+  width: 30px;
+  right: 0;
+  background-color: #bb2426;
+}
+
+.arrow-button{
+  position: absolute;
+  right: 5%;
+}
+
+.fix-header{
+  position: sticky;
+  top: 0;
+  /* width: 100%; */
+  z-index: 20;
+}
+
+.small-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #757575;
+}
+
+.text-container{
+  height: auto; 
+  min-height: 40px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.average-col{
+  white-space: wrap;
 }

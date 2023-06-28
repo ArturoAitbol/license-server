@@ -37,7 +37,6 @@ export const permissions = {
             'devices',
             'redirect',
             'spotlight',
-            'report-dashboards',
             'notes',
             'test-suites',
             'stakeholders',
@@ -46,6 +45,7 @@ export const permissions = {
             'details',
             'reports',
             'consumption-matrix',
+            'map',
             'spotlight-dashboard'
         ],
         elements: [
@@ -126,9 +126,9 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'subscriptions-overview',
-            'consumption-matrix'
+            'consumption-matrix',
+            'map'
         ],
         elements: [
             'showBanner'
@@ -170,7 +170,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'notes',
             'test-suites',
             'stakeholders',
@@ -178,7 +177,8 @@ export const permissions = {
             'details',
             'reports',
             'consumption-matrix',
-            'spotlight-dashboard'
+            'spotlight-dashboard',
+            'map'
         ],
         elements: [
             'addProject',
@@ -274,12 +274,12 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'stakeholders',
             'notes',
             'details',
             'reports',
-            'spotlight-dashboard'
+            'spotlight-dashboard',
+            'map'
         ],
         elements: [
             'view-profile',
@@ -331,12 +331,12 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'stakeholders',
             'notes',
             'details',
             'reports',
-            'spotlight-dashboard'
+            'spotlight-dashboard',
+            'map'
         ],
         elements: [
             'view-profile',
@@ -382,13 +382,13 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'visualization',
             'stakeholders',
             'notes',
             'details',
             'reports',
             'spotlight-dashboard',
+            'map'
         ],
         elements: [
             'view-profile',

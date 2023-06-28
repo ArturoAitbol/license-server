@@ -3,10 +3,7 @@ package ui.pages;
 import static org.junit.Assert.assertTrue;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
-import ui.core.DriverManager;
 import ui.pages.customer.Customers;
 
 public class LoginForm extends AbstractPageObject {
@@ -48,7 +45,7 @@ public class LoginForm extends AbstractPageObject {
         By stayedSigned = By.cssSelector(".win-button#idBtn_Back");
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
-        assertTrue(this.action.checkTitle("tekVizion 360 Portal"));
+        assertTrue(this.action.checkTitle("TekVizion 360 Portal"));
         return new Customers();
     }
 }

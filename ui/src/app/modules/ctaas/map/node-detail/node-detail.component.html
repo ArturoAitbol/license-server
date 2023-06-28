@@ -1,0 +1,131 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-start font-s">{{data.region.city}}, {{data.region.state}}, {{data.region.country}}</h1>
+        <div>
+            <mat-card class="card summary">
+                <mat-card-content class="summary-card-content">
+                    <table class="table">
+                        <tbody class="row-auto">
+                            <div class="row-auto">
+                                <div class="col-5" style="margin-left: 4%;">
+                                    <th class="total-calls-data">Total Calls</th>
+                                    <td class="total-calls-data">{{data.totalCalls}}</td>
+                                </div>
+                            </div>
+                            <tr class="col-6 originated-column-data">
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Originated calls</th>
+                                        <td>{{data.callsOriginated.total}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Originiated calls passed</th>
+                                        <td>{{data.callsOriginated.passed}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                     <div class="col-12">
+                                         <th>Originated calls failed</th>
+                                         <td>{{data.callsOriginated.failed}}</td>
+                                     </div>
+                                </div>
+                                <div class="row-auto">
+                                     <div class="col-12">
+                                        <th style="width: max-content;">POLQA</th>
+                                        <td style="width: 85%;">Min: {{data.callsOriginated.polqa.min | na}}, Avg: {{data.callsOriginated.polqa.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Jitter (ms)</th>
+                                        <td style="width: 72.75%;">Max: {{data.callsOriginated.receivedJitter.max | na}}, Avg: {{data.callsOriginated.receivedJitter.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Round trip time (ms)</th>
+                                        <td style="width: 53.6%;">Max: {{data.callsOriginated.roundTripTime.max | na}}, Avg: {{data.callsOriginated.roundTripTime.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Packet Loss (%)</th>
+                                        <td style="width: 62.3%;">Max: {{data.callsOriginated.receivedPacketLoss.max | na}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                               </div>
+                               <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Bitrate (kbps)</th>
+                                        <td style="width: 66.85%;">Avg: {{data.callsOriginated.sentBitrate.avg | number:'.0-2' | na}}</td>
+                                   </div>
+                               </div>
+                            </tr>
+                            <tr class="col-6 terminated-column-data">
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Terminated calls</th>     
+                                        <td>{{data.callsTerminated.total}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                       <th>Terminated calls passed</th>
+                                       <td>{{data.callsTerminated.passed}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Terminated calls failed</th>
+                                        <td>{{data.callsTerminated.failed}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">POLQA</th>
+                                        <td style="width: 85%;">Min: {{data.callsTerminated.polqa.min | na}}, Avg: {{data.callsTerminated.polqa.avg | number:'.0-2'}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Jitter (ms)</th>
+                                        <td style="width: 72.75%;">Max: {{data.callsTerminated.receivedJitter.max | na}}, Avg: {{data.callsTerminated.receivedJitter.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Round trip time (ms)</th>
+                                        <td style="width: 53.6%;">Max: {{data.callsTerminated.roundTripTime.max | na}}, Avg: {{data.callsTerminated.roundTripTime.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Packet Loss (%)</th>
+                                        <td style="width: 62.3%;">Max: {{data.callsTerminated.receivedPacketLoss.max | na}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                               </div>
+                               <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Bitrate (kbps)</th>
+                                        <td style="width: 66.85%;">Avg: {{data.callsTerminated.sentBitrate.avg | number:'.0-2' | na}}</td>
+                                </div>
+                              </div>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row justify-content-center">
+                        <button  class="viewDetail-button" mat-raised-button (click)="openNaviteDashboardWithSelectedData()">Go to
+                            Dashboard
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+    <div class="row justify-content-end" style="margin-top: 3%;">
+        <div class="col-auto">
+            <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Close</button>
+        </div>
+    </div>
+</div>

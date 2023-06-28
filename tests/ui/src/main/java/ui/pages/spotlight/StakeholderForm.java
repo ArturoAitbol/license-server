@@ -5,7 +5,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import ui.core.AbstractPageObject;
-import ui.core.DriverManager;
 
 public class StakeholderForm extends AbstractPageObject {
     @FindBy(css = "[formcontrolname='name']")

@@ -47,12 +47,12 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
-    readonly VIEW_LICENSES: string = 'View tekVizion 360 Subscriptions';
+    readonly VIEW_LICENSES: string = 'View TekVizion 360 Subscriptions';
     readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-    readonly VIEW_CTAAS_DASHBOARD: string = 'View Spotlight Dashboard';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View UCaaS Continuous Testing';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
     readonly CUSTOMER_FILTER: string = 'customer';
@@ -439,9 +439,8 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
                         if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.selectedSubaccount.id))
                             routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
                         const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
-                        console.log(routePath);
                         window.open(url);
-                    } else this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
+                    } else this.snackBarService.openSnackBar('UCaaS Continuous Testing Service is not available for this Subaccount', '');
                     break;
                 case this.MODIFY_ACCOUNT:
                     this.openDialog(object.selectedOption, object.selectedRow);

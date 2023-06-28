@@ -33,7 +33,7 @@ COPY public.customer (id, name, type, tombstone, distributor_id, test_customer) 
 cb1b268a-850a-4459-8033-09854d9ac015	Test NoDistributor	MSP	f	\N	t
 9f6ff46a-5f19-4bcf-9f66-c5f29b800205	Test Distributor	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	Test Subaccount	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
-b995ecaa-d64e-4067-90e5-cbc80935d1e0	Test Subaccount2	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
+b995ecaa-d64e-4067-90e5-cbc80935d1e0	SpotLight Demo-1	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 950f47c7-a477-455b-b65b-331ecacc88dd	Customer01	MSP	f	\N	f
 \.
 
@@ -65,7 +65,7 @@ cebe6542-2032-4398-882e-ffb44ade169d	Test Subaccount2	9f6ff46a-5f19-4bcf-9f66-c5
 ac7a78c2-d0b2-4c81-9538-321562d426c7	Default	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848	tokenConsumption
 069dc3aa-dcb1-45e6-886f-be8f2345080f	Default	0856df81-8d32-4adb-941a-c0d9187f36a7	tokenConsumption
 8acb6997-4d6a-4427-ba2c-7bf463fa08ec	Test Subaccount3	b995ecaa-d64e-4067-90e5-cbc80935d1e0	tokenConsumption,spotlight
-b5b91753-4c2b-43f5-afa0-feb00cefa981	Test SpotLight Setup	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
+b5b91753-4c2b-43f5-afa0-feb00cefa981	SpotLight Demo-1	b995ecaa-d64e-4067-90e5-cbc80935d1e0	tokenConsumption,spotlight
 b5b91753-4c2b-43f5-afa0-feb22cefa901	Test SpotLight Setup 2	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
 0e2038ec-2b9b-493b-b3f2-6702e60b5b90	Test SpotLight Suites 	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
 2c8e386b-d1bd-48b3-b73a-12bfa5d00805	Customer01	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
@@ -231,17 +231,17 @@ COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 34859fba-9987-4a1c-b176-14569b331653	f	pfernandez@tekvizionlabs.com	Subaccount User Creation For License Service	ad-license-service-user-creation
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
 74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb	t	vtorrico@tekvizionlabs.com	Portal Callback	callback
-3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
+3c9d0d97-7878-4f1f-8ca5-18bf93069691	f	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
-e83e94d8-563f-4a06-8aa8-b7bfbaeb7f15	f	vtorrico@tekvizionlabs.com	map poc 	mapPocFeature
+e83e94d8-563f-4a06-8aa8-b7bfbaeb7f15	t	vtorrico@tekvizionlabs.com	map 	mapFeature
 b66edd36-ee7f-42e7-bfb4-41810ea69fe6	f	\N	Refresh button for Power Bi Dashboard	powerbiRefreshFeature
 7f6c9fec-978f-41a6-ba38-117611f0dfa3	f	\N	By enabling this feature toggle will have 2 more toggles buttons in PowerBi Dashboard.	powerbiTestReport
-1ba09c6f-9a2a-4181-ac1e-b7217763df96	f	\N	Power Bi mobile feature	powerbiMobileFeature
 0e709699-3dab-47f1-a710-ebd2ae78d57b	t	\N	Maintenance Mode	maintenanceMode
 ea00b987-0f14-4888-a0ce-f963d1eb7592	t	\N	Native Dashboard	spotlight-dashboard
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Historical Native Dashboard for Notes	spotlight-historical-dashboard
 7564aab0-5331-4ab5-85f7-e37acbdfd90d	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
+be612704-c26e-48ea-ab9b-19312f03d644	t	\N	Send Welcome Email to SpotLight customers	welcomeEmail
 \.
 
 --

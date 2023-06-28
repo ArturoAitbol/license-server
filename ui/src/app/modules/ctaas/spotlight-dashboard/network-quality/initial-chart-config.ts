@@ -45,7 +45,7 @@ const trendsChartCommonOptions: Partial<ChartOptions> = {
 const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
-        id: 'Received Packet Loss',
+        id: 'Packet Loss',
         group: 'network-quality-trends',
         height: 300,
         zoom: {
@@ -56,16 +56,16 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
         }
     },
     title: {
-        text: "Max. Received Packet Loss (%)",
+        text: "Max. Packet Loss (%)",
         align: "center",
         style: {
-            color: '#7694B7'
+            color: '#000000'
         }
     },
-    colors: ["#7694B7"],
+    colors: ["#273176"],
     series: [
         {
-            name: 'Received Packet Loss',
+            name: 'Packet Loss',
             data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
         },
     ],
@@ -77,33 +77,38 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#7694B7"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#7694B7",
+                    colors: "#000000",
                 },
                 minWidth: 40,
                 formatter(val: number, opts?: any): string | string[] {
-                    return val + '%'
+                    if (val !== null && val !== undefined)
+                        return val + "%";
+                    return "--";
                 }
             },
             title: {
-                text: "Received Packet Loss",
+                text: "Packet Loss",
                 style: {
-                    color: "#7694B7"
+                    color: "#000000"
                 }
             },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedPacketLoss ? max : MetricsThresholds.receivedPacketLoss
         },
     markers: {
         size: 4,
-        colors: ["#7694B7"],
+        colors: ["#273176"],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.receivedPacketLoss,
-            borderColor: '#B80000',
-            fillColor: '#B80000',
+            borderColor: '#EC7C56',
+            fillColor: '#EC7C56',
             strokeDashArray: 8,
         }]
     }
@@ -126,10 +131,10 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
         text: "Max. Jitter (ms)",
         align: "center",
         style: {
-            color: '#7694B7'
+            color: '#000000'
         }
     },
-    colors: ['#E66C37'],
+    colors: ['#6E76B4'],
     series: [
         {
             name: "Jitter",
@@ -145,30 +150,38 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#E66C37"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#E66C37",
+                    colors: "#000000",
                 },
-                minWidth: 40
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
             },
             title: {
                 text: "Jitter",
                 style: {
-                    color: "#E66C37"
+                    color: "#000000"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedJitter ? max : MetricsThresholds.receivedJitter
         },
     markers: {
         size: 4,
-        colors: ["#E66C37"],
+        colors: ["#6E76B4"],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.receivedJitter,
-            borderColor: '#B80000',
-            fillColor: '#B80000',
+            borderColor: '#EC7C56',
+            fillColor: '#EC7C56',
             strokeDashArray: 8,
         }]
     }
@@ -191,10 +204,10 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
         text: "Avg. Sent Bitrate (kbps)",
         align: "center",
         style: {
-            color: '#7694B7'
+            color: '#000000'
         }
     },
-    colors: ['#079398'],
+    colors: ['#76BD83'],
     series: [
         {
             name: "Sent Bitrate",
@@ -210,31 +223,39 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#079398"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#079398",
+                    colors: "#000000",
                 },
-                minWidth: 40
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
             },
             title: {
                 text: "Sent Bitrate",
                 style: {
-                    color: "#079398"
+                    color: "#000000"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.maxBitrate ? max : MetricsThresholds.maxBitrate
         },
     markers: {
         size: 4,
-        colors: ["#079398"],
+        colors: ["#76BD83"],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.minBitrate,
             y2: MetricsThresholds.maxBitrate,
-            borderColor: '#22b800',
-            fillColor: '#22b800',
+            borderColor: '#EC7C56',
+            fillColor: '#9ad5a5',
             strokeDashArray: 8,
         }]
     }
@@ -257,10 +278,10 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
         text: "Max. Round Trip Time (ms)",
         align: "center",
         style: {
-            color: '#7694B7'
+            color: '#000000'
         }
     },
-    colors: ['#570798'],
+    colors: ['#6CD6EC'],
     series: [
         {
             name: "Round Trip Time",
@@ -276,30 +297,38 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#570798"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#570798",
+                    colors: "#000000",
                 },
-                minWidth: 40
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
             },
             title: {
                 text: "Round Trip Time",
                 style: {
-                    color: "#570798"
+                    color: "#000000"
                 }
-            }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.roundTripTime ? max : MetricsThresholds.roundTripTime
         },
     markers: {
         size: 4,
-        colors: [ "#570798" ],
+        colors: [ "#6CD6EC" ],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.roundTripTime,
-            borderColor: '#B80000',
-            fillColor: '#B80000',
+            borderColor: '#EC7C56',
+            fillColor: '#EC7C56',
             strokeDashArray: 8,
         }]
     }

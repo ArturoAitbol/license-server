@@ -33,7 +33,7 @@ describe('UI verification test', () => {
         const h1 = fixture.nativeElement.querySelector('#setup-title');
         const editButton = fixture.nativeElement.querySelector('#edit-details-button');
 
-        expect(h1.textContent).toBe('Spotlight Setup Details');
+        expect(h1.textContent).toBe('UCaaS Continuous Testing Setup Details');
         expect(editButton.textContent).toBe(' Edit Setup Details ');
 
     });
@@ -280,7 +280,7 @@ describe('check for error and success messages', () => {
         fixture.detectChanges();
 
         expect(CtaasSetupServiceMock.getSubaccountCtaasSetupDetails).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error getting Spotlight Setup!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error getting UCaaS Continuous Testing Setup!');
     });
 
     // test 13
@@ -295,7 +295,7 @@ describe('check for error and success messages', () => {
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating Spotlight Setup!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating UCaaS Continuous Testing Setup!');
     });
 
     it('should make a call to maintenanceToggle with disable and return error message', () => {
@@ -380,7 +380,7 @@ describe('check for error and success messages', () => {
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight Setup edited successfully!', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Setup edited successfully!', '');
     });
 
     it('should display a message when update is successful and the response is null', () => {
@@ -394,6 +394,6 @@ describe('check for error and success messages', () => {
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight Setup edited successfully!', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Setup edited successfully!', '');
     });
 });

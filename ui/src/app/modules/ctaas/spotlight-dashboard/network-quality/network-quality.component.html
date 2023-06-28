@@ -1,4 +1,4 @@
-<ng-container *ngIf="!isLoading && !privateIsLoading">
+<ng-container *ngIf="!isLoading && !hideChart">
     <div class="col-12 p-0">
         <div class="card text-center mt-2">
             <div class="card-header">
@@ -21,6 +21,9 @@
                                                 {{value}}
                                             </mat-option>
                                         </mat-select>
+                                        <mat-hint *ngIf="metricValueHasChanged()" align="end" class="apply-flag">
+                                            <mat-icon>error_outline</mat-icon> Not applied
+                                        </mat-hint>
                                     </mat-form-field>
                                 </div>
                                 <div class="col-auto">
@@ -32,6 +35,9 @@
                                                #userInput
                                                formControlName="user"
                                                [matAutocomplete]="userAuto">
+                                        <mat-hint *ngIf="userHasChanged()" align="end" class="apply-flag">
+                                            <mat-icon>error_outline</mat-icon> Not applied
+                                        </mat-hint>
                                         <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete" (optionSelected)="selected()">
                                             <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
                                                 {{user}}
@@ -42,7 +48,7 @@
                                 <div class="col-auto">
                                     <div style="display: inline-block; padding-right: 15px; margin-top: 16px;">
                                         <button class="apply-bttn" mat-raised-button
-                                                id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">
+                                                id="add-customer-button" (click)="applyFilters()" [disabled]="filters.disabled">
                                             Apply
                                         </button>
                                     </div>
@@ -51,15 +57,15 @@
                         </div>
                     </div>
                 </form>
-                <div class="row" *ngIf="this.selectedUsers.length>0">
+                <div class="row" *ngIf="this.preselectedUsers.length>0">
                     <div class="col-md-12">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                     <h2 class="mb-0">Selected User(s)&nbsp;</h2>
-                                    <button [disabled]="this.selectedUsers.length===0" (click)="clearUsersFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                                    <button [disabled]="this.preselectedUsers.length===0" (click)="clearUsersFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
                             </div>
                             <mat-chip-list #chipList aria-label="Region selection">
                                 <mat-chip
-                                  *ngFor="let user of selectedUsers"
+                                  *ngFor="let user of preselectedUsers"
                                   (removed)="remove(user)">
                                   {{user}}
                                   <button matChipRemove>
@@ -115,9 +121,16 @@
                             <div class="row justify-content-center mt-3">
                                 <div class="subtitle">
                                     <h2 class="mb-3">Network Metrics Summary
-                                        <mat-icon matTooltip="Most relevant value for each network metric.">
-                                            info_outline
-                                        </mat-icon>
+                                        <div *ngIf="!averageSelected; else average">
+                                            <mat-icon matTooltip="Worst case value for each network metric.">
+                                                info_outline
+                                            </mat-icon>
+                                        </div>
+                                        <ng-template #average>
+                                            <mat-icon matTooltip="Average value for each network metric.">
+                                                info_outline
+                                            </mat-icon>
+                                        </ng-template>
                                     </h2>
                                 </div>
                                 <div class="col-md-3 p-2 border metrics">
@@ -125,7 +138,7 @@
                                         <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
                                         <p>{{ summary.overall.packetLoss }}</p>
                                     </div>
-                                    <label class="blue-label">{{maxLabel}} Packet Loss Rate (%)</label>
+                                    <label class="blue-label">{{maxLabel}} Packet Loss (%)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
@@ -173,7 +186,7 @@
                                             info_outline
                                         </mat-icon>
                                     </h2>
-                                    <h2 *ngIf="selectedGraph==='roundTripTime'">{{maxLabel}} Round Trip vs {{minLabel}} POLQA 
+                                    <h2 *ngIf="selectedGraph==='roundTripTime'">{{maxLabel}} Round Trip Time vs {{minLabel}} POLQA 
                                         <mat-icon matTooltip="Maximum Round Trip Time versus Minimum POLQA histogram in Voice Quality (POLQA) tests.">
                                             info_outline
                                         </mat-icon>

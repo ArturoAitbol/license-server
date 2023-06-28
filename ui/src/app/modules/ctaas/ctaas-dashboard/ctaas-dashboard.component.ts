@@ -177,13 +177,10 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
         // load the view based on the route
-        if (this.router.url.includes('/report-dashboards') || this.openedAsModal)
-            this.viewMode.setValue(this.LEGACY_MODE);
-        else
-            this.viewMode.setValue(this.POWERBI_MODE);
+        this.viewMode.setValue(this.POWERBI_MODE);
         this.viewDashboardByMode();
         // fetch dashboard report for every 15 minutes interval
-        this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
+        this.refreshIntervalSubscription = interval(Constants.LEGACY_DASHBOARD_REFRESH_INTERVAL)
             .subscribe(() => {
                 // Make an http request only in Legacy mode
                 if (!this.powerBiEmbeddingFlag)
@@ -328,7 +325,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             this.hasDashboardDetails = this.checkForDashboardDetails();
             this.isLoadingResults = false;
             console.error('Error loading dashboard reports | ', e.error);
-            this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+            this.snackBarService.openSnackBar('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
         });
     }
 
@@ -393,7 +390,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.isLoadingResults = false;
                     console.error('Error while loading embedded powerbi report: ', err);
                     this.setPbiReportDetailsInSubaccountDetails(null);
-                    this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+                    this.snackBarService.openSnackBar('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
                     reject("API request is failed!");
                 });
         });

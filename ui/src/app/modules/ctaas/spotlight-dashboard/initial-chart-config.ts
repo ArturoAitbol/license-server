@@ -21,7 +21,7 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
             show: false
         }
     },
-    colors: ["#7694B7", "#E66C37"],
+    colors: ["#6E76B4", "#76BD83"],
     dataLabels: {
         enabled: false
     },
@@ -63,17 +63,17 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#7694B7"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#7694B7"
+                    colors: "#000000"
                 }
             },
             title: {
                 text: "Jitter",
                 style: {
-                    color: "#7694B7"
+                    color: "#000000"
                 }
             }
         },
@@ -87,24 +87,24 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#E66C37"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#E66C37"
+                    colors: "#000000"
                 }
             },
             title: {
                 text: "POLQA",
                 style: {
-                    color: "#E66C37"
+                    color: "#000000"
                 }
             }
         }
     ],
     markers: {
         size: 4,
-        colors: ["#7694B7", "#E66C37"],
+        colors: ["#6E76B4", "#76BD83"],
     },
     legend: {
         position: 'top',
@@ -141,15 +141,17 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
             show: false
         }
     },
-    colors: [ "#7694B7", "#83C96B", "#CE5A5B" ],
+    colors: [ "#6E76B4", "#9ad5a5", "#bb2426" ],
     dataLabels: {
         enabled: true,
         style: {
-            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+            colors: ["#000000", "#000000", "#FFFFFF"]
         },
         formatter(val: string | number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (opts.seriesIndex === 0) {
-                return val + "%"
+                if (val !== null && val !== undefined)
+                    return val + "%";
+                return "--";
             } else return val;
         }
     },
@@ -189,17 +191,17 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#7694B7"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#7694B7"
+                    colors: "#000000"
                 }
             },
             title: {
                 text: "Success %",
                 style: {
-                    color: "#7694B7"
+                    color: "#000000"
                 }
             },
             min: 0,
@@ -211,11 +213,11 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#7694B7"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#7694B7"
+                    colors: "#000000"
                 }
             },
             title: {
@@ -232,7 +234,7 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     ],
     markers: {
         size: 4,
-        colors: [ "#7694B7", "#83C96B", "#CE5A5B" ],
+        colors: [ "#6E76B4", "#9ad5a5", "#bb2426" ],
     },
     legend: {
         position: 'top',
@@ -269,15 +271,17 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
             show: false
         }
     },
-    colors: [ "#7694B7", "#83C96B", "#CE5A5B" ],
+    colors: [ "#6E76B4", "#9ad5a5", "#bb2426" ],
     dataLabels: {
         enabled: true,
         style: {
-            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+            colors: ["#000000", "#000000", "#FFFFFF"]
         },
         formatter(val: string | number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
             if (opts.seriesIndex === 0) {
-                return val + "%"
+                if (val !== null && val !== undefined)
+                    return val + "%";
+                return "--";
             } else return val;
         }
     },
@@ -317,17 +321,17 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#7694B7"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#7694B7"
+                    colors: "#000000"
                 }
             },
             title: {
                 text: "Success %",
                 style: {
-                    color: "#7694B7"
+                    color: "#000000"
                 }
             },
             min: 0,
@@ -339,11 +343,11 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
             },
             axisBorder: {
                 show: true,
-                color: "#7694B7"
+                color: "#000000"
             },
             labels: {
                 style: {
-                    colors: "#7694B7"
+                    colors: "#000000"
                 }
             },
             title: {
@@ -360,7 +364,7 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
     ],
     markers: {
         size: 4,
-        colors: [ "#7694B7", "#83C96B", "#CE5A5B" ],
+        colors: [ "#6E76B4", "#9ad5a5", "#bb2426" ],
     },
     legend: {
         position: 'top',
@@ -383,7 +387,7 @@ const defaultWeeklyCallsStatusChartOptions: Partial<ChartOptions> = {
     dataLabels: {
         enabled: true
     },
-    colors: [ "#5089c7" ],
+    colors: [ "#6E76B4" ],
     plotOptions: {
         heatmap: {
             shadeIntensity: 0.3,
@@ -391,7 +395,7 @@ const defaultWeeklyCallsStatusChartOptions: Partial<ChartOptions> = {
                 ranges: [
                     {
                         from: 0,
-                        color: "#5089c7",
+                        color: "#6E76B4",
                         foreColor: "#000000"
                     }
                 ]
@@ -422,9 +426,13 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
         data: []
     },
     ],
-    colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
+    colors: [ "#9ad5a5", "#6CD6EC", "#EC7C56", "#bb2426" ],
     dataLabels: {
         enabled: true,
+        textAnchor: "start",
+        style: {
+            colors: ["#424242"]
+        },
         formatter(val: number, opts?: any): string | number {
             return val.toFixed(2) + '%'
         },
@@ -545,6 +553,13 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
     tooltip: {
         enabled: true,
         fillSeriesColor: false,
+        y:{
+            formatter(val: number, opts?: any): string {
+                if (val !== null && val !== undefined)
+                    return val + "%";
+                return "--";
+            },
+        },
     },
     colors: ['#bb2426'],
 };
@@ -562,14 +577,16 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
             show: false
         }
     },
-    colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
+    colors: [ "#9ad5a5", "#6CD6EC", "#EC7C56", "#bb2426" ],
     dataLabels: {
         enabled: true,
         style: {
-            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+            colors: ["#000000", "#000000", "#000000", "#FFFFFF"]
         },
         formatter(val: number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
-            return val.toFixed(2) + "%"
+            if (val !== null && val !== undefined)
+                return val.toFixed(2) + "%"
+            return "--";
         }
     },
     grid: {
@@ -617,7 +634,7 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
     ],
     markers: {
         size: 4,
-        colors: [ "#5089c7"],
+        colors: [ "#6E76B4"],
     },
     legend: {
         position: 'top',

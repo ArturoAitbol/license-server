@@ -27,12 +27,6 @@ const MOCK_TOGGLES =
                 "status": false
             },
             {
-                "name": "powerbiFeature",
-                "description": "Power Bi feature",
-                "id": "3c9d0d97-7878-4f1f-8ca5-18bf93069691",
-                "status": true
-            },
-            {
                 "name": "testFT",
                 "description": "Test FT",
                 "id": "df6f5bc2-2687-49df-8dc0-beff88012235",

@@ -32,7 +32,8 @@ export class AddNotesComponent implements OnInit{
         public dialogRef: MatDialogRef<AddNotesComponent>) {}
 
     ngOnInit() {
-        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard')
+        this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id)
     }
 
     addNote() {

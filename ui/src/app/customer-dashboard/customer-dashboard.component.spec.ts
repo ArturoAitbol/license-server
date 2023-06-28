@@ -229,7 +229,7 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
     });
 
-    it('should navigate to Spotlight dashboard ', () => {
+    it('should navigate to UCaaS Continuous Testing dashboard ', () => {
         const selectedTestData = { selectedRow: {
             name: "testV2",
             id: "157fdef0-c28e-4764-9023-75c06daad09d",
@@ -246,13 +246,13 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Service is not available for this Subaccount', '');
     });
 });
 
 describe('routes to spotlight dashboard', () => {
     beforeEach(beforeEachFunction);
-    it('should navigate to Spotlight dashboard ', () => {
+    it('should navigate to UCaaS Continuous Testing dashboard ', () => {
         const selectedTestData = { selectedRow: {
             name: "testV2",
             id: "157fdef0-c28e-4764-9023-75c06daad09d",

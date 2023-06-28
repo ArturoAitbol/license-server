@@ -4,7 +4,7 @@ const USER_PROFILE_DETAILS_LIST: any = [
     {
         name: 'testDemoR',
         email: 'testdemo.r@tekvizion.com',
-        companyName: 'tekVizion',
+        companyName: 'TekVizion',
         jobTitle: 'Engineer',
         phoneNumber: '9012345680',
         subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e',
@@ -13,7 +13,7 @@ const USER_PROFILE_DETAILS_LIST: any = [
     {
         name: 'testcust',
         email: 'testcust@tekvizion.com',
-        companyName: 'tekVizion',
+        companyName: 'TekVizion',
         jobTitle: 'Lead Engineer',
         phoneNumber: '9012345678',
         subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',

@@ -1,4 +1,5 @@
 <app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
+<mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
 <div class="container-fluid">
     <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
         <div class="card col-8">
@@ -16,7 +17,7 @@
     </div>
     <div class="row mt-2">
         <div class="col">
-            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="reloadCharts()">
+            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="selectedPeriodChange()">
                 <mat-button-toggle value="daily">Daily</mat-button-toggle>
                 <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
             </mat-button-toggle-group>
@@ -51,7 +52,7 @@
     <figure *ngIf="isloading" class="reportLoading">
         <img class="spinner" height="80" width="80" src="assets/images/spinner.gif"
         alt="loading spinner gif">
-        <figcaption class= "loadingMessage">Please wait while we prepare your Spotlight Dashboard.</figcaption>
+        <figcaption class= "loadingMessage">Please wait while we prepare your UCaaS Continuous Testing Dashboard.</figcaption>
     </figure>
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
@@ -64,6 +65,10 @@
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
                         <div class="container-reverse">
                             <div class="date-field">
+                                <span *ngIf="dateHasChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
                                     <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
@@ -73,39 +78,46 @@
                                 </mat-form-field>
                             </div>
                             <div class="region-field">
+                                <span *ngIf="regionsHaveChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Region</mat-label>
+                                    <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
                                     <input type="text"
-                                    placeholder="City, State or Country"
+                                    placeholder="City or State or Country"
                                     matInput
                                     #regionInput
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
-                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
-                                        <mat-option *ngFor="let region of filteredRegions | async" [value]="region">
+                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="addRegion()">
+                                        <mat-option *ngFor="let region of notSelectedFilteredDailyRegions" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
                                     </mat-autocomplete>
                                 </mat-form-field>
                             </div>
                         </div>
-                        <div class="align-items-start apply-button">
+                        <div class="d-flex align-items-center apply-button" [ngClass]="{'apply-button-enable':(!dateHasChanged() && !regionsHaveChanged())}">
                             <button class="mt-2" mat-raised-button
-                                    id="reload-btn" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                                    id="reload-btn" (click)="applyFilters()" [disabled]="filters.disabled || (!dateHasChanged() && !regionsHaveChanged())">Apply</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="row" *ngIf="this.selectedRegions.length>0">
-                <div class="col-md-12">
+            <div class="row" *ngIf="this.preselectedRegions.length>0">
+                <div class="col-md-6 offset-md-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                                <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
-                                <button [disabled]="this.selectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                            <div class="d-flex justify-content-start">
+                                <h2 class="mb-0">Selected Region(s)</h2>
+                            </div>
+                            <button [disabled]="this.preselectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
                         </div>
                         <mat-chip-list aria-label="Region selection">
                             <mat-chip
-                              *ngFor="let region of selectedRegions"
-                              (removed)="remove(region)">
+                              *ngFor="let region of preselectedRegions"
+                              (removed)="removeRegion(region)">
                               {{region.displayName}}
                               <button matChipRemove>
                                 <mat-icon>cancel</mat-icon>
@@ -119,18 +131,16 @@
                 <div class="col-md-6" id="daily-calling-reliability">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
                                      [description]="'Represents the status of call routing across the selected regions.'"
-                                     [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
                                      [offNetCalls]="callingReliability.offNet"
                                      [seriesName]="'Passed'"
-                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
+                                     (viewDetailedTableEvent)="navigateToDetailedTable(callingReliabilityTestPlans)"></app-gauge-chart>
                 </div>
                 <div class="col-md-6" id="daily-feature-functionality">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
                                      [description]="'Represents the status of various call features.'"
-                                     [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"
@@ -139,11 +149,11 @@
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
                 </div>
             </div>
-            <div class="row" >
+            <div class="row">
                 <div class="col-md-6" >
                     <div class="card text-center mt-2 full-col" id="daily-voice-quality">
                         <div class="card-header">
-                            <h1>Voice Quality (POLQA)<mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm.">info_outline</mat-icon> </h1>
+                            <h1>Voice Quality (POLQA)<mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm. Average POLQA is considered for every call stream.">info_outline</mat-icon> </h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -162,18 +172,19 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">
+                            <button class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
                         <div class="card-footer" id="daily-voice-quality-footer">
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1"> Number of streams: {{ vq.streams }} | 
-                                    Number of calls: {{ vq.calls }} | 
+                                <label class="ps-1"> Number of call streams: {{ vq.streams }} | 
+                                    Number of calls: {{ vq.calls }} </label>
+                                    <!-- Number of calls: {{ vq.calls }} | 
                                     P2P: {{vq.p2p}} | 
                                     On-net: {{vq.onNet}} | 
-                                    Off-net: {{vq.offNet}}</label>
+                                    Off-net: {{vq.offNet}}</label> -->
                             </div>
                         </div>
                     </div>
@@ -181,7 +192,7 @@
                 <div class="col-md-6">
                     <div class="card text-center mt-2 full-col">
                         <div class="card-header">
-                            <h1>Failed Calls <mat-icon matTooltip = "Represents the calls failed due to routing or client issues.">info_outline</mat-icon></h1>
+                            <h1>Failed Calls <mat-icon matTooltip = "Represents the calls failed due to routing, media routing, media quality or client issues.">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row justify-content-center failed-calls-body">
@@ -215,7 +226,7 @@
                                 </div>
                             </div>
                             <br>
-                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable()">
+                            <button class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                 View Detailed Report
                             </button>
                         </div>
@@ -238,13 +249,15 @@
                 </div>
             </div>
         </ng-container>
-        <app-network-quality #networkQuality
-            [startDate]="this.filters.get('date').value"
-            [endDate]="this.filters.get('date').value"
-            [regions]="this.selectedRegions"
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality>
+        <ng-container *ngIf="showChildren">
+            <app-network-quality #networkQuality
+                                 [startDate]="this.date"
+                                 [endDate]="this.date"
+                                 [regions]="this.selectedRegions"
+                                 [users]="this.users" (chartStatus)="chartsStatus($event)"
+                                 [isLoading]="this.isloading">
+            </app-network-quality>
+        </ng-container>
         <br>
     </ng-container>
     <ng-container *ngIf="selectedPeriod === 'weekly'">
@@ -257,6 +270,10 @@
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
                         <div class="container-reverse">
                             <div class="weekly-date-field">
+                                <span *ngIf="dateHasChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
                                     <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
@@ -266,39 +283,44 @@
                                 </mat-form-field>
                             </div>
                             <div class="region-field">
+                                <span *ngIf="regionsHaveChanged()" class="d-flex justify-content-end apply-flag">
+                                    <mat-icon>error_outline</mat-icon>
+                                    <div>Not applied</div>
+                                </span>
                                 <mat-form-field appearance="outline">
                                     <mat-label>Region</mat-label>
+                                    <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
                                     <input type="text"
-                                    placeholder="City, State or Country"
-                                    matInput
+                                    placeholder="City or State or Country"
+                                    matInput                                   
                                     #regionInput
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
-                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
-                                        <mat-option *ngFor="let region of weeklyFilteredRegions | async" [value]="region">
+                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="addRegion()">
+                                        <mat-option *ngFor="let region of notSelectedFilteredWeeklyRegions" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
                                     </mat-autocomplete>
                                 </mat-form-field>
                             </div>
                         </div>
-                        <div class="align-items-start apply-button" style="padding-left: 22%">
+                        <div class="d-flex align-items-center apply-button" [ngClass]="{'apply-button-enable':(!dateHasChanged() && !regionsHaveChanged())}">
                             <button class="mt-2" mat-raised-button
-                                    id="reload-btn-2" (click)="reloadCharts()" [disabled]="weeklyFilters.disabled">Apply</button>
+                                    id="reload-btn-2" (click)="applyFilters()" [disabled]="weeklyFilters.disabled || (!dateHasChanged() && !regionsHaveChanged())">Apply</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="row" *ngIf="this.weeklySelectedRegions.length>0">
-                <div class="col-md-12">
+            <div class="row" *ngIf="this.weeklyPreselectedRegions.length>0">
+                <div class="col-md-6 offset-md-3">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
-                                <button [disabled]="this.weeklySelectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                                <button [disabled]="this.weeklyPreselectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
                         </div>
                         <mat-chip-list aria-label="Region selection">
                             <mat-chip
-                              *ngFor="let region of weeklySelectedRegions"
-                              (removed)="remove(region)">
+                              *ngFor="let region of weeklyPreselectedRegions"
+                              (removed)="removeRegion(region)">
                               {{region.displayName}}
                               <button matChipRemove>
                                 <mat-icon>cancel</mat-icon>
@@ -386,7 +408,7 @@
                 <div class="col-12" >
                     <div class="card text-center mt-2" id="weekly-voice-quality">
                         <div class="card-header">
-                            <h1>Voice Quality (POLQA) <mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm">info_outline</mat-icon></h1>
+                            <h1>Voice Quality (POLQA) <mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm. Average POLQA is considered for every call stream.">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -411,11 +433,12 @@
                         <div class="card-footer">
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1">Number of streams: {{ weeklyVQ.numberStreams }} | 
-                                    Number of calls: {{ weeklyVQ.numberCalls }} | 
+                                <label class="ps-1">Number of call streams: {{ weeklyVQ.numberStreams }} | 
+                                    Number of calls: {{ weeklyVQ.numberCalls }} </label>
+                                    <!-- Number of calls: {{ weeklyVQ.numberCalls }} | 
                                     P2P: {{weeklyVQ.p2p}} | 
                                     On-net: {{weeklyVQ.onNet}} | 
-                                    Off-net: {{weeklyVQ.offNet}}</label>
+                                    Off-net: {{weeklyVQ.offNet}}</label> -->
                             </div>
                         </div>
                     </div>
@@ -463,6 +486,9 @@
                                             [colors]="weeklyCallsStatusChartOptions.colors"
                                             [plotOptions]="weeklyCallsStatusChartOptions.plotOptions"
                                     ></apx-chart>
+                                    <div>
+                                        <label class="chart-axis-label">Hours</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -470,14 +496,16 @@
                 </div>
             </div>
         </ng-container>
-        <app-network-quality #networkQuality
-            [startDate]="getStartWeekDate()"
-            [endDate]="getEndWeekDate()"
-            [groupBy]="'day'"
-            [regions]="this.weeklySelectedRegions" 
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality>
+        <ng-container *ngIf="showChildren">
+            <app-network-quality #networkQuality
+                                 [startDate]="this.selectedRange.start"
+                                 [endDate]="this.selectedRange.end"
+                                 [groupBy]="'day'"
+                                 [regions]="this.weeklySelectedRegions"
+                                 [users]="this.users" (chartStatus)="chartsStatus($event)"
+                                 [isLoading]="this.isloading">
+            </app-network-quality>
+        </ng-container>
         <br>
     </ng-container>
 </div>
