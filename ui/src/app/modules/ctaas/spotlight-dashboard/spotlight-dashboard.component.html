@@ -1,4 +1,4 @@
-<app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
+<app-banner></app-banner>
 <mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
 <div class="container-fluid">
     <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
@@ -172,7 +172,7 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
+                            <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
@@ -226,7 +226,7 @@
                                 </div>
                             </div>
                             <br>
-                            <button class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                            <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                 View Detailed Report
                             </button>
                         </div>

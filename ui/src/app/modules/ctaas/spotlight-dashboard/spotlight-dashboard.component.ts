@@ -555,7 +555,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     let reportFilter = "";
     if (reportType && reportType != "")
       reportFilter += "type=" + reportType;
-    if (status && status != "")
+    else if (status && status != "")
       reportFilter += "status=" + status;
     this.goToDetailedReportView(reportFilter);
   }
