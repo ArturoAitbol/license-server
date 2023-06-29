@@ -93,11 +93,6 @@ export class DetailedReportsCompoment implements OnInit {
     });
     this.initColumns();
     this.calculateTableHeight();
-    // this.urlStartValue = this.route.snapshot.queryParamMap.get('start');
-    // this.urlEndValue = this.route.snapshot.queryParamMap.get('end');
-    // this.urlEndValueParsed = new Date(this.urlEndValue);
-    // const utcDate = new Date(this.urlEndValueParsed.getTime() + this.urlEndValueParsed.getTimezoneOffset() * 60000);
-    // console.log("end value "+utcDate.toISOString());
   }
   
   /**
@@ -711,5 +706,16 @@ export class DetailedReportsCompoment implements OnInit {
         avgString = "0";
       return "Max: "+maxValueString+", "+"Avg: "+avgString;
     }
+  }
+
+  private parseStringToUTC(timestampString: string): string {
+    const year = parseInt(timestampString.substr(0, 2), 10);
+    const month = parseInt(timestampString.substr(2, 2), 10) - 1; // Restar 1 al mes, ya que en JavaScript los meses van de 0 a 11
+    const day = parseInt(timestampString.substr(4, 4), 10);
+    const hr = parseInt(timestampString.substr(8, 2), 10);
+    const min = parseInt(timestampString.substr(10, 2), 10);
+    const sec = parseInt(timestampString.substr(12, 2), 10);
+
+    return day+"/"+month+"/"+year+" "+hr+":"+min+":"+sec;
   }
 }
