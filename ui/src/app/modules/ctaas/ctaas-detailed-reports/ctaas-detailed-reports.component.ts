@@ -7,7 +7,6 @@ import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service'
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
-import { objKeys } from '@microsoft/applicationinsights-core-js';
 import moment from 'moment';
 @Component({
   selector: 'app-detailed-reports',
