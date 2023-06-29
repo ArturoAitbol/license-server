@@ -32,7 +32,7 @@ const beforeEachFunction = () => {
     mapComponentInstance = fixture.componentInstance;
 }
 
-fdescribe('UI verification', () => {
+describe('UI verification', () => {
     beforeEach(beforeEachFunction);
     it('should get the nodes and lines data', () => {
         spyOn(MapServiceMock, 'getMapSummary').and.callThrough();
@@ -93,7 +93,7 @@ fdescribe('UI verification', () => {
 });
 
 
-fdescribe(' map errors tests', () => {
+describe(' map errors tests', () => {
     beforeEach(beforeEachFunction);
     it('should return an error if something went wrong in getMapSummary', () => {
         const responseWithError = {error:"some error"};
@@ -125,7 +125,7 @@ fdescribe(' map errors tests', () => {
     });
 });
 
-fdescribe('map filters test', () => {
+describe('map filters test', () => {
     beforeEach(beforeEachFunction);
     it('should call a dateFilter', () => {
         spyOn(MapServiceMock, 'getMapSummary').and.callThrough();

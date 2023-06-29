@@ -29,9 +29,9 @@ const beforeEachFunction = () => {
 }
 
 
-fdescribe('fetch the data for the node', () => {
+describe('fetch the data for the line', () => {
     beforeEach(beforeEachFunction)
-    it('should open a new window with the data of the node', () => {
+    it('should open a new window with the data of the line', () => {
         spyOn(window, 'open').and.returnValue(null);
         spyOn(window, 'close').and.returnValue(null);
         spyOn(lineComponentInstance,'openNaviteDashboardWithSelectedData').and.callThrough();
