@@ -131,7 +131,6 @@ describe("NetworkQualityComponent", () => {
   });
 
   it('should filter users by input string value', async () => {
-
     networkQualityComponentTestInstance.initAutocompletes();
     networkQualityComponentTestInstance.filters.enable();
     fixture.nativeElement.querySelector('#userInput').dispatchEvent(new Event('focusin'));
@@ -409,20 +408,20 @@ describe("NetworkQualityComponent", () => {
     expect(networkQualityComponentTestInstance.selectedFilter).toBe(true);
   });
 
-  /*it('should change network quality graph when button toggle is changed', () => {
+  it('should change network quality graph when button toggle is changed', () => {
     spyOn(networkQualityComponentTestInstance, 'changeGraph').and.callThrough();
     expect(networkQualityComponentTestInstance.selectedGraph).toBe('jitter');
     const matButtonToggles = fixture.debugElement.query(By.css("mat-button-toggle-group")).queryAll(By.css("mat-button-toggle"));
-    matButtonToggles[1].nativeElement.click();
+    matButtonToggles[1].nativeElement.querySelector('button').click();
     console.log(matButtonToggles[0].nativeElement.text);
     fixture.detectChanges();
     expect(networkQualityComponentTestInstance.selectedGraph).toBe('packetLoss');
     expect(networkQualityComponentTestInstance.changeGraph).toHaveBeenCalled();
-    matButtonToggles[2].nativeElement.click();
+    matButtonToggles[2].nativeElement.querySelector('button').click();
     fixture.detectChanges();
     expect(networkQualityComponentTestInstance.selectedGraph).toBe('roundTripTime');
     expect(networkQualityComponentTestInstance.changeGraph).toHaveBeenCalled();
-  });*/
+  });
 
   /*it("should open detailed table when point is clicked", waitForAsync(() => {
     spyOn(
@@ -431,7 +430,9 @@ describe("NetworkQualityComponent", () => {
     ).and.callThrough();
     fixture.whenRenderingDone().then(() => {
       const chart = fixture.debugElement.query(By.css("apx-chart"));
+      console.log(chart);
       const marker = chart.nativeElement.querySelector(".apxcharts-series-markers");
+      //console.log(marker);
       marker.click();
       expect(
         networkQualityComponentTestInstance.navigateToDetailedTableFromPoint
