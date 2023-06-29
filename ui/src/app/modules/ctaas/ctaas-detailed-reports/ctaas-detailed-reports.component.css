@@ -236,3 +236,17 @@ mat-panel-title {
 .average-col{
   white-space: wrap;
 }
+
+.hint {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #6E76B4;
+}
+
+.hint mat-icon {
+  margin-right: 5px;
+  /* display: flex;
+  align-items: center; 
+  justify-content: center; */
+}
