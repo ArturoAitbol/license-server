@@ -60,7 +60,6 @@ export const permissions = {
             'deleteSubAccAdminEmail',
             'auditInfo',
             'addTestSuite',
-            'showBanner',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'resetFilter',
@@ -131,7 +130,6 @@ export const permissions = {
             'map'
         ],
         elements: [
-            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -184,7 +182,6 @@ export const permissions = {
             'addProject',
             'addLicenseConsumption',
             'addTestSuite',
-            'showBanner',
             'resetFilter',
             'maintenanceModeCheckbox',
         ],
@@ -241,7 +238,6 @@ export const permissions = {
             'spotlight-dashboard'
         ],
         elements: [
-            'showBanner'
         ],
         tables: {
             customerOptions: [

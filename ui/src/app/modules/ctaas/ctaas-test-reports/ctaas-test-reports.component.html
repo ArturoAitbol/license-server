@@ -1,4 +1,4 @@
-<app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
+<app-banner></app-banner>
 <div class="btn-container" *ngIf="!maintenanceModeEnabled">
     <div *ngIf="tapURLFlag === 'withTapURL'">
         <form [formGroup]="filterForm" (ngSubmit)="todayReport()">
