@@ -172,7 +172,7 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
+                            <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
@@ -226,7 +226,7 @@
                                 </div>
                             </div>
                             <br>
-                            <button class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                            <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                 View Detailed Report
                             </button>
                         </div>
