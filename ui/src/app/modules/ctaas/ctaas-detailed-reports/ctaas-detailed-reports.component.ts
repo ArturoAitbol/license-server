@@ -7,7 +7,8 @@ import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service'
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
-
+import { objKeys } from '@microsoft/applicationinsights-core-js';
+import moment from 'moment';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
@@ -53,7 +54,11 @@ export class DetailedReportsCompoment implements OnInit {
   sortColumn: string = '';
   clickCount: number = 0;
   originalDetailedTestReport: any[] = [];
-
+  metricsObj: any;
+  urlStartValue: string;
+  urlEndValue: string;
+  urlStartValueParsed;
+  urlEndValueParsed;
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
   constructor(private msalService: MsalService,
@@ -88,6 +93,11 @@ export class DetailedReportsCompoment implements OnInit {
     });
     this.initColumns();
     this.calculateTableHeight();
+    // this.urlStartValue = this.route.snapshot.queryParamMap.get('start');
+    // this.urlEndValue = this.route.snapshot.queryParamMap.get('end');
+    // this.urlEndValueParsed = new Date(this.urlEndValue);
+    // const utcDate = new Date(this.urlEndValueParsed.getTime() + this.urlEndValueParsed.getTimezoneOffset() * 60000);
+    // console.log("end value "+utcDate.toISOString());
   }
   
   /**
@@ -170,13 +180,75 @@ export class DetailedReportsCompoment implements OnInit {
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
           this.detailedTestReport.forEach((obj: any, index) => {
+            this.metricsObj = obj;
             let fromCount = 0;
             let toCount = 0;
             let fromSumarize = 0, toSumarize = 0;
             let minFromPOLQA = 100;
             let minToPOLQA = 100;
+            let parsedJitter = 0;
+            let fromMaxJitter = 0;
+            let toMaxJitter = 0;
+            let parsedRoundTrip = 0;
+            let fromMaxRoundTrip = 0;
+            let toMaxRoundTrip = 0;
+            let parsedPacketLoss = 0;
+            let fromMaxPacketLoss = 0;
+            let toMaxPacketLoss = 0;
+            let fromBitrateSum = 0;
+            let fromAvgBitrate = 0;
+            let fromBitrateCount = 0;
+            let toBitrateSum = 0;
+            let toAvgBitrate = 0;
+            let toBitrateCount = 0;
+            let parsedBitrate = 0;
+            let fromJitterSum = 0;
+            let fromJitterCount = 0;
+            let fromRoundTripSum = 0;
+            let fromRoundTripCount = 0;
+            let fromPacketLossSum = 0;
+            let fromPacketLossCount = 0;
+            let toJitterSum = 0;
+            let toJitterCount = 0;
+            let toRoundTripSum = 0;
+            let toRoundTripCount = 0;
+            let toPacketLossSum = 0;
+            let toPacketLossCount = 0;
             if(obj.from?.mediaStats){
               for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
+                if(this.validMetric("from" ,i, "Received Jitter")){
+                  parsedJitter = this.parseMertic("from", i, "Received Jitter" );
+                  if (parsedJitter > fromMaxJitter) {
+                    fromMaxJitter = parsedJitter;
+                    obj.maxJitterFrom = fromMaxJitter;
+                  }
+                  fromJitterSum += parsedJitter;
+                  fromJitterCount++;
+                }
+                if(this.validMetric("from", i, "Round trip time")){
+                  parsedRoundTrip = this.parseMertic("from", i, "Round trip time" );
+                  if (parsedRoundTrip > fromMaxRoundTrip) {
+                    fromMaxRoundTrip = parsedRoundTrip;
+                    obj.maxRoundTripFrom = fromMaxRoundTrip;
+                  }
+                  fromRoundTripSum += parsedRoundTrip;
+                  fromRoundTripCount++;
+                }
+                if(this.validMetric("from", i, "Received packet loss")){
+                  parsedPacketLoss = this.parseMertic("from", i, "Received packet loss");
+                  if (parsedPacketLoss >= fromMaxPacketLoss) {
+                    fromMaxPacketLoss = parsedPacketLoss;
+                    obj.maxPacketLossFrom = fromMaxPacketLoss;
+                  }
+                  fromPacketLossSum += parsedPacketLoss;
+                  fromPacketLossCount++;
+                }
+                if(this.validMetric("from", i, "Sent bitrate")){
+                  parsedBitrate = this.parseMertic("from", i, "Sent bitrate");
+                  fromBitrateSum += parsedBitrate;
+                  fromBitrateCount++;
+                }
+        
                 if(obj.from?.mediaStats[i]?.data?.POLQA !== undefined && obj.from?.mediaStats[i]?.data?.POLQA !== null ){
                   if (obj.from?.mediaStats[i]?.data?.POLQA < minFromPOLQA  && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
                     minFromPOLQA = obj.from?.mediaStats[i]?.data?.POLQA;
@@ -206,6 +278,38 @@ export class DetailedReportsCompoment implements OnInit {
                   toSumarize += toPolqaSum;
                   toCount++;
                 }
+                if(this.validMetric("to" ,i, "Received Jitter")){
+                  parsedJitter = this.parseMertic("to", i, "Received Jitter" );
+                  if (parsedJitter > toMaxJitter) {
+                    toMaxJitter = parsedJitter;
+                    obj.maxJitterTo = toMaxJitter;
+                  }
+                  toJitterSum += parsedJitter;
+                  toJitterCount++;
+                }
+                if(this.validMetric("to", i, "Round trip time")){
+                  parsedRoundTrip = this.parseMertic("to", i, "Round trip time" );
+                  if (parsedRoundTrip > toMaxRoundTrip) {
+                    toMaxRoundTrip = parsedRoundTrip;
+                    obj.maxRoundTripTo = toMaxRoundTrip;
+                  }
+                  toRoundTripSum += parsedRoundTrip;
+                  toRoundTripCount++;
+                }
+                if(this.validMetric("to", i, "Received packet loss")){
+                  parsedPacketLoss = this.parseMertic("to", i, "Received packet loss");
+                  if (parsedPacketLoss >= toMaxPacketLoss) {
+                    toMaxPacketLoss = parsedPacketLoss;
+                    obj.maxPacketLossTo = toMaxPacketLoss;
+                  }
+                  toPacketLossSum += parsedPacketLoss;
+                  toPacketLossCount++;
+                }
+                if(this.validMetric("to", i, "Sent bitrate")){
+                  parsedBitrate = this.parseMertic("to", i, "Sent bitrate");
+                  toBitrateSum += parsedBitrate;
+                  toBitrateCount++;
+                }
               }
               obj.to.mediaStats.sort((a, b) => {
                 return a.timestamp - b.timestamp
@@ -219,8 +323,34 @@ export class DetailedReportsCompoment implements OnInit {
               let toAvg = (toSumarize / toCount).toFixed(2);
               obj.toPolqaAvg = toAvg;
             }
+            if(fromBitrateSum !== 0 && fromBitrateCount !== 0 ) {
+              let fromAvgBitrate = (fromBitrateSum / fromBitrateCount).toFixed(2);
+              obj.fromAvgBitrate = fromAvgBitrate;
+            }
+            if(toBitrateSum !== 0 && toBitrateCount !== 0 ) {
+              let toAvgBitrate = (toBitrateSum / toBitrateCount).toFixed(2);
+              obj.toAvgBitrate = toAvgBitrate;
+            }
+            obj.fromAvgJitter =this.average(fromJitterSum, fromJitterCount);
+            obj.fromAvgRoundTrip =this.average(fromRoundTripSum, fromRoundTripCount);
+            obj.fromAvgPacketLoss =this.average(fromPacketLossSum, fromPacketLossCount);
+            obj.toAvgJitter =this.average(toJitterSum, toJitterCount);
+            obj.toAvgRoundTrip =this.average(toRoundTripSum, toRoundTripCount);
+            obj.toAvgPacketLoss =this.average(toPacketLossSum, toPacketLossCount);
+
+            obj.fromJitter = this.dataToString(obj.maxJitterFrom, obj.fromAvgJitter, "Received Jitter");
+            obj.toJitter = this.dataToString(obj.maxJitterTo, obj.toAvgJitter, "Received Jitter");
+            obj.fromRoundTrip = this.dataToString(obj.maxRoundTripFrom, obj.fromAvgRoundTrip, "Round trip time");
+            obj.toRoundTrip = this.dataToString(obj.maxRoundTripTo, obj.toAvgRoundTrip, "Round trip time");
+            obj.fromPacketLoss = this.dataToString(obj.maxPacketLossFrom, obj.fromAvgPacketLoss, "Received packet loss");
+            obj.toPacketLoss = this.dataToString(obj.maxPacketLossFrom, obj.fromAvgPacketLoss, "Received packet loss");
+            obj.fromAvgBitrate = this.dataToString(0, obj.fromAvgBitrate, "Sent bitrate");
+            obj.toAvgBitrate = this.dataToString(0, obj.toAvgBitrate, "Sent bitrate");
+
             let startTimeTimeStamp = new Date(obj.startTime).getTime();
             let endTimeTimeStamp = new Date(obj.endTime).getTime();
+            obj.startTime = moment.utc(obj.startTime).format("MM/DD/YYYY HH:mm:ss");
+            obj.endTime = moment.utc(obj.endTime).format("MM/DD/YYYY HH:mm:ss");
             if(startTimeTimeStamp < minorTimestamp){
               minorTimestamp = startTimeTimeStamp;
               minorTimeIndex = index;
@@ -236,7 +366,7 @@ export class DetailedReportsCompoment implements OnInit {
             obj.panelOpenState = true;
             obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
-          this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime;
+          this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime; //
           this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[majorTimeIndex].endTime;
         } else {
           this.hasDashboardDetails = false;
@@ -404,7 +534,15 @@ export class DetailedReportsCompoment implements OnInit {
       { header: 'Status', value: 'status' },
       { header: 'Call Type', value: 'callType' },
       { header: 'Error Category', value: 'errorCategory' },
-      { header: 'Reason', value: 'errorReason' }
+      { header: 'Reason', value: 'errorReason' },
+      { header: 'From Jitter (ms)', value: 'fromJitter' },
+      { header: 'To Jitter (ms)', value: 'toJitter' },
+      { header: 'From Round trip time (ms)', value: 'fromRoundTrip' },
+      { header: 'To Round trip time (ms)', value: 'toRoundTrip' },
+      { header: 'From Packet Loss (%)', value: 'fromPacketLoss' },
+      { header: 'To Packet Loss (%)', value: 'toPacketLoss' },
+      { header: 'From Bitrate (kbps)', value: 'fromAvgBitrate' },
+      { header: 'To Bitrate (kbps)', value: 'toAvgBitrate' },
     ];
     this.mediaStatsDisplayedColumns = [
       { header: 'Sent packets', value: 'Sent packets' },
@@ -525,5 +663,53 @@ export class DetailedReportsCompoment implements OnInit {
       }
     });
       this.detailedTestReport = sortedList;
+  }
+
+  private validMetric(location: string ,index: number, metric: string): boolean {
+    if(location === "from")
+      return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj.from?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj.from?.mediaStats[index]?.data?.[metric] !== '--';
+    else
+      return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj.to?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj.to?.mediaStats[index]?.data?.[metric] !== '--';
+  }
+
+  private parseMertic(location: string, index: number, metric: string) {
+    if(metric === "Received Jitter" || metric === "Round trip time"){
+      return parseFloat(this.metricsObj[location]?.mediaStats[index]?.data?.[metric]);
+    }
+    if(metric === "Received packet loss"){
+      const percentageString = this.metricsObj[location]?.mediaStats[index]?.data?.[metric];
+      const packetLossString =  percentageString.replace("%", "");
+      return parseFloat(packetLossString);
+    }
+    if(metric === "Sent bitrate"){
+      const bitrateString = this.metricsObj[location]?.mediaStats[index]?.data?.[metric];
+      const values = bitrateString.split(' ');
+      const numericString = values[0];
+      return parseFloat(numericString);
+    }
+  }
+
+  private average(sum: number, count: number){
+    if(sum !== 0 && count !== 0 ) {
+      let average = (sum / count).toFixed(2);
+      return average;
+    }
+  }
+
+  private dataToString(maxValue: number, avg: number, metric: string){
+    let maxValueString = maxValue + "";
+    let avgString = avg + "";
+    if(maxValue === undefined)
+      maxValueString = "N/A";
+    if(avg === undefined)
+      avgString = "N/A"
+    if(metric === "Sent bitrate"){
+      return "Avg: "+avgString;
+    }
+    else{
+      if(maxValue === 0 && avg === undefined)
+        avgString = "0";
+      return "Max: "+maxValueString+", "+"Avg: "+avgString;
+    }
   }
 }
