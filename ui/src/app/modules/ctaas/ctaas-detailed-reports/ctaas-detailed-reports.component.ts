@@ -706,15 +706,4 @@ export class DetailedReportsCompoment implements OnInit {
       return "Max: "+maxValueString+", "+"Avg: "+avgString;
     }
   }
-
-  private parseStringToUTC(timestampString: string): string {
-    const year = parseInt(timestampString.substr(0, 2), 10);
-    const month = parseInt(timestampString.substr(2, 2), 10) - 1; // Restar 1 al mes, ya que en JavaScript los meses van de 0 a 11
-    const day = parseInt(timestampString.substr(4, 4), 10);
-    const hr = parseInt(timestampString.substr(8, 2), 10);
-    const min = parseInt(timestampString.substr(10, 2), 10);
-    const sec = parseInt(timestampString.substr(12, 2), 10);
-
-    return day+"/"+month+"/"+year+" "+hr+":"+min+":"+sec;
-  }
 }
