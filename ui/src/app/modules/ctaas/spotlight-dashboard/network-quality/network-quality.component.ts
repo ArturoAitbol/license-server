@@ -106,7 +106,7 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
     this.commonChartOptions = trendsChartCommonOptions;
     this.polqaChartOptions = defaultPolqaChartOptions;
     this.polqaChartOptions.chart.events = {
-      markerClick: this.navigateToDetailedTableFromPoint.bind(this)
+      markerClick: this.navigateToDetailedTableFromPolqaChart.bind(this)
     };
     this.matIconRegistry.addSvgIcon(
         'packetloss',
@@ -257,11 +257,19 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
     this.sentBitrateChartOptions = {...this.commonChartOptions, ...defaultSentBitrateChartOptions };
     this.roundTripChartOptions = {...this.commonChartOptions, ...defaultRoundtripTimeChartOptions };
     this.receivedPacketLossChartOptions.chart.events = {
-      markerClick: this.navigateToDetailedTableFromPoint.bind(this)
+      markerClick: this.navigateToDetailedTableFromNetworkChart.bind(this)
     };
   }
 
-  navigateToDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
+  navigateToDetailedTableFromPolqaChart(event, chartContext, { seriesIndex, dataPointIndex, config}) {
+    this.navigateToDetailedTable(chartContext, dataPointIndex, true);
+  }
+  
+  navigateToDetailedTableFromNetworkChart(event, chartContext, { seriesIndex, dataPointIndex, config}) {
+    this.navigateToDetailedTable(chartContext, dataPointIndex, false);
+  }
+
+  navigateToDetailedTable(chartContext, dataPointIndex, polqaCalls = false) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
     let startDate: Moment, endDate: Moment;
     if (this.groupBy==='hour') {
@@ -279,6 +287,8 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
       url += "&regions=" + JSON.stringify(this.regions);
     if (this.selectedUsers.length > 0)
       url+= "&users=" + this.selectedUsers.join(',');
+    if (polqaCalls)
+      url+= "&polqaCalls=true";
     window.open(url);
   }
 
