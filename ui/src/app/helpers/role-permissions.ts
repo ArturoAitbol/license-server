@@ -64,6 +64,7 @@ export const permissions = {
             'changeSpotlightRole',
             'resetFilter',
             'maintenanceModeCheckbox',
+            'viewDetailedReport'
         ],
         tables: {
             customerOptions: [
@@ -184,6 +185,74 @@ export const permissions = {
             'addTestSuite',
             'resetFilter',
             'maintenanceModeCheckbox',
+            'viewDetailedReport'
+        ],
+        tables: {
+            customerOptions: [
+                'VIEW_LICENSES',
+                'VIEW_CONSUMPTION',
+                'VIEW_PROJECTS',
+                'VIEW_ADMIN_EMAILS',
+                'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD'
+            ],
+            licenseOptions: [],
+            licConsumptionOptions: [
+                'EDIT',
+                'VIEW_DETAILS',
+                'DELETE'
+            ],
+            projectOptions: [
+                'VIEW_CONSUMPTION',
+                'MODIFY_PROJECT',
+                'CLOSE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE',
+                'DELETE_TEST_SUITE'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
+            ],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ],
+            subscriptionsOverviewOptions: [],
+            deviceOptions: [],
+            testReportsOptions: [
+                'VIEW_DETAILS'
+            ]
+        }
+    },
+    'tekvizion.IgesAdmin': {
+        paths: [
+            'customers-dashboard',
+            'visualization',
+            'customer',
+            'consumption',
+            'projects',
+            'licenses',
+            'devices',
+            'redirect',
+            'apps',
+            'spotlight',
+            'notes',
+            'test-suites',
+            'stakeholders',
+            'setup',
+            'details',
+            'reports',
+            'consumption-matrix',
+            'spotlight-dashboard',
+            'map'
+        ],
+        elements: [
+            'addProject',
+            'addLicenseConsumption',
+            'addTestSuite',
+            'resetFilter',
+            'maintenanceModeCheckbox'
         ],
         tables: {
             customerOptions: [
@@ -238,6 +307,7 @@ export const permissions = {
             'spotlight-dashboard'
         ],
         elements: [
+            'viewDetailedReport'
         ],
         tables: {
             customerOptions: [
@@ -284,7 +354,8 @@ export const permissions = {
             'addSpotlightNote',
             'showLatestNote',
             'resetFilter',
-            'request-call'
+            'request-call',
+            'viewDetailedReport'
         ],
         tables: {
             customerOptions: [
@@ -341,7 +412,8 @@ export const permissions = {
             'addSpotlightNote',
             'showLatestNote',
             'resetFilter',
-            'request-call'
+            'request-call',
+            'viewDetailedReport'
         ],
         tables: {
             customerOptions: [
@@ -390,7 +462,8 @@ export const permissions = {
             'view-profile',
             'showLatestNote',
             'resetFilter',
-            'request-call'
+            'request-call',
+            'viewDetailedReport'
         ],
         tables: {
             customerOptions: [],
