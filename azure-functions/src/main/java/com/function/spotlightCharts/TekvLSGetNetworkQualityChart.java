@@ -82,9 +82,9 @@ public class TekvLSGetNetworkQualityChart {
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
 
 		String averageFlag = request.getQueryParameters().getOrDefault("average", "");
-		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","POLQA");
+		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","");
 
-		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
+		String metrics = request.getQueryParameters().getOrDefault("metric", Utils.DEFAULT_METRICS);
 		String metricsClause = metrics.replace(",", "', '");
 		Iterator<String> metricsArray = Arrays.stream(metrics.split(",")).iterator();
 		StringBuilder statistics = new StringBuilder();
@@ -95,28 +95,33 @@ public class TekvLSGetNetworkQualityChart {
 			switch (metric) {
 				case "Received Jitter":
 					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" ");
-					statisticsLabels.add("Received Jitter");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + 
+						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "\"");
+					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.JITTER.value());
 					break;
 				case "Received packet loss":
 					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\" ");
-					statisticsLabels.add("Received packet loss");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + 
+						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "\"");
+					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value());
 					break;
 				case "Round trip time":
 					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Round trip time\" ");
-					statisticsLabels.add("Round trip time");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + 
+						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "\"");
+					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value());
 					break;
 				case "Sent bitrate":
 					// here the average is always the most representative value
-					statistics.append(selector + "(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
-					statisticsLabels.add("Sent bitrate");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + 
+						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "\"");
+					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.BITRATE.value());
 					break;
 				case "POLQA":
 					if (averageFlag.isEmpty()) selector = "min";
-					statistics.append(selector + "(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as \"POLQA\" ");
-					statisticsLabels.add("POLQA");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + 
+						"' then CAST(ms.parameter_value AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "\"");
+					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.POLQA.value());
 					break;
 			}
 			if (metricsArray.hasNext()) {
@@ -125,7 +130,7 @@ public class TekvLSGetNetworkQualityChart {
 		}
 
 		String query = "SELECT TO_CHAR(sr.startdate,'" + groupByClause + "') as date_hour, " + statistics +
-				"FROM media_stats ms " +
+				" FROM media_stats ms " +
 				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
 				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
 				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +

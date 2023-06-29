@@ -166,14 +166,13 @@ public class TekvLSGetCallsStatusSummary {
 
 			// Return a JSON array of status and counts (id and value)
 			HashMap<String,String> reportTypes = new HashMap<>();
-			reportTypes.put("STS","callingReliability");
-			reportTypes.put("LTS","featureFunctionality");
-			reportTypes.put("POLQA","POLQA");
+			reportTypes.put(Utils.TEST_PLAN_NAMES.CALLING_RELIABILITY.value(),"callingReliability");
+			reportTypes.put(Utils.TEST_PLAN_NAMES.FEATURE_FUNCTIONALITY.value(),"featureFunctionality");
+			reportTypes.put(Utils.TEST_PLAN_NAMES.POLQA.value(),"POLQA");
 			// first fill json object with callingReliability and featureFunctionality arrays
 			reportTypes.forEach((tpName, reportType) -> {
 				json.put(reportType, new JSONObject("{ callsByType: {p2p:0,onNet:0,offNet:0}, callsByStatus: {PASSED:0,FAILED:0}}"));
 			});
-			// then add the POLQA mapping to callingReliability
 
 			for(Object resultElement : resultSet) {
 				JSONArray values = (JSONArray) resultElement;

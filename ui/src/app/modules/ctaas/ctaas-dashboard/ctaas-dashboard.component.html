@@ -1,6 +1,6 @@
 <div>
   <div>
-    <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'">
+    <app-banner [stylesflag]="'dashboard'">
     </app-banner>
     <div class="container-fluid controls" id="reportContainer">
       <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
