@@ -20,6 +20,14 @@ const beforeEachFunction = () => {
     dashboardPocComponentTestInstance = fixture.componentInstance;
 };
 
+
+
+//Test that Daily Weekly toggle button correctly updates and reloads
+//Test customer name is correct
+//Test report title is correct
+//Test filters and apply button
+//Test Weekly graphs are in place with tooltip and correct logic
+//Test Daily graphs are in place with tooltip and correct logic
 describe('DashboardPocComponent', () => {
   beforeEach(beforeEachFunction);
 
