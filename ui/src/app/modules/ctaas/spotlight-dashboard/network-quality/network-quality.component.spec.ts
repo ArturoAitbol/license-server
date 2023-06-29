@@ -133,10 +133,13 @@ describe("NetworkQualityComponent", () => {
   it('should filter users by input string value', async () => {
     networkQualityComponentTestInstance.initAutocompletes();
     networkQualityComponentTestInstance.filters.enable();
-    fixture.nativeElement.querySelector('#userInput').dispatchEvent(new Event('focusin'));
-    networkQualityComponentTestInstance.filters.controls['user'].setValue(["joh"]);
     fixture.detectChanges();
 
+    let inputSelected = fixture.nativeElement.querySelector('#userInput');
+    inputSelected.dispatchEvent(new Event('focusin'));
+    networkQualityComponentTestInstance.filters.get('user').setValue("joh");
+
+    fixture.detectChanges();
     await fixture.whenStable();
     
     const options = fixture.debugElement.queryAll(By.css('mat-option'));
