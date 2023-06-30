@@ -59,7 +59,7 @@ export class DetailedReportsCompoment implements OnInit {
   urlStartValueParsed;
   urlEndValueParsed;
   metricsObjTemplate = { 
-    polqa: {count: 0, sum: 0, min: 0, avg: 0},
+    polqa: {count: 0, sum: 0, min: 100, avg: 0},
     jitter: {count: 0, sum: 0, max: 0},
     roundTrip: {count: 0, sum: 0, max: 0},
     packetLoss: {count: 0, sum: 0, max: 0},
@@ -184,11 +184,6 @@ export class DetailedReportsCompoment implements OnInit {
             this.metricsObj = obj;
             let fromObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
             let toObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
-            let fromCount = 0;
-            let toCount = 0;
-            let fromSumarize = 0, toSumarize = 0;
-            let minFromPOLQA = 100;
-            let minToPOLQA = 100;
             let parsedJitter = 0;
             let parsedRoundTrip = 0;
             let parsedPacketLoss = 0;
@@ -218,22 +213,22 @@ export class DetailedReportsCompoment implements OnInit {
                   fromObj = this.updateMetricSum(parsedBitrate, fromObj, "bitrate");
                 }
         
-                if(obj.from?.mediaStats[i]?.data?.POLQA !== undefined && obj.from?.mediaStats[i]?.data?.POLQA !== null ){
-                  if (obj.from?.mediaStats[i]?.data?.POLQA < minFromPOLQA  && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                    minFromPOLQA = obj.from?.mediaStats[i]?.data?.POLQA;
-                    obj.fromPolqaMin = minFromPOLQA;
+                if(this.validMetric("from", i, "POLQA")){
+                  if (obj.from?.mediaStats[i]?.data?.POLQA < fromObj.polqa.min  && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
+                    fromObj.polqa.min = obj.from?.mediaStats[i]?.data?.POLQA;
+                    obj.fromPolqaMin = fromObj.polqa.min;
                   }
                 }
-                if(obj.to?.mediaStats[i]?.data?.POLQA !== undefined && obj.to?.mediaStats[i]?.data?.POLQA !== null ){
-                  if (obj.to?.mediaStats[i]?.data?.POLQA < minToPOLQA  && obj.to?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                    minToPOLQA = obj.to?.mediaStats[i]?.data?.POLQA;
-                    obj.toPolqaMin = minToPOLQA;
+                if(this.validMetric("to", i, "POLQA")){
+                  if (obj.to?.mediaStats[i]?.data?.POLQA < toObj.polqa.min  && obj.to?.mediaStats[i]?.data?.POLQA !== 0 ) {
+                    toObj.polqa.min  = obj.to?.mediaStats[i]?.data?.POLQA;
+                    obj.toPolqaMin = toObj.polqa.min ;
                   }
                 }
                 if(obj.from?.mediaStats[i]?.data?.POLQA && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
                   let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
-                  fromSumarize += fromPolqaSum;
-                  fromCount++;
+                  fromObj.polqa.sum += fromPolqaSum;
+                  fromObj.polqa.count++;
                 }
               }
               obj.from.mediaStats.sort((a, b) => {
@@ -244,8 +239,8 @@ export class DetailedReportsCompoment implements OnInit {
               for(let i=0 ; i< obj.to.mediaStats.length; i ++) {
                 if(obj.to?.mediaStats[i]?.data?.POLQA && obj.to?.mediaStats[i]?.data?.POLQA !== 0) {
                   let toPolqaSum = parseFloat(obj.to.mediaStats[i].data.POLQA);
-                  toSumarize += toPolqaSum;
-                  toCount++;
+                  toObj.polqa.sum  += toPolqaSum;
+                  toObj.polqa.count++;
                 }
                 if(this.validMetric("to" ,i, "Received Jitter")){
                   parsedJitter = this.parseMertic("to", i, "Received Jitter" );
@@ -274,28 +269,17 @@ export class DetailedReportsCompoment implements OnInit {
                 return a.timestamp - b.timestamp
               })
             }
-            if(fromSumarize !== 0 && fromCount !== 0 ) {
-              let fromAvg = (fromSumarize / fromCount).toFixed(2);
-              obj.fromPolqaAvg = fromAvg;
-            }
-            if(toSumarize !== 0 && toCount !== 0) {
-              let toAvg = (toSumarize / toCount).toFixed(2);
-              obj.toPolqaAvg = toAvg;
-            }
-            if(fromObj.bitrate.sum !== 0 && fromObj.bitrate.count !== 0 ) {
-              let fromAvgBitrate = (fromObj.bitrate.sum / fromObj.bitrate.count).toFixed(2);
-              obj.fromAvgBitrate = fromAvgBitrate;
-            }
-            if(toObj.bitrate.sum !== 0 && toObj.bitrate.count !== 0 ) {
-              let toAvgBitrate = (toObj.bitrate.sum / toObj.bitrate.count).toFixed(2);
-              obj.toAvgBitrate = toAvgBitrate;
-            }
+            
+            obj.fromPolqaAvg =this.average(fromObj.polqa.sum, fromObj.polqa.count);
             obj.fromAvgJitter =this.average(fromObj.jitter.sum, fromObj.jitter.count);
             obj.fromAvgRoundTrip =this.average(fromObj.roundTrip.sum, fromObj.roundTrip.count);
             obj.fromAvgPacketLoss =this.average(fromObj.packetLoss.sum, fromObj.packetLoss.count);
+            obj.fromAvgBitrate =this.average(fromObj.bitrate.sum, fromObj.bitrate.count);
+            obj.toPolqaAvg =this.average(toObj.polqa.sum, toObj.polqa.count);
             obj.toAvgJitter =this.average(toObj.jitter.sum, toObj.jitter.count);
             obj.toAvgRoundTrip =this.average(toObj.roundTrip.sum, toObj.roundTrip.count);
             obj.toAvgPacketLoss =this.average(toObj.packetLoss.sum, toObj.packetLoss.count);
+            obj.toAvgBitrate =this.average(toObj.bitrate.sum, toObj.bitrate.count);
 
             obj.fromJitter = this.dataToString(obj.maxJitterFrom, obj.fromAvgJitter, "Received Jitter");
             obj.toJitter = this.dataToString(obj.maxJitterTo, obj.toAvgJitter, "Received Jitter");
