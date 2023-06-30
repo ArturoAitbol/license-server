@@ -8,6 +8,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
 import moment from 'moment';
+import { from } from 'rxjs';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
@@ -199,35 +200,25 @@ export class DetailedReportsCompoment implements OnInit {
               for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
                 if(this.validMetric("from" ,i, "Received Jitter")){
                   parsedJitter = this.parseMertic("from", i, "Received Jitter" );
-                  if (parsedJitter > fromObj.jitter.max) {
-                    fromObj.jitter.max = parsedJitter;
-                    obj.maxJitterFrom = fromObj.jitter.max;
-                  }
-                  fromObj.jitter.sum += parsedJitter;
-                  fromObj.jitter.count++;
+                  fromObj.jitter.max = this.maxValue(parsedJitter, fromObj.jitter.max);
+                  obj.maxJitterFrom = fromObj.jitter.max;
+                  fromObj = this.updateMetricSum(parsedJitter, fromObj, "jitter");
                 }
                 if(this.validMetric("from", i, "Round trip time")){
                   parsedRoundTrip = this.parseMertic("from", i, "Round trip time" );
-                  if (parsedRoundTrip > fromObj.roundTrip.max) {
-                    fromObj.roundTrip.max = parsedRoundTrip;
-                    obj.maxRoundTripFrom = fromObj.roundTrip.max;
-                  }
-                  fromObj.roundTrip.sum += parsedRoundTrip;
-                  fromObj.roundTrip.count++;
+                  fromObj.roundTrip.max = this.maxValue(parsedRoundTrip, fromObj.roundTrip.max);
+                  obj.maxRoundTripFrom = fromObj.roundTrip.max;
+                  fromObj = this.updateMetricSum(parsedRoundTrip, fromObj, "roundTrip");
                 }
                 if(this.validMetric("from", i, "Received packet loss")){
                   parsedPacketLoss = this.parseMertic("from", i, "Received packet loss");
-                  if (parsedPacketLoss >= fromObj.packetLoss.max) {
-                    fromObj.packetLoss.max = parsedPacketLoss;
-                    obj.maxPacketLossFrom = fromObj.packetLoss.max;
-                  }
-                  fromObj.packetLoss.sum += parsedPacketLoss;
-                  fromObj.packetLoss.count++;
+                  fromObj.packetLoss.max = this.maxValue(parsedPacketLoss, fromObj.packetLoss.max);
+                  obj.maxPacketLossFrom = fromObj.packetLoss.max;
+                  fromObj = this.updateMetricSum(parsedPacketLoss, fromObj, "packetLoss");
                 }
                 if(this.validMetric("from", i, "Sent bitrate")){
                   parsedBitrate = this.parseMertic("from", i, "Sent bitrate");
-                  fromObj.bitrate.sum += parsedBitrate;
-                  fromObj.bitrate.count++;
+                  fromObj = this.updateMetricSum(parsedBitrate, fromObj, "bitrate");
                 }
         
                 if(obj.from?.mediaStats[i]?.data?.POLQA !== undefined && obj.from?.mediaStats[i]?.data?.POLQA !== null ){
@@ -261,35 +252,25 @@ export class DetailedReportsCompoment implements OnInit {
                 }
                 if(this.validMetric("to" ,i, "Received Jitter")){
                   parsedJitter = this.parseMertic("to", i, "Received Jitter" );
-                  if (parsedJitter > toObj.jitter.max) {
-                    toObj.jitter.max = parsedJitter;
-                    obj.maxJitterTo = toObj.jitter.max;
-                  }
-                  toObj.jitter.sum += parsedJitter;
-                  toObj.jitter.count++;
+                  toObj.jitter.max = this.maxValue(parsedJitter, toObj.jitter.max);
+                  obj.maxJitterTo = toObj.jitter.max;
+                  toObj = this.updateMetricSum(parsedJitter, toObj, "jitter");
                 }
                 if(this.validMetric("to", i, "Round trip time")){
                   parsedRoundTrip = this.parseMertic("to", i, "Round trip time" );
-                  if (parsedRoundTrip > toObj.roundTrip.max) {
-                    toObj.roundTrip.max = parsedRoundTrip;
-                    obj.maxRoundTripTo = toObj.roundTrip.max;
-                  }
-                  toObj.roundTrip.sum += parsedRoundTrip;
-                  toObj.roundTrip.count++;
+                  toObj.roundTrip.max = this.maxValue(parsedRoundTrip, toObj.roundTrip.max);
+                  obj.maxRoundTripTo = toObj.roundTrip.max;
+                  toObj = this.updateMetricSum(parsedRoundTrip, toObj, "roundTrip");
                 }
                 if(this.validMetric("to", i, "Received packet loss")){
                   parsedPacketLoss = this.parseMertic("to", i, "Received packet loss");
-                  if (parsedPacketLoss >= toObj.packetLoss.max) {
-                    toObj.packetLoss.max = parsedPacketLoss;
-                    obj.maxPacketLossTo = toObj.packetLoss.max;
-                  }
-                  toObj.packetLoss.sum += parsedPacketLoss;
-                  toObj.packetLoss.count++;
+                  toObj.packetLoss.max = this.maxValue(parsedPacketLoss, toObj.packetLoss.max);
+                  obj.maxPacketLossTo = toObj.packetLoss.max;
+                  toObj = this.updateMetricSum(parsedPacketLoss, toObj, "packetLoss");
                 }
                 if(this.validMetric("to", i, "Sent bitrate")){
                   parsedBitrate = this.parseMertic("to", i, "Sent bitrate");
-                  toObj.bitrate.sum += parsedBitrate;
-                  toObj.bitrate.count++;
+                  toObj = this.updateMetricSum(parsedBitrate, toObj, "bitrate");
                 }
               }
               obj.to.mediaStats.sort((a, b) => {
@@ -692,5 +673,17 @@ export class DetailedReportsCompoment implements OnInit {
         avgString = "0";
       return "Max: "+maxValueString+", "+"Avg: "+avgString;
     }
+  }
+  
+  private maxValue(number1, number2){
+    if (number1 > number2) 
+        return number1;
+    return number2;
+  }
+
+  private updateMetricSum(parsedValue, objLocation, metric: string){
+    objLocation[metric].sum += parsedValue;
+    objLocation[metric].count++;
+    return objLocation;
   }
 }
