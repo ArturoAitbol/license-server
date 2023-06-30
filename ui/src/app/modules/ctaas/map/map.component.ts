@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 import moment from 'moment';
-import { MapServicesService } from 'src/app/services/map.service';
+import { MapService } from 'src/app/services/map.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
@@ -53,7 +53,7 @@ export class MapComponent implements OnInit, OnDestroy {
   });
   private onDestroy: Subject<void> = new Subject<void>();
 
-  constructor(private mapService: MapServicesService,
+  constructor(private mapService: MapService,
     private spotlightChartsService: SpotlightChartsService, 
     private fb: FormBuilder,
     private subaccountService: SubAccountService,
@@ -121,11 +121,11 @@ export class MapComponent implements OnInit, OnDestroy {
         let fromRegion: string; 
         let toRegion: string;
         if(this.mapData[i].from.location) {
-          fromRegion = this.mapData[i].from.location?.y + ", " + this.mapData[i].from.location?.x;
+          fromRegion = this.mapData[i].from.location.y + ", " + this.mapData[i].from.location.x;
           this.mapStartView.push([this.mapData[i].from.location.y,this.mapData[i].from.location.x]);
         }
         if(this.mapData[i].to.location) {
-          toRegion = this.mapData[i].to.location?.y + ", " + this.mapData[i].to.location?.x;
+          toRegion = this.mapData[i].to.location.y + ", " + this.mapData[i].to.location.x;
           this.mapStartView.push([this.mapData[i].to.location.y,this.mapData[i].to.location.x]);
         }
         this.getNodeData(i, fromRegion, toRegion);
@@ -521,8 +521,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   private _filterRegion(value: string): { country: string; state: string; city: string; displayName: string }[] {
-    const filterValue = value.toLowerCase();
-
+    const filterValue = value;
     return this.regions.filter(option => option.displayName.toLowerCase().includes(filterValue));
   }
 

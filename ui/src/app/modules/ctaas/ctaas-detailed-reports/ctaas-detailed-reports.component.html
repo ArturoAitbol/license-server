@@ -27,6 +27,10 @@
             </button>
         </div>
     </div>
+    <div class="hint">
+        <mat-icon>info_outline</mat-icon>
+        <div>All results are displayed in UTC</div>
+    </div>
     <div class="row">
         <div class="col-4 table-max-size">
             <h1 class="text-start font-s">Summary</h1>
@@ -114,19 +118,13 @@
                                         {{item.from?.DID | na}}
                                     </mat-panel-title>
                                     <mat-panel-title class="average-col col-xl-1 col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
-                                        Min: 
-                                        <ng-container *ngIf="item.fromPolqaAvg === undefined">N/A</ng-container>
-                                        <ng-container *ngIf="item.fromPolqaAvg !== undefined">{{item.fromPolqaMin}}</ng-container>
-                                        - Avg: {{item.fromPolqaAvg | na }}
+                                        Min:{{item.fromPolqaMin | na }}, Avg:{{item.fromPolqaAvg | na }}
                                     </mat-panel-title>
                                     <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
                                         {{item.to?.DID | na}}
                                     </mat-panel-title>
                                     <mat-panel-title class="average-col col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col">
-                                        Min: 
-                                        <ng-container *ngIf="item.toPolqaAvg === undefined">N/A</ng-container>
-                                        <ng-container *ngIf="item.toPolqaAvg !== undefined">{{item.toPolqaMin}}</ng-container>
-                                        - Avg: {{item.toPolqaAvg | na }}
+                                        Min:{{item.toPolqaMin | na }}, Avg:{{item.toPolqaAvg | na }}
                                     </mat-panel-title>
                                     <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
                                         {{item.status | na}}
