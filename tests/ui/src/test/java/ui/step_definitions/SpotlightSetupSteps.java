@@ -31,15 +31,15 @@ public class SpotlightSetupSteps {
     public void iShouldSeeTheModifiedDataInSpotlightConfigurationView(){
         if (!this.azureResourceGroup.equals("none")){
             String actualAzureResourceGroup = this.setup.getInputValue("azure-resource-group");
-            assertEquals("Spotlight doesn't have this azureResourceGroup: ".concat(this.azureResourceGroup), this.azureResourceGroup, actualAzureResourceGroup);
+            assertEquals("UCaaS Continuous Testing doesn't have this azureResourceGroup: ".concat(this.azureResourceGroup), this.azureResourceGroup, actualAzureResourceGroup);
         }
         if (!this.tapUrl.equals("none")){
             String actualTapUrl = this.setup.getInputValue("tap-url");
-            assertEquals("Spotlight doesn't have this tap url: ".concat(this.tapUrl),this.tapUrl,actualTapUrl);
+            assertEquals("UCaaS Continuous Testing doesn't have this tap url: ".concat(this.tapUrl),this.tapUrl,actualTapUrl);
         }
         if (!this.status.equals("none")){
             String actualStatus = this.setup.getSelectedOption("status");
-            assertEquals("Spotlight doesn't have this status: ".concat(this.status),this.status,actualStatus);
+            assertEquals("UCaaS Continuous Testing doesn't have this status: ".concat(this.status),this.status,actualStatus);
         }
     }
 }

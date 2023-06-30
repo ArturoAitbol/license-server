@@ -157,7 +157,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 					return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 				} else {
 					JSONObject json = new JSONObject();
-					json.put("error", "Spotlight Setup does not exist or is not ready");
+					json.put("error", "UCaaS Continuous Testing Setup does not exist or is not ready");
 					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 				}
 			} else {
