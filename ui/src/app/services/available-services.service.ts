@@ -15,10 +15,10 @@ export class AvailableServicesService {
       "access": false,
       "routePath": Constants.CUSTOMERS_DASHBOARD_VIEW_PATH,
       "imagePath": "assets/images/tokens.png",
-      "tabName": "tekVizion 360 Portal"
+      "tabName": "TekVizion 360 Portal"
     },
     {
-      "label": "Spotlight",
+      "label": "UCaaS Continuous Testing",
       "value": tekVizionServices.SpotLight,
       "enabled": true,
       "access": false,

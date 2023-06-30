@@ -36,7 +36,7 @@ const defaultGaugeChartOptions: Partial<ChartOptions> = {
         }
     },
     fill: {
-        colors: ['#83C96B'],
+        colors: ['#9ad5a5'],
         type: "gradient",
         gradient: {
             shade: "light",
@@ -84,7 +84,7 @@ const defaultGaugeChartOptions: Partial<ChartOptions> = {
             },
         },
     },
-    colors: ['#83C96B'],
+    colors: ['#9ad5a5'],
     labels: ['Passed']
 };
 

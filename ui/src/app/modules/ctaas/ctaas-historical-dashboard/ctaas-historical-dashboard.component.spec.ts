@@ -92,7 +92,7 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
 
     fixture.detectChanges();
    
-    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please connect tekVizion admin', 'Ok');
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
     expect(ctaasHistoricalDashboardComponentTestInstance.fetchCtaasDashboardDetailsBySubaccount).not.toHaveBeenCalled();
   });
 
@@ -103,7 +103,7 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     fixture.detectChanges();
 
     expect(CtaasDashboardServiceMock.getCtaasHistoricalDashboardDetails).toHaveBeenCalled();
-    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please connect tekVizion admin', 'Ok');
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
   });
 
   it('should heck whether dashboard has any data to display or not when calling checkForDashboardDetails()',()=>{

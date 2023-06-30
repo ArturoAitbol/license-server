@@ -58,7 +58,7 @@ export class CallbackComponent implements OnInit {
             this.snackBarService.openSnackBar('Call request has been made!', '');
             this.dialogService.acceptDialog({
                 title: 'Done!',
-                message: 'Thanks for your request, one of our Spotlight experts will reach out to you shortly.',
+                message: 'Thanks for your request, one of our UCaaS Continuous Testing experts will reach out to you shortly.',
                 confirmCaption: 'Ok',
             });
         } else {
@@ -81,7 +81,7 @@ export class CallbackComponent implements OnInit {
     } else {
       this.dialogService.acceptDialog({
         title: 'Incomplete personal information',
-        message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
+        message: 'Please contact your Subaccount Administrator or TekVizion to fill this user’s info.',
         confirmCaption: 'Ok',
       });
     }

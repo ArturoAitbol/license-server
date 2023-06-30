@@ -70,7 +70,7 @@ public class TekvLSGetNetworkQualitySummary {
 
 		String averageFlag = request.getQueryParameters().getOrDefault("average", "");
 
-		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
+		String metrics = request.getQueryParameters().getOrDefault("metric", Utils.DEFAULT_METRICS);
 		String metricsClause = metrics.replace(",", "', '");
 		String[] metricsArray = metrics.split(",");
 		StringBuilder statistics = new StringBuilder();
@@ -80,33 +80,33 @@ public class TekvLSGetNetworkQualitySummary {
 			switch (metric){
 				case "Received Jitter":
 					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxJitter, ");
-					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = 'Received Jitter' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.MetricsThresholds.received_jitter.value() + ") AS jitterAboveThld, ");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxJitter, ");
+					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.METRICS_THRESHOLDS.JITTER.value() + ") AS jitterAboveThld, ");
 					statisticsLabels.add("maxJitter");
 					statisticsLabels.add("jitterAboveThld");
 					break;
 				case "Received packet loss":
 					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxPacketLoss, ");
-					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = 'Received packet loss' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.MetricsThresholds.packet_loss.value() + ") AS packetLossAboveThld, ");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxPacketLoss, ");
+					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.METRICS_THRESHOLDS.PACKET_LOSS.value() + ") AS packetLossAboveThld, ");
 					statisticsLabels.add("maxPacketLoss");
 					statisticsLabels.add("packetLossAboveThld");
 					break;
 				case "Round trip time":
 					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxRoundTripTime, ");
-					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = 'Round trip time' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.MetricsThresholds.round_trip_time.value() + ") AS roundTripTimeAboveThld, ");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxRoundTripTime, ");
+					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.METRICS_THRESHOLDS.ROUND_TRIP_TIME.value() + ") AS roundTripTimeAboveThld, ");
 					statisticsLabels.add("maxRoundTripTime");
 					statisticsLabels.add("roundTripTimeAboveThld");
 					break;
 				case "Sent bitrate":
 					// here the average is always the most representative value
-					statistics.append(selector + "(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as avgSentBitrate, ");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as avgSentBitrate, ");
 					statisticsLabels.add("avgSentBitrate");
 					break;
 				case "POLQA":
 					if (averageFlag.isEmpty()) selector = "min";
-					statistics.append(selector + "(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as minPolqa, ");
+					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as minPolqa, ");
 					statisticsLabels.add("minPolqa");
 					break;
 			}

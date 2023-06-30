@@ -40,8 +40,8 @@ describe('licenses.component - UI verification tests',()=>{
         const addLicenseButton: HTMLElement = fixture.nativeElement.querySelector('#add-license-button');
         const currentSubaccount = licensesComponentTestInstance.customerSubaccountDetails;
         expect(h1.textContent).toBe(`${currentSubaccount.customerName} - ${currentSubaccount.name}`);
-        expect(h2.textContent).toBe('tekVizion 360 Subscriptions');
-        expect(addLicenseButton.textContent).toBe('Add tekVizion 360 Subscription');
+        expect(h2.textContent).toBe('TekVizion 360 Subscriptions');
+        expect(addLicenseButton.textContent).toBe('Add TekVizion 360 Subscription');
     });
 
     it('should load correct data columns for the table', ()=>{

@@ -2,6 +2,8 @@ package com.function.clients;
 
 import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpStatus;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,20 +48,26 @@ public class TAPClient {
         headers.put("Content-Type", "application/json");
         // disable SSL host verification
         TAPClient.disableSslVerification(context);
-        JSONObject response = HttpClient.post(url, bodyAsString, headers);
-        if (response.has("error") || (response.has("success") && !response.getBoolean("success"))) {
-            context.getLogger().severe("Request params: " + bodyAsString);
-            context.getLogger().severe("Error response: " + response);
-            throw new Exception("Error retrieving token from Automation Platform");
+        try {
+            JSONObject response = HttpClient.post(url, bodyAsString, headers);
+            if (response.has("error") || (response.has("success") && !response.getBoolean("success"))) {
+                context.getLogger().severe("Request params: " + bodyAsString);
+                context.getLogger().severe("Error response: " + response);
+                throw new Exception("Error retrieving token from Automation Platform");
+            }
+            JSONObject responseObj = (JSONObject) response.get("response");
+            if (!responseObj.has("accessToken")) {
+                context.getLogger().severe("Request body: " + bodyAsString);
+                context.getLogger().severe("Error response: " + response);
+                throw new Exception("Error retrieving token from Automation Platform");
+            }
+            context.getLogger().info("Received Bearer token from Automation Platform");
+            return responseObj.get("accessToken").toString();
+            
+        } catch (Exception e) {
+            context.getLogger().severe("Exception found on getAccessToken: "+ e.getMessage());            
+            throw e;
         }
-        JSONObject responseObj = (JSONObject) response.get("response");
-        if (!responseObj.has("accessToken")) {
-            context.getLogger().severe("Request body: " + bodyAsString);
-            context.getLogger().severe("Error response: " + response);
-            throw new Exception("Error retrieving token from Automation Platform");
-        }
-        context.getLogger().info("Received Bearer token from Automation Platform");
-        return responseObj.get("accessToken").toString();
     }
 
     /**
@@ -107,26 +115,31 @@ public class TAPClient {
      * @throws Exception
      */
     static public JSONArray executeQuery(final String tapURL, String query, ExecutionContext context) throws Exception {
-        String token = TAPClient.getAccessToken(tapURL, Constants.TEMP_ONPOINT_USERNAME,
-                Constants.TEMP_ONPOINT_PASSWORD, context);
-
-        String resource = "/query/data";
-        String queryParam = "queryString=" + URLEncoder.encode(query, "UTF-8");
-        final String url = String.format("%s/%s/%s?%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource, queryParam);
-        context.getLogger().info("TAP data query endpoint: " + url);
-
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + token);
-
-        // disable SSL host verification
-        TAPClient.disableSslVerification(context);
-        JSONObject response = HttpClient.get(url, headers);
-        if (response.has("error")) {
-            context.getLogger().severe("Error while retrieving data query from Automation Platform: " + response);
-            throw new SQLException("Error retrieving data query from Automation Platform: " + response);
+        try {
+            String token = TAPClient.getAccessToken(tapURL, Constants.TEMP_ONPOINT_USERNAME,
+                    Constants.TEMP_ONPOINT_PASSWORD, context);
+    
+            String resource = "/query/data";
+            String queryParam = "queryString=" + URLEncoder.encode(query, "UTF-8");
+            final String url = String.format("%s/%s/%s?%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource, queryParam);
+            context.getLogger().info("TAP data query endpoint: " + url);
+    
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + token);
+    
+            // disable SSL host verification
+            TAPClient.disableSslVerification(context);
+            JSONObject response = HttpClient.get(url, headers);
+            if (response.has("error")) {
+                context.getLogger().severe("Error while retrieving data query from Automation Platform: " + response);
+                throw new SQLException("Error retrieving data query from Automation Platform: " + response);
+            }
+            context.getLogger().info("Data were retrieved from the Automation Platform successfully");
+            return response.getJSONArray("resultSet");            
+        } catch (Exception e) {
+            context.getLogger().severe("Exception found on executeQuery: "+ e.getMessage());
+            throw e;
         }
-        context.getLogger().info("Data were retrieved from the Automation Platform successfully");
-        return response.getJSONArray("resultSet");
     }
 
     static public JSONObject saveCustomerDetailsOnTap(String tapURL, JSONObject request, ExecutionContext context) {

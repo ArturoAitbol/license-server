@@ -30,7 +30,7 @@ describe('UI and component verification tests', () => {
         const submitButton: HTMLElement = fixture.nativeElement.querySelector('#submit-button');
         const labels: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('label'));
 
-        expect(h1.textContent).toBe('Add tekVizion 360 Subscription');
+        expect(h1.textContent).toBe('Add TekVizion 360 Subscription');
         expect(cancelButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
         expect(labels.find(label => label.textContent.includes("Start Date"))).not.toBeUndefined();
