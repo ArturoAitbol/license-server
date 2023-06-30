@@ -136,11 +136,7 @@ public class TekvLSGetCtaasMapSummary {
                 if(regionCondition != null)
                     conditions.add(regionCondition.toString());
             }
-            for (int i=0;i<conditions.size();i++) {
-                if(i!=0)
-                    innerQueryBuilder.append(" AND ");
-                innerQueryBuilder.append(conditions.get(i));
-            }
+            innerQueryBuilder.append(conditions.get(0));
             sqlStats += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
             sqlTestResults += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
         }
