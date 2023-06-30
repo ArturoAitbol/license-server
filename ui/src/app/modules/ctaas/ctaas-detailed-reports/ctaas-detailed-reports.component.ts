@@ -214,21 +214,10 @@ export class DetailedReportsCompoment implements OnInit {
                 }
         
                 if(this.validMetric("from", i, "POLQA")){
-                  if (obj.from?.mediaStats[i]?.data?.POLQA < fromObj.polqa.min  && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                    fromObj.polqa.min = obj.from?.mediaStats[i]?.data?.POLQA;
-                    obj.fromPolqaMin = fromObj.polqa.min;
-                  }
-                }
-                if(this.validMetric("to", i, "POLQA")){
-                  if (obj.to?.mediaStats[i]?.data?.POLQA < toObj.polqa.min  && obj.to?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                    toObj.polqa.min  = obj.to?.mediaStats[i]?.data?.POLQA;
-                    obj.toPolqaMin = toObj.polqa.min ;
-                  }
-                }
-                if(obj.from?.mediaStats[i]?.data?.POLQA && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                  let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
-                  fromObj.polqa.sum += fromPolqaSum;
-                  fromObj.polqa.count++;
+                  let parsedPolqa = this.parseMertic("from", i, "POLQA");
+                  fromObj.polqa.min = this.minValue(obj.from?.mediaStats[i]?.data?.POLQA, fromObj.polqa.min);
+                  obj.fromPolqaMin = fromObj.polqa.min;
+                  fromObj = this.updateMetricSum(parsedPolqa, fromObj, "polqa");
                 }
               }
               obj.from.mediaStats.sort((a, b) => {
@@ -237,10 +226,11 @@ export class DetailedReportsCompoment implements OnInit {
             }
             if(obj.to?.mediaStats){
               for(let i=0 ; i< obj.to.mediaStats.length; i ++) {
-                if(obj.to?.mediaStats[i]?.data?.POLQA && obj.to?.mediaStats[i]?.data?.POLQA !== 0) {
-                  let toPolqaSum = parseFloat(obj.to.mediaStats[i].data.POLQA);
-                  toObj.polqa.sum  += toPolqaSum;
-                  toObj.polqa.count++;
+                if(this.validMetric("to" ,i, "POLQA")) {
+                  let parsedPolqa = this.parseMertic("to", i, "POLQA");
+                  toObj.polqa.min = this.minValue(obj.to?.mediaStats[i]?.data?.POLQA, toObj.polqa.min);
+                  obj.toPolqaMin = toObj.polqa.min ;
+                  toObj = this.updateMetricSum(parsedPolqa, toObj, "polqa");
                 }
                 if(this.validMetric("to" ,i, "Received Jitter")){
                   parsedJitter = this.parseMertic("to", i, "Received Jitter" );
@@ -609,14 +599,11 @@ export class DetailedReportsCompoment implements OnInit {
   }
 
   private validMetric(location: string ,index: number, metric: string): boolean {
-    if(location === "from")
-      return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj.from?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj.from?.mediaStats[index]?.data?.[metric] !== '--';
-    else
-      return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj.to?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj.to?.mediaStats[index]?.data?.[metric] !== '--';
+      return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== '--';
   }
 
   private parseMertic(location: string, index: number, metric: string) {
-    if(metric === "Received Jitter" || metric === "Round trip time"){
+    if(metric === "Received Jitter" || metric === "Round trip time" || metric === "POLQA"){
       return parseFloat(this.metricsObj[location]?.mediaStats[index]?.data?.[metric]);
     }
     if(metric === "Received packet loss"){
@@ -658,6 +645,12 @@ export class DetailedReportsCompoment implements OnInit {
   
   private maxValue(number1, number2){
     if (number1 > number2) 
+        return number1;
+    return number2;
+  }
+
+  private minValue(number1, number2){
+    if (number1 < number2) 
         return number1;
     return number2;
   }
