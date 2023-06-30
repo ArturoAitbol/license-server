@@ -286,7 +286,46 @@ public class Permissions {
                         GET_MAP,
                         // MODIFY
                         MODIFY_AUTH_USER_PROFILE);
+
             public static final EnumSet<Resource> IGESAdminPermissions = EnumSet.of(                
-                        GET_REPORTABLE_SUBACCOUNTS
+                        // CREATE
+                        CREATE_LICENSE_USAGE_DETAIL,
+                        CREATE_PROJECT,
+                        CREATE_USAGE_DETAILS,
+                        CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_TEST_SUITE,
+                        CREATE_SUBACCOUNT_STAKEHOLDER,
+                        // DELETE
+                        DELETE_LICENSE_USAGE,
+                        DELETE_USAGE_DETAILS,
+                        DELETE_SUBACCOUNT_STAKEHOLDER,
+                        DELETE_CTAAS_TEST_SUITE,
+                        // READ
+                        GET_REPORTABLE_SUBACCOUNTS,
+                        GET_ALL_CUSTOMERS,
+                        GET_ALL_SUBACCOUNTS,
+                        GET_ALL_LICENSES,
+                        GET_ALL_LICENSE_USAGE_DETAILS,
+                        GET_CONSUMPTION_USAGE_DETAILS,
+                        GET_ALL_DEVICES,
+                        GET_ALL_DEVICE_TYPES,
+                        GET_ALL_PROJECTS,
+                        GET_ALL_BUNDLES,
+                        GET_ALL_CTAAS_SETUPS,
+                        GET_ALL_CTAAS_TEST_SUITES,
+                        GET_ALL_SUBACCOUNT_STAKEHOLDER,
+                        GET_CTAAS_DASHBOARD,
+                        GET_ALL_NOTES,
+                        GET_ALL_REPORTS,
+                        GET_CONSUMPTION_MATRIX,
+                        GET_ALL_FEATURE_TOGGLES,
+                        GET_CHARTS,
+                        GET_MAP,
+                        // UPDATE
+                        MODIFY_PROJECT,
+                        MODIFY_LICENSE_USAGE,
+                        MODIFY_CTAAS_SETUP,
+                        MODIFY_CTAAS_TEST_SUITE,
+                        MODIFY_SUBACCOUNT_STAKEHOLDER
             );
 }
