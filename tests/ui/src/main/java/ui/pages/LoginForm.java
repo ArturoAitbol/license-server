@@ -43,7 +43,7 @@ public class LoginForm extends AbstractPageObject {
         By stayedSigned = By.cssSelector(".win-button#idBtn_Back");
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
-        By settingsSelector = By.cssSelector("#settings-buttonn");
+        By settingsSelector = By.cssSelector("#settings-button");
         assertEquals("Verification of login process has failed", "ok", this.action.checkElement(settingsSelector));
         return new Customers();
     }
