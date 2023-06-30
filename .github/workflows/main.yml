@@ -43,7 +43,8 @@ jobs:
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
     
     - name: Get Relevant SHA
-      run: echo "Relevant commit SHA: $RELEVANT_SHA"
+      run: |
+        echo "Relevant commit SHA: $RELEVANT_SHA"
       env:
         RELEVANT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     
