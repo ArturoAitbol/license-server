@@ -100,8 +100,6 @@ export class DetailedReportsCompoment implements OnInit {
     });
     this.initColumns();
     this.calculateTableHeight();
-    this.urlStartValue = this.route.snapshot.queryParamMap.get('start');
-    this.urlEndValue = this.route.snapshot.queryParamMap.get('end');
   }
   
   /**
