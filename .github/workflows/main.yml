@@ -42,15 +42,12 @@ jobs:
       id: date
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
     
-    - name: Get Relevant SHA
-      run: |
-        echo "Relevant commit SHA: $RELEVANT_SHA"
-      env:
-        RELEVANT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     
     - name: Get Commit Short Hash
       id: hash
       run: echo "hash=$(git rev-parse --short "$RELEVANT_SHA")" >> $GITHUB_OUTPUT
+      env:
+        RELEVANT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
     
     - name: Get Latest tag
