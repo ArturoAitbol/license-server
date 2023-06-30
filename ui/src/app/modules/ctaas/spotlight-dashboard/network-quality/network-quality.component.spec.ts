@@ -11,7 +11,7 @@ import {
   FormsModule,
   FormControlDirective,
 } from "@angular/forms";
-import { of } from "rxjs";
+import { of, throwError } from "rxjs";
 import { By } from "@angular/platform-browser";
 import { HttpClientModule } from "@angular/common/http";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
@@ -25,8 +25,12 @@ import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
 import { NetworkQualityComponent } from "./network-quality.component";
 import { SpotlightChartsService } from "src/app/services/spotlight-charts.service";
 import { SpotlightChartsServiceMock } from "src/test/mock/services/spotlight-charts-service.mock";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { SimpleChange } from "@angular/core";
+import { environment } from "src/environments/environment";
+import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
+import { trendsChartCommonOptions } from "./initial-chart-config";
+import { Utility } from "src/app/helpers/utils";
 
 let networkQualityComponentTestInstance: NetworkQualityComponent;
 let fixture: ComponentFixture<NetworkQualityComponent>;
@@ -426,27 +430,54 @@ describe("NetworkQualityComponent", () => {
     expect(networkQualityComponentTestInstance.changeGraph).toHaveBeenCalled();
   });
 
-  /*it("should open detailed table when point is clicked", waitForAsync(() => {
-    spyOn(
-      networkQualityComponentTestInstance,
-      "navigateToDetailedTableFromPoint"
-    ).and.callThrough();
-    fixture.whenRenderingDone().then(() => {
-      const chart = fixture.debugElement.query(By.css("apx-chart"));
-      console.log(chart);
-      const marker = chart.nativeElement.querySelector(".apxcharts-series-markers");
-      //console.log(marker);
-      marker.click();
-      expect(
-        networkQualityComponentTestInstance.navigateToDetailedTableFromPoint
-      ).toHaveBeenCalled();
-    });
-  }));*/
+  it("should open detailed table when point is clicked on hourly graph", () => {
+    spyOn(window, "open");
+    networkQualityComponentTestInstance.regions = [{country: "United States", state: null, city: null, displayName: "United States"}];
+    networkQualityComponentTestInstance.selectedUsers = ['John Doe'];
+    fixture.detectChanges();
+    let startDate: Moment, endDate: Moment;
+    const chartContext = {opts: {xaxis: {categories: ["00:00-01:00"]}}};
+    const [startTime, endTime] = "00:00-1:00".split('-');
+    startDate = networkQualityComponentTestInstance.startDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]);
+    endDate = Utility.setMinutesOfDate(networkQualityComponentTestInstance.endDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]));
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
+    networkQualityComponentTestInstance.navigateToDetailedTableFromPoint("", chartContext, {seriesIndex: "", dataPointIndex: 0, config: ""})
+    expect(window.open).toHaveBeenCalledWith(url);
+  });
+  it("should open correct detailed table when point is clicked on hourly graph", () => {
+    spyOn(window, "open");
+    networkQualityComponentTestInstance.regions = [{country: "United States", state: null, city: null, displayName: "United States"}];
+    networkQualityComponentTestInstance.selectedUsers = ['John Doe'];
+    fixture.detectChanges();
+    let startDate: Moment, endDate: Moment;
+    const chartContext = {opts: {xaxis: {categories: ["00:00-01:00"]}}};
+    const [startTime, endTime] = "00:00-1:00".split('-');
+    startDate = networkQualityComponentTestInstance.startDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]);
+    endDate = Utility.setMinutesOfDate(networkQualityComponentTestInstance.endDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]));
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
+    networkQualityComponentTestInstance.navigateToDetailedTableFromPoint("", chartContext, {seriesIndex: "", dataPointIndex: 0, config: ""})
+    expect(window.open).toHaveBeenCalledWith(url);
+  });
+  it("should open correct detailed table when point is clicked on daily graph", () => {
+    spyOn(window, "open");
+    networkQualityComponentTestInstance.groupBy = 'date';
+    networkQualityComponentTestInstance.regions = [{country: "United States", state: null, city: null, displayName: "United States"}];
+    networkQualityComponentTestInstance.selectedUsers = ['John Doe'];
+    fixture.detectChanges();
+    let startDate: Moment, endDate: Moment;
+    const chartContext = {opts: {xaxis: {categories: ["06-23-2023"]}}};
+    startDate = moment.utc("06-23-2023").hour(0);
+    endDate = Utility.setHoursOfDate(moment.utc("06-23-2023"));
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
+    networkQualityComponentTestInstance.navigateToDetailedTableFromPoint("", chartContext, {seriesIndex: "", dataPointIndex: 0, config: ""})
+    expect(window.open).toHaveBeenCalledWith(url);
+  });
 
-  /*it('should correctly navigate to the detailed table from a point on a graph', () => {
-
-    networkQualityComponentTestInstance.navigateToDetailedTableFromPoint()
-
-    expect(networkQualityComponentTestInstance.)
-  });*/
+  it("should throw error with bad service data", () => {
+    spyOn(console, "error");
+    const error = new Error('Simulated error');
+    spyOn(spotlightChartsServiceMock, "getCustomerNetworkTrendsData").and.returnValue(throwError(error));
+    networkQualityComponentTestInstance.loadCharts();
+    expect(console.error).toHaveBeenCalledWith(error);
+  });
 });
