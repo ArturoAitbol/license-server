@@ -8,7 +8,6 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
 import moment from 'moment';
-import { from } from 'rxjs';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
