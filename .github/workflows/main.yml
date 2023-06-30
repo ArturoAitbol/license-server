@@ -1,7 +1,6 @@
 name: License Server CI/CD
 
 on:
-  workflow_dispatch:
   push:
     branches: [main]
     paths-ignore:
@@ -187,11 +186,11 @@ jobs:
           name: ui-test-report
           path: tests/ui/reports/html/
 
-      # - name: Bump version and push tag
-      #   id: tag_version
-      #   uses: mathieudutour/github-tag-action@v6.1
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Archive Full Build
         uses: vimtor/action-zip@v1
@@ -222,17 +221,14 @@ jobs:
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1.12.0
         with:
-          tag: v0.0.436
-          # tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release v0.0.436
-          # name: Release ${{ steps.tag_version.outputs.new_tag }}
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
           bodyFile: "./ReleaseNotes.txt"
           artifacts: "LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print Release Version
-        run: echo 'Released v0.0.436 Build'
-        # run: echo 'Released ${{ steps.tag_version.outputs.new_tag }} Build'
+        run: echo 'Released ${{ steps.tag_version.outputs.new_tag }} Build'
 
       # Azure logout
       - name: logout
