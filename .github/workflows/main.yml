@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - ".github/**"
 
+permissions: write-all
+
 env:
   AZURE_FUNCTIONAPP_NAME: tekvLicenseServerPOCFunction
   POM_XML_DIRECTORY: 'azure-functions/'
@@ -42,15 +44,12 @@ jobs:
       id: date
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
     
-    - name: Get Relevant SHA
-      run: |
-        echo "Relevant commit SHA: $RELEVANT_SHA"
-      env:
-        RELEVANT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     
     - name: Get Commit Short Hash
       id: hash
       run: echo "hash=$(git rev-parse --short "$RELEVANT_SHA")" >> $GITHUB_OUTPUT
+      env:
+        RELEVANT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
     
     - name: Get Latest tag
@@ -222,7 +221,7 @@ jobs:
       run: git log --pretty=format:%s --ancestry-path ${{steps.get_commit.outputs.result}}^..${{steps.hash.outputs.hash}} > ReleaseNotes.txt
 
     - name: Create a GitHub release
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@v1.12.0
       with:
         tag: ${{ steps.tag_version.outputs.new_tag }}
         name: Release ${{ steps.tag_version.outputs.new_tag }}
