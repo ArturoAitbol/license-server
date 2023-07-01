@@ -16,8 +16,6 @@ env:
 
 jobs:
   build:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -174,7 +172,7 @@ jobs:
         run: |
           cd tests/ui
           gradle uiTests -Denv=integration -D"cucumber.filter.tags=not @feature-toggle"
-      - uses: deblockt/cucumber-report-annotations-action@v1.10
+      - uses: deblockt/cucumber-report-annotations-action@v1.11
         if: success() || failure()
         name: Publish Cucumber Report
         with:
