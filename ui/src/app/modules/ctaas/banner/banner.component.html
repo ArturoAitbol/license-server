@@ -1,11 +1,11 @@
 <div class="banner-container">
     <ul class="breadcrumb d-flex align-content-center" *ngIf="isCustomerNameAndSubaccountNameIsSame; else elseBlock">
-        <li class="breadcrumb-item" id="customer-name"> {{cutomerDetails.customerName}} </li>
-        <li class="breadcrumb-item" id="subaccount-name"> {{cutomerDetails.name}} </li>
+        <li class="breadcrumb-item" id="customer-name"> {{subaccountDetails.customerName}} </li>
+        <li class="breadcrumb-item" id="subaccount-name"> {{subaccountDetails.name}} </li>
     </ul>
     <ng-template #elseBlock>
         <ul id="customer-name">
-            <li> {{cutomerDetails.customerName}} </li>
+            <li> {{subaccountDetails.customerName}} </li>
         </ul>
     </ng-template>
 </div>
