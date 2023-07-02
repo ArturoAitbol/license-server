@@ -173,9 +173,9 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
       this.avgLabel = ""
     }
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.averageSelected).pipe(catchError(e => of(e))));
-    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.averageSelected).pipe(catchError(e => of(e))));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.averageSelected).pipe(catchError(e => of(e))));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.averageSelected));
+    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.averageSelected));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.averageSelected));
     this.qualitySubscriber =  forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
