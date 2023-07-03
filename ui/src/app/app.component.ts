@@ -83,14 +83,15 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/spotlight/',
                 isPreview: false
             },
-            {
-                name: 'Test Suites',
-                path: 'test-suites',
-                active: false,
-                materialIcon: 'folder_open',
-                baseUrl: '/spotlight/',
-                isPreview: false
-            },
+            // Hiding this for now until Test Suites is enhanced
+            // {
+            //     name: 'Test Suites',
+            //     path: 'test-suites',
+            //     active: false,
+            //     materialIcon: 'folder_open',
+            //     baseUrl: '/spotlight/',
+            //     isPreview: false
+            // },
             {
                 name: 'Stakeholders',
                 path: 'stakeholders',
@@ -228,7 +229,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     //if old subaccount details are empty set only the id before requesting the rest of the data 
                     this.subaccountService.setSelectedSubAccount({ id: this.subaccountId });
                     this.retrieveSubaccountDetails();
-                } else if (oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name) {
+                } else if (oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name || !oldSubaccountDetails.customerName) {
                     //if old selected subaccount id is different to the new selected subaccount id retrieve the rest of the details
                     this.retrieveSubaccountDetails();
                 }
@@ -265,6 +266,12 @@ export class AppComponent implements OnInit, OnDestroy {
     private retrieveSubaccountDetails() {
         this.subaccountService.getSubAccountDetails(this.subaccountId).subscribe((subaccountsResp: any) => {
             let selectedSubAccount = subaccountsResp.subaccounts[0];
+            if (selectedSubAccount.services) {
+                selectedSubAccount.services = selectedSubAccount.services.split(',').map((e: string) => e.trim());
+            } else {
+                selectedSubAccount.services = [];
+            }
+            selectedSubAccount.customerName = selectedSubAccount.name;
             this.customerService.getCustomerById(selectedSubAccount.customerId).subscribe((customersResp: any) => {
                 const subaccountCustomer = customersResp.customers[0];
                 selectedSubAccount.id = this.subaccountId;
@@ -442,7 +449,7 @@ export class AppComponent implements OnInit, OnDestroy {
     navigateToMainView(): void {
         const accountDetails = this.getAccountDetails();
         const { roles } = accountDetails.idTokenClaims;
-        if (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
+        if (roles.length === 1 && (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)))
             this.router.navigate(['/']);
         else
             this.router.navigate([this.MAIN_DASHBOARD]);

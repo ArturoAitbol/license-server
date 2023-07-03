@@ -178,8 +178,8 @@ public class TekvLSCreateSubaccount
 				rs.next();
 				String customerName = rs.getString("name");
 
-				EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
-
+				if (FeatureToggleService.isFeatureActiveByName("welcomeEmail"))
+					EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
 			} else {
 				if (FeatureToggleService.isFeatureActiveByName("ad-license-service-user-creation"))
 					this.ADUserCreation(jobj,context);

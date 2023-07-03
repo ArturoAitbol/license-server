@@ -1,4 +1,4 @@
-<app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
+<app-banner></app-banner>
 <div class="btn-container" *ngIf="!maintenanceModeEnabled">
     <div *ngIf="tapURLFlag === 'withTapURL'">
         <form [formGroup]="filterForm" (ngSubmit)="todayReport()">
@@ -84,7 +84,7 @@
                   <mat-card-subtitle ></mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
-                  <p class='text-content2'>Unable to find a Spotlight Setup for this Customer, please contact your service provider</p>
+                  <p class='text-content2'>Unable to find a UCaaS Continuous Testing Setup for this Customer, please contact your service provider</p>
                 </mat-card-content>
               </mat-card>
         </div>

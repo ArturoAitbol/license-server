@@ -22,7 +22,7 @@ Feature: CtaasSetup
   Scenario: Add Basic license
     Given I see the customer "functional-spotlight-customer" in the table
     And I go to the Subscriptions view of "functional-spotlight-customer"
-    And I should see the "tekVizion 360 Subscriptions" table
+    And I should see the "TekVizion 360 Subscriptions" table
     And I open the Add Subscription form
     When I create a subscription with the following data
       | startDate             | 8/20/2022         |

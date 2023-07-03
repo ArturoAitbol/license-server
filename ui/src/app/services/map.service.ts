@@ -6,14 +6,15 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class MapServicesService {  
+export class MapService {  
   private readonly CTAAS_MAP_SUMMARY_API_URL = environment.apiEndpoint + '/spotlighCharts/mapSummary';
 
   constructor(private httpClient: HttpClient) { }
   
-  getMapSummary(startDate: string, subaccountId:string, regions: {city: string, state:string, country:string}[]){
+  getMapSummary(date: Moment, subaccountId:string, regions: {city: string, state:string, country:string}[]){
     let params = new HttpParams();
-    params = params.set('startDate', startDate);
+    params = params.set('startDate', date.format("YYYY-MM-DD 00:00:00"));
+    params = params.set('endDate', date.format("YYYY-MM-DD HH:mm:ss"));
     params = params.set('subaccountId', subaccountId);
     if( regions.length > 0)
       params = params.set('regions',JSON.stringify(regions));

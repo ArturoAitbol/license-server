@@ -66,7 +66,7 @@ public class TekvLSDeleteResidualTestData {
             context.getLogger().info("Execute SQL statement: " + noteStatement);
             noteStatement.executeUpdate();
 
-            customerStatement.setString(1, "functional-test-%");
+            customerStatement.setString(1, "functional-%");
             customerStatement.setString(2, "true");
             context.getLogger().info("Execute SQL statement: " + customerStatement);
             customerStatement.executeUpdate();

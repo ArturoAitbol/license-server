@@ -137,10 +137,10 @@ export class CtaasSetupComponent implements OnInit {
     this.isDataLoading = true;
     this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
       if (!res?.error) {
-        this.snackBarService.openSnackBar('Spotlight Setup edited successfully!', '');
+        this.snackBarService.openSnackBar('UCaaS Continuous Testing Setup edited successfully!', '');
         this.isEditing = false;
       } else {
-        this.snackBarService.openSnackBar(res.error, 'Error updating Spotlight Setup!');
+        this.snackBarService.openSnackBar(res.error, 'Error updating UCaaS Continuous Testing Setup!');
       }
       this.disableForm();
       this.fetchSetupInfo();
@@ -162,7 +162,7 @@ export class CtaasSetupComponent implements OnInit {
         this.setupForm.patchValue(res);
         this.ctaasSetupId = res.id;
       } else {
-        this.snackBarService.openSnackBar("No initial setup found", 'Error getting Spotlight Setup!');
+        this.snackBarService.openSnackBar("No initial setup found", 'Error getting UCaaS Continuous Testing Setup!');
       }
       this.isDataLoading = false;
     })

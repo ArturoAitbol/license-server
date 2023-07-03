@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { map } from 'rxjs/operators';
 import { Constants } from '../helpers/constants';
 import { IService } from '../model/service.model';
-import { SubAccount } from '../model/subaccount.model';
 import { SubAccountService } from '../services/sub-account.service';
 import { AvailableServicesService } from '../services/available-services.service';
 import { UserProfileService } from '../services/user-profile.service';
 import { tekVizionServices } from '../helpers/tekvizion-services';
-import { FeatureToggleService } from "../services/feature-toggle.service";
+import { CustomerService } from '../services/customer.service';
 @Component({
   selector: 'app-redirect-page',
   templateUrl: './redirect-page.component.html',
@@ -21,15 +19,15 @@ export class RedirectPageComponent implements OnInit {
   private readonly APPS_ROUTE_PATH: string = '/apps';
   private readonly  CONSUMPTION_MATRIX_PATH = '/consumption-matrix';
   loggedInUserRoles: string[] = [];
-  currentSubaccountDetails: SubAccount;
+  currentSubaccountDetails: any;
   availableServices: IService[] = [];
   constructor(
     private router: Router,
     private msalService: MsalService,
     private subaccountService: SubAccountService,
+    private customerService: CustomerService,
     private userProfileService: UserProfileService,
     private availabeService: AvailableServicesService,
-    private featureTogglesService: FeatureToggleService,
   ) { }
 
   ngOnInit(): void {
@@ -55,7 +53,7 @@ export class RedirectPageComponent implements OnInit {
     }
   }
   /**
-   * get all available tekVizion services
+   * get all available TekVizion 360 services
    * @returns: IService[] 
    */
   private getAvailableServices() {
@@ -68,18 +66,26 @@ export class RedirectPageComponent implements OnInit {
    * get logged in user's subaccount details
    */
   private getSubAccountDetails(): void {
-    this.subaccountService.getSubAccountList().pipe(map((e: SubAccount) => {
-        const { services } = e['subaccounts'][0];
-        if (services) {
-          e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
+    this.subaccountService.getSubAccountList().subscribe((subaccountsResp: any) => {
+      if (subaccountsResp) {
+        this.currentSubaccountDetails = subaccountsResp.subaccounts[0];
+        if (this.currentSubaccountDetails.services) {
+            this.currentSubaccountDetails.services = this.currentSubaccountDetails.services.split(',').map((e: string) => e.trim());
         } else {
-          e['subaccounts'][0]['services'] = [];
+            this.currentSubaccountDetails.services = [];
         }
-        return e;
-      })).subscribe((res: any) => {
-      if (res) {
-        const { subaccounts } = res;
-        this.currentSubaccountDetails = subaccounts[0];
+        this.currentSubaccountDetails.customerName = this.currentSubaccountDetails.name;
+        this.customerService.getCustomerById(this.currentSubaccountDetails.customerId).subscribe((customersResp: any) => {
+            const subaccountCustomer = customersResp.customers[0];
+            this.currentSubaccountDetails.customerName = subaccountCustomer.name;
+            this.currentSubaccountDetails.testCustomer = subaccountCustomer.testCustomer;
+            this.currentSubaccountDetails.customerType = subaccountCustomer.customerType;
+            this.currentSubaccountDetails.distributorId = subaccountCustomer.distributorId;
+            this.currentSubaccountDetails.adminEmails = subaccountCustomer.adminEmails;
+            this.currentSubaccountDetails.customerId = this.currentSubaccountDetails.customerId;
+            this.currentSubaccountDetails.subaccountId = this.currentSubaccountDetails.id;
+            this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
+        });
         this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
         // enable/disable the available services
         this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
@@ -87,7 +93,7 @@ export class RedirectPageComponent implements OnInit {
             e.access = true;
         });
         this.navigationCheckPoint();
-      }
+  }
     });
   }
   /**
@@ -98,7 +104,7 @@ export class RedirectPageComponent implements OnInit {
     return this.msalService.instance.getActiveAccount() || null;
   }
   /**
-   * navigate to Dashboard page if roles has tekVizion FullAdmin/ConfigTester/Distributor
+   * navigate to Dashboard page if roles has tekVizion.FullAdmin/ConfigTester/Distributor
    */
   private navigateToDashboard(): void { this.router.navigate([this.DASHBOARD_ROUTE_PATH]); }
   /**
@@ -117,7 +123,11 @@ export class RedirectPageComponent implements OnInit {
    */
   private navigateToMyApps(): void {
     const { services } = this.currentSubaccountDetails;
-    if (!this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) && services.length > 0) {
+    if (this.loggedInUserRoles.length > 1) {
+      this.router.navigate([this.APPS_ROUTE_PATH]);
+      return;
+    }
+    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) && services.length > 0) {
       const serviceObj: IService = this.availableServices.find((e: any) => e.value === tekVizionServices.SpotLight);
       const { routePath } = serviceObj;
       this.router.navigate([routePath]);

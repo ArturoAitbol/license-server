@@ -52,6 +52,10 @@ import { UserProfileService } from '../../app/services/user-profile.service';
 import { UserProfileServiceMock } from './services/user-profile.mock';
 import { CallbackService } from "src/app/services/callback.service";
 import { CallbackServiceMock } from "./services/callback-service.mock";
+import { MapService } from "src/app/services/map.service";
+import { MapServiceMock } from "./services/map-service.mock";
+import { SpotlightChartsService } from "src/app/services/spotlight-charts.service";
+import { SpotlightChartsServiceMock } from "./services/spotlightCharts-service.mock";
 
 export class TestBedConfigBuilder {
     testBedConfig:{declarations:Array<any>, schema?:Array<any>, imports:Array<any>, providers:Array<any>};
@@ -82,6 +86,8 @@ export class TestBedConfigBuilder {
                 { provide: NoteService, useValue: NoteServiceMock },
                 { provide: StakeHolderService, useValue: StakeHolderServiceMock },
                 { provide: LicenseService, useValue: LicenseServiceMock },
+                { provide: MapService, useValue: MapServiceMock},
+                { provide: SpotlightChartsService, useValue: SpotlightChartsServiceMock},
                 { provide: LicenseConsumptionService, useValue: ConsumptionServiceMock },
                 { provide: ProjectService, useValue: ProjectServiceMock },
                 { provide: CustomerService, useValue: CustomerServiceMock },
