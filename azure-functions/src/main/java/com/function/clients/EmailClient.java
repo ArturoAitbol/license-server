@@ -126,7 +126,7 @@ public class EmailClient {
 
             context.getLogger().info("Email is ready");
             Transport.send(msg);
-            context.getLogger().info("Email sent successfully");
+            context.getLogger().info("Email sent successfully, Email List: " + emailList);
     }
 
 
