@@ -131,13 +131,11 @@ public class TekvLSGetCtaasMapSummary {
         if (!regions.isEmpty()) {
             StringBuilder innerQueryBuilder = new StringBuilder("SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE ");
             String condition = "";
-            if (!regions.isEmpty()) {
-                StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
-                if(regionCondition != null)
-                    condition = regionCondition.toString();
-            }
+            StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
+            if(regionCondition != null)
+                condition = regionCondition.toString();
             innerQueryBuilder.append(condition);
-            sqlStats += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
+            sqlStats += " AND " + regionCondition;
             sqlTestResults += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
         }
 
