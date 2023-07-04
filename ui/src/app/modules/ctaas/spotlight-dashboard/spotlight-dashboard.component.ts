@@ -332,10 +332,12 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     if(this.selectedPeriod==="daily"){
       this.selectedRegions = [...this.preselectedRegions];
       this.setDate();
+      this.setNewNoteBtn(this.filters.get('date').value);
     }
     else{
       this.weeklySelectedRegions = [...this.weeklyPreselectedRegions];
       this.setWeeklyRange();
+      this.setNewNoteBtn(this.weeklyFilters.get('date').value);
     }
     this.reloadCharts();
   }
@@ -347,13 +349,23 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   selectedPeriodChange() {
     if (this.selectedPeriod == 'daily') {
-      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView
-          && this.filters.get('date').value.isSame(moment().utc(), "day")
+      if(!this.isHistoricalView && this.filters.get('date').value.isSame(moment.utc(),'day')){
+        this.filters.get('date').setValue(moment.utc());
+        this.setDate();
+      }
+      this.setNewNoteBtn(this.filters.get('date').value);
     } else {
-      this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView
-          && this.weeklyFilters.get('date').value.isSame(moment().utc(), "day")
+      if(!this.isHistoricalView && this.weeklyFilters.get('date').value.isSame(moment.utc(),'day')){
+        this.weeklyFilters.get('date').setValue(moment.utc());
+        this.setWeeklyRange();
+      }
+      this.setNewNoteBtn(this.weeklyFilters.get('date').value);
     }
     this.loadCharts();
+  }
+
+  setNewNoteBtn(date: Moment){
+    this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard',this.subaccountDetails?.id) && !this.isHistoricalView && date.isSame(moment.utc(),'day');
   }
 
   loadCharts(showLoading = true) {
@@ -605,9 +617,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         startWith(''),
         map(value => this._filterRegion(value || '')),
     );
-    this.weeklyFilteredRegions.subscribe((regions) => {this.notSelectedFilteredWeeklyRegions = regions;});
-    this.weeklySelectedRegions.forEach(region => {
-      this.removeRegionFromArray(region.displayName, this.notSelectedFilteredWeeklyRegions);
+    this.weeklyFilteredRegions.subscribe((regions) => {
+      this.notSelectedFilteredWeeklyRegions = regions;
+      this.weeklyPreselectedRegions.forEach(region => {
+        this.removeRegionFromArray(region.displayName, this.notSelectedFilteredWeeklyRegions);
+      });
     });
   }
 
