@@ -34,4 +34,8 @@ describe('DashboardPocComponent', () => {
   it('should create', () => {
     expect(dashboardPocComponentTestInstance).toBeTruthy();
   });
+
+  it('should change graphs when toggle is changed', () => {
+    
+  });
 });
