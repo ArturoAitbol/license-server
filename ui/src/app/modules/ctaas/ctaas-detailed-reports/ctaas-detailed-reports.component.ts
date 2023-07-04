@@ -60,9 +60,9 @@ export class DetailedReportsCompoment implements OnInit {
   urlEndValueParsed;
   metricsObjTemplate = { 
     polqa: {count: 0, sum: 0, min: 100, avg: 0},
-    jitter: {count: 0, sum: 0, max: 0},
-    roundTrip: {count: 0, sum: 0, max: 0},
-    packetLoss: {count: 0, sum: 0, max: 0},
+    jitter: {count: 0, sum: 0},
+    roundTrip: {count: 0, sum: 0},
+    packetLoss: {count: 0, sum: 0},
     bitrate: {count: 0, sum: 0},
   };
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
@@ -191,32 +191,28 @@ export class DetailedReportsCompoment implements OnInit {
             if(obj.from?.mediaStats){
               for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
                 if(this.validMetric("from" ,i, "Received Jitter")){
-                  parsedJitter = this.parseMertic("from", i, "Received Jitter" );
-                  fromObj.jitter.max = this.maxValue(parsedJitter, fromObj.jitter.max);
-                  obj.maxJitterFrom = fromObj.jitter.max;
+                  parsedJitter = Utility.parseMertic("from", i, "Received Jitter", this.metricsObj );
+                  obj.maxJitterFrom = this.maxValue(parsedJitter, obj.maxJitterFrom);
                   fromObj = this.updateMetricSum(parsedJitter, fromObj, "jitter");
                 }
                 if(this.validMetric("from", i, "Round trip time")){
-                  parsedRoundTrip = this.parseMertic("from", i, "Round trip time" );
-                  fromObj.roundTrip.max = this.maxValue(parsedRoundTrip, fromObj.roundTrip.max);
-                  obj.maxRoundTripFrom = fromObj.roundTrip.max;
+                  parsedRoundTrip = Utility.parseMertic("from", i, "Round trip time", this.metricsObj );
+                  obj.maxRoundTripFrom = this.maxValue(parsedRoundTrip, obj.maxRoundTripFrom );
                   fromObj = this.updateMetricSum(parsedRoundTrip, fromObj, "roundTrip");
                 }
                 if(this.validMetric("from", i, "Received packet loss")){
-                  parsedPacketLoss = this.parseMertic("from", i, "Received packet loss");
-                  fromObj.packetLoss.max = this.maxValue(parsedPacketLoss, fromObj.packetLoss.max);
-                  obj.maxPacketLossFrom = fromObj.packetLoss.max;
+                  parsedPacketLoss = Utility.parseMertic("from", i, "Received packet loss", this.metricsObj);
+                  obj.maxPacketLossFrom = this.maxValue(parsedPacketLoss, obj.maxPacketLossFrom);
                   fromObj = this.updateMetricSum(parsedPacketLoss, fromObj, "packetLoss");
                 }
                 if(this.validMetric("from", i, "Sent bitrate")){
-                  parsedBitrate = this.parseMertic("from", i, "Sent bitrate");
+                  parsedBitrate = Utility.parseMertic("from", i, "Sent bitrate", this.metricsObj);
                   fromObj = this.updateMetricSum(parsedBitrate, fromObj, "bitrate");
                 }
         
                 if(this.validMetric("from", i, "POLQA")){
-                  let parsedPolqa = this.parseMertic("from", i, "POLQA");
-                  fromObj.polqa.min = this.minValue(obj.from?.mediaStats[i]?.data?.POLQA, fromObj.polqa.min);
-                  obj.fromPolqaMin = fromObj.polqa.min;
+                  let parsedPolqa = Utility.parseMertic("from", i, "POLQA", this.metricsObj);
+                  obj.fromPolqaMin = this.minValue(obj.from?.mediaStats[i]?.data?.POLQA, obj.fromPolqaMin);
                   fromObj = this.updateMetricSum(parsedPolqa, fromObj, "polqa");
                 }
               }
@@ -227,31 +223,27 @@ export class DetailedReportsCompoment implements OnInit {
             if(obj.to?.mediaStats){
               for(let i=0 ; i< obj.to.mediaStats.length; i ++) {
                 if(this.validMetric("to" ,i, "POLQA")) {
-                  let parsedPolqa = this.parseMertic("to", i, "POLQA");
-                  toObj.polqa.min = this.minValue(obj.to?.mediaStats[i]?.data?.POLQA, toObj.polqa.min);
-                  obj.toPolqaMin = toObj.polqa.min ;
+                  let parsedPolqa = Utility.parseMertic("to", i, "POLQA", this.metricsObj);
+                  obj.toPolqaMin = this.minValue(obj.to?.mediaStats[i]?.data?.POLQA, obj.toPolqaMin);
                   toObj = this.updateMetricSum(parsedPolqa, toObj, "polqa");
                 }
                 if(this.validMetric("to" ,i, "Received Jitter")){
-                  parsedJitter = this.parseMertic("to", i, "Received Jitter" );
-                  toObj.jitter.max = this.maxValue(parsedJitter, toObj.jitter.max);
-                  obj.maxJitterTo = toObj.jitter.max;
+                  parsedJitter = Utility.parseMertic("to", i, "Received Jitter", this.metricsObj);
+                  obj.maxJitterTo = this.maxValue(parsedJitter, obj.maxJitterTo);
                   toObj = this.updateMetricSum(parsedJitter, toObj, "jitter");
                 }
                 if(this.validMetric("to", i, "Round trip time")){
-                  parsedRoundTrip = this.parseMertic("to", i, "Round trip time" );
-                  toObj.roundTrip.max = this.maxValue(parsedRoundTrip, toObj.roundTrip.max);
-                  obj.maxRoundTripTo = toObj.roundTrip.max;
+                  parsedRoundTrip = Utility.parseMertic("to", i, "Round trip time", this.metricsObj);
+                  obj.maxRoundTripTo = this.maxValue(parsedRoundTrip, obj.maxRoundTripTo);
                   toObj = this.updateMetricSum(parsedRoundTrip, toObj, "roundTrip");
                 }
                 if(this.validMetric("to", i, "Received packet loss")){
-                  parsedPacketLoss = this.parseMertic("to", i, "Received packet loss");
-                  toObj.packetLoss.max = this.maxValue(parsedPacketLoss, toObj.packetLoss.max);
-                  obj.maxPacketLossTo = toObj.packetLoss.max;
+                  parsedPacketLoss = Utility.parseMertic("to", i, "Received packet loss", this.metricsObj);
+                  obj.maxPacketLossTo = this.maxValue(parsedPacketLoss, obj.maxPacketLossTo);
                   toObj = this.updateMetricSum(parsedPacketLoss, toObj, "packetLoss");
                 }
                 if(this.validMetric("to", i, "Sent bitrate")){
-                  parsedBitrate = this.parseMertic("to", i, "Sent bitrate");
+                  parsedBitrate = Utility.parseMertic("to", i, "Sent bitrate", this.metricsObj);
                   toObj = this.updateMetricSum(parsedBitrate, toObj, "bitrate");
                 }
               }
@@ -602,23 +594,6 @@ export class DetailedReportsCompoment implements OnInit {
       return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== '--';
   }
 
-  private parseMertic(location: string, index: number, metric: string) {
-    if(metric === "Received Jitter" || metric === "Round trip time" || metric === "POLQA"){
-      return parseFloat(this.metricsObj[location]?.mediaStats[index]?.data?.[metric]);
-    }
-    if(metric === "Received packet loss"){
-      const percentageString = this.metricsObj[location]?.mediaStats[index]?.data?.[metric];
-      const packetLossString =  percentageString.replace("%", "");
-      return parseFloat(packetLossString);
-    }
-    if(metric === "Sent bitrate"){
-      const bitrateString = this.metricsObj[location]?.mediaStats[index]?.data?.[metric];
-      const values = bitrateString.split(' ');
-      const numericString = values[0];
-      return parseFloat(numericString);
-    }
-  }
-
   private average(sum: number, count: number){
     if(sum !== 0 && count !== 0 ) {
       let average = (sum / count).toFixed(2);
@@ -644,12 +619,16 @@ export class DetailedReportsCompoment implements OnInit {
   }
   
   private maxValue(number1, number2){
+    if(number2=== undefined)
+      number2 = 0;
     if (number1 > number2) 
         return number1;
     return number2;
   }
 
   private minValue(number1, number2){
+    if(number2 === undefined)
+      number2 = 100;
     if (number1 < number2) 
         return number1;
     return number2;
