@@ -254,21 +254,18 @@ export class Utility {
         return date.endOf("hour");
     }
 
-    public static parseMertic(location: string, index: number, metric: string, metricsObj) {
-        if(metric === "Received Jitter" || metric === "Round trip time" || metric === "POLQA"){
-          return parseFloat(metricsObj[location]?.mediaStats[index]?.data?.[metric]);
-        }
+    public static parseMetric(metricsObj: any, metric: string) {
         if(metric === "Received packet loss"){
-          const percentageString = metricsObj[location]?.mediaStats[index]?.data?.[metric];
+          const percentageString = metricsObj[metric];
           const packetLossString =  percentageString.replace("%", "");
           return parseFloat(packetLossString);
         }
-        if(metric === "Sent bitrate"){
-          const bitrateString = metricsObj[location]?.mediaStats[index]?.data?.[metric];
+        if(metric === "Sent bitrate" || metric === "Received Jitter" || metric === "Round trip time" ){
+          const bitrateString = metricsObj[metric];
           const values = bitrateString.split(' ');
           const numericString = values[0];
           return parseFloat(numericString);
         }
+        return parseFloat(metricsObj[metric]);
       }
-    
 }
