@@ -157,9 +157,9 @@ public class TekvLSModifyCtaasSetupById {
                 PreparedStatement statement = queryBuilder.build(connection);
                 PreparedStatement projectStatement = connection.prepareStatement(sql);
                 PreparedStatement ctaasDeviceStatement = connection.prepareStatement(deviceSql);
-                PreparedStatement customerAndSubAccountDetails = customerAndSubQueryBuilder == null ?
+                PreparedStatement customerAndSubAccountDetails = customerAndSubQueryBuilder == null ? 
                     null : customerAndSubQueryBuilder.build(connection);
-                PreparedStatement licenseVerificationStatement = verificationBuilder == null ?
+                PreparedStatement licenseVerificationStatement = verificationBuilder == null ? 
                     null : verificationBuilder.build(connection)) {
 
             JSONObject json = new JSONObject();
@@ -292,7 +292,6 @@ public class TekvLSModifyCtaasSetupById {
             throws SQLException {
         if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib)) {
             final String subaccountId = jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib);
-            context.getLogger().info("@@@DEV1: " + FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId));
             if (FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId)) {
                 String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
                 String customerAdminEmailsSql = null;
