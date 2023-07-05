@@ -225,7 +225,7 @@ export const permissions = {
             ]
         }
     },
-    'tekvizion.IgesAdmin': {
+    'tekvizion.IGESAdmin': {
         paths: [
             'customers-dashboard',
             'visualization',
