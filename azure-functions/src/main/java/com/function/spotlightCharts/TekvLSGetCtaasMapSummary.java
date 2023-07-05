@@ -71,64 +71,89 @@ public class TekvLSGetCtaasMapSummary {
 
         }
 
-        String sql = "SELECT er.fromcity as from_city, er.fromstate as from_state, er.fromcountry as from_country," +
-                "       er.tocity as to_city, er.tostate as to_state, er.tocountry as to_country, er.fromcoordinates as from_coordinates, er.tocoordinates as to_coordinates," +
-                "       count(distinct sr.id) as total_calls,\n" +
-                "       count(distinct sr.id) FILTER (WHERE sr.status = 'PASSED') as passed,\n" +
-                "       count(distinct sr.id) FILTER (WHERE sr.status = 'FAILED') as failed," +
-                "       count(case when ms.parameter_name = 'Received Jitter' then ms.parameter_name end) as count_jitter," +
-                "       max(case when ms.parameter_name = 'Received Jitter'" +
-                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_jitter," +
-                "       avg(case when ms.parameter_name = 'Received Jitter'" +
-                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_jitter," +
-                "       count(case when ms.parameter_name = 'Received packet loss' then ms.parameter_name end) as count_packet_loss," +
-                "       max(case when ms.parameter_name = 'Received packet loss'" +
-                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_packet_loss," +
-                "       avg(case when ms.parameter_name = 'Received packet loss'" +
-                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_packet_loss," +
-                "       count(case when ms.parameter_name = 'Round trip time' then ms.parameter_name end) as count_round_trip," +
-                "       max(case when ms.parameter_name = 'Round trip time'" +
-                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_round_trip," +
-                "       avg(case when ms.parameter_name = 'Round trip time'" +
-                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_round_trip," +
-                "       count(case when ms.parameter_name = 'Sent bitrate' then ms.parameter_name end) as count_bitrate," +
-                "       avg(case when ms.parameter_name = 'Sent bitrate'" +
-                "           then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate," +
-                "       count(case when ms.parameter_name = 'POLQA' then ms.parameter_name end) as count_polqa," +
-                "       min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as min_polqa," +
-                "       avg(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as avg_polqa " +
-                "FROM media_stats ms" +
-                "         LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id" +
-                "         LEFT JOIN sub_result sr ON trr.subresultid = sr.id" +
-                "         LEFT JOIN test_result tr ON sr.testresultid = tr.id" +
-                "         LEFT JOIN run_instance r ON tr.runinstanceid = r.id" +
-                "         LEFT JOIN project p ON r.projectid = p.id" +
-                "         LEFT JOIN test_plan tp ON p.testplanid = tp.id" +
-                "         LEFT JOIN execution_report er on sr.execution_report_id = er.id " +
-                "WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')" +
-                "  AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
-                "  AND ms.parameter_name IN ('Received Jitter', 'Received packet loss', 'Round trip time', 'Sent bitrate', 'POLQA')";
+        String sqlUnifiedLocationsData = 
+        "SELECT fromcity, fromstate, fromcountry, tocity, tostate, tocountry, fromcoordinates, tocoordinates,\n" +
+        "	sum(total_calls) as total_calls, sum(passed) as passed, sum(failed) as failed,\n" +
+        "	sum(count_jitter) as count_jitter, sum(max_jitter) as max_jitter, sum(avg_jitter) as avg_jitter,\n" +
+        "	sum(count_packet_loss) as count_packet_loss, sum(max_packet_loss) as max_packet_loss, sum(avg_packet_loss) as avg_packet_loss,\n" +
+        "	sum(count_round_trip) as count_round_trip, sum(max_round_trip) as max_round_trip, sum(avg_round_trip) as avg_round_trip,\n" +
+        "	sum(count_bitrate) as count_bitrate, sum(avg_bitrate) as avg_bitrate,\n" +
+        "	sum(count_polqa) as count_polqa, sum(min_polqa) as min_polqa, sum(avg_polqa) as avg_polqa\n";
+
+        String sqlStats = "SELECT er.fromcity, er.fromstate, er.fromcountry, er.tocity, er.tostate, er.tocountry, er.fromcoordinates, er.tocoordinates,\n" +
+            "	null as total_calls, null as passed, null as failed,\n" +
+            "	count(case when ms.parameter_name = 'Received Jitter' then ms.parameter_name end) as count_jitter,\n" +
+            "	max(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_jitter,\n" +
+            "	avg(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_jitter,\n" +
+            "	count(case when ms.parameter_name = 'Received packet loss' then ms.parameter_name end) as count_packet_loss,\n" +
+            "	max(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_packet_loss,\n" +
+            "	avg(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_packet_loss,\n" +
+            "	count(case when ms.parameter_name = 'Round trip time' then ms.parameter_name end) as count_round_trip,\n" +
+            "	max(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_round_trip,\n" +
+            "	avg(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_round_trip,\n" +
+            "	count(case when ms.parameter_name = 'Sent bitrate' then ms.parameter_name end) as count_bitrate,\n" +
+            "	avg(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate,\n" +
+            "	count(case when ms.parameter_name = 'POLQA' then ms.parameter_name end) as count_polqa,\n" +
+            "	min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as min_polqa,\n" +
+            "	avg(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as avg_polqa\n" +
+            "FROM media_stats ms\n" +
+            "	LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id\n" +
+            "	LEFT JOIN sub_result sr ON trr.subresultid = sr.id\n" +
+            "	LEFT JOIN test_result tr ON sr.testresultid = tr.id\n" +
+            "	LEFT JOIN run_instance r ON tr.runinstanceid = r.id\n" +
+            "	LEFT JOIN project p ON r.projectid = p.id\n" +
+            "	LEFT JOIN test_plan tp ON p.testplanid = tp.id\n" +
+            "	LEFT JOIN execution_report er on sr.execution_report_id = er.id\n" +
+            "WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND " + Utils.CONSIDERED_STATUS_SUBQUERY + "\n" +
+            "	AND " + Utils.CONSIDERED_FAILURES_SUBQUERY + "\n" +
+            "	AND ms.parameter_name IN ('Received Jitter', 'Received packet loss', 'Round trip time', 'Sent bitrate', 'POLQA')\n";
+
+        String sqlTestResults = "SELECT er.fromcity, er.fromstate, er.fromcountry,\n" +
+            "	er.tocity, er.tostate, er.tocountry,\n" +
+            "	er.fromcoordinates, er.tocoordinates,\n" +
+            "	count(distinct sr.id) as total_calls,\n" +
+            "	count(distinct sr.id) FILTER (WHERE sr.status = 'PASSED') as passed,\n" +
+            "	count(distinct sr.id) FILTER (WHERE sr.status = 'FAILED') as failed,\n" +
+            "	null as count_jitter, null as max_jitter, null as avg_jitter,\n" +
+            "	null as count_packet_loss, null as max_packet_loss, null as avg_packet_loss,\n" +
+            "	null as count_round_trip, null as max_round_trip, null as avg_round_trip,\n" +
+            "	null as count_bitrate, null as avg_bitrate,\n" +
+            "	null as count_polqa, null as min_polqa, null as avg_polqa\n" +
+            "FROM execution_report er\n" +
+            "	JOIN sub_result sr on sr.execution_report_id = er.id\n" +
+            "	JOIN test_result tr ON sr.testresultid = tr.id\n" +
+            "	JOIN run_instance r ON tr.runinstanceid = r.id\n" +
+            "	JOIN project p ON r.projectid = p.id\n" +
+            "	JOIN test_plan tp ON p.testplanid = tp.id\n" +
+            "WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND " + Utils.CONSIDERED_STATUS_SUBQUERY + "\n" +
+            "	AND " + Utils.CONSIDERED_FAILURES_SUBQUERY + "\n";
 
         if (!regions.isEmpty()) {
             StringBuilder innerQueryBuilder = new StringBuilder("SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE ");
             List<String> conditions = new ArrayList<>();
-            if (!regions.isEmpty()){
+            if (!regions.isEmpty()) {
                 StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
                 if(regionCondition != null)
                     conditions.add(regionCondition.toString());
             }
-            for (int i=0;i<conditions.size();i++){
+            for (int i=0;i<conditions.size();i++) {
                 if(i!=0)
                     innerQueryBuilder.append(" AND ");
                 innerQueryBuilder.append(conditions.get(i));
             }
-            sql += " AND sr.id IN (" + innerQueryBuilder + ")";
+            sqlStats += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
+            sqlTestResults += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
         }
 
-        SelectQueryBuilder locationsQB = new SelectQueryBuilder(sql, true);
-        locationsQB.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
-        locationsQB.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
-        locationsQB.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates");
+        SelectQueryBuilder statsStmt = new SelectQueryBuilder(sqlStats, true);
+        statsStmt.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+        statsStmt.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+        statsStmt.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates");
+
+        SelectQueryBuilder testResultsStmt = new SelectQueryBuilder(sqlTestResults, true);
+        testResultsStmt.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+        testResultsStmt.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+        testResultsStmt.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates");
 
         // Build SQL statement to get the TAP URL
         SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -175,9 +200,14 @@ public class TekvLSGetCtaasMapSummary {
             }
             context.getLogger().info("TAP URL for data query: " + tapURL);
 
-            String locationsSql = locationsQB.getQuery();
-            context.getLogger().info("Execute map SQL statement: " + locationsSql);
-            JSONArray resultSet = TAPClient.executeQuery(tapURL, locationsSql, context);
+            // Build unified query with execution details and media stats
+            sqlStats = statsStmt.getQuery();
+            sqlTestResults = testResultsStmt.getQuery();
+            sqlUnifiedLocationsData += "FROM (\n(" + sqlStats + ")\nUNION (" + sqlTestResults + ")\n) as unified_results\n" +
+                "GROUP BY fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates";
+            context.getLogger().info("Execute map SQL statement: " + sqlUnifiedLocationsData);
+
+            JSONArray resultSet = TAPClient.executeQuery(tapURL, sqlUnifiedLocationsData, context);
             JSONArray result = new JSONArray();
             for (Object entry : resultSet) {
                 JSONObject res = new JSONObject();

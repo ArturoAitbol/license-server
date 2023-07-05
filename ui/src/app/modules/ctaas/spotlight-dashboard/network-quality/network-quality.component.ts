@@ -140,12 +140,13 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
         map(value =>  this._filterUser(value || '')),
     );
 
-    this.usersForDropdown = [...this.users];
-    this.selectedUsers.forEach(user => {
-      const index = this.usersForDropdown.indexOf(user);
-      if (index !== -1)
-        this.usersForDropdown.splice(index, 1);
-      this.filters.enable();
+    this.filteredUsers.subscribe((users) => {
+      this.usersForDropdown = [...users];
+      this.preselectedUsers.forEach(user => {
+        const index = this.usersForDropdown.indexOf(user);
+        if (index !== -1)
+          this.usersForDropdown.splice(index, 1);
+      });
     });
   }
 
@@ -156,7 +157,6 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   applyFilters(){
-    this.selectedUsers = [...this.preselectedUsers];
     this.selectedUsers = [...this.preselectedUsers];
     this.averageSelected = this.evaluateFilter();
     this.loadCharts({hideChart:false,showLoading:true});

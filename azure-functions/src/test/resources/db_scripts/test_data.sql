@@ -241,6 +241,7 @@ b66edd36-ee7f-42e7-bfb4-41810ea69fe6	f	\N	Refresh button for Power Bi Dashboard	
 ea00b987-0f14-4888-a0ce-f963d1eb7592	t	\N	Native Dashboard	spotlight-dashboard
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Historical Native Dashboard for Notes	spotlight-historical-dashboard
 7564aab0-5331-4ab5-85f7-e37acbdfd90d	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
+be612704-c26e-48ea-ab9b-19312f03d644	t	\N	Send Welcome Email to SpotLight customers	welcomeEmail
 \.
 
 --
