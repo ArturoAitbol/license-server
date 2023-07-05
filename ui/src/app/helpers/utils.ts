@@ -86,12 +86,12 @@ export class Utility {
                     case 'unavailable':
                     case 'rebooting':
                     case 'inactive':
-                        return '#7694B7';
+                        return '#6E76B4';
                     default:
-                        return 'red';
+                        return '#bb2426';
                 }
             } catch (e: any) {
-                return 'red';
+                return '#bb2426';
             }
         }
     }

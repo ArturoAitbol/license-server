@@ -280,10 +280,10 @@ public class TekvLSModifyCtaasSetupById {
             String customerName = customerNameRs.getString("name");
             ResultSet rs = subaccountEmailsStmt.executeQuery();
             while (rs.next()) {
-                if (GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
-                        rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context))
-                    // Send second email with link to portal
-                    EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, context);
+                GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
+                        rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context);
+                // Send onboarding email with link to portal
+                EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, context);
             }
         }
     }

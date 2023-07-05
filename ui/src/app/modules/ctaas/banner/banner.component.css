@@ -13,13 +13,13 @@ ul {
 }
 ul li {
     display: inline-block;
-    color: #203c66;
+    color: rgb(39, 49, 118);
     font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
     letter-spacing: normal;
     /* margin: 0 0 16px; */
 }
 /* ul.breadcrumb li+li:before {
-    color: #203c66;
+    color: rgb(39, 49, 118);
     content: "/\00a0";
 } */
 .alignment {

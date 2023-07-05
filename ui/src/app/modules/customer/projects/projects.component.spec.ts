@@ -64,7 +64,7 @@ describe('projects - UI verification test', () => {
 
         // Filters
         const licenseFilterForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#license-filter-form" }));
-        expect(await licenseFilterForm.getLabel()).toContain('tekVizion 360 Subscription');
+        expect(await licenseFilterForm.getLabel()).toContain('TekVizion 360 Subscription');
     });
 
     it('should load correct data columns for the table', () => {

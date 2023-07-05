@@ -49,7 +49,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
             this.fetchCtaasDashboardDetailsBySubaccount();
         } else {
             console.error('Error loading dashboard reports | ', "No reports found for the selected note");
-            this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+            this.snackBarService.openSnackBar('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
         }
     }
     /**
@@ -97,7 +97,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
             this.hasDashboardDetails = this.checkForDashboardDetails();
             this.isLoadingResults = false;
             console.error('Error loading dashboard reports | ', e.error);
-            this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+            this.snackBarService.openSnackBar('Error loading dashboard, please contact your TekVizion 360 admin', 'Ok');
         });
     }
     /**

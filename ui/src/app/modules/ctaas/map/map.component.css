@@ -3,7 +3,7 @@
 }
 
 .banner-container {
-    background: #7694B7;
+    background: #6E76B4;
     /* background: lightgrey; */
     padding: 6px 6px 6px 12px;
 }
@@ -53,13 +53,13 @@ ul {
 
 ul li {
     display: inline-block;
-    color: #203c66;
+    color: #273176;
     font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
     letter-spacing: normal;
     /* margin: 0 0 16px; */
 }
 /* ul.breadcrumb li+li:before {
-    color: #203c66;
+    color: #273176;
     content: "/\00a0";
 } */
 .alignment {
@@ -115,37 +115,25 @@ ul li {
 }
 
 ::ng-deep .mat-tooltip {
-    background-color: #7694B7;  /* previus color rgb(22,53,89) */
+    background-color: #6E76B4;  /* previus color rgb(22,53,89) */
     font-size: 14px;
 }
 
 .good {
-    background-color: #203c66;
+    background-color: #273176;
 }
   
 .fair {
-    background-color: orange;
+    background-color: #EC7C56;
 }
   
 .bad {
-    background-color: red;
+    background-color: #bb2426;
 }
 
 .clear-button{
     height: auto;
     padding: 0px;
-}
-
-.good:hover {
-
-}
-  
-.fair:hover {
-   
-}
-  
-.bad:hover {
-    
 }
 
 .legend-item:hover {
@@ -156,15 +144,11 @@ ul li {
     border: 1px solid #000;
 }
 
-.legend-item:hover .legend-label {
-   
-}
-
 .apply-flag {
     display: flex;
     align-items: center;
     font-size: 12px;
-    color: #7694B7;
+    color: #6E76B4;
     padding-right: 20%;
 }
 .apply-flag mat-icon {

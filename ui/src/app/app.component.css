@@ -19,7 +19,8 @@
 .position-fixed {
   z-index: 998;
   position: fixed;
-  background: #203c66;
+  background: linear-gradient(90deg, rgb(39, 49, 118) 0%, rgb(154,213,165) 100%);
+  /* background: linear-gradient(90deg, rgb(39, 49, 118) 0%, #6E76B4 35%, rgb(154,213,165) 100%); */
 }
 
 .spacer,
@@ -51,6 +52,10 @@
   margin-top: -10px;
   padding: 0px 20px;
   cursor: pointer;
+}
+
+.logo-changes img {
+  max-height: 40px;
 }
 
 .tab-name {
@@ -93,7 +98,7 @@
   /* margin-left: 3px; */
   /* border-left: 3px solid #0077d9 !important; */
   /* border-radius: 3px; */
-  color: #203c66;
+  color: rgb(39, 49, 118);
   background: none;
   font-weight: 600;
 }
@@ -136,7 +141,7 @@ button {
 }
 
 .selected {
-  color: #203c66;
+  color: rgb(39, 49, 118);
   background: none;
   font-weight: 600;
 }

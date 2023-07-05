@@ -27,7 +27,7 @@ button:focus {
 }
 
 .select-all {
-  color: #203c66;
+  color: rgb(39, 49, 118);
   font-family: "Helvetica Neue Regular";
   font-size: 12px;
 }
@@ -75,7 +75,7 @@ tbody tr {
 
 .ng-valid[required],
 .ng-valid.required {
-  border-left: 5px solid #42a948;
+  border-left: 5px solid #76BD83;
 } */
 
 .close-btn {
@@ -189,7 +189,7 @@ tbody tr {
 /* progress bar styles*/
 .customClass .progress-bar {
   background: #56b6ca;
-  /*background: #203C66;*/
+  /*background: #273176;*/
 }
 
 .customClass .progress {
@@ -229,7 +229,7 @@ tbody tr {
   width: 15px;
   background-color: none;
   outline-style: solid;
-  outline-color: #203c66;
+  outline-color: rgb(39, 49, 118);
   outline-width: 1.5pt;
 }
 
@@ -243,7 +243,7 @@ tbody tr {
   width: 15px;
   background-color: none;
   outline-style: solid;
-  outline-color: #203c66;
+  outline-color: rgb(39, 49, 118);
   outline-width: 1.5pt;
 }
 
@@ -256,7 +256,7 @@ tbody tr {
 }
 
 .chekboxcontainer input:checked~.checkmark {
-  background-color: #203c66;
+  background-color: rgb(39, 49, 118);
 }
 
 .chekboxcontainer input:checked~.checkmarkTCP {
@@ -300,7 +300,7 @@ tbody tr {
   top: 2px;
   width: 5px;
   height: 10px;
-  border: solid #203c66;
+  border: solid rgb(39, 49, 118);
   border-width: 0 3px 3px 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
@@ -308,14 +308,14 @@ tbody tr {
 }
 
 .select-all {
-  color: #203c66;
+  color: rgb(39, 49, 118);
   font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular",
     "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
 }
 
 .action-btn {
-  color: #203c66;
+  color: rgb(39, 49, 118);
   font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular",
     "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
@@ -581,7 +581,7 @@ ngx-intl-tel-input input:hover {
 
 ngx-intl-tel-input input:focus {
 	outline: none !important;
-	border-color: #3f51b5;
+	border-color: #6E76B4;
   border-width: 2px;
 	box-shadow: 0 0 0 0 #000;
 }

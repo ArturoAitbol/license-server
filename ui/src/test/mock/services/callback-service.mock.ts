@@ -17,7 +17,7 @@ export const CallbackServiceMock = {
             observer.next({
                 name: 'testDemoR',
                 email: 'testdemo.r@tekvizion.com',
-                companyName: 'tekVizion',
+                companyName: 'TekVizion',
                 jobTitle: 'Engineer',
                 phoneNumber: '9012345680',
                 subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e',
