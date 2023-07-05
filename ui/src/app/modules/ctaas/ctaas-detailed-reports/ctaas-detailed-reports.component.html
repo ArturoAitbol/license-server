@@ -118,13 +118,13 @@
                                         {{item.from?.DID | na}}
                                     </mat-panel-title>
                                     <mat-panel-title class="average-col col-xl-1 col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
-                                        Min:{{item.fromPolqaMin | na }}, Avg:{{item.fromPolqaAvg | na }}
+                                        Min:{{item.fromPolqaMin | number:'.2' | na }}, Avg:{{item.fromPolqaAvg | number:'.2' | na }}
                                     </mat-panel-title>
                                     <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
                                         {{item.to?.DID | na}}
                                     </mat-panel-title>
                                     <mat-panel-title class="average-col col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col">
-                                        Min:{{item.toPolqaMin | na }}, Avg:{{item.toPolqaAvg | na }}
+                                        Min:{{item.toPolqaMin | number:'.2' | na }}, Avg:{{item.toPolqaAvg | number:'.2' | na }}
                                     </mat-panel-title>
                                     <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
                                         {{item.status | na}}

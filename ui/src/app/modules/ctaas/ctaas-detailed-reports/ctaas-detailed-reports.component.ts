@@ -594,7 +594,7 @@ export class DetailedReportsCompoment implements OnInit {
   }
 
   private validMetric(metricsObj: any, metric: string): boolean {
-      return metricsObj[metric] !== undefined && metricsObj[metric] !== null && metricsObj[metric] !== '--';
+      return metricsObj[metric] !== undefined && metricsObj[metric] !== null && metricsObj[metric] !== '--' && metricsObj[metric] !== '';
   }
 
   private average(sum: number, count: number){
@@ -612,18 +612,18 @@ export class DetailedReportsCompoment implements OnInit {
     if(avg === undefined)
       avgString = "N/A"
     if(metric === "Sent bitrate"){
-      return "Avg: "+avgString;
+      return "Avg: "+ parseFloat(avgString);
     }
     else{
       if(maxValue === 0 && avg === undefined)
         avgString = "0";
-      return "Max: "+maxValueString+", "+"Avg: "+avgString;
+      return "Max: "+parseFloat(maxValueString)+", "+"Avg: "+ parseFloat(avgString);
     }
   }
   
   private maxValue(number1, number2){
-    if(number2=== undefined)
-      number2 = 0;
+    if(number2 === undefined)
+      return number1;
     if (number1 > number2) 
         return number1;
     return number2;
@@ -631,7 +631,7 @@ export class DetailedReportsCompoment implements OnInit {
 
   private minValue(number1, number2){
     if(number2 === undefined)
-      number2 = 100;
+      return number1;
     if (number1 < number2) 
         return number1;
     return number2;
