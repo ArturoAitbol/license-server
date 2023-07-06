@@ -40,7 +40,7 @@
                                             <mat-icon>error_outline</mat-icon> Not applied
                                         </mat-hint>
                                         <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete" (optionSelected)="selected()">
-                                            <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                                            <mat-option *ngFor="let user of usersForDropdown" [value]="user">
                                                 {{user}}
                                             </mat-option>
                                         </mat-autocomplete>
@@ -59,7 +59,7 @@
                     </div>
                 </form>
                 <div class="row" *ngIf="this.preselectedUsers.length>0">
-                    <div class="col-md-12">
+                    <div class="col-md-6 offset-md-3">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                     <h2 class="mb-0">Selected User(s)&nbsp;</h2>
                                     <button [disabled]="this.preselectedUsers.length===0" (click)="clearUsersFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>

@@ -37,7 +37,7 @@ export class DetailedReportsCompoment implements OnInit {
   detailedTestReport: any = [];
   openFlag: any = false;
   lowerDate: any;
-  obj: any = {};
+  expansionObj: any = {};
   fromMediaTimeStampsList: string[] = [];
   toMediaTimeStampsList: string[] = [];
   otherPartiesMediaTimeStampsList: string[] = [];
@@ -54,11 +54,17 @@ export class DetailedReportsCompoment implements OnInit {
   sortColumn: string = '';
   clickCount: number = 0;
   originalDetailedTestReport: any[] = [];
-  metricsObj: any;
   urlStartValue: string;
   urlEndValue: string;
   urlStartValueParsed;
   urlEndValueParsed;
+  metricsObjTemplate = { 
+    polqa: {count: 0, sum: 0},
+    jitter: {count: 0, sum: 0},
+    roundTrip: {count: 0, sum: 0},
+    packetLoss: {count: 0, sum: 0},
+    bitrate: {count: 0, sum: 0},
+  };
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
   constructor(private msalService: MsalService,
@@ -173,178 +179,106 @@ export class DetailedReportsCompoment implements OnInit {
           majorTimestamp = new Date(majorTime).getTime();
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
-          this.detailedTestReport.forEach((obj: any, index) => {
-            this.metricsObj = obj;
-            let fromCount = 0;
-            let toCount = 0;
-            let fromSumarize = 0, toSumarize = 0;
-            let minFromPOLQA = 100;
-            let minToPOLQA = 100;
+          this.detailedTestReport.forEach((testResult: any, index) => {
+            let fromObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
+            let toObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
             let parsedJitter = 0;
-            let fromMaxJitter = 0;
-            let toMaxJitter = 0;
             let parsedRoundTrip = 0;
-            let fromMaxRoundTrip = 0;
-            let toMaxRoundTrip = 0;
             let parsedPacketLoss = 0;
-            let fromMaxPacketLoss = 0;
-            let toMaxPacketLoss = 0;
-            let fromBitrateSum = 0;
-            let fromAvgBitrate = 0;
-            let fromBitrateCount = 0;
-            let toBitrateSum = 0;
-            let toAvgBitrate = 0;
-            let toBitrateCount = 0;
             let parsedBitrate = 0;
-            let fromJitterSum = 0;
-            let fromJitterCount = 0;
-            let fromRoundTripSum = 0;
-            let fromRoundTripCount = 0;
-            let fromPacketLossSum = 0;
-            let fromPacketLossCount = 0;
-            let toJitterSum = 0;
-            let toJitterCount = 0;
-            let toRoundTripSum = 0;
-            let toRoundTripCount = 0;
-            let toPacketLossSum = 0;
-            let toPacketLossCount = 0;
-            if(obj.from?.mediaStats){
-              for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
-                if(this.validMetric("from" ,i, "Received Jitter")){
-                  parsedJitter = this.parseMertic("from", i, "Received Jitter" );
-                  if (parsedJitter > fromMaxJitter) {
-                    fromMaxJitter = parsedJitter;
-                    obj.maxJitterFrom = fromMaxJitter;
-                  }
-                  fromJitterSum += parsedJitter;
-                  fromJitterCount++;
+            if(testResult.from?.mediaStats){
+              testResult.from.mediaStats.forEach((mediaStatsObj: any) => {
+                if(!mediaStatsObj.data)
+                  return;
+                if(this.validMetric(mediaStatsObj.data, "Received Jitter")){
+                  parsedJitter = Utility.parseMetric(mediaStatsObj.data, "Received Jitter" );
+                  testResult.maxJitterFrom = this.maxValue(parsedJitter, testResult.maxJitterFrom);
+                  this.updateMetricSum(parsedJitter, fromObj, "jitter");
                 }
-                if(this.validMetric("from", i, "Round trip time")){
-                  parsedRoundTrip = this.parseMertic("from", i, "Round trip time" );
-                  if (parsedRoundTrip > fromMaxRoundTrip) {
-                    fromMaxRoundTrip = parsedRoundTrip;
-                    obj.maxRoundTripFrom = fromMaxRoundTrip;
-                  }
-                  fromRoundTripSum += parsedRoundTrip;
-                  fromRoundTripCount++;
+                if(this.validMetric(mediaStatsObj.data, "Round trip time")){
+                  parsedRoundTrip = Utility.parseMetric(mediaStatsObj.data, "Round trip time" );
+                  testResult.maxRoundTripFrom = this.maxValue(parsedRoundTrip, testResult.maxRoundTripFrom );
+                  this.updateMetricSum(parsedRoundTrip, fromObj, "roundTrip");
                 }
-                if(this.validMetric("from", i, "Received packet loss")){
-                  parsedPacketLoss = this.parseMertic("from", i, "Received packet loss");
-                  if (parsedPacketLoss >= fromMaxPacketLoss) {
-                    fromMaxPacketLoss = parsedPacketLoss;
-                    obj.maxPacketLossFrom = fromMaxPacketLoss;
-                  }
-                  fromPacketLossSum += parsedPacketLoss;
-                  fromPacketLossCount++;
+                if(this.validMetric(mediaStatsObj.data, "Received packet loss")){
+                  parsedPacketLoss = Utility.parseMetric(mediaStatsObj.data, "Received packet loss");
+                  testResult.maxPacketLossFrom = this.maxValue(parsedPacketLoss, testResult.maxPacketLossFrom);
+                  this.updateMetricSum(parsedPacketLoss, fromObj, "packetLoss");
                 }
-                if(this.validMetric("from", i, "Sent bitrate")){
-                  parsedBitrate = this.parseMertic("from", i, "Sent bitrate");
-                  fromBitrateSum += parsedBitrate;
-                  fromBitrateCount++;
+                if(this.validMetric(mediaStatsObj.data, "Sent bitrate")){
+                  parsedBitrate = Utility.parseMetric(mediaStatsObj.data, "Sent bitrate");
+                  this.updateMetricSum(parsedBitrate, fromObj, "bitrate");
                 }
         
-                if(obj.from?.mediaStats[i]?.data?.POLQA !== undefined && obj.from?.mediaStats[i]?.data?.POLQA !== null ){
-                  if (obj.from?.mediaStats[i]?.data?.POLQA < minFromPOLQA  && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                    minFromPOLQA = obj.from?.mediaStats[i]?.data?.POLQA;
-                    obj.fromPolqaMin = minFromPOLQA;
-                  }
+                if(this.validMetric(mediaStatsObj.data, "POLQA")){
+                  let parsedPolqa = Utility.parseMetric(mediaStatsObj.data, "POLQA");
+                  testResult.fromPolqaMin = this.minValue(parsedPolqa, testResult.fromPolqaMin);
+                  this.updateMetricSum(parsedPolqa, fromObj, "polqa");
                 }
-                if(obj.to?.mediaStats[i]?.data?.POLQA !== undefined && obj.to?.mediaStats[i]?.data?.POLQA !== null ){
-                  if (obj.to?.mediaStats[i]?.data?.POLQA < minToPOLQA  && obj.to?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                    minToPOLQA = obj.to?.mediaStats[i]?.data?.POLQA;
-                    obj.toPolqaMin = minToPOLQA;
-                  }
-                }
-                if(obj.from?.mediaStats[i]?.data?.POLQA && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
-                  let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
-                  fromSumarize += fromPolqaSum;
-                  fromCount++;
-                }
-              }
-              obj.from.mediaStats.sort((a, b) => {
+              });
+              testResult.from.mediaStats.sort((a, b) => {
                 return a.timestamp - b.timestamp
               })
             }
-            if(obj.to?.mediaStats){
-              for(let i=0 ; i< obj.to.mediaStats.length; i ++) {
-                if(obj.to?.mediaStats[i]?.data?.POLQA && obj.to?.mediaStats[i]?.data?.POLQA !== 0) {
-                  let toPolqaSum = parseFloat(obj.to.mediaStats[i].data.POLQA);
-                  toSumarize += toPolqaSum;
-                  toCount++;
+            if(testResult.to?.mediaStats){
+              testResult.to.mediaStats.forEach((mediaStatsObj: any) => {
+                if(!mediaStatsObj.data)
+                  return;
+                if(this.validMetric(mediaStatsObj.data, "Received Jitter")){
+                  parsedJitter = Utility.parseMetric(mediaStatsObj.data, "Received Jitter" );
+                  testResult.maxJitterTo = this.maxValue(parsedJitter, testResult.maxJitterTo);
+                  this.updateMetricSum(parsedJitter, toObj, "jitter");
                 }
-                if(this.validMetric("to" ,i, "Received Jitter")){
-                  parsedJitter = this.parseMertic("to", i, "Received Jitter" );
-                  if (parsedJitter > toMaxJitter) {
-                    toMaxJitter = parsedJitter;
-                    obj.maxJitterTo = toMaxJitter;
-                  }
-                  toJitterSum += parsedJitter;
-                  toJitterCount++;
+                if(this.validMetric(mediaStatsObj.data, "Round trip time")){
+                  parsedRoundTrip = Utility.parseMetric(mediaStatsObj.data, "Round trip time" );
+                  testResult.maxRoundTripTo = this.maxValue(parsedRoundTrip, testResult.maxRoundTripTo );
+                  this.updateMetricSum(parsedRoundTrip, toObj, "roundTrip");
                 }
-                if(this.validMetric("to", i, "Round trip time")){
-                  parsedRoundTrip = this.parseMertic("to", i, "Round trip time" );
-                  if (parsedRoundTrip > toMaxRoundTrip) {
-                    toMaxRoundTrip = parsedRoundTrip;
-                    obj.maxRoundTripTo = toMaxRoundTrip;
-                  }
-                  toRoundTripSum += parsedRoundTrip;
-                  toRoundTripCount++;
+                if(this.validMetric(mediaStatsObj.data, "Received packet loss")){
+                  parsedPacketLoss = Utility.parseMetric(mediaStatsObj.data, "Received packet loss");
+                  testResult.maxPacketLossTo = this.maxValue(parsedPacketLoss, testResult.maxPacketLossTo);
+                  this.updateMetricSum(parsedPacketLoss, toObj, "packetLoss");
                 }
-                if(this.validMetric("to", i, "Received packet loss")){
-                  parsedPacketLoss = this.parseMertic("to", i, "Received packet loss");
-                  if (parsedPacketLoss >= toMaxPacketLoss) {
-                    toMaxPacketLoss = parsedPacketLoss;
-                    obj.maxPacketLossTo = toMaxPacketLoss;
-                  }
-                  toPacketLossSum += parsedPacketLoss;
-                  toPacketLossCount++;
+                if(this.validMetric(mediaStatsObj.data, "Sent bitrate")){
+                  parsedBitrate = Utility.parseMetric(mediaStatsObj.data, "Sent bitrate");
+                  this.updateMetricSum(parsedBitrate, toObj, "bitrate");
                 }
-                if(this.validMetric("to", i, "Sent bitrate")){
-                  parsedBitrate = this.parseMertic("to", i, "Sent bitrate");
-                  toBitrateSum += parsedBitrate;
-                  toBitrateCount++;
+        
+                if(this.validMetric(mediaStatsObj.data, "POLQA")){
+                  let parsedPolqa = Utility.parseMetric(mediaStatsObj.data, "POLQA");
+                  testResult.toPolqaMin = this.minValue(parsedPolqa, testResult.toPolqaMin);
+                  this.updateMetricSum(parsedPolqa, toObj, "polqa");
                 }
-              }
-              obj.to.mediaStats.sort((a, b) => {
+              });
+              testResult.to.mediaStats.sort((a, b) => {
                 return a.timestamp - b.timestamp
               })
             }
-            if(fromSumarize !== 0 && fromCount !== 0 ) {
-              let fromAvg = (fromSumarize / fromCount).toFixed(2);
-              obj.fromPolqaAvg = fromAvg;
-            }
-            if(toSumarize !== 0 && toCount !== 0) {
-              let toAvg = (toSumarize / toCount).toFixed(2);
-              obj.toPolqaAvg = toAvg;
-            }
-            if(fromBitrateSum !== 0 && fromBitrateCount !== 0 ) {
-              let fromAvgBitrate = (fromBitrateSum / fromBitrateCount).toFixed(2);
-              obj.fromAvgBitrate = fromAvgBitrate;
-            }
-            if(toBitrateSum !== 0 && toBitrateCount !== 0 ) {
-              let toAvgBitrate = (toBitrateSum / toBitrateCount).toFixed(2);
-              obj.toAvgBitrate = toAvgBitrate;
-            }
-            obj.fromAvgJitter =this.average(fromJitterSum, fromJitterCount);
-            obj.fromAvgRoundTrip =this.average(fromRoundTripSum, fromRoundTripCount);
-            obj.fromAvgPacketLoss =this.average(fromPacketLossSum, fromPacketLossCount);
-            obj.toAvgJitter =this.average(toJitterSum, toJitterCount);
-            obj.toAvgRoundTrip =this.average(toRoundTripSum, toRoundTripCount);
-            obj.toAvgPacketLoss =this.average(toPacketLossSum, toPacketLossCount);
+            
+            testResult.fromPolqaAvg =this.average(fromObj.polqa.sum, fromObj.polqa.count);
+            testResult.fromAvgJitter =this.average(fromObj.jitter.sum, fromObj.jitter.count);
+            testResult.fromAvgRoundTrip =this.average(fromObj.roundTrip.sum, fromObj.roundTrip.count);
+            testResult.fromAvgPacketLoss =this.average(fromObj.packetLoss.sum, fromObj.packetLoss.count);
+            testResult.fromAvgBitrate =this.average(fromObj.bitrate.sum, fromObj.bitrate.count);
+            testResult.toPolqaAvg =this.average(toObj.polqa.sum, toObj.polqa.count);
+            testResult.toAvgJitter =this.average(toObj.jitter.sum, toObj.jitter.count);
+            testResult.toAvgRoundTrip =this.average(toObj.roundTrip.sum, toObj.roundTrip.count);
+            testResult.toAvgPacketLoss =this.average(toObj.packetLoss.sum, toObj.packetLoss.count);
+            testResult.toAvgBitrate =this.average(toObj.bitrate.sum, toObj.bitrate.count);
 
-            obj.fromJitter = this.dataToString(obj.maxJitterFrom, obj.fromAvgJitter, "Received Jitter");
-            obj.toJitter = this.dataToString(obj.maxJitterTo, obj.toAvgJitter, "Received Jitter");
-            obj.fromRoundTrip = this.dataToString(obj.maxRoundTripFrom, obj.fromAvgRoundTrip, "Round trip time");
-            obj.toRoundTrip = this.dataToString(obj.maxRoundTripTo, obj.toAvgRoundTrip, "Round trip time");
-            obj.fromPacketLoss = this.dataToString(obj.maxPacketLossFrom, obj.fromAvgPacketLoss, "Received packet loss");
-            obj.toPacketLoss = this.dataToString(obj.maxPacketLossFrom, obj.fromAvgPacketLoss, "Received packet loss");
-            obj.fromAvgBitrate = this.dataToString(0, obj.fromAvgBitrate, "Sent bitrate");
-            obj.toAvgBitrate = this.dataToString(0, obj.toAvgBitrate, "Sent bitrate");
+            testResult.fromJitter = this.dataToString(testResult.maxJitterFrom, testResult.fromAvgJitter, "Received Jitter");
+            testResult.toJitter = this.dataToString(testResult.maxJitterTo, testResult.toAvgJitter, "Received Jitter");
+            testResult.fromRoundTrip = this.dataToString(testResult.maxRoundTripFrom, testResult.fromAvgRoundTrip, "Round trip time");
+            testResult.toRoundTrip = this.dataToString(testResult.maxRoundTripTo, testResult.toAvgRoundTrip, "Round trip time");
+            testResult.fromPacketLoss = this.dataToString(testResult.maxPacketLossFrom, testResult.fromAvgPacketLoss, "Received packet loss");
+            testResult.toPacketLoss = this.dataToString(testResult.maxPacketLossFrom, testResult.fromAvgPacketLoss, "Received packet loss");
+            testResult.fromAvgBitrate = this.dataToString(0, testResult.fromAvgBitrate, "Sent bitrate");
+            testResult.toAvgBitrate = this.dataToString(0, testResult.toAvgBitrate, "Sent bitrate");
 
-            let startTimeTimeStamp = new Date(obj.startTime).getTime();
-            let endTimeTimeStamp = new Date(obj.endTime).getTime();
-            obj.startTime = moment.utc(obj.startTime).format("MM/DD/YYYY HH:mm:ss");
-            obj.endTime = moment.utc(obj.endTime).format("MM/DD/YYYY HH:mm:ss");
+            let startTimeTimeStamp = new Date(testResult.startTime).getTime();
+            let endTimeTimeStamp = new Date(testResult.endTime).getTime();
+            testResult.startTime = moment.utc(testResult.startTime).format("MM/DD/YYYY HH:mm:ss");
+            testResult.endTime = moment.utc(testResult.endTime).format("MM/DD/YYYY HH:mm:ss");
             if(startTimeTimeStamp < minorTimestamp){
               minorTimestamp = startTimeTimeStamp;
               minorTimeIndex = index;
@@ -353,12 +287,12 @@ export class DetailedReportsCompoment implements OnInit {
               majorTimestamp = endTimeTimeStamp;
               majorTimeIndex = index;
             }
-            obj.closeKey = false;
-            obj.fromnoDataFoundFlag = false;
-            obj.tonoDataFoundFlag = false;
-            obj.otherPartynoDataFoundFlag = false;
-            obj.panelOpenState = true;
-            obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
+            testResult.closeKey = false;
+            testResult.fromnoDataFoundFlag = false;
+            testResult.tonoDataFoundFlag = false;
+            testResult.otherPartynoDataFoundFlag = false;
+            testResult.panelOpenState = true;
+            testResult.otherParties = (testResult.otherParties && testResult.otherParties.length > 0) ? testResult.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
           this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime; //
           this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[majorTimeIndex].endTime;
@@ -387,7 +321,7 @@ export class DetailedReportsCompoment implements OnInit {
 
   setStep(key: any, index: number, rowIndex) {
     this.openFlag = true;
-    this.obj['key' + rowIndex] = index;
+    this.expansionObj['key' + rowIndex] = index;
     if (key === 'from') {
       if (this.detailedTestReport[rowIndex].from.mediaStats.length > 0) {
         this.fromMediaStats = this.detailedTestReport[rowIndex].from.mediaStats[0];
@@ -461,7 +395,7 @@ export class DetailedReportsCompoment implements OnInit {
     if (trueKey) {
       this.openFlag = false;
     }
-    this.obj['key' + index] = '';
+    this.expansionObj['key' + index] = '';
     this.detailedTestReport[index].panelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
     this.detailedTestReport[index].frompanelOpenState = true
@@ -659,28 +593,8 @@ export class DetailedReportsCompoment implements OnInit {
       this.detailedTestReport = sortedList;
   }
 
-  private validMetric(location: string ,index: number, metric: string): boolean {
-    if(location === "from")
-      return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj.from?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj.from?.mediaStats[index]?.data?.[metric] !== '--';
-    else
-      return this.metricsObj[location]?.mediaStats[index]?.data?.[metric] !== undefined && this.metricsObj.to?.mediaStats[index]?.data?.[metric] !== null && this.metricsObj.to?.mediaStats[index]?.data?.[metric] !== '--';
-  }
-
-  private parseMertic(location: string, index: number, metric: string) {
-    if(metric === "Received Jitter" || metric === "Round trip time"){
-      return parseFloat(this.metricsObj[location]?.mediaStats[index]?.data?.[metric]);
-    }
-    if(metric === "Received packet loss"){
-      const percentageString = this.metricsObj[location]?.mediaStats[index]?.data?.[metric];
-      const packetLossString =  percentageString.replace("%", "");
-      return parseFloat(packetLossString);
-    }
-    if(metric === "Sent bitrate"){
-      const bitrateString = this.metricsObj[location]?.mediaStats[index]?.data?.[metric];
-      const values = bitrateString.split(' ');
-      const numericString = values[0];
-      return parseFloat(numericString);
-    }
+  private validMetric(metricsObj: any, metric: string): boolean {
+      return metricsObj[metric] !== undefined && metricsObj[metric] !== null && metricsObj[metric] !== '--' && metricsObj[metric] !== '';
   }
 
   private average(sum: number, count: number){
@@ -698,12 +612,33 @@ export class DetailedReportsCompoment implements OnInit {
     if(avg === undefined)
       avgString = "N/A"
     if(metric === "Sent bitrate"){
-      return "Avg: "+avgString;
+      return "Avg: "+ parseFloat(avgString);
     }
     else{
       if(maxValue === 0 && avg === undefined)
         avgString = "0";
-      return "Max: "+maxValueString+", "+"Avg: "+avgString;
+      return "Max: "+parseFloat(maxValueString)+", "+"Avg: "+ parseFloat(avgString);
     }
+  }
+  
+  private maxValue(number1, number2){
+    if(number2 === undefined)
+      return number1;
+    if (number1 > number2) 
+        return number1;
+    return number2;
+  }
+
+  private minValue(number1, number2){
+    if(number2 === undefined)
+      return number1;
+    if (number1 < number2) 
+        return number1;
+    return number2;
+  }
+
+  private updateMetricSum(parsedValue, objLocation, metric: string){
+    objLocation[metric].sum += parsedValue;
+    objLocation[metric].count++;
   }
 }
