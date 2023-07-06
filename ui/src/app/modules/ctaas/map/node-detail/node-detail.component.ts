@@ -14,6 +14,9 @@ export class NodeDetailComponent implements OnInit {
   terminatedCalls: any[] = [];
   selectedSubaccount: any;
   parsedPolqaData: any;
+  originatedCrossRegion: any;
+  terminatedCrossRegion: any;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<NodeDetailComponent>,
@@ -21,6 +24,8 @@ export class NodeDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedSubaccount = this.subaccountService.getSelectedSubAccount();
+    this.originatedCrossRegion = this.data.callsOriginated.total - this.data.callsOriginated.callsToSameRegion;
+    this.terminatedCrossRegion = this.data.callsTerminated.total - this.data.callsTerminated.callsToSameRegion;
   }
 
   onCancel(type?: string): void {
