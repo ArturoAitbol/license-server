@@ -197,7 +197,6 @@ describe('calls with customer subaccount admin role', () => {
         spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
-        ctaasStakeholderComponentTestInstance.toggleStatus = true;
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount({
             "subaccountId": "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",
