@@ -368,7 +368,7 @@ export class MapComponent implements OnInit, OnDestroy {
         iconAnchor: [25, 29]
       })
       let latlong = new L.LatLng(this.nodesMap[key].region.location.y, this.nodesMap[key].region.location.x)
-      let node = L.marker(latlong, {icon:customIcon}).on('click', (e) =>{
+      let node = L.marker(latlong, {icon:customIcon, title:this.nodesMap[key].region.city}).on('click', (e) =>{
         this.nodeDetails(key);
       }).addTo(this.map);
       this.nodesArray.push(node)
@@ -396,7 +396,8 @@ export class MapComponent implements OnInit, OnDestroy {
       let line = new L.Polyline(coordinatesArray, {
         color: lineState,
         weight: this.LINE_WEIGHT,
-        smoothFactor: this.LINE_SMOOTH_FACTOR
+        smoothFactor: this.LINE_SMOOTH_FACTOR,
+        className: `${this.linesMap[key].from.city} ${this.linesMap[key].to.city}`
       }).on('click', (e) =>{
         this.lineDetails(key);
       }).addTo(this.map);
@@ -552,6 +553,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   nodeDetails(key:any){
+    console.log("entra")
     let nodeData = {...this.nodesMap[key], date: this.filteredDate};
     this.dialog.open(NodeDetailComponent, {
       width: '900px',

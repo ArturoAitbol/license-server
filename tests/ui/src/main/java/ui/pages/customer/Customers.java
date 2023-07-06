@@ -51,6 +51,10 @@ public class Customers extends AbstractPageObject {
         return customerRow;
     }
 
+    public CustomerRow getCustomerSubaccount(String customerName){
+        return new CustomerRow(customerName);
+    }
+    
     public SubaccountForm openSubaccountForm() {
         this.action.click(this.addSubaccountButton);
         this.action.waitSpinner(this.spinnerSelector);
