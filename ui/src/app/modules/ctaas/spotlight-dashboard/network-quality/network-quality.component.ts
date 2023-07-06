@@ -46,22 +46,23 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
   commonChartOptions: Partial<ChartOptions>;
   filteredUsers: Observable<string[]>;
   selectedUsers = [];
+  usersForDropdown: string[] = [];
   preselectedUsers = [];
   @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
   
 
   filterNetworkQualityForm: any[] = ['Worst Case', 'Average'];
   defaultValue: string = this.filterNetworkQualityForm[0];
-  averageSelected: boolean = false;
-  preselectedFilter:string = 'Worst Case';
-  avgFlag: boolean = false;
-  maxLabel: string = 'Max.';
-  minLabel: string = 'Min.';
-  avgLabel: string = 'Avg.'
-    filters = this.fb.group({
-      user: [""],
-      selectedValue: [""]
-    });
+  averageSelected = false;
+  preselectedFilter = 'Worst Case';
+  avgFlag = false;
+  maxLabel = 'Max.';
+  minLabel = 'Min.';
+  avgLabel = 'Avg.';
+  filters = this.fb.group({
+    user: [""],
+    selectedValue: [""]
+  });
 
   summary = {
     totalCalls: 0,
@@ -138,6 +139,15 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
         startWith(''),
         map(value =>  this._filterUser(value || '')),
     );
+
+    this.filteredUsers.subscribe((users) => {
+      this.usersForDropdown = [...users];
+      this.preselectedUsers.forEach(user => {
+        const index = this.usersForDropdown.indexOf(user);
+        if (index !== -1)
+          this.usersForDropdown.splice(index, 1);
+      });
+    });
   }
 
   private _filterUser(value: string): string[] {
@@ -148,9 +158,9 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
 
   applyFilters(){
     this.selectedUsers = [...this.preselectedUsers];
-    this.selectedUsers = [...this.preselectedUsers];
     this.averageSelected = this.evaluateFilter();
     this.loadCharts({hideChart:false,showLoading:true});
+    this.initAutocompletes();
   }
 
   onChangeValue(event:any){
@@ -313,6 +323,7 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
     if (index >= 0) {
       this.preselectedUsers.splice(index, 1);
     }
+    this.initAutocompletes();
   }
 
   selected(): void {
@@ -323,6 +334,8 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   clearUsersFilter(){
+    this.selectedUsers=[];
+    this.initAutocompletes();
     this.preselectedUsers=[];
   }
 
