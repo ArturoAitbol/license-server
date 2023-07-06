@@ -104,7 +104,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   currentDate: any;
   selectedRegion: any;
-  locationFlag: boolean = false;
+  locationFlag = false;
   startTime = 0;
   milliseconds = 0;
   seconds = 0;
@@ -176,7 +176,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    let currentEndDate
+    let currentEndDate;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.checkMaintenanceMode();
     this.disableFiltersWhileLoading = true;
@@ -194,18 +194,18 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         });
       } else {
         if(params.date && this.filters.get('date').value !== "") {
-          let nodeDate = params.date.split('T')[0]
+          const nodeDate = params.date.split('T')[0]
           this.currentDate = Utility.setHoursOfDate(moment.utc(nodeDate));
           this.filters.controls['date'].setValue(moment.utc(nodeDate));
         }
         if(params.date && this.weeklyFilters.get('date').value !== "") {
-          let parsedDate = params.date.split('T')[0];
+          const parsedDate = params.date.split('T')[0];
           currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
           this.weeklyFilters.controls['date'].setValue(currentEndDate);
-        } 
+        }
         if(params.location && this.selectedRegions.length === 0) {
           this.selectedRegions.push({
-            city:params.location.split(',')[0], 
+            city:params.location.split(',')[0],
             state:params.location.split(', ')[1],
             country:params.location.split(', ')[2],
             displayName: params.location
@@ -573,7 +573,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   navigateToPOLQACallsDetailedTable() {
-    let reportFilter = "polqaCalls=true";
+    const reportFilter = "polqaCalls=true";
     this.goToDetailedReportView(reportFilter);
   }
 
@@ -660,8 +660,8 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.filters.enable();
       this.weeklyFilters.enable();
 
+      this.networkQuality.users = res.users;
       this.networkQuality.initAutocompletes();
-
       this.networkQuality.filters.enable();
     })
   }
