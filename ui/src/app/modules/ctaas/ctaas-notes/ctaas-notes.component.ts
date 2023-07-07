@@ -36,6 +36,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     toggleStatus = false;
     addNoteDisabled = false;
     nativeHistoricalDashboardActive = false;
+    maintenanceModeEnabled = false;
     private subaccountDetails: any;
     private onDestroy: Subject<void> = new Subject<void>();
     readonly CLOSE_NOTE = 'Close Note';
@@ -86,9 +87,12 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     /**
      * get action menu options
      */
-    private getActionMenuOptions() {
+    private async getActionMenuOptions() {
         const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions")
+        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions");
+        if(this.maintenanceModeEnabled) {
+            this.actionMenuOptions = [];
+        }
     }
     /**
      * fetch note data
@@ -256,7 +260,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
                 this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+                this.maintenanceModeEnabled = true;
             }
+            this.getActionMenuOptions();
         })
     }
 }
