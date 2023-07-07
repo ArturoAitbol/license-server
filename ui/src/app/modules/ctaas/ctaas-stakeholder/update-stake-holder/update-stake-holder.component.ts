@@ -62,6 +62,8 @@ export class UpdateStakeHolderComponent implements OnInit {
       }
       const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, role };
       this.updateStakeholderForm.patchValue(payload);
+      if (this.data.restrictRole)
+        this.updateStakeholderForm.get('role').disable();
       this.previousFormValue = { ...payload };
     } catch (e) {
       console.error('some error | ', e);
