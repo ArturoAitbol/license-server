@@ -7,7 +7,7 @@ import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service'
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
@@ -143,12 +143,6 @@ export class DetailedReportsComponent implements OnInit {
   public fetchDashboardReportDetails(): void {
     this.isRequestCompleted = false;
     this.hasDashboardDetails = false;
-    let minorTime;
-    let minorTimestamp;
-    let minorTimeIndex = 0;
-    let majorTime;
-    let majorTimestamp;
-    let majorTimeIndex = 0;
     this.isLoadingResults = true;
     this.testPlanNames = this.parseTestPlanNames();
     this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, this.testPlanNames, this.startDateStr, this.endDateStr, this.status,
@@ -173,12 +167,12 @@ export class DetailedReportsComponent implements OnInit {
           } else {
             this.reportResponse.endpoints = [];
           }
-
-          minorTime = moment.utc(this.reportResponse.results[0].startTime.split(' UTC')[0], 'MM-DD-YYYY HH:mm:ss').format("YYYY-DD-MM HH:mm:ss");
-          minorTimestamp = new Date(minorTime).getTime();
-
-          majorTime = moment.utc(this.reportResponse.results[this.reportResponse.results.length -1].endTime.split(' UTC')[0], 'MM-DD-YYYY HH:mm:ss').format("YYYY-DD-MM HH:mm:ss");
-          majorTimestamp = new Date(majorTime).getTime();
+          let minorTime: Moment;
+          let minorTimeIndex = 0;
+          let majorTime: Moment;
+          let majorTimeIndex = 0;
+          minorTime = moment(this.reportResponse.results[0].startTime, "MM-DD-YYYY HH:mm:ss");
+          majorTime = moment(this.reportResponse.results[this.reportResponse.results.length -1].endTime, "MM-DD-YYYY HH:mm:ss");
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
           this.detailedTestReport.forEach((testResult: any, index) => {
@@ -277,20 +271,16 @@ export class DetailedReportsComponent implements OnInit {
             testResult.fromAvgBitrate = this.dataToString(0, testResult.fromAvgBitrate, "Sent bitrate");
             testResult.toAvgBitrate = this.dataToString(0, testResult.toAvgBitrate, "Sent bitrate");
 
-            let formattedStartTime = moment.utc(testResult.startTime.split(' UTC')[0], 'MM-DD-YYYY HH:mm:ss').format("YYYY-DD-MM HH:mm:ss");
-            let formattedEndTime = moment.utc(testResult.endTime.split(' UTC')[0], 'MM-DD-YYYY HH:mm:ss').format("YYYY-DD-MM HH:mm:ss");
-
-            let startTimeTimeStamp = new Date(formattedStartTime).getTime();
-            let endTimeTimeStamp = new Date(formattedEndTime).getTime();
-            
-            testResult.startTime = moment.utc(formattedStartTime, "YYYY-DD-MM HH:mm:ss").format("MM/DD/YYYY HH:mm:ss");
-            testResult.endTime = moment.utc(formattedEndTime, "YYYY-DD-MM HH:mm:ss").format("MM/DD/YYYY HH:mm:ss");
-            if(startTimeTimeStamp < minorTimestamp){
-              minorTimestamp = startTimeTimeStamp;
+            const startTime = moment(testResult.startTime, "MM-DD-YYYY HH:mm:ss");
+            const endTime = moment(testResult.endTime, "MM-DD-YYYY HH:mm:ss");
+            testResult.startTime = startTime.format("MM/DD/YYYY HH:mm:ss");
+            testResult.endTime = endTime.format("MM/DD/YYYY HH:mm:ss");
+            if (startTime < minorTime) {
+              minorTime = startTime;
               minorTimeIndex = index;
             }
-            if(endTimeTimeStamp >= majorTimestamp){
-              majorTimestamp = endTimeTimeStamp;
+            if (endTime >= majorTime) {
+              majorTime = endTime;
               majorTimeIndex = index;
             }
             testResult.closeKey = false;
