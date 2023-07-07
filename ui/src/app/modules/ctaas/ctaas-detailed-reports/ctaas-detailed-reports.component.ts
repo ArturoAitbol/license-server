@@ -174,8 +174,18 @@ export class DetailedReportsCompoment implements OnInit {
             this.reportResponse.endpoints = [];
           }
           minorTime =  this.reportResponse.results[0].startTime;
+          minorTime = minorTime.split(" UTC")[0];
+          let date = minorTime.split(" ")[1];
+          minorTime = minorTime.split(" ")[0];
+          minorTime = minorTime.split("-").reverse().join("-");
+          minorTime = minorTime + " " + date;
           minorTimestamp = new Date(minorTime).getTime();
           majorTime = this.reportResponse.results[this.reportResponse.results.length -1].endTime;
+          majorTime = majorTime.split(" UTC")[0];
+          date = majorTime.split(" ")[1];
+          majorTime = majorTime.split(" ")[0];
+          majorTime = majorTime.split("-").reverse().join("-");
+          majorTime = majorTime + " " + date;
           majorTimestamp = new Date(majorTime).getTime();
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
@@ -275,10 +285,23 @@ export class DetailedReportsCompoment implements OnInit {
             testResult.fromAvgBitrate = this.dataToString(0, testResult.fromAvgBitrate, "Sent bitrate");
             testResult.toAvgBitrate = this.dataToString(0, testResult.toAvgBitrate, "Sent bitrate");
 
-            let startTimeTimeStamp = new Date(testResult.startTime).getTime();
-            let endTimeTimeStamp = new Date(testResult.endTime).getTime();
-            testResult.startTime = moment.utc(testResult.startTime).format("MM/DD/YYYY HH:mm:ss");
-            testResult.endTime = moment.utc(testResult.endTime).format("MM/DD/YYYY HH:mm:ss");
+            let formattedStartTime = testResult.startTime.split(" UTC")[0];
+            let date = formattedStartTime.split(" ")[1];
+            formattedStartTime = formattedStartTime.split(" ")[0];
+            formattedStartTime = formattedStartTime.split("-").reverse().join("-");
+            formattedStartTime = formattedStartTime + " " + date;
+
+            let formattedEndTime = testResult.endTime.split(" UTC")[0];
+            date = formattedEndTime.split(" ")[1];
+            formattedEndTime = formattedEndTime.split(" ")[0];
+            formattedEndTime = formattedEndTime.split("-").reverse().join("-");
+            formattedEndTime = formattedEndTime + " " + date;
+
+            let startTimeTimeStamp = new Date(formattedStartTime).getTime();
+            let endTimeTimeStamp = new Date(formattedEndTime).getTime();
+            
+            testResult.startTime = moment.utc(formattedStartTime).format("MM/DD/YYYY HH:mm:ss");
+            testResult.endTime = moment.utc(formattedEndTime).format("MM/DD/YYYY HH:mm:ss");
             if(startTimeTimeStamp < minorTimestamp){
               minorTimestamp = startTimeTimeStamp;
               minorTimeIndex = index;
