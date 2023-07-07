@@ -84,23 +84,24 @@ public class TekvLSCreateSubaccountAdminEmail {
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
 
+            final String ctaasSetupSql = "SELECT cs.id FROM ctaas_setup cs, subaccount s WHERE cs.subaccount_id = ?::uuid AND cs.subaccount_id = s.id AND s.services LIKE ? AND cs.status=?";
             final String subaccountNameSql = "SELECT name, customer_id FROM subaccount WHERE id = ?::uuid;";
-            final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?::uuid";
-            try (PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql);
-                    PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql)) {
+            try (PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql);
+                PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)) {
                 ctaasSetupStmt.setString(1, createSubaccountAdminRequest.subaccountId);
+                ctaasSetupStmt.setString(2, "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
+                ctaasSetupStmt.setString(3, Constants.CTaaSSetupStatus.READY.value());
+                context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + ctaasSetupStmt);
                 ResultSet rs = ctaasSetupStmt.executeQuery();
                 boolean setupExists = rs.next();
 
-                // Only create the user when the setup does not exist and toggle is enabled, or when it exists and the status is Ready
-                if ((!setupExists && FeatureToggleService.isFeatureActiveBySubaccountId("ad-license-service-user-creation", createSubaccountAdminRequest.subaccountId)) ||
-                    (setupExists && !Objects.equals(rs.getString("status"), Constants.CTaaSSetupStatus.READY.value())))
-                    return request.createResponseBuilder(HttpStatus.OK).build();
-                subaccountNameStmt.setString(1, createSubaccountAdminRequest.getSubaccountId());
-                rs = subaccountNameStmt.executeQuery();
-                if (rs.next()) {
-                    GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
-                            createSubaccountAdminRequest.getAdminEmail(), SUBACCOUNT_ADMIN, context);
+                // Only create the user when (the subaccount has SpotLight service enabled, the setup exists and is ready) OR ad-license-service-user-creation toggle is enabled
+                if (setupExists || FeatureToggleService.isFeatureActiveBySubaccountId("ad-license-service-user-creation", createSubaccountAdminRequest.subaccountId)) {
+                    subaccountNameStmt.setString(1, createSubaccountAdminRequest.getSubaccountId());
+                    rs = subaccountNameStmt.executeQuery();
+                    if (rs.next()) {
+                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"), createSubaccountAdminRequest.getAdminEmail(), SUBACCOUNT_ADMIN, context);
+                    }
                 }
             }
 

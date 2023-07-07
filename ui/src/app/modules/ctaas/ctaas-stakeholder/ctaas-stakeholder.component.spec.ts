@@ -112,7 +112,7 @@ describe('dialog calls and interactions',() => {
         selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Deleted Stakeholder successfully', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Stakeholder deleted successfully!', '');
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
 
@@ -197,7 +197,6 @@ describe('calls with customer subaccount admin role', () => {
         spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
-        ctaasStakeholderComponentTestInstance.toggleStatus = true;
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount({
             "subaccountId": "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",
