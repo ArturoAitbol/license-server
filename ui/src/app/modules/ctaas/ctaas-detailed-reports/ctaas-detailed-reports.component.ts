@@ -13,7 +13,7 @@ import moment from 'moment';
   templateUrl: './ctaas-detailed-reports.component.html',
   styleUrls: ['./ctaas-detailed-reports.component.css']
 })
-export class DetailedReportsCompoment implements OnInit {
+export class DetailedReportsComponent implements OnInit {
 
   endpointDisplayedColumns: any = [];
   filename: string = '';
@@ -510,7 +510,7 @@ export class DetailedReportsCompoment implements OnInit {
     try {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
-      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
+      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();      
       detailedResponseObj.summary.startTime = this.reportResponse.summary.summaryStartTime;
       detailedResponseObj.summary.endTime = this.reportResponse.summary.summaryEndTime;
       detailedResponseObj.type = this.testPlanNames;
