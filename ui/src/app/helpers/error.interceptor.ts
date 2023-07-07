@@ -14,17 +14,15 @@ export class ErrorInterceptor implements HttpInterceptor {
         return next.handle(request).pipe(
             tap(event => this.autoLogoutService.restartTimer()),
             catchError(err => {
-                let errorText;
+                let error;
                 if (!err)
-                    errorText = "Unexpected Error"
-                else {
-                    const error = err.error ? err.error : err.statusText;
-                    errorText = error.error
-                }
-                this.snackBarService.openSnackBar(errorText, 'Error performing action!');
+                    error = { error: "Unexpected Error" };
+                else
+                    error = err.error ? err.error : err.statusText;
+                this.snackBarService.openSnackBar(error.error, 'Error performing action!');
                 if (err.status === 401)
                     this.autoLogoutService.logout();
-                return throwError(err);
+                return throwError(error);
             }))
     }
 }
