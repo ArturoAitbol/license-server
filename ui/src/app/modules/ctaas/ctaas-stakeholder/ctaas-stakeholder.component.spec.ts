@@ -112,7 +112,7 @@ describe('dialog calls and interactions',() => {
         selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Deleted Stakeholder successfully', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Stakeholder deleted successfully!', '');
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
 
