@@ -15,8 +15,14 @@
                             <tr class="col-6 originated-column-data">
                                 <div class="row-auto">
                                     <div class="col-12">
-                                        <th>Originated calls</th>
-                                        <td>{{data.callsOriginated.total}}</td>
+                                        <th>Originated calls (Crossed regions)</th>
+                                        <td>{{originatedCrossRegion}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Originated calls (Same region)</th>
+                                        <td>{{data.callsOriginated.callsToSameRegion}}</td>
                                     </div>
                                 </div>
                                 <div class="row-auto">
@@ -65,8 +71,14 @@
                             <tr class="col-6 terminated-column-data">
                                 <div class="row-auto">
                                     <div class="col-12">
-                                        <th>Terminated calls</th>     
-                                        <td>{{data.callsTerminated.total}}</td>
+                                        <th>Terminated calls (Crossed regions)</th>     
+                                        <td>{{terminatedCrossRegion}}</td>
+                                   </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Terminated calls (Same region)</th>     
+                                        <td>{{data.callsTerminated.callsToSameRegion}}</td>
                                    </div>
                                 </div>
                                 <div class="row-auto">
