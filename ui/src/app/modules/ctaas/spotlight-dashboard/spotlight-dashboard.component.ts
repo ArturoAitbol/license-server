@@ -595,8 +595,15 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   private goToDetailedReportView(reportFilter: string) {
-    const startDate = this.selectedDate.clone().utc().startOf('day');
-    const endDate = this.selectedDate.clone().utc();
+    let startDate;
+    let endDate;
+    if (this.selectedPeriod == "daily") {
+      startDate = this.selectedDate.clone().utc().startOf('day');
+      endDate = this.selectedDate.clone().utc();
+    } else {
+      startDate = this.getStartWeekDate();
+      endDate = this.getEndWeekDate();
+    }
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     let regions = ""
