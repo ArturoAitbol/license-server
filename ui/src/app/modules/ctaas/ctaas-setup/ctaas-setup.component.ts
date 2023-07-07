@@ -71,6 +71,7 @@ export class CtaasSetupComponent implements OnInit {
 
           if (activeLicenses.length === 0) {
             this.snackBarService.openSnackBar("No active subscriptions found", "Error selecting a subscription");
+            this.isDataLoading = false;
             return;
           }
           if (activeLicenses.length === 1) {

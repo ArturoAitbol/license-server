@@ -68,6 +68,10 @@ export class RedirectPageComponent implements OnInit {
   private getSubAccountDetails(): void {
     this.subaccountService.getSubAccountList().subscribe((subaccountsResp: any) => {
       if (subaccountsResp) {
+        if (subaccountsResp.subaccounts.length > 1) {
+          this.navigateToDashboard();
+          return;
+        }
         this.currentSubaccountDetails = subaccountsResp.subaccounts[0];
         if (this.currentSubaccountDetails.services) {
             this.currentSubaccountDetails.services = this.currentSubaccountDetails.services.split(',').map((e: string) => e.trim());

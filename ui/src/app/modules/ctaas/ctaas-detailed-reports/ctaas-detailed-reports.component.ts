@@ -13,13 +13,14 @@ import moment from 'moment';
   templateUrl: './ctaas-detailed-reports.component.html',
   styleUrls: ['./ctaas-detailed-reports.component.css']
 })
-export class DetailedReportsCompoment implements OnInit {
+export class DetailedReportsComponent implements OnInit {
 
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
   title: string = ReportName.FEATURE_FUNCTIONALITY_NAME + " + " + ReportName.CALLING_RELIABILITY_NAME + " + " + ReportName.VQ_NAME;
   types: string = '';
+  testPlanNames: string = '';
   status: string = '';
   startDateStr: string = '';
   endDateStr: string = '';
@@ -149,15 +150,14 @@ export class DetailedReportsCompoment implements OnInit {
     let majorTimestamp;
     let majorTimeIndex = 0;
     this.isLoadingResults = true;
-    const PARSED_REPORT_TYPE = this.parseTestPlanNames();
-    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status,
+    this.testPlanNames = this.parseTestPlanNames();
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, this.testPlanNames, this.startDateStr, this.endDateStr, this.status,
       this.regionsStr, this.usersStr, this.polqaCalls).subscribe((res: any) => {
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         if (res.response.report && res.response.reportType) {
           this.reportResponse = res.response.report;
-          const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-          detailedResponseObj[this.types] = JSON.parse(JSON.stringify(res.response.report));
+          const detailedResponseObj = JSON.parse(JSON.stringify(res.response.report));
           this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
           this.filename = res.response.reportType;
           this.hasDashboardDetails = true;
@@ -502,7 +502,7 @@ export class DetailedReportsCompoment implements OnInit {
     const hh = currentDate.getHours();
     const mm = currentDate.getMinutes();
     const ss = currentDate.getSeconds();
-    const name = `${this.types}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
+    const name = `${this.testPlanNames}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     a.download = name;
@@ -516,12 +516,12 @@ export class DetailedReportsCompoment implements OnInit {
     try {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
-      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-      const reportResponse = detailedResponseObj[this.types];
-      reportResponse.summary.startTime = this.reportResponse.summary.summaryStartTime;
-      reportResponse.summary.endTime = this.reportResponse.summary.summaryEndTime;
-      if (reportResponse) {
-        this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(reportResponse)
+      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();      
+      detailedResponseObj.summary.startTime = this.reportResponse.summary.summaryStartTime;
+      detailedResponseObj.summary.endTime = this.reportResponse.summary.summaryEndTime;
+      detailedResponseObj.type = this.testPlanNames;
+      if (detailedResponseObj) {
+        this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(detailedResponseObj)
           .subscribe((res: any) => {
             if (!res.error) this.downloadExcelFile(res);
           }, (error) => {
