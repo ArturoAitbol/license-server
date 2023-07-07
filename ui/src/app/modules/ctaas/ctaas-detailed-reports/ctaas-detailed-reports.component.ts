@@ -168,9 +168,7 @@ export class DetailedReportsComponent implements OnInit {
             this.reportResponse.endpoints = [];
           }
           let minorTime: Moment;
-          let minorTimeIndex = 0;
           let majorTime: Moment;
-          let majorTimeIndex = 0;
           minorTime = moment(this.reportResponse.results[0].startTime, "MM-DD-YYYY HH:mm:ss");
           majorTime = moment(this.reportResponse.results[this.reportResponse.results.length -1].endTime, "MM-DD-YYYY HH:mm:ss");
 
@@ -275,14 +273,10 @@ export class DetailedReportsComponent implements OnInit {
             const endTime = moment(testResult.endTime, "MM-DD-YYYY HH:mm:ss");
             testResult.startTime = startTime.format("MM/DD/YYYY HH:mm:ss");
             testResult.endTime = endTime.format("MM/DD/YYYY HH:mm:ss");
-            if (startTime < minorTime) {
+            if (startTime < minorTime)
               minorTime = startTime;
-              minorTimeIndex = index;
-            }
-            if (endTime >= majorTime) {
+            if (endTime >= majorTime)
               majorTime = endTime;
-              majorTimeIndex = index;
-            }
             testResult.closeKey = false;
             testResult.fromnoDataFoundFlag = false;
             testResult.tonoDataFoundFlag = false;
@@ -290,8 +284,8 @@ export class DetailedReportsComponent implements OnInit {
             testResult.panelOpenState = true;
             testResult.otherParties = (testResult.otherParties && testResult.otherParties.length > 0) ? testResult.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
-          this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime; //
-          this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[majorTimeIndex].endTime;
+          this.reportResponse.summary.summaryStartTime = minorTime.format("MM/DD/YYYY HH:mm:ss");
+          this.reportResponse.summary.summaryEndTime =  majorTime.format("MM/DD/YYYY HH:mm:ss");
         } else {
           this.hasDashboardDetails = false;
           this.reportResponse = {};
