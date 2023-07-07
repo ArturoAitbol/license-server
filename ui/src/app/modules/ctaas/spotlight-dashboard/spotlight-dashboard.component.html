@@ -457,6 +457,9 @@
                                     <label class="ps-2">Total Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ heatMapCallsSummary.total }}</p>
+                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable()">
+                                        View Detailed Report
+                                    </button>
                                 </div>
                                 <div class="vr p-0" style="color: black"></div>
                                 <div class="col-5 red-label">
@@ -464,6 +467,9 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ heatMapCallsSummary.failed }}</p>
+                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                                        View Detailed Report
+                                    </button>
                                 </div>
                             </div>
                             <hr>
