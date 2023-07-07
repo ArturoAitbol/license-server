@@ -210,8 +210,8 @@ export class CtaasTestReportsComponent implements OnInit {
   onClickMoreDetails(selectedReport: any): void {
     const startDate = selectedReport.startDate.split('UTC')[0];
     const endDate = selectedReport.endDate.split('UTC')[0];
-    const startTime = Utility.parseReportDate(moment(startDate));
-    const endTime = Utility.parseReportDate(moment(endDate));
+    const startTime = Utility.parseReportDate(moment(startDate,'MM-DD-YYYY HH:mm:ss'));
+    const endTime = Utility.parseReportDate(moment(endDate,'MM-DD-YYYY HH:mm:ss'));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
 }
