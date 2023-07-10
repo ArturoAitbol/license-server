@@ -15,10 +15,22 @@ Feature: Stakeholders
   Scenario: Validate node POLQA data
     Given I go to spotlight for "Spotlight Demo-1"
     And I go to the spotlight "Map" tab
-    Then I open a node of the map and validate POLQA
+    Then I validate node avg POLQA of "Chicago" with "Avg: 3.91" and "Avg: 3.89"
 
   @validateLinkInformation @spotLightDashboard @test
-  Scenario: Open a link information
+  Scenario: Open a link and validate information
     Given I go to spotlight for "Spotlight Demo-1"
     And I go to the spotlight "Map" tab
-    Then I open a node of the map and validate POLQA
+    Then I open a link and validate the data
+
+  @validateFailedInformation @spotLightDashboard @test
+  Scenario: Open a link and validate the failed calls
+    Given I go to spotlight for "Spotlight Demo-1"
+    And I go to the spotlight "Map" tab
+    Then I open a link and validate failed calls
+
+  @validateAvgPOLQAInformation @spotLightDashboard @test
+  Scenario: Open a node and validate the POLQA value
+    Given I go to spotlight for "Spotlight Demo-1"
+    And I go to the spotlight "Map" tab
+    Then I validate node avg POLQA of "Las Vegas" with "Avg: 3.76" and "Avg: 3.81"

@@ -27,22 +27,33 @@ public class SpotlightMapSteps {
         this.map.openNodeAndValidateData();
     }
 
-    @Then("I open a node of the map and validate POLQA")
-    public void iOpenANodeOfTheMapAndValidatePOLQA() {
-        this.map.waitData();
-        this.map.validatePOLQAValues();
-    }
+//    @Then("I open a node of the map and validate POLQA")
+//    public void iOpenANodeOfTheMapAndValidatePOLQA() {
+//        this.map.waitData();
+//        this.map.validatePOLQAValues();
+//    }
 
     @Then("I open a link and validate the data")
     public void iOpenALinkAndValidateTheData() {
         this.map.waitData();
+        this.map.validateCallsFailedValues();
+    }
+
+    @Then("I open a link and validate failed calls")
+    public void iOpenALinkAndValidateFailedCalls() {
+        this.map.waitData();
         this.map.validateLinkData();
+    }
+
+    @Then("I validate node avg POLQA of {string} with {string} and {string}")
+    public void iValidateNodeAvgPOLQA(String node, String orginatedAvg, String terminatedAvg) {
+        this.map.waitData();
+        this.map.validatePOLQA(node, orginatedAvg, terminatedAvg);
     }
 
     @Given("I go to spotlight for {string}")
     public void iGoToTheSpotlightDashboardViewFor(String customerName) {
         CustomerRow customerRow = this.customers.getCustomerSubaccount(customerName);
-        System.out.println(customerRow + " " + customerName );
         ActionMenu actionMenu = customerRow.openActionMenu();
         this.spotlightDashboard = actionMenu.goToSpotlightDashboard();
     }

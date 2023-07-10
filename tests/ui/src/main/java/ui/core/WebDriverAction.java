@@ -176,4 +176,9 @@ public class WebDriverAction {
         wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
         return output;
     }
+
+    public void waitPropertyToBe(WebElement element, String property, String value){
+        wait.until(ExpectedConditions.domPropertyToBe(element, property, value));
+        System.out.println(element + ": enabled!");
+    }
 }
