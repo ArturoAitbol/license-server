@@ -87,11 +87,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     /**
      * get action menu options
      */
-    private async getActionMenuOptions() {
-        const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions");
-        if(this.maintenanceModeEnabled) {
-            this.actionMenuOptions = [];
+    private getActionMenuOptions() {
+        if(!this.maintenanceModeEnabled) {
+            const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+            this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions");
         }
     }
     /**
@@ -123,7 +122,6 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
         this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id);
         this.calculateTableHeight();
-        this.getActionMenuOptions();
         this.initColumns();
         this.fetchNoteList();
         this.checkMaintenanceMode();

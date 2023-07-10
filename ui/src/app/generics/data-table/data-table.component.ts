@@ -27,7 +27,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit, OnC
   @Input() isSortable = false;
   @Input() isFilterable = false;
   @Input() tableColumns: TableColumn[];
-  @Input() rowActionIcon: any;
+  @Input() rowActionIcon: string;
   @Input() paginationSizes: number[] = [5, 10, 15];
   @Input() defaultPageSize = this.paginationSizes[1];
   @Input() actionMenuList: string[];
@@ -68,7 +68,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit, OnC
   }
 
   ngOnChanges(): void {
-    if (this.rowActionIcon == false && this.displayedColumns[this.displayedColumns.length-1] === 'more_vert') this.displayedColumns.pop();
+    this.ngOnInit();
   }
 
   // we need this, in order to make pagination work with *ngIf
