@@ -14,9 +14,12 @@ export class NodeDetailComponent implements OnInit {
   terminatedCalls: any[] = [];
   selectedSubaccount: any;
   parsedPolqaData: any;
-  originatedCrossRegion: any;
-  terminatedCrossRegion: any;
-
+  originatedPassedCallsCrossRegion: number;
+  terminatedPassedCallsCrossRegion: number;
+  originatedFailedCallsCrossRegion: number;
+  terminatedFailedCallsCrossRegion: number;
+  totalPassedCalls: number;
+  totalFailedCalls: number;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<NodeDetailComponent>,
@@ -24,8 +27,12 @@ export class NodeDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedSubaccount = this.subaccountService.getSelectedSubAccount();
-    this.originatedCrossRegion = this.data.callsOriginated.total - this.data.callsOriginated.callsToSameRegion;
-    this.terminatedCrossRegion = this.data.callsTerminated.total - this.data.callsTerminated.callsToSameRegion;
+    this.originatedPassedCallsCrossRegion = this.data.callsOriginated.passed - this.data.callsOriginated.callsPassedToSameRegion;
+    this.terminatedPassedCallsCrossRegion = this.data.callsTerminated.passed - this.data.callsTerminated.callsPassedToSameRegion;
+    this.originatedFailedCallsCrossRegion = this.data.callsOriginated.failed - this.data.callsOriginated.callsFailedToSameRegion;
+    this.terminatedFailedCallsCrossRegion = this.data.callsTerminated.failed - this.data.callsTerminated.callsFailedToSameRegion;
+    this.totalFailedCalls = this.originatedFailedCallsCrossRegion + this.terminatedFailedCallsCrossRegion + this.data.callsOriginated.callsFailedToSameRegion;
+    this.totalPassedCalls = this.originatedPassedCallsCrossRegion + this.terminatedPassedCallsCrossRegion + this.data.callsOriginated.callsPassedToSameRegion;
   }
 
   onCancel(type?: string): void {

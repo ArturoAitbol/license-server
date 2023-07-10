@@ -30,3 +30,32 @@ th{
         overflow-x: auto;
     }
 }
+
+.table-caption {
+    caption-side: top;
+    text-align: center;
+}
+
+.custom-table {
+ margin-left: 5%;
+ width: 90%;
+}
+
+.custom-td {
+    width: 0% !important; 
+    text-align: start !important;
+}
+
+.headers-data {
+    float: right; 
+    margin-left: 10px;
+    margin-bottom: 0;
+}
+
+.main-headers {
+    margin-bottom: 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    
+}

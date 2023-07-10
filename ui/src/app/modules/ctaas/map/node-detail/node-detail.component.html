@@ -4,125 +4,115 @@
         <div>
             <mat-card class="card summary">
                 <mat-card-content class="summary-card-content">
-                    <table class="table">
-                        <tbody class="row-auto">
-                            <div class="row-auto">
-                                <div class="col-5" style="margin-left: 4%;">
-                                    <th class="total-calls-data">Total Calls</th>
-                                    <td class="total-calls-data">{{data.totalCalls}}</td>
-                                </div>
-                            </div>
-                            <tr class="col-6 originated-column-data">
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th>Originated calls (Crossed regions)</th>
-                                        <td>{{originatedCrossRegion}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th>Originated calls (Same region)</th>
-                                        <td>{{data.callsOriginated.callsToSameRegion}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th>Originiated calls passed</th>
-                                        <td>{{data.callsOriginated.passed}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                     <div class="col-12">
-                                         <th>Originated calls failed</th>
-                                         <td>{{data.callsOriginated.failed}}</td>
-                                     </div>
-                                </div>
-                                <div class="row-auto">
-                                     <div class="col-12">
-                                        <th style="width: max-content;">POLQA</th>
-                                        <td style="width: 85%;">Min: {{data.callsOriginated.polqa.min | na}}, Avg: {{data.callsOriginated.polqa.avg | number:'.0-2' | na}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Jitter (ms)</th>
-                                        <td style="width: 72.75%;">Max: {{data.callsOriginated.receivedJitter.max | na}}, Avg: {{data.callsOriginated.receivedJitter.avg | number:'.0-2' | na}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Round trip time (ms)</th>
-                                        <td style="width: 53.6%;">Max: {{data.callsOriginated.roundTripTime.max | na}}, Avg: {{data.callsOriginated.roundTripTime.avg | number:'.0-2' | na}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Packet Loss (%)</th>
-                                        <td style="width: 62.3%;">Max: {{data.callsOriginated.receivedPacketLoss.max | na}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
-                                    </div>
-                               </div>
-                               <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Bitrate (kbps)</th>
-                                        <td style="width: 66.85%;">Avg: {{data.callsOriginated.sentBitrate.avg | number:'.0-2' | na}}</td>
-                                   </div>
-                               </div>
+                    <table class="table custom-table table-bordered">
+                        <thead style="border-top: 2px solid #dee2e6;">
+                            <tr>
+                                <th colspan="3" class="text-center"> 
+                                    <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Total Calls: {{data.totalCalls}}</strong></h4>
+                                </th>
                             </tr>
-                            <tr class="col-6 terminated-column-data">
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th>Terminated calls (Crossed regions)</th>     
-                                        <td>{{terminatedCrossRegion}}</td>
-                                   </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th>Terminated calls (Same region)</th>     
-                                        <td>{{data.callsTerminated.callsToSameRegion}}</td>
-                                   </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                       <th>Terminated calls passed</th>
-                                       <td>{{data.callsTerminated.passed}}</td>
-                                   </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th>Terminated calls failed</th>
-                                        <td>{{data.callsTerminated.failed}}</td>
-                                   </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">POLQA</th>
-                                        <td style="width: 85%;">Min: {{data.callsTerminated.polqa.min | na}}, Avg: {{data.callsTerminated.polqa.avg | number:'.0-2'}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Jitter (ms)</th>
-                                        <td style="width: 72.75%;">Max: {{data.callsTerminated.receivedJitter.max | na}}, Avg: {{data.callsTerminated.receivedJitter.avg | number:'.0-2' | na}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Round trip time (ms)</th>
-                                        <td style="width: 53.6%;">Max: {{data.callsTerminated.roundTripTime.max | na}}, Avg: {{data.callsTerminated.roundTripTime.avg | number:'.0-2' | na}}</td>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Packet Loss (%)</th>
-                                        <td style="width: 62.3%;">Max: {{data.callsTerminated.receivedPacketLoss.max | na}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
-                                    </div>
-                               </div>
-                               <div class="row-auto">
-                                    <div class="col-12">
-                                        <th style="width: max-content;">Bitrate (kbps)</th>
-                                        <td style="width: 66.85%;">Avg: {{data.callsTerminated.sentBitrate.avg | number:'.0-2' | na}}</td>
-                                </div>
-                              </div>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Passed Calls</strong>
+                                    <p style="float: right;">{{totalPassedCalls}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Failed Calls</strong>
+                                    <p style="float: right;">{{totalFailedCalls}}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <thead style="border-top: 2px solid #dee2e6;">
+                            <tr>
+                                <th style="width: 50%; text-align: center;">Originated Calls</th>
+                                <th style="text-align: center;">Terminated Calls</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Cross Regions (Passed/Failed)</strong>
+                                    <p style="float: right;">{{originatedPassedCallsCrossRegion}}/{{originatedFailedCallsCrossRegion}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Cross Regions (Passed/Failed)</strong>
+                                    <p style="float: right;">{{terminatedPassedCallsCrossRegion}}/{{terminatedFailedCallsCrossRegion}}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Same Region (Passed/Failed)</strong>
+                                    <p style="float: right;">{{data.callsOriginated.callsPassedToSameRegion}}/{{data.callsOriginated.callsFailedToSameRegion}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Same Region (Passed/Failed)</strong>
+                                    <p style="float: right;">{{data.callsTerminated.callsPassedToSameRegion}}/{{data.callsTerminated.callsFailedToSameRegion}}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <thead style="border-top: 2px solid #dee2e6;">
+                            <tr>
+                                <th colspan="3" class="text-center" style="border-top: 1px ;">
+                                    <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Media Stats</strong></h4>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 50%; text-align: center;">Originated Calls</th>
+                                <th style="text-align: center;">Terminated Calls</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">POLQA</strong>
+                                    <p style="float: right;">Min: {{data.callsOriginated.polqa.min | na}}, Avg: {{data.callsOriginated.polqa.avg | number:'.0-2' | na}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">POLQA</strong>
+                                    <p style="float: right;">Min: {{data.callsTerminated.polqa.min | na}}, Avg: {{data.callsTerminated.polqa.avg | number:'.0-2'}}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Jitter (ms)</strong>
+                                    <p style="float: right;">Max: {{data.callsOriginated.receivedJitter.max | na}}, Avg: {{data.callsOriginated.receivedJitter.avg | number:'.0-2' | na}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Jitter (ms)</strong>
+                                    <p style="float: right;">Max: {{data.callsTerminated.receivedJitter.max | na}}, Avg: {{data.callsTerminated.receivedJitter.avg | number:'.0-2' | na}}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Round trip time (ms)</strong>
+                                    <p style="float: right;">Max: {{data.callsOriginated.roundTripTime.max | na}}, Avg: {{data.callsOriginated.roundTripTime.avg | number:'.0-2' | na}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Round trip time (ms)</strong>
+                                    <p style="float: right;">Max: {{data.callsTerminated.roundTripTime.max | na}}, Avg: {{data.callsTerminated.roundTripTime.avg | number:'.0-2' | na}}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Packet Loss (%)</strong>
+                                    <p style="float: right;">Max: {{data.callsOriginated.receivedPacketLoss.max | na}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg | number:'.0-2' | na}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Packet Loss (%)</strong>
+                                    <p style="float: right;">Max: {{data.callsTerminated.receivedPacketLoss.max | na}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg | number:'.0-2' | na}}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Bitrate (kbps)</strong>
+                                    <p style="float: right;">Avg: {{data.callsOriginated.sentBitrate.avg | number:'.0-2' | na}}</p>
+                                </td>
+                                <td class="custom-td">
+                                    <strong style="font-weight:500;">Bitrate (kbps)</strong>
+                                    <p style="float: right;">Avg: {{data.callsTerminated.sentBitrate.avg | number:'.0-2' | na}}</p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
