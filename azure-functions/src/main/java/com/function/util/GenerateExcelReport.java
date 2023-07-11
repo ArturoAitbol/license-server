@@ -224,12 +224,18 @@ public class GenerateExcelReport {
         int columnnum = row.getRowNum() + 1;
         summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "J" + columnnum));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
-        String[] reportTypes = jsonObject.get("type").toString().split(",");
-        String reportTypesHeader = "";
-        for (int i = 0; i < reportTypes.length; i++) {
-            reportTypesHeader += Utils.getReportNameByTestPlan(reportTypes[i]);
-            if (i + 1 < reportTypes.length)
-                reportTypesHeader += " + ";
+        String reportTypeParam = jsonObject.get("type").toString();
+        String reportTypesHeader;
+        if (reportTypeParam.isEmpty()){
+            reportTypesHeader = Constants.DEFAULT_REPORT_NAME;
+        } else {
+            String[] reportTypes = reportTypeParam.split(",");
+            reportTypesHeader = "";
+            for (int i = 0; i < reportTypes.length; i++) {
+                reportTypesHeader += Utils.getReportNameByTestPlan(reportTypes[i]);
+                if (i + 1 < reportTypes.length)
+                    reportTypesHeader += " + ";
+            }
         }
         if (jsonObject.get("results") != null)
             addCell(row, null, whiteLabel, count++, reportTypesHeader);

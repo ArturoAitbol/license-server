@@ -1,6 +1,6 @@
 <app-banner></app-banner>
 <mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
-<div class="container-fluid">
+<div class="container-fluid" *ngIf="!maintenanceModeEnabled">
     <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
         <div class="card col-8">
             <div class="card-body">
@@ -218,7 +218,7 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col top-spacing-1" style="transform: scale(1.4);">
+                                <div class="col top-spacing-1">
                                     <apx-chart
                                             [series]="failedCallsChartOptions.series"
                                             [chart]="failedCallsChartOptions.chart"
