@@ -13,9 +13,8 @@ import { Report } from 'src/app/helpers/report';
 import { Utility } from 'src/app/helpers/utils';
 import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { ViewProfileComponent } from 'src/app/generics/view-profile/view-profile.component';
-import { CallbackService } from 'src/app/services/callback.service';
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
+import { SubaccountAdminEmailService } from 'src/app/services/subaccount-admin-email.service';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -30,7 +29,6 @@ export class CtaasStakeholderComponent implements OnInit {
   isLoadingResults = false;
   isRequestCompleted = false;
   stakeholdersCount = 0;
-  toggleStatus = false;
   isDataLoading = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Details';
@@ -47,6 +45,7 @@ export class CtaasStakeholderComponent implements OnInit {
     private snackBarService: SnackBarService,
     private dialogService: DialogService,
     private stakeholderService: StakeHolderService,
+    private subaccountAdminEmailService: SubaccountAdminEmailService,
     private subaccountService: SubAccountService,
     private featureToggleService: FeatureToggleService
   ) { }
@@ -189,6 +188,8 @@ export class CtaasStakeholderComponent implements OnInit {
         });
         break;
       case this.MODIFY_STAKEHOLDER:
+        if (data.role === Constants.SUBACCOUNT_ADMIN && this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1)
+          data.restrictRole = true;
         dialogRef = this.dialog.open(UpdateStakeHolderComponent, {
           width: '400px',
           data: data,
@@ -227,11 +228,9 @@ export class CtaasStakeholderComponent implements OnInit {
    * @param selectedRow: any
    */
   onDeleteStakeholderAccount(selectedRow: any): void {
-    if (this.toggleStatus && this.msalService.instance.getActiveAccount()?.idTokenClaims?.roles.includes(Constants.SUBACCOUNT_ADMIN)) {
-      if (this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1) {
-        this.snackBarService.openSnackBar("Error deleting administrator email, at least one administrator must remain");
-        return;
-      }
+    if (selectedRow.role === Constants.SUBACCOUNT_ADMIN && this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1) {
+      this.snackBarService.openSnackBar("Error deleting administrator email, at least one administrator must remain");
+      return;
     }
     this.dialogService.confirmDialog({
       title: 'Confirm Action',
@@ -241,7 +240,10 @@ export class CtaasStakeholderComponent implements OnInit {
     }).subscribe((confirmed) => {
       if (confirmed) {
         const { email } = selectedRow;
-        this.deleteStakeholder(email);
+        if (selectedRow.role === Constants.SUBACCOUNT_ADMIN)
+          this.deleteSubaccountAdmin(email);
+        else
+          this.deleteStakeholder(email);
         this.stakeholdersCount = this.stakeholdersCount - 1
       }
     });
@@ -252,21 +254,39 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   deleteStakeholder(email: string): void {
     this.stakeholderService.deleteStakeholder(email).subscribe((response: any) => {
-      if (response) {
-        const { error } = response;
-        if (error) {
-          this.snackBarService.openSnackBar(response.error, 'Error while deleting Stakeholder');
-        } else {
-          this.stakeholdersDataBk = this.stakeholdersData = [];
-          this.fetchStakeholderList();
-        }
+      this.processDeletion(response, "Stakeholder");
+    });
+  }
+  /**
+   * delete selected stakeholder details by id
+   * @param email: string 
+   */
+  deleteSubaccountAdmin(email: string): void {
+    this.subaccountAdminEmailService.deleteAdminEmail(email).subscribe((response: any) => {
+      this.processDeletion(response, "Admin");
+    });
+  }
+  /**
+   * process selected stakeholder deletion
+   * @param response: any 
+   * @param role: string 
+   */
+  processDeletion(response: any, role: string): void {
+    if (response) {
+      const { error } = response;
+      if (error) {
+        this.snackBarService.openSnackBar(response.error, 'Error while deleting ' + role);
       } else {
-        this.snackBarService.openSnackBar('Deleted Stakeholder successfully', '');
         this.stakeholdersDataBk = this.stakeholdersData = [];
         this.fetchStakeholderList();
       }
-    });
+    } else {
+      this.snackBarService.openSnackBar(role + ' deleted successfully!', '');
+      this.stakeholdersDataBk = this.stakeholdersData = [];
+      this.fetchStakeholderList();
+    }
   }
+
   /**
    * get reports
    * @returns: any[]

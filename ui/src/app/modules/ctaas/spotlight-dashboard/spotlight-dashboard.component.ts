@@ -28,6 +28,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { FeatureToggleService } from "../../../services/feature-toggle.service";
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { BannerService } from 'src/app/services/alert-banner.service';
+import { MsalService } from '@azure/msal-angular';
+import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -128,6 +130,8 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   note: Note;
   showNewNoteBtn = false;
 
+  loggedInUserRoles: any;
+
   readonly ReportType = ReportType;
   readonly callingReliabilityTestPlans = ReportName.TAP_CALLING_RELIABILITY + "," + ReportName.TAP_VQ;
 
@@ -138,6 +142,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   private onDestroy: Subject<void> = new Subject<void>();
 
   constructor(private subaccountService: SubAccountService,
+              private msalService: MsalService,
               private spotlightChartsService: SpotlightChartsService,
               private noteService: NoteService,
               private route: ActivatedRoute,
@@ -179,7 +184,10 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let currentEndDate;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
-    this.checkMaintenanceMode();
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.loggedInUserRoles = roles;
+    this.checkSetupStatus();
     this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
       console.log(params);
@@ -243,6 +251,14 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     });
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
+  }
+
+  /**
+   * get logged in account details
+   * @returns: any | null
+   */
+  private getAccountDetails(): any | null {
+      return this.msalService.instance.getActiveAccount() || null;
   }
 
   dateHasChanged():boolean{
@@ -580,8 +596,15 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   private goToDetailedReportView(reportFilter: string) {
-    const startDate = this.selectedDate.clone().utc().startOf('day');
-    const endDate = this.selectedDate.clone().utc();
+    let startDate;
+    let endDate;
+    if (this.selectedPeriod == "daily") {
+      startDate = this.selectedDate.clone().utc().startOf('day');
+      endDate = this.selectedDate.clone().utc();
+    } else {
+      startDate = this.getStartWeekDate();
+      endDate = this.getEndWeekDate();
+    }
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     let regions = ""
@@ -728,14 +751,32 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private checkMaintenanceMode() {
+  private checkSetupStatus() {
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
         const ctaasSetupDetails = res['ctaasSetups'][0];
         if (ctaasSetupDetails.maintenance) {
             this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
             this.maintenanceModeEnabled = true;
+        } else {
+          this.setupCustomerOnboardDetails(ctaasSetupDetails);
         }
     });
+  }
+
+  /**
+   * setup customer onboarding details
+   */
+  private setupCustomerOnboardDetails(ctaasSetupDetails: any): void {
+    // only open onboarding wizard dialog/modal when onboardingcomplete is f and user is SUBACCOUNT_ADMIN
+    if ((!ctaasSetupDetails.onBoardingComplete && this.loggedInUserRoles.length === 1 && this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN))) {
+        const { id } = ctaasSetupDetails;
+        this.dialog.open(OnboardWizardComponent, {
+            width: '700px',
+            maxHeight: '80vh',
+            disableClose: true,
+            data: { ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountDetails.id }
+        });
+    }
   }
 
   ngOnDestroy(): void {

@@ -334,9 +334,8 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   clearUsersFilter(){
-    this.selectedUsers=[];
-    this.initAutocompletes();
     this.preselectedUsers=[];
+    this.initAutocompletes();
   }
 
   userHasChanged(){

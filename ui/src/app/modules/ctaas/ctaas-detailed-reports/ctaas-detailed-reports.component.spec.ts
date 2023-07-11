@@ -7,14 +7,14 @@ import { CtaasDashboardServiceMock } from "src/test/mock/services/ctaas-dashboar
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
-import { DetailedReportsCompoment } from "./ctaas-detailed-reports.component";
+import { DetailedReportsComponent } from "./ctaas-detailed-reports.component";
 
-let onboardWizardComponentInstance: DetailedReportsCompoment;
-let fixture : ComponentFixture<DetailedReportsCompoment>;
+let onboardWizardComponentInstance: DetailedReportsComponent;
+let fixture : ComponentFixture<DetailedReportsComponent>;
 const dialogService = new DialogServiceMock();
 
 const beforeEachFunction = () => {
-    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DetailedReportsCompoment);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DetailedReportsComponent);
     configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
     configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
     configBuilder.addProvider({provide: ActivatedRoute, useValue: {
@@ -24,7 +24,7 @@ const beforeEachFunction = () => {
         })
     }})
     TestBed.configureTestingModule(configBuilder.getConfig());
-    fixture = TestBed.createComponent(DetailedReportsCompoment);
+    fixture = TestBed.createComponent(DetailedReportsComponent);
     onboardWizardComponentInstance = fixture.componentInstance;
     fixture.detectChanges();
 }
@@ -210,7 +210,7 @@ describe ('triggered methods', () => {
 
 describe ('download detailed test reports', () => {
     beforeEach(beforeEachFunction);
-    it('it should call downloadDteailedTestReportByType', () => {
+    it('it should call downloadDetailedTestReportByType', () => {
        spyOn(onboardWizardComponentInstance, 'downloadDetailedTestReportByType').and.callThrough();
        spyOn(CtaasDashboardServiceMock, 'downloadCtaasDashboardDetailedReport').and.callThrough();
        fixture.detectChanges();
@@ -242,7 +242,7 @@ describe ('testing errors thrown by functions', () => {
 
         fixture.detectChanges();
         onboardWizardComponentInstance.downloadDetailedTestReportByType();
-        expect(console.error).toHaveBeenCalledWith("Error while downloading report:TypeError: Cannot read properties of null (reading 'Daily-FeatureFunctionality')");
+        expect(console.error).toHaveBeenCalledWith("Error while downloading report:TypeError: Cannot read properties of null (reading 'summary')");
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading downloading report', 'Ok');
     });
 
