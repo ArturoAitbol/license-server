@@ -131,8 +131,7 @@ public class TekvLSModifySubaccountById {
 
 				context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
 				ResultSet rsCtassSetup = verifyCtassSetupStmt.executeQuery();
-				rsCtassSetup.next();
-				if (rsCtassSetup.getInt(1) == 0) {
+				if (!rsCtassSetup.next() || rsCtassSetup.getInt(1) == 0) {
 					insertCtassSetupStmt.setString(1, id);
 					insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
 					insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
@@ -148,11 +147,11 @@ public class TekvLSModifySubaccountById {
 					final String customerName = rs.getString("name");
 					adminEmailStmt.setString(1, id);
 					rs = adminEmailStmt.executeQuery();
-					rs.next();
-					final String adminEmail = rs.getString("subaccount_admin_email");
-
-					if (FeatureToggleService.isFeatureActiveBySubaccountId("welcomeEmail", id))
-						EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
+					if (rs.next()) {
+						final String adminEmail = rs.getString("subaccount_admin_email");
+						if (FeatureToggleService.isFeatureActiveBySubaccountId("welcomeEmail", id))
+							EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
+					}
 				}
 				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + customerDetailStatement);
 				ResultSet customerAndSubQueryResult = customerDetailStatement.executeQuery();
