@@ -7,51 +7,140 @@
                     <table class="table custom-table table-bordered">
                         <thead style="border-top: 2px solid #dee2e6;">
                             <tr>
-                                <th colspan="3" class="text-center"> 
-                                    <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Total Calls: {{data.totalCalls}}</strong></h4>
+                                <th colspan="3" class="text-center" style="border-top: 1px ;">
+                                    <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Overall Calls</strong></h4>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Passed Calls</strong>
-                                    <p style="float: right;">{{totalPassedCalls}}</p>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Total</strong>
+                                        <p style="margin: 0; text-align: right;">{{data.totalCalls}}</p>
+                                    </div>
                                 </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Failed Calls</strong>
-                                    <p style="float: right;">{{totalFailedCalls}}</p>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Passed</strong>
+                                        <p style="margin: 0; text-align: right;">{{totalPassedCalls}}</p>
+                                    </div>
+                                </td>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Failed</strong>
+                                        <p style="margin: 0; text-align: right;">{{totalFailedCalls}}</p>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
+                    </table>
+                    <table class="table custom-table table-bordered" style="vertical-align: middle; padding: 10px;" style="margin-bottom: 0;">
                         <thead style="border-top: 2px solid #dee2e6;">
                             <tr>
-                                <th style="width: 50%; text-align: center;">Originated Calls</th>
-                                <th style="text-align: center;">Terminated Calls</th>
+                                <th colspan="3" class="text-center" style="border-top: 1px ;">
+                                    <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Same Region</strong></h4>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Cross Regions (Passed/Failed)</strong>
-                                    <p style="float: right;">{{originatedPassedCallsCrossRegion}}/{{originatedFailedCallsCrossRegion}}</p>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Total</strong>
+                                        <p style="margin: 0; text-align: right;">{{totalSameRegionCalls}}</p>
+                                    </div>
                                 </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Cross Regions (Passed/Failed)</strong>
-                                    <p style="float: right;">{{terminatedPassedCallsCrossRegion}}/{{terminatedFailedCallsCrossRegion}}</p>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Passed</strong>
+                                        <p style="margin: 0; text-align: right;">{{data.callsOriginated.callsPassedToSameRegion}}</p>
+                                    </div>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Same Region (Passed/Failed)</strong>
-                                    <p style="float: right;">{{data.callsOriginated.callsPassedToSameRegion}}/{{data.callsOriginated.callsFailedToSameRegion}}</p>
-                                </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Same Region (Passed/Failed)</strong>
-                                    <p style="float: right;">{{data.callsTerminated.callsPassedToSameRegion}}/{{data.callsTerminated.callsFailedToSameRegion}}</p>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Failed</strong>
+                                        <p style="margin: 0; text-align: right;">{{data.callsOriginated.callsFailedToSameRegion}}</p>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
+                    </table>
+                    <table class="table custom-table table-bordered" style="vertical-align: middle; padding: 10px;margin-bottom: 0;">
+                        <thead>
+                            <tr>
+                                <th colspan="3" class="text-center" style="border-top: 1px ;">
+                                    <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Cross Region</strong></h4>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div class="container">
+                        <table class="table custom-table-split table-bordered" style="vertical-align: middle; padding: 10px;" style="margin-left: 0; margin-right: 0; margin-top: 0;">
+                            <thead style="border-top: 0px solid #dee2e6;">
+                                <tr>
+                                    <th colspan="3" class="text-center">
+                                        <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Originated Calls</strong></h4>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Total</strong>
+                                            <p style="margin: 0; text-align: right;">{{originatedCrossRegionTotalCalls}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Passed</strong>
+                                            <p style="margin: 0; text-align: right;">{{originatedPassedCallsCrossRegion}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Failed</strong>
+                                            <p style="margin: 0; text-align: right;">{{originatedFailedCallsCrossRegion}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table custom-table-split table-bordered" style="margin-left: 0; margin-right: 0; margin-top: 0;">
+                            <thead style="border-top: 0px solid #dee2e6;">
+                                <tr>
+                                    <th colspan="3" class="text-center">
+                                        <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Terminated Calls</strong></h4>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Total</strong>
+                                            <p style="margin: 0; text-align: right;">{{terminatedCrossRegionTotalCalls}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Passed</strong>
+                                            <p style="margin: 0; text-align: right;">{{terminatedPassedCallsCrossRegion}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Failed</strong>
+                                            <p style="margin: 0; text-align: right;">{{terminatedFailedCallsCrossRegion}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <table class="table custom-table table-bordered">
                         <thead style="border-top: 2px solid #dee2e6;">
                             <tr>
                                 <th colspan="3" class="text-center" style="border-top: 1px ;">
@@ -59,59 +148,79 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th style="width: 50%; text-align: center;">Originated Calls</th>
-                                <th style="text-align: center;">Terminated Calls</th>
+                                <th style="width: 50%; text-align: center; padding: 12px  !important;">Originated Calls</th>
+                                <th style="text-align: center;  padding: 12px  !important;">Terminated Calls</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">POLQA</strong>
-                                    <p style="float: right;">Min: {{data.callsOriginated.polqa.min | na}}, Avg: {{data.callsOriginated.polqa.avg | number:'.0-2' | na}}</p>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                      <strong style="font-weight: 500;">POLQA</strong>
+                                      <p style="margin: 0; text-align: right;">Min: {{data.callsOriginated.polqa.min | na}}, Avg: {{data.callsOriginated.polqa.avg | number:'.0-2' | na}}</p>
+                                    </div>
                                 </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">POLQA</strong>
-                                    <p style="float: right;">Min: {{data.callsTerminated.polqa.min | na}}, Avg: {{data.callsTerminated.polqa.avg | number:'.0-2'}}</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Jitter (ms)</strong>
-                                    <p style="float: right;">Max: {{data.callsOriginated.receivedJitter.max | na}}, Avg: {{data.callsOriginated.receivedJitter.avg | number:'.0-2' | na}}</p>
-                                </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Jitter (ms)</strong>
-                                    <p style="float: right;">Max: {{data.callsTerminated.receivedJitter.max | na}}, Avg: {{data.callsTerminated.receivedJitter.avg | number:'.0-2' | na}}</p>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div  style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">POLQA</strong>
+                                        <p style="margin: 0; text-align: right;">Min: {{data.callsTerminated.polqa.min | na}}, Avg: {{data.callsTerminated.polqa.avg | number:'.0-2'}}</p>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Round trip time (ms)</strong>
-                                    <p style="float: right;">Max: {{data.callsOriginated.roundTripTime.max | na}}, Avg: {{data.callsOriginated.roundTripTime.avg | number:'.0-2' | na}}</p>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Jitter (ms)</strong>
+                                        <p style="margin: 0; text-align: right;">Max: {{data.callsOriginated.receivedJitter.max | na}}, Avg: {{data.callsOriginated.receivedJitter.avg | number:'.0-2' | na}}</p>
+                                    </div>
                                 </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Round trip time (ms)</strong>
-                                    <p style="float: right;">Max: {{data.callsTerminated.roundTripTime.max | na}}, Avg: {{data.callsTerminated.roundTripTime.avg | number:'.0-2' | na}}</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Packet Loss (%)</strong>
-                                    <p style="float: right;">Max: {{data.callsOriginated.receivedPacketLoss.max | na}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg | number:'.0-2' | na}}</p>
-                                </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Packet Loss (%)</strong>
-                                    <p style="float: right;">Max: {{data.callsTerminated.receivedPacketLoss.max | na}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg | number:'.0-2' | na}}</p>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Jitter (ms)</strong>
+                                        <p style="margin: 0; text-align: right;">Max: {{data.callsTerminated.receivedJitter.max | na}}, Avg: {{data.callsTerminated.receivedJitter.avg | number:'.0-2' | na}}</p>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Bitrate (kbps)</strong>
-                                    <p style="float: right;">Avg: {{data.callsOriginated.sentBitrate.avg | number:'.0-2' | na}}</p>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Round trip time (ms)</strong>
+                                        <p style="margin: 0; text-align: right;">Max: {{data.callsOriginated.roundTripTime.max | na}}, Avg: {{data.callsOriginated.roundTripTime.avg | number:'.0-2' | na}}</p>
+                                    </div>
                                 </td>
-                                <td class="custom-td">
-                                    <strong style="font-weight:500;">Bitrate (kbps)</strong>
-                                    <p style="float: right;">Avg: {{data.callsTerminated.sentBitrate.avg | number:'.0-2' | na}}</p>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Round trip time (ms)</strong>
+                                        <p style="margin: 0; text-align: right;">Max: {{data.callsTerminated.roundTripTime.max | na}}, Avg: {{data.callsTerminated.roundTripTime.avg | number:'.0-2' | na}}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Packet Loss (%)</strong>
+                                        <p style="margin: 0; text-align: right;">Max: {{data.callsOriginated.receivedPacketLoss.max | na}}, Avg: {{data.callsOriginated.receivedPacketLoss.avg | number:'.0-2' | na}}</p>
+                                    </div>
+                                </td>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Packet Loss (%)</strong>
+                                        <p style="margin: 0; text-align: right;">Max: {{data.callsTerminated.receivedPacketLoss.max | na}}, Avg: {{data.callsTerminated.receivedPacketLoss.avg | number:'.0-2' | na}}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Bitrate (kbps)</strong>
+                                        <p style="margin: 0; text-align: right;">Avg: {{data.callsOriginated.sentBitrate.avg | number:'.0-2' | na}}</p>
+                                    </div>
+                                </td>
+                                <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Bitrate (kbps)</strong>
+                                        <p style="margin: 0; text-align: right;">Avg: {{data.callsTerminated.sentBitrate.avg | number:'.0-2' | na}}</p>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

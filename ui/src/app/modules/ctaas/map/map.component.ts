@@ -589,7 +589,7 @@ export class MapComponent implements OnInit, OnDestroy {
     let nodeData = {...this.nodesMap[key], date: this.filteredDate};
     this.dialog.open(NodeDetailComponent, {
       width: '900px',
-      height: '84vh',
+      height: '89vh',
       maxHeight: '100vh',
       autoFocus: false,
       disableClose: true,

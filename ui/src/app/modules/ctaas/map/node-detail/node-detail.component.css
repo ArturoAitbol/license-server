@@ -5,6 +5,8 @@ td {
 
 th{
    width: 100%;
+   line-height: 1;
+   padding: 7px;
 }
 
 .terminated-column-data {
@@ -41,9 +43,23 @@ th{
  width: 90%;
 }
 
+.custom-table-split {
+    margin-left: 5%;
+    width: 90%;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.container {
+    display: flex;
+    width: 93%;
+}
+
 .custom-td {
     width: 0% !important; 
     text-align: start !important;
+    line-height: 1;
+    padding: 7px;
 }
 
 .headers-data {
@@ -57,5 +73,4 @@ th{
     display: flex; 
     justify-content: center; 
     align-items: center;
-    
 }
