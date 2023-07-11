@@ -818,7 +818,8 @@ const DEVICE_TYPES = {
         { "name": "BYOC" },
         { "name": "Application" },
         { "name": "Headset" },
-        { "name": "Video Collab Device" },
+        { "name": "Video Collab Device (ROW)" },
+        { "name": "Video Collab Device (US)" },
         { "name": "OTHER" }
     ],
     "callingPlatformTypes": [
@@ -834,7 +835,8 @@ const DEVICE_TYPES = {
         { "name": "BYOC" },
         { "name": "Application" },
         { "name": "Headset" },
-        { "name": "Video Collab Device" }
+        { "name": "Video Collab Device (ROW)" },
+        { "name": "Video Collab Device (US)" }
     ]
 }
 
