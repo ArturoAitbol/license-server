@@ -36,6 +36,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     toggleStatus = false;
     addNoteDisabled = false;
     nativeHistoricalDashboardActive = false;
+    maintenanceModeEnabled = false;
     private subaccountDetails: any;
     private onDestroy: Subject<void> = new Subject<void>();
     readonly CLOSE_NOTE = 'Close Note';
@@ -87,8 +88,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * get action menu options
      */
     private getActionMenuOptions() {
-        const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions")
+        if(!this.maintenanceModeEnabled) {
+            const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+            this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions");
+        }
     }
     /**
      * fetch note data
@@ -119,7 +122,6 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
         this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id);
         this.calculateTableHeight();
-        this.getActionMenuOptions();
         this.initColumns();
         this.fetchNoteList();
         this.checkMaintenanceMode();
@@ -256,7 +258,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
                 this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+                this.maintenanceModeEnabled = true;
             }
+            this.getActionMenuOptions();
         })
     }
 }

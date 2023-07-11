@@ -103,6 +103,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   loadingTime = 0;
 
   isloading = true;
+  maintenanceModeEnabled = false;
 
   currentDate: any;
   selectedRegion: any;
@@ -755,6 +756,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         const ctaasSetupDetails = res['ctaasSetups'][0];
         if (ctaasSetupDetails.maintenance) {
             this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+            this.maintenanceModeEnabled = true;
         } else {
           this.setupCustomerOnboardDetails(ctaasSetupDetails);
         }

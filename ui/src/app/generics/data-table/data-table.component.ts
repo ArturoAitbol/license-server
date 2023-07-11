@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, OnChanges } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -11,7 +11,7 @@ import { SelectionModel } from "@angular/cdk/collections";
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.css']
 })
-export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   data: any = [];
   public tableDataSource = new MatTableDataSource([]);
   public displayedColumns: string[];
@@ -65,6 +65,10 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
     //  Override the isSelected function of the SelectionModel
     if (this.selectionById)
       this.selection.isSelected = this.isSelected.bind(this);
+  }
+
+  ngOnChanges(): void {
+    this.ngOnInit();
   }
 
   // we need this, in order to make pagination work with *ngIf
