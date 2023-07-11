@@ -18,6 +18,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { FeatureToggleService } from "../../../services/feature-toggle.service";
 import { Router } from "@angular/router";
 import { environment } from 'src/environments/environment';
+import moment from 'moment';
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -103,9 +104,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.noteService.getNoteList(this.subaccountDetails.id).subscribe((res) => {
             this.isRequestCompleted = true;
             this.notesDataBk = res.notes.map(note => {
-                note.openDate = this.datePipe.transform(new Date(note.openDate), 'yyyy-MM-dd  h:mm:ss');
+                note.openDate = moment(note.openDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
                 if(note.closeDate) {
-                    note.closeDate = this.datePipe.transform(new Date(note.closeDate), 'yyyy-MM-dd  h:mm:ss');
+                    note.closeDate = moment(note.closeDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
                 }
                 return note;
             });
