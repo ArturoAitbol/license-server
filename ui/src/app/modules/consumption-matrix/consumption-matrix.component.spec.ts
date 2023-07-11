@@ -41,7 +41,8 @@ describe('Consumption Matrix - UI verification tests', () => {
     const ByocColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[4];
     const applicationColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[5];
     const headsetColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[6];
-    const videoCollabDeviceColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[7];
+    const videoCollabDeviceROWColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[7];
+    const videoCollabDeviceUSColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[8];
 
     expect(callingPlatformColumn.innerText).toBe('Calling Platform');
     expect(devicePhoneAta.innerText).toBe('Device/Phone/ATA');
@@ -50,7 +51,8 @@ describe('Consumption Matrix - UI verification tests', () => {
     expect(ByocColumn.innerText).toBe('BYOC');
     expect(applicationColumn.innerText).toBe('Application');
     expect(headsetColumn.innerText).toBe('Headset');
-    expect(videoCollabDeviceColumn.innerText).toBe('Video Collab Device')
+    expect(videoCollabDeviceROWColumn.innerText).toBe('Video Collab Device (ROW)')
+    expect(videoCollabDeviceUSColumn.innerText).toBe('Video Collab Device (US)')
   });
 });
 
