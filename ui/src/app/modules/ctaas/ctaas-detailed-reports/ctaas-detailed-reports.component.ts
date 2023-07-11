@@ -486,7 +486,7 @@ export class DetailedReportsComponent implements OnInit {
     const hh = currentDate.getHours();
     const mm = currentDate.getMinutes();
     const ss = currentDate.getSeconds();
-    const name = `${this.testPlanNames}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
+    const name = `${this.title}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     a.download = name;
