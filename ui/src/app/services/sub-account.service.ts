@@ -65,7 +65,7 @@ export class SubAccountService {
     return this.httpClient.get<SubAccount>(this.API_URL, { headers, params });
   }
   /**
-   * fetch SubAccount details list
+   * fetch SubAccount details list for a CustomerUser
    * @returns: Observable 
    */
   public getSubAccountListForCustomerUser() {
@@ -98,8 +98,7 @@ export class SubAccountService {
    * @returns: HttpHeaders 
    */
   public getHeaders() {
-    const headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json');
+    const headers = new HttpHeaders().append('Content-Type', 'application/json');
     return headers;
   }
 }
