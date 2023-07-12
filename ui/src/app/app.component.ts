@@ -449,7 +449,7 @@ export class AppComponent implements OnInit, OnDestroy {
     navigateToMainView(): void {
         const accountDetails = this.getAccountDetails();
         const { roles } = accountDetails.idTokenClaims;
-        if (roles.length === 1 && (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)))
+        if (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
             this.router.navigate(['/']);
         else
             this.router.navigate([this.MAIN_DASHBOARD]);
