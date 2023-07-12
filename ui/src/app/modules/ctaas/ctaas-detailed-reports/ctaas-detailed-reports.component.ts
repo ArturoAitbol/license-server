@@ -599,7 +599,7 @@ export class DetailedReportsComponent implements OnInit {
     if (metric === "Sent bitrate")
       return "Avg: " + avgString;
     let maxValueString: any;
-    if (maxValue === null)
+    if (maxValue === undefined)
       maxValueString = "N/A";
     else maxValueString = parseFloat(maxValue.toString());
     return "Max: " + maxValueString + ", " + "Avg: " + avgString;
