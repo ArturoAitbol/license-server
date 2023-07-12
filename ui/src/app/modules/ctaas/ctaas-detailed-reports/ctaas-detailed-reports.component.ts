@@ -7,19 +7,20 @@ import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service'
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
   styleUrls: ['./ctaas-detailed-reports.component.css']
 })
-export class DetailedReportsCompoment implements OnInit {
+export class DetailedReportsComponent implements OnInit {
 
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
   title: string = ReportName.FEATURE_FUNCTIONALITY_NAME + " + " + ReportName.CALLING_RELIABILITY_NAME + " + " + ReportName.VQ_NAME;
   types: string = '';
+  testPlanNames: string = '';
   status: string = '';
   startDateStr: string = '';
   endDateStr: string = '';
@@ -142,22 +143,15 @@ export class DetailedReportsCompoment implements OnInit {
   public fetchDashboardReportDetails(): void {
     this.isRequestCompleted = false;
     this.hasDashboardDetails = false;
-    let minorTime;
-    let minorTimestamp;
-    let minorTimeIndex = 0;
-    let majorTime;
-    let majorTimestamp;
-    let majorTimeIndex = 0;
     this.isLoadingResults = true;
-    const PARSED_REPORT_TYPE = this.parseTestPlanNames();
-    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status,
+    this.testPlanNames = this.parseTestPlanNames();
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, this.testPlanNames, this.startDateStr, this.endDateStr, this.status,
       this.regionsStr, this.usersStr, this.polqaCalls).subscribe((res: any) => {
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         if (res.response.report && res.response.reportType) {
           this.reportResponse = res.response.report;
-          const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-          detailedResponseObj[this.types] = JSON.parse(JSON.stringify(res.response.report));
+          const detailedResponseObj = JSON.parse(JSON.stringify(res.response.report));
           this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
           this.filename = res.response.reportType;
           this.hasDashboardDetails = true;
@@ -173,10 +167,10 @@ export class DetailedReportsCompoment implements OnInit {
           } else {
             this.reportResponse.endpoints = [];
           }
-          minorTime =  this.reportResponse.results[0].startTime;
-          minorTimestamp = new Date(minorTime).getTime();
-          majorTime = this.reportResponse.results[this.reportResponse.results.length -1].endTime;
-          majorTimestamp = new Date(majorTime).getTime();
+          let minorTime: Moment;
+          let majorTime: Moment;
+          minorTime = moment(this.reportResponse.results[0].startTime, "MM-DD-YYYY HH:mm:ss");
+          majorTime = moment(this.reportResponse.results[this.reportResponse.results.length -1].endTime, "MM-DD-YYYY HH:mm:ss");
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
           this.detailedTestReport.forEach((testResult: any, index) => {
@@ -275,18 +269,14 @@ export class DetailedReportsCompoment implements OnInit {
             testResult.fromAvgBitrate = this.dataToString(0, testResult.fromAvgBitrate, "Sent bitrate");
             testResult.toAvgBitrate = this.dataToString(0, testResult.toAvgBitrate, "Sent bitrate");
 
-            let startTimeTimeStamp = new Date(testResult.startTime).getTime();
-            let endTimeTimeStamp = new Date(testResult.endTime).getTime();
-            testResult.startTime = moment.utc(testResult.startTime).format("MM/DD/YYYY HH:mm:ss");
-            testResult.endTime = moment.utc(testResult.endTime).format("MM/DD/YYYY HH:mm:ss");
-            if(startTimeTimeStamp < minorTimestamp){
-              minorTimestamp = startTimeTimeStamp;
-              minorTimeIndex = index;
-            }
-            if(endTimeTimeStamp >= majorTimestamp){
-              majorTimestamp = endTimeTimeStamp;
-              majorTimeIndex = index;
-            }
+            const startTime = moment(testResult.startTime, "MM-DD-YYYY HH:mm:ss");
+            const endTime = moment(testResult.endTime, "MM-DD-YYYY HH:mm:ss");
+            testResult.startTime = startTime.format("MM/DD/YYYY HH:mm:ss");
+            testResult.endTime = endTime.format("MM/DD/YYYY HH:mm:ss");
+            if (startTime < minorTime)
+              minorTime = startTime;
+            if (endTime >= majorTime)
+              majorTime = endTime;
             testResult.closeKey = false;
             testResult.fromnoDataFoundFlag = false;
             testResult.tonoDataFoundFlag = false;
@@ -294,8 +284,8 @@ export class DetailedReportsCompoment implements OnInit {
             testResult.panelOpenState = true;
             testResult.otherParties = (testResult.otherParties && testResult.otherParties.length > 0) ? testResult.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
-          this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime; //
-          this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[majorTimeIndex].endTime;
+          this.reportResponse.summary.summaryStartTime = minorTime.format("MM/DD/YYYY HH:mm:ss");
+          this.reportResponse.summary.summaryEndTime =  majorTime.format("MM/DD/YYYY HH:mm:ss");
         } else {
           this.hasDashboardDetails = false;
           this.reportResponse = {};
@@ -496,7 +486,7 @@ export class DetailedReportsCompoment implements OnInit {
     const hh = currentDate.getHours();
     const mm = currentDate.getMinutes();
     const ss = currentDate.getSeconds();
-    const name = `${this.types}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
+    const name = `${this.title}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     a.download = name;
@@ -510,12 +500,12 @@ export class DetailedReportsCompoment implements OnInit {
     try {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
-      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-      const reportResponse = detailedResponseObj[this.types];
-      reportResponse.summary.startTime = this.reportResponse.summary.summaryStartTime;
-      reportResponse.summary.endTime = this.reportResponse.summary.summaryEndTime;
-      if (reportResponse) {
-        this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(reportResponse)
+      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();      
+      detailedResponseObj.summary.startTime = this.reportResponse.summary.summaryStartTime;
+      detailedResponseObj.summary.endTime = this.reportResponse.summary.summaryEndTime;
+      detailedResponseObj.type = this.testPlanNames;
+      if (detailedResponseObj) {
+        this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(detailedResponseObj)
           .subscribe((res: any) => {
             if (!res.error) this.downloadExcelFile(res);
           }, (error) => {

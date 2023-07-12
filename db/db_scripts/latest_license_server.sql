@@ -70,7 +70,8 @@ CREATE TYPE public.dut_type_enum AS ENUM (
     'BYOC',
     'Application',
     'Headset',
-    'Video Collab Device'
+    'Video Collab Device (ROW)',
+    'Video Collab Device (US)'
 );
 
 --
@@ -111,7 +112,8 @@ CREATE TYPE public.device_type_enum AS ENUM (
     'BYOC',
     'Application',
     'Headset',
-    'Video Collab Device',
+    'Video Collab Device (ROW)',
+    'Video Collab Device (US)',
     'OTHER'
 );
 
@@ -747,7 +749,8 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	3	Application	CCaaS
 9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	5	Headset	UCaaS
 f2b57afb-c389-48ec-a54b-7d8a05a51f32	5	Headset	CCaaS
 2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	5	Headset	CPaaS
-7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Video Collab Device	UCaaS
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Video Collab Device (ROW)	UCaaS
+cdd0e8af-1ba4-4a20-b354-bf7c6c121dc3	3	Video Collab Device (US)	UCaaS
 \.
 
 

@@ -28,6 +28,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { FeatureToggleService } from "../../../services/feature-toggle.service";
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { BannerService } from 'src/app/services/alert-banner.service';
+import { MsalService } from '@azure/msal-angular';
+import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -101,6 +103,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   loadingTime = 0;
 
   isloading = true;
+  maintenanceModeEnabled = false;
 
   currentDate: any;
   selectedRegion: any;
@@ -121,11 +124,13 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   autoRefresh = false;
   disableFiltersWhileLoading = true;
   showChildren = false;
-  private subaccountDetails: any;
+  subaccountDetails: any;
   // Historical view variables
   isHistoricalView = false;
   note: Note;
   showNewNoteBtn = false;
+
+  loggedInUserRoles: any;
 
   readonly ReportType = ReportType;
   readonly callingReliabilityTestPlans = ReportName.TAP_CALLING_RELIABILITY + "," + ReportName.TAP_VQ;
@@ -137,6 +142,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   private onDestroy: Subject<void> = new Subject<void>();
 
   constructor(private subaccountService: SubAccountService,
+              private msalService: MsalService,
               private spotlightChartsService: SpotlightChartsService,
               private noteService: NoteService,
               private route: ActivatedRoute,
@@ -178,9 +184,13 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let currentEndDate;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
-    this.checkMaintenanceMode();
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.loggedInUserRoles = roles;
+    this.checkSetupStatus();
     this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
+      console.log(params);
       if (params?.noteId) {
         this.noteService.getNoteList(this.subaccountDetails.id, params.noteId).subscribe(res => {
           this.note = res.notes[0];
@@ -243,6 +253,14 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     this.initWeeklyAutocompletes();
   }
 
+  /**
+   * get logged in account details
+   * @returns: any | null
+   */
+  private getAccountDetails(): any | null {
+      return this.msalService.instance.getActiveAccount() || null;
+  }
+
   dateHasChanged():boolean{
     if(this.selectedPeriod==="daily")
       return this.filters.get('date').value.format("MM-DD-YYYY") !== this.date.format("MM-DD-YYYY");
@@ -302,7 +320,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.weeklyFilters.get('region').setValue("");
       this.initWeeklyAutocompletes();
     }
-    this.regionInput.nativeElement.value = '';
+    //this.regionInput.nativeElement.value = '';
   }
 
   clearRegionsFilter(){
@@ -387,11 +405,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     } else {
       const selectedStartDate: Moment = this.selectedRange.start.clone();
       const selectedEndDate: Moment = this.selectedRange.end.clone();
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions).pipe(catchError(e => of(e))));
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', this.weeklySelectedRegions).pipe(catchError(e => of(e))));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, this.weeklySelectedRegions).pipe(catchError(e => of(e))));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId).pipe(catchError(e => of(e))));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true).pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions));//.pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', this.weeklySelectedRegions));//.pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, this.weeklySelectedRegions));//.pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId));//.pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true));//.pipe(catchError(e => of(e))));
     }
 
     this.chartsSubscription = forkJoin(obs).subscribe((res: any) => {
@@ -578,8 +596,15 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   private goToDetailedReportView(reportFilter: string) {
-    const startDate = this.selectedDate.clone().utc().startOf('day');
-    const endDate = this.selectedDate.clone().utc();
+    let startDate;
+    let endDate;
+    if (this.selectedPeriod == "daily") {
+      startDate = this.selectedDate.clone().utc().startOf('day');
+      endDate = this.selectedDate.clone().utc();
+    } else {
+      startDate = this.getStartWeekDate();
+      endDate = this.getEndWeekDate();
+    }
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     let regions = ""
@@ -726,13 +751,32 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private checkMaintenanceMode() {
+  private checkSetupStatus() {
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
         const ctaasSetupDetails = res['ctaasSetups'][0];
         if (ctaasSetupDetails.maintenance) {
             this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+            this.maintenanceModeEnabled = true;
+        } else {
+          this.setupCustomerOnboardDetails(ctaasSetupDetails);
         }
     });
+  }
+
+  /**
+   * setup customer onboarding details
+   */
+  private setupCustomerOnboardDetails(ctaasSetupDetails: any): void {
+    // only open onboarding wizard dialog/modal when onboardingcomplete is f and user is SUBACCOUNT_ADMIN
+    if ((!ctaasSetupDetails.onBoardingComplete && this.loggedInUserRoles.length === 1 && this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN))) {
+        const { id } = ctaasSetupDetails;
+        this.dialog.open(OnboardWizardComponent, {
+            width: '700px',
+            maxHeight: '80vh',
+            disableClose: true,
+            data: { ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountDetails.id }
+        });
+    }
   }
 
   ngOnDestroy(): void {

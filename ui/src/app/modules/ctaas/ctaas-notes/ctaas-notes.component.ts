@@ -18,6 +18,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { FeatureToggleService } from "../../../services/feature-toggle.service";
 import { Router } from "@angular/router";
 import { environment } from 'src/environments/environment';
+import moment from 'moment';
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -36,6 +37,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     toggleStatus = false;
     addNoteDisabled = false;
     nativeHistoricalDashboardActive = false;
+    maintenanceModeEnabled = false;
     private subaccountDetails: any;
     private onDestroy: Subject<void> = new Subject<void>();
     readonly CLOSE_NOTE = 'Close Note';
@@ -87,8 +89,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * get action menu options
      */
     private getActionMenuOptions() {
-        const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions")
+        if(!this.maintenanceModeEnabled) {
+            const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+            this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions");
+        }
     }
     /**
      * fetch note data
@@ -100,9 +104,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.noteService.getNoteList(this.subaccountDetails.id).subscribe((res) => {
             this.isRequestCompleted = true;
             this.notesDataBk = res.notes.map(note => {
-                note.openDate = this.datePipe.transform(new Date(note.openDate), 'yyyy-MM-dd  h:mm:ss');
+                note.openDate = moment(note.openDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
                 if(note.closeDate) {
-                    note.closeDate = this.datePipe.transform(new Date(note.closeDate), 'yyyy-MM-dd  h:mm:ss');
+                    note.closeDate = moment(note.closeDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
                 }
                 return note;
             });
@@ -119,7 +123,6 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
         this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id);
         this.calculateTableHeight();
-        this.getActionMenuOptions();
         this.initColumns();
         this.fetchNoteList();
         this.checkMaintenanceMode();
@@ -256,7 +259,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
                 this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+                this.maintenanceModeEnabled = true;
             }
+            this.getActionMenuOptions();
         })
     }
 }

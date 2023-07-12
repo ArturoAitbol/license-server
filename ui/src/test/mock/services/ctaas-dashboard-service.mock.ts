@@ -48,7 +48,15 @@ const CTAAS_DASHBOARD_LIST = [
 
 const DASHBOARD_DETAIL_REPORT = {
     response: {
+        reportType: 'LTS',
         report: {
+            summary: {
+                total: 5,
+                startTime: "02-26-2023 00:20:29 UTC",
+                passed: 5,
+                failed: 0,
+                endTime: "02-26-2023 05:50:55 UTC"
+            },
             endpoints:[{
                 zipcode: "9725980067",
                 country: "US",
@@ -59,11 +67,12 @@ const DASHBOARD_DETAIL_REPORT = {
                 firmwareVersion: "1.5.00.36367",
                 did: "9725989021"
             }],
+            type: "LTS",
             results:[{
-                closeKey: true,
                 errorCategory: null,
                 errorReason: null,
                 startTime: "02-26-2023 00:20:29 UTC",
+                closeKey: true,
                 from: {
                     mediaStats: [{data: {
                             "Received packet loss": "0.00%",
@@ -149,16 +158,7 @@ const DASHBOARD_DETAIL_REPORT = {
                 }],
                 status: "PASSED"
             }],
-            summary: {
-                total: 5,
-                startTime: "02-26-2023 00:20:29 UTC",
-                passed: 5,
-                failed: 0,
-                endTime: "02-26-2023 05:50:55 UTC"
-            },
-            type: "LTS"
         },
-        reportType: 'LTS'
     }
 }
 
@@ -359,8 +359,7 @@ const DASHBOARD_DETAIL_REPORT_WITH_MISSING_ATTRIBUTES = {
     }
 }
 
-const REPORT_DETAILED_OBJ = {
-    "Daily-FeatureFunctionality": {
+const REPORT_DETAILED_OBJ = {    
         endPoints:[{
             zipcode: "9725980067",
             country: "US",
@@ -438,7 +437,7 @@ const REPORT_DETAILED_OBJ = {
             endTime: "02-26-2023 05:50:55 UTC"
         },
         type: "LTS"
-   }
+   
 }
 
 const CONTENT_DOWNLOADED = {
