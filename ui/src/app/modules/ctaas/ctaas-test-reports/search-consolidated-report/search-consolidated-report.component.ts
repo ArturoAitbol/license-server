@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { Utility } from 'src/app/helpers/utils';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
@@ -19,9 +19,11 @@ export class SearchConsolidatedReportComponent implements OnInit {
   subaccountDetails:any;
   isDataLoading = false;
   maxTime: any;
+  maxTimeBK: any;
   minTime: any;
-  startDate: any;
-  endDate: any;
+  minTimeBK: any;
+  startDate: Moment;
+  endDate: Moment;
   dateLimit: number = 4;
   readonly CALLING: string = 'Calling Reliability';
   readonly FEATURE: string = 'Feature Functionality';
@@ -93,19 +95,27 @@ export class SearchConsolidatedReportComponent implements OnInit {
   }
 
   validateTimers() {
-    let selectedStartDate = moment.utc(this.startDate);
-    let selectedEndDate = moment.utc(this.endDate);
-    if (selectedStartDate.diff(selectedEndDate, "days") > 0) {
+    if (!this.startDate || !this.endDate)
+      return;
+    const daysDiff = this.endDate.diff(this.startDate, "days");
+    if (daysDiff > 0) {
       this.minTime = "00:00";
       this.maxTime = "23:59";
+    } else if (daysDiff === 0) {
+      this.minTime = this.minTimeBK;
+      this.maxTime = this.maxTimeBK;
     }
   }
   
   onChangeStartTime(event: any) {
-    this.minTime = event;
+    if (this.startDate && this.endDate && this.endDate.diff(this.startDate, "days") === 0)
+      this.minTime = event;
+    this.minTimeBK = event;
   }
 
   onChangeEndTime(event: any) {
-    this.maxTime = event;
+    if (this.startDate && this.endDate && this.endDate.diff(this.startDate, "days") === 0)
+      this.maxTime = event;
+    this.maxTimeBK = event;
   }
 }
