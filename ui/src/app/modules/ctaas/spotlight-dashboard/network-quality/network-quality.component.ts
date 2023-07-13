@@ -80,15 +80,15 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
       value: "Received Jitter"
     },
     packetLoss: {
-      label: "Packet loss",
+      label: "Packet Loss",
       value: "Received packet loss"
     },
     sentBitrate: {
-      label: "Sent bitrate",
+      label: "Sent Bitrate",
       value: "Sent bitrate"
     },
     roundTripTime: {
-      label: "Round trip time",
+      label: "Round Trip Time",
       value: "Round trip time"
     }
   }

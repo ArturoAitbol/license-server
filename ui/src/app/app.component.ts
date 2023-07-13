@@ -388,6 +388,7 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe((result: EventMessage) => {
             // Do something with event payload here 
             this.initializeSideBarItems();
+            this.autoLogoutService.cancelAcquireTokenTimeout();
         });
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
@@ -395,6 +396,20 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe(event => {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
+            this.autoLogoutService.cancelLoginTimeout();
+        });
+
+        this.broadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_START),
+            takeUntil(this._destroying$)
+        ).subscribe((result: EventMessage) => {
+            this.autoLogoutService.initLoginTimeout();
+        });
+        this.broadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_START),
+            takeUntil(this._destroying$)
+        ).subscribe((result: EventMessage) => {
+            this.autoLogoutService.initAcquireTokenTimeout();
         });
     }
 
