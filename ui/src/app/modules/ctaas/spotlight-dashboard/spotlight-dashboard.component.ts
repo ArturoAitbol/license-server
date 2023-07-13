@@ -190,7 +190,6 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     this.checkSetupStatus();
     this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
-      console.log(params);
       if (params?.noteId) {
         this.noteService.getNoteList(this.subaccountDetails.id, params.noteId).subscribe(res => {
           this.note = res.notes[0];
@@ -400,16 +399,18 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
     if (this.selectedPeriod == "daily") {
       this.selectedDate = this.date.clone().utc();
-      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(this.date, this.selectedRegions, subaccountId));
+      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(this.date, this.selectedRegions, subaccountId, null));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(this.date, this.date, this.selectedRegions, subaccountId));
+      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(this.date, this.selectedRegions, subaccountId, ReportName.TAP_VQ));
     } else {
       const selectedStartDate: Moment = this.selectedRange.start.clone();
       const selectedEndDate: Moment = this.selectedRange.end.clone();
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', this.weeklySelectedRegions));//.pipe(catchError(e => of(e))));
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', this.weeklySelectedRegions));//.pipe(catchError(e => of(e))));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, this.weeklySelectedRegions));//.pipe(catchError(e => of(e))));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId));//.pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId,null));//.pipe(catchError(e => of(e))));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true));//.pipe(catchError(e => of(e))));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, ReportName.TAP_VQ));
     }
 
     this.chartsSubscription = forkJoin(obs).subscribe((res: any) => {
@@ -467,11 +468,12 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
     // Daily Voice Quality
     const voiceQualityRes: any = res[1];
+    const POLQARes: any = res[2].POLQA;
     this.vq.calls = voiceQualityRes.summary.calls;
     this.vq.streams = voiceQualityRes.summary.streams;
-    this.vq.p2p = POLQA.callsByType.p2p;
-    this.vq.onNet = POLQA.callsByType.onNet;
-    this.vq.offNet = POLQA.callsByType.offNet;
+    this.vq.p2p = POLQARes.callsByType.p2p;
+    this.vq.onNet = POLQARes.callsByType.onNet;
+    this.vq.offNet = POLQARes.callsByType.offNet;
     this.vqChartOptions.series = [ { name: 'percentages', data: voiceQualityRes.percentages }];
     this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
     this.vq.numericValues = voiceQualityRes.numericValues;
@@ -536,7 +538,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
     // Weekly CR and FF footer info
     const weeklyCallStatus = res[3];
-    const POLQA = res[3].POLQA;
+    const POLQA = res[3].POLQA;    
     this.weeklyFeatureFunctionality.p2pCalls = weeklyCallStatus.featureFunctionality.callsByType.p2p;
     this.weeklyFeatureFunctionality.onNetCalls = weeklyCallStatus.featureFunctionality.callsByType.onNet;
     this.weeklyFeatureFunctionality.offNetCalls = weeklyCallStatus.featureFunctionality.callsByType.offNet;
@@ -550,11 +552,12 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
     // Weekly VQ chart
     const vqData = res[4];
+    const resPOLQA = res[5].POLQA;
     this.weeklyVQ.numberStreams = vqData.summary.streams;
     this.weeklyVQ.numberCalls = vqData.summary.calls;
-    this.weeklyVQ.p2p = POLQA.p2p;
-    this.weeklyVQ.onNet = POLQA.onNet;
-    this.weeklyVQ.offNet = POLQA.offNet;
+    this.weeklyVQ.p2p = resPOLQA.callsByType.p2p;
+    this.weeklyVQ.onNet = resPOLQA.callsByType.onNet;
+    this.weeklyVQ.offNet = resPOLQA.callsByType.offNet;
     this.weeklyVQChartOptions.xAxis = {...this.weeklyVQChartOptions.xAxis,categories:vqData.categories};
     this.weeklyVQChartOptions.series = [
       vqData.percentages.excellent,
