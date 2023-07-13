@@ -194,7 +194,8 @@ describe('Data collection and parsing tests', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId);
-        expect(licenseConsumptionComponentTestInstance.licensesList).toEqual([LicenseServiceMock.mockLicenseN, LicenseServiceMock.mockLicenseO],);
+        expect(licenseConsumptionComponentTestInstance.licensesList).toEqual([LicenseServiceMock.mockLicenseN, LicenseServiceMock.mockLicenseO]);
+        await fixture.whenStable();
         expect(licenseConsumptionComponentTestInstance.isLicenseListLoaded).toBeTrue();
         expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchProjectsList).toHaveBeenCalled();
@@ -271,12 +272,13 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails for equipment view when calling fetchEquipment()', () => {
+    it('should make a call to get licenseConsumptionDetails for equipment view when calling fetchEquipment()', async () => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.fetchEquipment();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
