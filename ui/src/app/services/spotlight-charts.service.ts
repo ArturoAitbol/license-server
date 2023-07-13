@@ -107,8 +107,8 @@ export class SpotlightChartsService {
      * @param region Region
      * @param subaccountId Subaccount ID
      */
-    public getDailyCallsStatusSummary(date: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string): Observable<any> {
-       return this.getCallsStatusSummary(date, date, regions, subaccountId);
+    public getDailyCallsStatusSummary(date: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string, callsFilter:string): Observable<any> {
+       return this.getCallsStatusSummary(date, date, regions, subaccountId, callsFilter);
     }
 
     /**
@@ -118,16 +118,17 @@ export class SpotlightChartsService {
      * @param regions Regions
      * @param subaccountId Subaccount ID
      */
-    public getWeeklyCallsStatusSummary(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string): Observable<any> {
-        return this.getCallsStatusSummary(startDate, endDate, regions, subaccountId);
+    public getWeeklyCallsStatusSummary(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string, callsFilter:string): Observable<any> {
+        return this.getCallsStatusSummary(startDate, endDate, regions, subaccountId, callsFilter);
     }
 
-    private getCallsStatusSummary(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string) {
+    private getCallsStatusSummary(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string, callsFilter:string) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('subaccountId', subaccountId);
         if(regions.length>0) params = params.set('regions', JSON.stringify(regions));
+        if(callsFilter) params = params.set('callsFilter', callsFilter);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'callsStatusSummary', { headers, params });
     }

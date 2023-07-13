@@ -260,11 +260,11 @@ describe("DashboardPocComponent", () => {
     dashboardPocComponentTestInstance.loadCharts();
     dashboardPocComponentTestInstance.selectedPeriod = "weekly";
     dashboardPocComponentTestInstance.loadCharts();
-    expect(spotlightChartsServiceMock.getDailyCallsStatusSummary).toHaveBeenCalledTimes(1);
+    expect(spotlightChartsServiceMock.getDailyCallsStatusSummary).toHaveBeenCalledTimes(2);
     expect(spotlightChartsServiceMock.getVoiceQualityChart).toHaveBeenCalledTimes(2);
     expect(spotlightChartsServiceMock.getWeeklyComboBarChart).toHaveBeenCalledTimes(2);
     expect(spotlightChartsServiceMock.getWeeklyCallsStatusHeatMap).toHaveBeenCalledTimes(1);
-    expect(spotlightChartsServiceMock.getWeeklyCallsStatusSummary).toHaveBeenCalledTimes(1);
+    expect(spotlightChartsServiceMock.getWeeklyCallsStatusSummary).toHaveBeenCalledTimes(2);
   });
 
   it("should throw error with bad service data", () => {

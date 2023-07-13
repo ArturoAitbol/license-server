@@ -92,7 +92,7 @@ public class ActionMenu extends AbstractPageObject {
         this.action.waitSpinner(messageSelector);
         //Switch to new UCaaS Continuous Testing Dashboard tab
         ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
-        driver.switchTo().window(tabs.get(1));
+        driver.switchTo().window(tabs.get(tabs.size()-1));
         return new Dashboard();
     }
 

@@ -67,6 +67,7 @@ public class TekvLSGetCallsStatusSummary {
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 
 		String regions = request.getQueryParameters().getOrDefault("regions","");
+		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","");
 
 		String users = request.getQueryParameters().getOrDefault("users", "");
 		String usersClause = users.replace(",","', '");
@@ -90,7 +91,7 @@ public class TekvLSGetCallsStatusSummary {
 			StringBuilder innerQueryBuilder = new StringBuilder("SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE ");
 			List<String> conditions = new ArrayList<>();
 			if (!users.isEmpty())
-				conditions.add("trr.did IN ('"+ usersClause +"')");
+				conditions.add("trr.did IN ('"+ usersClause +"')");			
 			if (!regions.isEmpty()){
 				StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
 				if(regionCondition != null)
@@ -102,6 +103,19 @@ public class TekvLSGetCallsStatusSummary {
 				innerQueryBuilder.append(conditions.get(i));
 			}
 			query += " AND sr.id IN (" + innerQueryBuilder + ")";
+		}
+
+		if (!callsFilter.isEmpty()) {
+			String filteredCalls = "SELECT sr.id FROM sub_result sr " +
+					"JOIN test_result_resource trr ON trr.subresultid = sr.id " +
+					"JOIN media_stats ms ON ms.testresultresourceid = trr.id " +
+					"JOIN test_result tr ON sr.testresultid = tr.id " +
+					"WHERE sr.finalResult = true AND " + Utils.CONSIDERED_STATUS_SUBQUERY + "  AND "
+					+ Utils.CONSIDERED_FAILURES_SUBQUERY +
+					" AND sr.startdate >= CAST('" + startDate + "' AS timestamp) AND sr.startdate <= CAST('"
+					+ endDate + "' AS timestamp)" +
+					" AND ms.parameter_name = CAST('" + callsFilter + "' AS VARCHAR) GROUP BY sr.id";
+			query += " AND sr.id IN (" + filteredCalls + ")";
 		}
 		
 		// Build SQL statement
@@ -117,7 +131,6 @@ public class TekvLSGetCallsStatusSummary {
 		// Build SQL statement to verify the role
 		String email = getEmailFromToken(tokenClaims, context);
 		SelectQueryBuilder verificationQueryBuilder = getCustomerRoleVerificationQuery(subaccountId,roles,email);
-
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -142,8 +155,9 @@ public class TekvLSGetCallsStatusSummary {
 				}
 			}
 
-			// Retrieve tap URL
-			context.getLogger().info("Execute SQL statement: " + selectStmtTapUrl);
+			// Retrieve tap URL			
+			context.getLogger().info("Execute SQL statement TekvLSGetCallsStatusSummary: " + selectStmtTapUrl);
+			
 			rs = selectStmtTapUrl.executeQuery();
 			String tapURL = null;
 			if (rs.next()) {
@@ -156,27 +170,38 @@ public class TekvLSGetCallsStatusSummary {
 			}
 			context.getLogger().info("TAP URL for data query: " + tapURL);
 
-
 			String statement = queryBuilder.getQuery();
-
-			// Retrieve executions status list.
-			context.getLogger().info("Execute SQL statement: " + statement);
-			// Connect to the API
+			// Retrieve executions status list.			
+			context.getLogger().info("Execute SQL statement, Retrieve Execution status: " + statement);
+					
+			// Connect to the API			
 			JSONArray resultSet = TAPClient.executeQuery(tapURL,statement,context);
 
 			// Return a JSON array of status and counts (id and value)
-			HashMap<String,String> reportTypes = new HashMap<>();
-			reportTypes.put(Utils.TEST_PLAN_NAMES.CALLING_RELIABILITY.value(),"callingReliability");
-			reportTypes.put(Utils.TEST_PLAN_NAMES.FEATURE_FUNCTIONALITY.value(),"featureFunctionality");
-			reportTypes.put(Utils.TEST_PLAN_NAMES.POLQA.value(),"POLQA");
+			HashMap<String, String> reportTypes = new HashMap<>();
+			if (callsFilter.isEmpty()) {
+				reportTypes.put(Utils.TEST_PLAN_NAMES.CALLING_RELIABILITY.value(), "callingReliability");
+				reportTypes.put(Utils.TEST_PLAN_NAMES.FEATURE_FUNCTIONALITY.value(), "featureFunctionality");
+				reportTypes.put(Utils.TEST_PLAN_NAMES.POLQA.value(), "POLQA");
+			} else {
+				if (callsFilter.equals("POLQA")) {
+					reportTypes.put(Utils.TEST_PLAN_NAMES.POLQA.value(), "POLQA");
+					for (Object result : resultSet) {
+						JSONArray values = (JSONArray) result;
+						values.put(0, "POLQA");
+					}
+					;
+				}
+			}			
+			
 			// first fill json object with callingReliability and featureFunctionality arrays
 			reportTypes.forEach((tpName, reportType) -> {
 				json.put(reportType, new JSONObject("{ callsByType: {p2p:0,onNet:0,offNet:0}, callsByStatus: {PASSED:0,FAILED:0}}"));
-			});
-
+			});			
+			
 			for(Object resultElement : resultSet) {
 				JSONArray values = (JSONArray) resultElement;
-
+				
 				String reportType = values.getString(0);
 				String type = reportTypes.get(reportType);
 				JSONObject reportTypeObject = json.getJSONObject(type);
