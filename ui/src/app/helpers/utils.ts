@@ -254,7 +254,7 @@ export class Utility {
         return date.endOf("hour");
     }
 
-    public static parseMetric(metricsObj: any, metric: string) {
+    public static parseMetric(metricsObj: any, metric: string): number {
         if(metric === "Received packet loss"){
           const percentageString = metricsObj[metric];
           const packetLossString =  percentageString.replace("%", "");

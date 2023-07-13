@@ -36,7 +36,7 @@ export class RedirectPageComponent implements OnInit {
       const accountDetails = this.getAccountDetails();
       const { idTokenClaims: { roles } } = accountDetails;
       this.loggedInUserRoles = roles;
-      if (this.loggedInUserRoles.length == 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
+      if (this.loggedInUserRoles.length === 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
         // Devices admin does not have permission to access dashboard, so it's a special case
         this.router.navigate([ this.CONSUMPTION_MATRIX_PATH ]);
       } else {
@@ -66,29 +66,38 @@ export class RedirectPageComponent implements OnInit {
    * get logged in user's subaccount details
    */
   private getSubAccountDetails(): void {
-    this.subaccountService.getSubAccountList().subscribe((subaccountsResp: any) => {
+    this.subaccountService.getSubAccountListForCustomerUser().subscribe((subaccountsResp: any) => {
       if (subaccountsResp) {
-        if (subaccountsResp.subaccounts.length > 1) {
+        let indexOfLastCustomerWithServices: number = 0;
+        for (let i = 0; i < subaccountsResp.subaccounts.length; i++) {
+          const services: string = subaccountsResp.subaccounts[i].services;
+          if (services.includes(tekVizionServices.SpotLight)) {
+            this.currentSubaccountDetails = subaccountsResp.subaccounts[i];
+            break;
+          }
+          if (services !== "")
+            indexOfLastCustomerWithServices = i;
+        }
+        if (!this.currentSubaccountDetails) {
+          this.currentSubaccountDetails = subaccountsResp.subaccounts[indexOfLastCustomerWithServices];
           this.navigateToDashboard();
           return;
         }
-        this.currentSubaccountDetails = subaccountsResp.subaccounts[0];
-        if (this.currentSubaccountDetails.services) {
-            this.currentSubaccountDetails.services = this.currentSubaccountDetails.services.split(',').map((e: string) => e.trim());
-        } else {
-            this.currentSubaccountDetails.services = [];
-        }
+        if (this.currentSubaccountDetails.services)
+          this.currentSubaccountDetails.services = this.currentSubaccountDetails.services.split(',').map((e: string) => e.trim());
+        else
+          this.currentSubaccountDetails.services = [];
         this.currentSubaccountDetails.customerName = this.currentSubaccountDetails.name;
         this.customerService.getCustomerById(this.currentSubaccountDetails.customerId).subscribe((customersResp: any) => {
-            const subaccountCustomer = customersResp.customers[0];
-            this.currentSubaccountDetails.customerName = subaccountCustomer.name;
-            this.currentSubaccountDetails.testCustomer = subaccountCustomer.testCustomer;
-            this.currentSubaccountDetails.customerType = subaccountCustomer.customerType;
-            this.currentSubaccountDetails.distributorId = subaccountCustomer.distributorId;
-            this.currentSubaccountDetails.adminEmails = subaccountCustomer.adminEmails;
-            this.currentSubaccountDetails.customerId = this.currentSubaccountDetails.customerId;
-            this.currentSubaccountDetails.subaccountId = this.currentSubaccountDetails.id;
-            this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
+          const subaccountCustomer = customersResp.customers[0];
+          this.currentSubaccountDetails.customerName = subaccountCustomer.name;
+          this.currentSubaccountDetails.testCustomer = subaccountCustomer.testCustomer;
+          this.currentSubaccountDetails.customerType = subaccountCustomer.customerType;
+          this.currentSubaccountDetails.distributorId = subaccountCustomer.distributorId;
+          this.currentSubaccountDetails.adminEmails = subaccountCustomer.adminEmails;
+          this.currentSubaccountDetails.customerId = this.currentSubaccountDetails.customerId;
+          this.currentSubaccountDetails.subaccountId = this.currentSubaccountDetails.id;
+          this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
         });
         this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
         // enable/disable the available services
@@ -96,7 +105,7 @@ export class RedirectPageComponent implements OnInit {
           if (this.currentSubaccountDetails.services.includes(e.value))
             e.access = true;
         });
-        this.navigationCheckPoint();
+        this.navigateToMyApps();
   }
     });
   }
@@ -111,17 +120,6 @@ export class RedirectPageComponent implements OnInit {
    * navigate to Dashboard page if roles has tekVizion.FullAdmin/ConfigTester/Distributor
    */
   private navigateToDashboard(): void { this.router.navigate([this.DASHBOARD_ROUTE_PATH]); }
-  /**
-   * check point where based on roles, it will redirect to apps/tekToken Consumption portal
-   */
-  private navigationCheckPoint(): void {
-    // checking that user has subaccount role to send it to apps page 
-    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER)) {
-      this.navigateToMyApps();
-    } else {
-      this.navigateToDashboard();
-    }
-  }
   /**
    * navigate to my apps page
    */
