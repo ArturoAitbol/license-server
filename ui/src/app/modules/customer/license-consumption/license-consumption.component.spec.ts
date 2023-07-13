@@ -303,12 +303,15 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isEquipmentSummaryRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData()', () => {
+    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData()', async() => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.setMonthAndYear(moment("2022-08-02"));
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
+
+        fixture.detectChanges();
+        await fixture.whenStable();
 
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
@@ -331,12 +334,15 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.tokenConsumptionData).toEqual([expectedConsumptionDetail]);
     });
 
-    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData() - Case: (selectedType: Configuration, tokenConsumption variables null', () => {
+    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData() - Case: (selectedType: Configuration, tokenConsumption variables null', async() => {
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         licenseConsumptionComponentTestInstance.selectedType = 'Configuration';
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(of(ConsumptionServiceMock.mockDetailedInfoNoTokenConsumption));
+
+        fixture.detectChanges();
+        await fixture.whenStable();
 
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
@@ -350,7 +356,7 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.tokenConsumptionData).toEqual([expectedConsumptionDetail]);
     });
 
-    it('should throw an error if getting licenseConsumptionDetails failed when calling fetchAggregatedData()', () => {
+    it('should throw an error if getting licenseConsumptionDetails failed when calling fetchAggregatedData()', async() => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
@@ -358,6 +364,7 @@ describe('Data collection and parsing tests', () => {
         spyOn(console, 'error');
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -368,13 +375,14 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isDetailedConsumptionRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails when calling onPageChange()', () => {
+    it('should make a call to get licenseConsumptionDetails when calling onPageChange()', async() => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
         const event = { pageIndex: 0, pageSize: 10 };
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.onPageChange(event);
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
