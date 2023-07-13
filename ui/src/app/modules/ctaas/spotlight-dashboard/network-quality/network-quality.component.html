@@ -2,7 +2,7 @@
     <div class="col-12 p-0">
         <div class="card text-center mt-2">
             <div class="card-header">
-                <h1>Network Quality
+                <h1 id="network-quality-title">Network Quality
                     <mat-icon matTooltip="Represents the customer's network quality summary along with the detailed reports of Received Packet Loss, Round Trip Time, Jitter, Sent Bit Rate and POLQA.">
                         info_outline
                     </mat-icon>
@@ -17,7 +17,7 @@
                                     <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
                                         <mat-label id="type-filter-label">Selected Value:</mat-label>
                                         <mat-select formControlName="selectedValue" [value]="defaultValue" [(ngModel)]="defaultValue" (selectionChange)="onChangeValue($event.value)">
-                                            <mat-option *ngFor="let value of filterNetworkQualityForm" [value]="value">
+                                            <mat-option *ngFor="let value of filterNetworkQualityForm" [value]="value" title="{{value}}">
                                                 {{value}}
                                             </mat-option>
                                         </mat-select>
@@ -49,7 +49,7 @@
                                 <div class="col-auto">
                                     <div style="display: inline-block; padding-right: 15px; margin-top: 16px;">
                                         <button class="apply-bttn" mat-raised-button
-                                                id="add-customer-button" (click)="applyFilters()" [disabled]="filters.disabled">
+                                                id="apply-network-filters-button" (click)="applyFilters()" [disabled]="filters.disabled">
                                             Apply
                                         </button>
                                     </div>
@@ -94,11 +94,11 @@
                                     <div class="metric-header">
                                         <mat-icon>call</mat-icon>
                                         <label class="ps-2 blue-label">Calls With Network Stats:</label>
-                                        <span class="ms-1">{{ summary.totalCalls }}</span>
+                                        <span class="ms-1" id="callsWithNetStats">{{ summary.totalCalls }}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt-3">
+                            <div class="row mt-3" id="thresholds">
                                 <div class="subtitle">
                                     <h2 class="mb-3">Calls Above Threshold Metrics
                                         <mat-icon matTooltip="Number of calls that exceed the recommended threshold for a particular metric.">
@@ -107,19 +107,19 @@
                                     </h2>
                                 </div>
                                 <div class="col-md-4 p-2 border metrics">
-                                    <p>{{ summary.aboveThreshold.jitter }}</p>
+                                    <p id="jitterAboveThreshold">{{ summary.aboveThreshold.jitter }}</p>
                                     <label class="blue-label">Jitter (> {{ MetricsThresholds.receivedJitter }} ms)</label>
                                 </div>
                                 <div class="col-md-4 p-2 border metrics">
-                                    <p>{{ summary.aboveThreshold.packetLoss }}</p>
+                                    <p id="packetLossAboveThreshold">{{ summary.aboveThreshold.packetLoss }}</p>
                                     <label class="blue-label">Packet Loss (> {{ MetricsThresholds.receivedPacketLoss }}%)</label>
                                 </div>
                                 <div class="col-md-4 p-2 border metrics">
-                                    <p>{{ summary.aboveThreshold.roundTripTime }}</p>
+                                    <p id="roundTripTimeAboveThreshold">{{ summary.aboveThreshold.roundTripTime }}</p>
                                     <label class="blue-label">Round Trip Time (> {{ MetricsThresholds.roundTripTime }} ms)</label>
                                 </div>
                             </div>
-                            <div class="row justify-content-center mt-3">
+                            <div class="row justify-content-center mt-3" id="network-summary">
                                 <div class="subtitle">
                                     <h2 class="mb-3">Network Metrics Summary
                                         <div *ngIf="!averageSelected; else average">
@@ -137,41 +137,41 @@
                                 <div class="col-md-3 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
-                                        <p>{{ summary.overall.packetLoss }}</p>
+                                        <p id="packetLossValue">{{ summary.overall.packetLoss }}</p>
                                     </div>
                                     <label class="blue-label">{{maxLabel}} Packet Loss (%)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon class="custom-icon" svgIcon="jitter"></mat-icon>
-                                        <p>{{ summary.overall.jitter }}</p>
+                                        <p id="jitterValue">{{ summary.overall.jitter }}</p>
                                     </div>
                                     <label class="blue-label">{{maxLabel}} Jitter (ms)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>update</mat-icon>
-                                        <p>{{ summary.overall.roundTripTime }}</p>
+                                        <p id="roundTripTimeValue">{{ summary.overall.roundTripTime }}</p>
                                     </div>
                                     <label class="blue-label">{{maxLabel}} Round Trip Time (ms)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>network_check</mat-icon>
-                                        <p>{{ summary.overall.polqa }}</p>
+                                        <p id="polqaValue">{{ summary.overall.polqa }}</p>
                                     </div>
                                     <label class="blue-label">{{minLabel}} POLQA</label>
                                 </div>
                                 <div class="col-md-3 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>multiple_stop</mat-icon>
-                                        <p>{{ summary.overall.sendBitrate }}</p>
+                                        <p id="sentBitrateValue">{{ summary.overall.sendBitrate }}</p>
                                     </div>
                                     <label class="blue-label">{{avgLabel}} Sent Bitrate (kbps)</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row" id="polqa-chart-titles">
                             <div class="col-12 mt-4">
                                 <hr>
                             </div>
@@ -206,7 +206,7 @@
                                 </mat-button-toggle-group>
                             </div>
                         </div>
-                        <div class="col-12 mt-3" style="height: 450px">
+                        <div id="polqa-chart" class="col-12 mt-3" style="height: 450px">
                             <ng-container #outlet [ngTemplateOutlet]="chartContent"></ng-container>
                             <ng-template #chartContent>
                                 <apx-chart #polqaChart
@@ -231,7 +231,7 @@
                             </div>
                             <div class="mt-4">
                                 <div class="subtitle">
-                                    <h2 class="mb-3">Network Trends 
+                                    <h2 class="mb-3" id="networkTrendsTitle">Network Trends 
                                         <mat-icon matTooltip="Represents detailed insight into the overall health of the network with the detailed reports of Received Packet Loss, Round Trip Time, Jitter and Sent Bit Rate.">
                                             info_outline
                                         </mat-icon>
@@ -241,7 +241,7 @@
                         </div>
                         <div class="network-quality">
                             <div class="row">
-                                <div class="col-md-6 mt-3" style="height: 300px">
+                                <div class="col-md-6 mt-3" style="height: 300px" id="packetLossTrends">
                                     <apx-chart
                                             [series]="receivedPacketLossChartOptions.series"
                                             [title]="receivedPacketLossChartOptions.title"
@@ -257,7 +257,7 @@
                                             [colors]="receivedPacketLossChartOptions.colors">
                                     </apx-chart>
                                 </div>
-                                <div class="col-md-6 mt-3" style="height: 300px">
+                                <div class="col-md-6 mt-3" style="height: 300px" id="jitterTrends">
                                     <apx-chart
                                             [series]="jitterChartOptions.series"
                                             [title]="jitterChartOptions.title"
@@ -275,7 +275,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mt-3" style="height: 300px">
+                                <div class="col-md-6 mt-3" style="height: 300px" id="sentBitrateTrends">
                                     <apx-chart
                                             [series]="sentBitrateChartOptions.series"
                                             [title]="sentBitrateChartOptions.title"
@@ -291,7 +291,7 @@
                                             [colors]="sentBitrateChartOptions.colors">
                                     </apx-chart>
                                 </div>
-                                <div class="col-md-6 mt-3" style="height: 300px">
+                                <div class="col-md-6 mt-3" style="height: 300px" id="roundTripTimeTrends">
                                     <apx-chart
                                             [series]="roundTripChartOptions.series"
                                             [title]="roundTripChartOptions.title"
