@@ -9,6 +9,8 @@ import moment from "moment";
 })
 export class AutoLogoutService {
     timeoutId: any = null;
+    loginTimeoutId: any = null;
+    acquireTokenTimeoutId: any = null;
 
     private readonly  LAST_ACTIVITY_TIMESTAMP_KEY = 'lastActivityTime';
     constructor(private router: Router, private msalService: MsalService) {
@@ -50,5 +52,25 @@ export class AutoLogoutService {
                 console.error('error while logout: ', error);
             }
         }
+    }
+
+    public initLoginTimeout(){
+        clearTimeout(this.loginTimeoutId);
+        this.loginTimeoutId = setTimeout(()=> window.location.reload(), Constants.LOGIN_TIMEOUT);
+    }
+
+    public cancelLoginTimeout(){
+        clearTimeout(this.loginTimeoutId);
+        this.loginTimeoutId = null;
+    }
+
+    public initAcquireTokenTimeout(){
+        clearTimeout(this.acquireTokenTimeoutId);
+        this.acquireTokenTimeoutId = setTimeout(()=> this.logout(), Constants.LOGIN_TIMEOUT);
+    }
+
+    public cancelAcquireTokenTimeout(){
+        clearTimeout(this.acquireTokenTimeoutId);
+        this.acquireTokenTimeoutId = null;
     }
 }
