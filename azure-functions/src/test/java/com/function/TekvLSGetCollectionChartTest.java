@@ -1,7 +1,6 @@
 package com.function;
 
 import com.function.auth.RoleAuthHandler;
-import com.function.spotlightCharts.TekvLSGetCallsStatusSummary;
 import com.function.spotlightCharts.TekvLSGetCollectionChart;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
@@ -161,7 +160,6 @@ public class TekvLSGetCollectionChartTest extends TekvLSTest {
     @Test
     public void sqlExceptionTest() {
         //Given
-        String subaccountId = "f5a60920-8b70-4a10-9dc8-9536bdb5652c";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
 
         //When - Action

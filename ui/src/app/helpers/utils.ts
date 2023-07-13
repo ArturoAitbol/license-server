@@ -254,4 +254,18 @@ export class Utility {
         return date.endOf("hour");
     }
 
+    public static parseMetric(metricsObj: any, metric: string): number {
+        if(metric === "Received packet loss"){
+          const percentageString = metricsObj[metric];
+          const packetLossString =  percentageString.replace("%", "");
+          return parseFloat(packetLossString);
+        }
+        if(metric === "Sent bitrate" || metric === "Received Jitter" || metric === "Round trip time" ){
+          const bitrateString = metricsObj[metric];
+          const values = bitrateString.split(' ');
+          const numericString = values[0];
+          return parseFloat(numericString);
+        }
+        return parseFloat(metricsObj[metric]);
+      }
 }
