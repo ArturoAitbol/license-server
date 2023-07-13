@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, AfterViewIn
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs/internal/Subject';
-import { EventMessage, EventType, InteractionStatus } from '@azure/msal-browser';
+import { EventMessage, EventType } from '@azure/msal-browser';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AutoLogoutService } from "./services/auto-logout.service";
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
