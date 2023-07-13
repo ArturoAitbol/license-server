@@ -2705,7 +2705,8 @@ export class SpotlightChartsServiceMock {
   getDailyCallsStatusSummary(
     date: Moment,
     regions: { country: string; state: string; city: string }[],
-    subaccountId: string
+    subaccountId: string,
+    callsFilter:string
   ): Observable<any> {
     return new Observable((observer) => {
       observer.next(DAILY_CALLS_STATUS_SUMMARY);
