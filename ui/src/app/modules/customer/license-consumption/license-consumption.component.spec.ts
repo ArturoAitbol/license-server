@@ -393,7 +393,7 @@ describe('Data collection and parsing tests', () => {
     });
 
 
-    it('should throw an error if getting licenseConsumptionDetails failed when calling onPageChange()', () => {
+    it('should throw an error if getting licenseConsumptionDetails failed when calling onPageChange()', async() => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const err = "some error";
@@ -402,6 +402,7 @@ describe('Data collection and parsing tests', () => {
         const event = { pageIndex: 0, pageSize: 10 };
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.onPageChange(event);
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();

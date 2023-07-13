@@ -132,14 +132,14 @@ export class RedirectPageComponent implements OnInit {
     if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) && services.length > 0) {
       const serviceObj: IService = this.availableServices.find((e: any) => e.value === tekVizionServices.SpotLight);
       const { routePath } = serviceObj;
-      this.router.navigate([routePath]);
+      this.router.navigate([routePath], { queryParams: { subaccountId: this.currentSubaccountDetails.id } });
     } else {
       if (services.length > 1) {
         this.router.navigate([this.APPS_ROUTE_PATH]);
       } else if (services.length === 1) {
         const serviceObj: IService = this.availableServices.find((e: any) => e.value === services[0]);
         const { routePath } = serviceObj;
-        this.router.navigate([routePath]);
+        this.router.navigate([routePath], { queryParams: { subaccountId: this.currentSubaccountDetails.id } });
       }
     }
   }
