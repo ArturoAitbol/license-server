@@ -54,12 +54,22 @@ export class SubAccountService {
    * @returns: Observable 
    */
   public getSubAccountList(customerId?: string, customerName?: string) {
-    const params = new HttpParams();
+    let params = new HttpParams();
     if (customerId) {
-      params.append('customerId', customerId);
+      params = params.append('customerId', customerId);
     } else if (customerName) {
-      params.append('customerName', customerName);
+      params = params.append('customerName', customerName);
     }
+
+    const headers = this.getHeaders();
+    return this.httpClient.get<SubAccount>(this.API_URL, { headers, params });
+  }
+  /**
+   * fetch SubAccount details list for a CustomerUser
+   * @returns: Observable 
+   */
+  public getSubAccountListForCustomerUser() {
+    const params = new HttpParams().append('filterByCustomerUser', true);
 
     const headers = this.getHeaders();
     return this.httpClient.get<SubAccount>(this.API_URL, { headers, params });
@@ -88,8 +98,7 @@ export class SubAccountService {
    * @returns: HttpHeaders 
    */
   public getHeaders() {
-    const headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json');
+    const headers = new HttpHeaders().append('Content-Type', 'application/json');
     return headers;
   }
 }
