@@ -60,9 +60,9 @@ public class SpotlightMapSteps {
         this.map.openLink(regionFilter);
     }
 
-    @Given("I go to spotlight for {string}")
-    public void iGoToTheSpotlightDashboardViewFor(String customerName) {
-        CustomerRow customerRow = this.customers.getCustomerSubaccount(customerName);
+    @Given("I go to spotlight for customer {string} with subaccount {string}")
+    public void iGoToTheSpotlightDashboardViewFor(String customerName, String customerSubaccount) {
+        CustomerRow customerRow = this.customers.getCustomerSubaccount(customerName, customerSubaccount);
         ActionMenu actionMenu = customerRow.openActionMenu();
         this.spotlightDashboard = actionMenu.goToSpotlightDashboard();
     }

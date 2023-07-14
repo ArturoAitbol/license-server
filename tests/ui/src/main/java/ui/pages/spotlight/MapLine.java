@@ -53,7 +53,6 @@ public class MapLine extends AbstractPageObject {
         String callsPassed = "12";
         String callsFailed = "1";
         waitData();
-        selectDate("06/24/2023");
         this.action.click(this.link);
         this.action.click(this.link);
         assertEquals("link POLQA isn't the same: ".concat(this.action.getText(linkPOLQA)),POLQA,this.action.getText(linkPOLQA));
@@ -69,9 +68,8 @@ public class MapLine extends AbstractPageObject {
     }
 
     public Map validateCallsFailedValues() {
-        String callsFailed = "5";
+        String callsFailed = "0";
         waitData();
-        selectDate("06/19/2023");
         this.action.click(this.tampaChicago);
         this.action.click(this.tampaChicago);
         assertEquals("link Passed Calls isn't the same: ".concat(this.action.getText(linkFailedCalls)),callsFailed,this.action.getText(linkFailedCalls));
@@ -79,24 +77,32 @@ public class MapLine extends AbstractPageObject {
         return new Map();
     }
 
-    public void selectDate(String date) {
-        this.currentDate = date;
+    public void changeDate(){
+        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
         this.action.click(calendarButton);
-        this.action.click(this.previousMonthButton);
+        boolean monthFound = false;
+        while (!monthFound){
+            this.action.click(this.previousMonthButton);
+            By monthButtonLocator = By.xpath("//button[@aria-label='Choose month and year']/span/span");
+            String month = this.action.getText(monthButtonLocator);
+            monthFound = month.equals("JUN 2023");
+        }
+
         DateTimeFormatter webDateFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
-        LocalDate previousDate = LocalDate.parse(this.currentDate, webDateFormat);
+        LocalDate selectedDate = LocalDate.parse("06/24/2023", webDateFormat);
         Locale englishLocale = new Locale("en");
+
         DateTimeFormatter testDateFormat = DateTimeFormatter.ofPattern("MMMM d, uuuu", englishLocale);
-        By dateButtonLocator = By.cssSelector(String.format(this.dateButtonLocatorString, testDateFormat.format(previousDate)));
+        By dateButtonLocator = By.cssSelector(String.format(this.dateButtonLocatorString, testDateFormat.format(selectedDate)));
         this.action.click(dateButtonLocator);
         By applyButtonSelector = By.cssSelector("button[id*=filter-button]");
         this.action.click(applyButtonSelector);
-        waitData();
+        this.action.waitSpinner(spinnerSelector);
+        this.action.waitPropertyToBe(this.datePicker, "disabled", "false");
     }
 
     public void waitData(){
-        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
-        this.action.waitSpinner(spinnerSelector);
         this.action.waitPropertyToBe(this.datePicker, "disabled", "false");
+        this.changeDate();
     }
 }

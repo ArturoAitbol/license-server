@@ -107,7 +107,6 @@ public class MapNode extends AbstractPageObject {
         String tPacketLoss= "Max: 22.07, Avg: 0.06";
         String tBitrate= "Avg: 37.11";
         waitData();
-        selectDate("06/24/2023");
         this.action.click(this.node);
         this.action.click(this.node);
         assertEquals("originated POLQA isn't the same: ".concat(this.action.getText(originatedPOLQA)),oPOLQA,this.action.getText(originatedPOLQA));
@@ -141,7 +140,6 @@ public class MapNode extends AbstractPageObject {
     public Map validatePOLQA(String node, String orginatedAvg, String terminatedAvg) {
         By selectedNode = By.xpath("//img[@title='" + node + "']");
         waitData();
-        selectDate("06/24/2023");
         this.action.click(selectedNode);
         this.action.click(selectedNode);
         String[] avgOriginatedPOLQA = this.action.getText(originatedPOLQA).split(", ");
@@ -158,7 +156,6 @@ public class MapNode extends AbstractPageObject {
         String report = "Daily Report | 06/24/2023";
         String selectedRegion = "Chicago, Illinois, United States";
         waitData();
-        selectDate("06/24/2023");
         this.action.click(selectedNode);
         this.action.click(selectedNode);
         this.action.click(dashboardButton);
@@ -175,25 +172,33 @@ public class MapNode extends AbstractPageObject {
         return new Map();
     }
 
-    public void selectDate(String date) {
-        this.currentDate = date;
+    public void changeDate(){
+        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
         this.action.click(calendarButton);
-        this.action.click(this.previousMonthButton);
+        boolean monthFound = false;
+        while (!monthFound){
+            this.action.click(this.previousMonthButton);
+            By monthButtonLocator = By.xpath("//button[@aria-label='Choose month and year']/span/span");
+            String month = this.action.getText(monthButtonLocator);
+            monthFound = month.equals("JUN 2023");
+        }
+
         DateTimeFormatter webDateFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
-        LocalDate previousDate = LocalDate.parse(this.currentDate, webDateFormat);
+        LocalDate selectedDate = LocalDate.parse("06/24/2023", webDateFormat);
         Locale englishLocale = new Locale("en");
+
         DateTimeFormatter testDateFormat = DateTimeFormatter.ofPattern("MMMM d, uuuu", englishLocale);
-        By dateButtonLocator = By.cssSelector(String.format(this.dateButtonLocatorString, testDateFormat.format(previousDate)));
+        By dateButtonLocator = By.cssSelector(String.format(this.dateButtonLocatorString, testDateFormat.format(selectedDate)));
         this.action.click(dateButtonLocator);
         By applyButtonSelector = By.cssSelector("button[id*=filter-button]");
         this.action.click(applyButtonSelector);
-        waitData();
+        this.action.waitSpinner(spinnerSelector);
+        this.action.waitPropertyToBe(this.datePicker, "disabled", "false");
     }
 
     public void waitData(){
-        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
-        this.action.waitSpinner(spinnerSelector);
         this.action.waitPropertyToBe(this.datePicker, "disabled", "false");
+        this.changeDate();
     }
 
     public void waitSpinner() {
