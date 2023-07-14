@@ -30,6 +30,7 @@ export class Constants {
 
     //LIMITS
     public static readonly STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
+    public static readonly STAKEHOLDERS_LIMIT_MULTITENANT_SUBACCOUNT = 50;
 
     // Alert messages
     public static readonly MAINTENANCE_MODE_ALERT = "The UCaaS Continuous Testing Service is currently experiencing limited functionality due to ongoing maintenance. " +

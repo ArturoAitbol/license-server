@@ -14,6 +14,7 @@ import { delay } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { CallbackService } from "src/app/services/callback.service";
 import { CallbackServiceMock } from "src/test/mock/services/callback-service.mock";
+import { FeatureToggleServiceMock } from "src/test/mock/services/feature-toggle-service.mock";
 
 let ctaasStakeholderComponentTestInstance: CtaasStakeholderComponent;
 let fixture: ComponentFixture<CtaasStakeholderComponent>;
@@ -171,6 +172,10 @@ describe('dialog calls and interactions',() => {
 
     it('should throw a error if you exceeded the amount of stakeholders created', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callFake((ftName, subaccountId) => {
+            if (ftName === 'multitenant-demo-subaccount')
+                return false;
+        });
 
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.stakeholdersCount = Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;

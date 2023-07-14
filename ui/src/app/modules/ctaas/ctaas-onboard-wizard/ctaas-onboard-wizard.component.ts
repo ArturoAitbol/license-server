@@ -5,6 +5,7 @@ import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-
 import {Constants} from 'src/app/helpers/constants';
 import {AutoLogoutService} from 'src/app/services/auto-logout.service';
 import {CtaasSetupService} from 'src/app/services/ctaas-setup.service';
+import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import {SnackBarService} from 'src/app/services/snack-bar.service';
 import {StakeHolderService} from 'src/app/services/stake-holder.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
@@ -49,6 +50,7 @@ export class OnboardWizardComponent implements OnInit {
         private ctaasSetupService: CtaasSetupService,
         private snackBarService: SnackBarService,
         private subaccountService: SubAccountService,
+        private featureToggleService: FeatureToggleService,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         this.ctaasSetupId = data.ctaasSetupId;
@@ -153,12 +155,14 @@ export class OnboardWizardComponent implements OnInit {
                 this.isDataLoading = true;
                 this.stakeholderService.getStakeholderList(subaccountDetails.id).subscribe(res => {
                     this.isDataLoading = false;
-                    if(res.stakeHolders.length < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT){
+                    const limit = this.featureToggleService.isFeatureEnabled("multitenant-demo-subaccount", subaccountDetails.id)?
+                        Constants.STAKEHOLDERS_LIMIT_MULTITENANT_SUBACCOUNT : Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
+                    if (res.stakeHolders.length < limit) {
                         this.addAnotherStakeHolder = true;
                         this.interaction = '4';
                         this.stakeholderForm.reset();
                     } else {
-                        this.snackBarService.openSnackBar('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+                        this.snackBarService.openSnackBar('The maximum amount of users per customer (' + limit + ') has been reached', '');
                     }
                 });
                 break;

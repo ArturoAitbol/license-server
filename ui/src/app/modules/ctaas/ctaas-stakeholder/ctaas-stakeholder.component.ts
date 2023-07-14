@@ -39,6 +39,8 @@ export class CtaasStakeholderComponent implements OnInit {
     DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER
   };
 
+  private subaccountDetails: any;
+
   constructor(
     private msalService: MsalService,
     public dialog: MatDialog,
@@ -91,8 +93,8 @@ export class CtaasStakeholderComponent implements OnInit {
   private fetchStakeholderList(): void {
     this.isRequestCompleted = false;
     this.isLoadingResults = true;
-    let subaccountDetails = this.subaccountService.getSelectedSubAccount();
-    this.stakeholderService.getStakeholderList(subaccountDetails.id).pipe(
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.stakeholderService.getStakeholderList(this.subaccountDetails.id).pipe(
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
           try {
@@ -168,10 +170,12 @@ export class CtaasStakeholderComponent implements OnInit {
    * open add stake holder component in dialog
    */
   addStakeholder(): void {
-    if(this.stakeholdersCount < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT)
+    const limit = this.featureToggleService.isFeatureEnabled("multitenant-demo-subaccount", this.subaccountDetails.id)?
+      Constants.STAKEHOLDERS_LIMIT_MULTITENANT_SUBACCOUNT : Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
+    if(this.stakeholdersCount < limit)
       this.openDialog(this.ADD_STAKEHOLDER);
     else
-      this.snackBarService.openSnackBar('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+      this.snackBarService.openSnackBar('The maximum amount of users per customer (' + limit + ') has been reached', '');
   }
   /**
    * open dialog
