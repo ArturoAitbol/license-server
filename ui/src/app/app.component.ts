@@ -388,6 +388,7 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe((result: EventMessage) => {
             // Do something with event payload here 
             this.initializeSideBarItems();
+            this.autoLogoutService.cancelAcquireTokenTimeout();
         });
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
@@ -395,6 +396,20 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe(event => {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
+            this.autoLogoutService.cancelLoginTimeout();
+        });
+
+        this.broadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_START),
+            takeUntil(this._destroying$)
+        ).subscribe((result: EventMessage) => {
+            this.autoLogoutService.initLoginTimeout();
+        });
+        this.broadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_START),
+            takeUntil(this._destroying$)
+        ).subscribe((result: EventMessage) => {
+            this.autoLogoutService.initAcquireTokenTimeout();
         });
     }
 
@@ -405,29 +420,33 @@ export class AppComponent implements OnInit, OnDestroy {
         try {
             const accountDetails = this.getAccountDetails();
             const { roles } = accountDetails.idTokenClaims; 
+            if (!this.subaccountId)
+                this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
-            let featureToggleProtectedItems = [
+            let disabledItems: any[] = [];
+            const featureToggleProtectedItems = [
                 {
-                    toggleName:"mapFeature",
-                    subaccountId:this.subaccountId,
-                    item:"map"
-                }, 
+                    toggleName: "mapFeature",
+                    subaccountId: this.subaccountId,
+                    item: "map"
+                },
                 {
-                    toggleName:"powerbiFeature",
-                    subaccountId:this.subaccountId,
-                    item:"visualization"
+                    toggleName: "powerbiFeature",
+                    subaccountId: this.subaccountId,
+                    item: "visualization"
                 }
             ];
-
-            let disabledItems:any[]=[];
             featureToggleProtectedItems.forEach(featureToggle => {
-                if(!this.featureToggleService.isFeatureEnabled(featureToggle.toggleName, featureToggle.subaccountId)){
+                if (!this.featureToggleService.isFeatureEnabled(featureToggle.toggleName, featureToggle.subaccountId))
                     disabledItems.push(featureToggle.item);
-                }
             });
 
-            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length===0 ? this.fullSideBarItems.spotlight 
-                                             : this.fullSideBarItems.spotlight.filter((e: ISidebar) => !disabledItems.includes(e.path || e.element));
+            // disable stakeholders view for Stakeholders users only if subaccount is multitenant-demo-subaccount
+            if (roles.length === 1 && roles.includes(Constants.SUBACCOUNT_STAKEHOLDER) && this.featureToggleService.isFeatureEnabled("multitenant-demo-subaccount", this.subaccountId))
+                disabledItems.push("stakeholders");
+
+            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length === 0 ? 
+                this.fullSideBarItems.spotlight : this.fullSideBarItems.spotlight.filter((e: ISidebar) => !disabledItems.includes(e.path || e.element));
             this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST, this.featureToggleService, this.subaccountId));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main, this.featureToggleService, this.subaccountId));
         } catch (e) {
@@ -449,7 +468,7 @@ export class AppComponent implements OnInit, OnDestroy {
     navigateToMainView(): void {
         const accountDetails = this.getAccountDetails();
         const { roles } = accountDetails.idTokenClaims;
-        if (roles.length === 1 && (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)))
+        if (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
             this.router.navigate(['/']);
         else
             this.router.navigate([this.MAIN_DASHBOARD]);

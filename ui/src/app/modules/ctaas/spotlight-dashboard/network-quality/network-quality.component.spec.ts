@@ -406,7 +406,7 @@ describe("NetworkQualityComponent", () => {
     matOption[1].nativeElement.click();
     fixture.detectChanges();
     const apply = fixture.debugElement.query(
-      By.css("#add-customer-button")
+      By.css("#apply-network-filters-button")
     ).nativeElement;
     apply.click();
     fixture.detectChanges();

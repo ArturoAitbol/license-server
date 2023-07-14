@@ -13,6 +13,7 @@ import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service
 import { UserProfileServiceMock } from "src/test/mock/services/user-profile.mock";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
 import { OnboardWizardComponent } from "./ctaas-onboard-wizard.component";
+import { FeatureToggleServiceMock } from "src/test/mock/services/feature-toggle-service.mock";
 
 
 let onboardWizardComponentInstance: OnboardWizardComponent;
@@ -199,6 +200,10 @@ describe('testing the error thrown by the functions', () => {
         spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
         spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(of(response));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callFake((ftName, subaccountId) => {
+            if (ftName === 'multitenant-demo-subaccount')
+                return false;
+        });
 
         fixture.detectChanges();
         await fixture.whenStable();

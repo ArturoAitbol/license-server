@@ -181,4 +181,9 @@ public class WebDriverAction {
         wait.until(ExpectedConditions.domPropertyToBe(element, property, value));
         System.out.println(element + ": enabled!");
     }
+
+    public void scrollToElement(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor) this.driver;
+        js.executeScript("arguments[0].scrollIntoView();", element);
+    }
 }
