@@ -7,7 +7,7 @@ Feature: spotlightDashboard
 
   @validateDailyReport
   Scenario: Go to the Spotlight Dashboard to validate the daily report
-    Given I go to the spotlight dashboard of subaccount "Spotlight Demo-1" of customer "Spotlight Demo-1"
+    Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
     Then I should see the "daily-calling-reliability" chart with the following data
       | dataLabel           | Oops! There were some failures  |
@@ -100,7 +100,7 @@ Feature: spotlightDashboard
 
   @validateNetworkQualityReport
   Scenario: Go to the Native Dashboard to validate the daily Network Quality Charts with Average values
-    Given I go to the spotlight dashboard of subaccount "Spotlight Demo-1" of customer "Spotlight Demo-1"
+    Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
     And I change the selected value to "Average" in the Network Quality Section
     And I should see the Network Quality Summary with the following data
