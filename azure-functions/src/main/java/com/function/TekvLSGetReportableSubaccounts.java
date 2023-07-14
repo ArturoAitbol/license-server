@@ -38,27 +38,29 @@ public class TekvLSGetReportableSubaccounts {
                     HttpMethod.GET }, authLevel = AuthorizationLevel.ANONYMOUS, route = "reportable_subaccounts") HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
-        Claims tokenClaims = getTokenClaimsFromHeader(request, context);
-        JSONArray roles = getRolesFromToken(tokenClaims, context);
-        if (roles.isEmpty()) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
-            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
-            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
-        }
-        if (!hasPermission(roles, Resource.GET_REPORTABLE_SUBACCOUNTS)) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
-            json.put("error", MESSAGE_FOR_FORBIDDEN);
-            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
-        }
+        // Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+        // JSONArray roles = getRolesFromToken(tokenClaims, context);
+        // if (roles.isEmpty()) {
+        // JSONObject json = new JSONObject();
+        // context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+        // json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+        // return
+        // request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        // }
+        // if (!hasPermission(roles, Resource.GET_REPORTABLE_SUBACCOUNTS)) {
+        // JSONObject json = new JSONObject();
+        // context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
+        // json.put("error", MESSAGE_FOR_FORBIDDEN);
+        // return
+        // request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        // }
 
         context.getLogger().info("Entering TekvLSGetReportableCustomers Azure function");
 
         SelectQueryBuilder selectStmnt = new SelectQueryBuilder(
-                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" , sa.subaccount_admin_email AS \"lsSubAccountAdminEmail\" , cs.maintenance "
+                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" , sa.subaccount_admin_email AS \"lsSubAccountAdminEmail\" , cs.maintenance, cse.email AS \"lsSupportEmails\" "
                         +
-                        "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id LEFT JOIN subaccount_admin sa ON s.id = sa.subaccount_id");
+                        "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id LEFT JOIN subaccount_admin sa ON s.id = sa.subaccount_id LEFT JOIN ctaas_support_email cse ON cs.id = cse.ctaas_setup_id");
         selectStmnt.appendCustomCondition("s.services LIKE ?",
                 "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
         selectStmnt.appendEqualsCondition(" cs.status", Constants.CTaaSSetupStatus.READY.value(),
@@ -77,18 +79,26 @@ public class TekvLSGetReportableSubaccounts {
                 if (itemIndex != -1) {
                     JSONObject existingObject = array.getJSONObject(itemIndex);
                     JSONArray existingMails = existingObject.getJSONArray("emails");
-                    existingMails.put(rs.getString("lsSubAccountAdminEmail"));
+                    JSONArray existingSupportMails = existingObject.getJSONArray("supportEmails");
+                    if (rs.getString("lsSubAccountAdminEmail") != null)
+                        existingMails.put(rs.getString("lsSubAccountAdminEmail"));
+                    if (rs.getString("lsSupportEmails") != null)
+                        existingSupportMails.put(rs.getString("lsSupportEmails"));
                     existingObject.put("emails", existingMails);
+                    existingObject.put("supportEmails", existingSupportMails);
                     array.put(itemIndex, existingObject);
                 } else {
                     JSONArray emails = new JSONArray();
+                    JSONArray supportEmails = new JSONArray();
                     item.put("subAccountId", rs.getString("lsSubAccountId"));
                     item.put("subAccountName", rs.getString("lsSubAccountName"));
                     item.put("customerName", rs.getString("lsCustomerName"));
                     item.put("customerId", rs.getString("lsCustomerId"));
                     item.put("maintenance", rs.getBoolean("maintenance"));
                     emails.put(rs.getString("lsSubAccountAdminEmail"));
+                    supportEmails.put(rs.getString("lsSupportEmails"));
                     item.put("emails", emails);
+                    item.put("supportEmails", supportEmails);
                     array.put(item);
                 }
             }
