@@ -15,7 +15,6 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { GaugeChartComponent } from "../../generics/gauge-chart/gauge-chart.component";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { SecondsToDateTimePipe } from 'src/app/pipes/seconds-to-date-time.pipe';
-import { SecondToDaysPipe } from 'src/app/pipes/second-to-days.pipe';
 
 @NgModule({
   declarations: [
@@ -29,7 +28,6 @@ import { SecondToDaysPipe } from 'src/app/pipes/second-to-days.pipe';
     TitleGetterPipe,
     GaugeChartComponent,
     SecondsToDateTimePipe,
-    SecondToDaysPipe,
   ],
   imports: [
     CommonModule,
@@ -51,7 +49,6 @@ import { SecondToDaysPipe } from 'src/app/pipes/second-to-days.pipe';
     NgxIntlTelInputModule,
     GaugeChartComponent,
     SecondsToDateTimePipe,
-    SecondToDaysPipe,
   ]
 })
 export class SharedModule { }
