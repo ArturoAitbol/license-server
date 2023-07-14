@@ -587,7 +587,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   nodeDetails(key:any){
-    console.log("entra")
     let nodeData = {...this.nodesMap[key], date: this.filteredDate};
     this.dialog.open(NodeDetailComponent, {
       width: '900px',
@@ -603,7 +602,7 @@ export class MapComponent implements OnInit, OnDestroy {
     let lineData = {...this.linesMap[key], date: this.filteredDate};
     let dialogRef = this.dialog.open(LineDetailComponent, {
       width: '505px',
-      height: '82vh',
+      height: '89vh',
       maxHeight: '100vh',
       disableClose: true,
       autoFocus: false,

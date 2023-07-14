@@ -57,7 +57,7 @@
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
+                <h1 class="text-center" title="report-title">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
                 </h1>
             </div>
             <div class="date-picker-form">
@@ -73,7 +73,7 @@
                                     <mat-label>Date</mat-label>
                                     <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
                                     <mat-hint>MM/DD/YYYY</mat-hint>
-                                    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                                    <mat-datepicker-toggle matSuffix [for]="dp" title="date-label"></mat-datepicker-toggle>
                                     <mat-datepicker #dp></mat-datepicker>
                                 </mat-form-field>
                             </div>
@@ -117,7 +117,7 @@
                         <mat-chip-list aria-label="Region selection">
                             <mat-chip
                               *ngFor="let region of preselectedRegions"
-                              (removed)="removeRegion(region)">
+                              (removed)="removeRegion(region)" title="mat-chip">
                               {{region.displayName}}
                               <button matChipRemove>
                                 <mat-icon>cancel</mat-icon>

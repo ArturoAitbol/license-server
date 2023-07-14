@@ -17,6 +17,12 @@ Feature: Stakeholders
     And I go to the spotlight "Map" tab
     Then I validate node avg POLQA of "Chicago" with "Avg: 3.91" and "Avg: 3.89"
 
+  @validateAvgPOLQAInformation @spotLightDashboard @test
+  Scenario: Open a node and validate the POLQA value
+    Given I go to spotlight for "Spotlight Demo-1"
+    And I go to the spotlight "Map" tab
+    Then I validate node avg POLQA of "Las Vegas" with "Avg: 3.76" and "Avg: 3.81"
+
   @validateLinkInformation @spotLightDashboard @test
   Scenario: Open a link and validate information
     Given I go to spotlight for "Spotlight Demo-1"
@@ -29,8 +35,20 @@ Feature: Stakeholders
     And I go to the spotlight "Map" tab
     Then I open a link and validate failed calls
 
-  @validateAvgPOLQAInformation @spotLightDashboard @test
-  Scenario: Open a node and validate the POLQA value
+  @goToNativeDashboard @spotLightDashboard @test
+  Scenario: Open a node and open the native dashboard
     Given I go to spotlight for "Spotlight Demo-1"
     And I go to the spotlight "Map" tab
-    Then I validate node avg POLQA of "Las Vegas" with "Avg: 3.76" and "Avg: 3.81"
+    Then I open the native dashboard of the "Chicago" node
+
+  @filterByRegionAndOpenNode @spotLightDashboard @test
+  Scenario: Filter region and open a node
+    Given I go to spotlight for "Spotlight Demo-1"
+    And I go to the spotlight "Map" tab
+    Then I filter by date and "Chicago, IL, United States" and open a node
+
+  @filterByRegionAndOpenLink @spotLightDashboard @test
+  Scenario: Filter region and open a link
+    Given I go to spotlight for "Spotlight Demo-1"
+    And I go to the spotlight "Map" tab
+    Then I filter by date and "Chicago, IL, United States" and open a link

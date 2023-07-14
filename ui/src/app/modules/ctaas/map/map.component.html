@@ -33,7 +33,7 @@
                 formControlName="region"
                 [matAutocomplete]="regionAuto">
                 <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="addRegion()">
-                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region">
+                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region" title="{{region.displayName}}">
                         {{region.displayName}}
                     </mat-option>
                 </mat-autocomplete>
