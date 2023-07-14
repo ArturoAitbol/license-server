@@ -31,10 +31,7 @@ describe('UI verification test', () => {
     it('should display essential UI and components', () => {
         fixture.detectChanges();
         const h1 = fixture.nativeElement.querySelector('#setup-title');
-        const editButton = fixture.nativeElement.querySelector('#edit-details-button');
-
         expect(h1.textContent).toBe('UCaaS Continuous Testing Setup Details');
-        expect(editButton.textContent).toBe(' Edit Setup Details ');
 
     });
 
@@ -55,35 +52,12 @@ describe('UI verification test', () => {
 
 describe('make method calls', () => {
     beforeEach(beforeEachFunction);
-
-    // test 3
-    it('should enable form when "Edit Setup Details" button is clicked', () => {
-        fixture.detectChanges();
-        spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough;
-
-        CtaasSetupComponentTestInstance.editForm();
-        const form = CtaasSetupComponentTestInstance.setupForm.enable();
-        expect(CtaasSetupComponentTestInstance.editForm).toHaveBeenCalled();
-        expect(form).toBeTruthy
-    });
-
-    // test 4
-    it('should display update and cancel buttons, when "Edit Setup Details" button is clicked', () => {
-        spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
-        CtaasSetupComponentTestInstance.editForm();
-        fixture.detectChanges();
-
-        const updateButton = fixture.nativeElement.querySelector('#update-button');
-        const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
-
-        expect(updateButton.textContent).toBe(' Update ');
-        expect(cancelButton.textContent).toBe(' Cancel ');
-    });
     // test 5    
     it('should update setup details on "Update" button click', () => {
+        dialogService.expectedConfirmDialogValue = true;
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
 
-        CtaasSetupComponentTestInstance.editForm();
         const setupDetails = CtaasSetupServiceMock.testSetup2
         const form = CtaasSetupComponentTestInstance.setupForm;
         form.patchValue(setupDetails);
@@ -91,22 +65,6 @@ describe('make method calls', () => {
 
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
-    });
-
-    // test 6
-    it('should cancel editing and disable form when "Cancel" button is clicked', () => {
-        fixture.detectChanges();
-        spyOn(CtaasSetupComponentTestInstance, 'cancelEdit').and.callThrough();
-        spyOn(dialogService, 'close').and.callThrough();
-
-        CtaasSetupComponentTestInstance.editForm();
-        CtaasSetupComponentTestInstance.cancelEdit();
-        dialogService.close();
-        CtaasSetupComponentTestInstance.setupForm.disable();
-        fixture.detectChanges();
-
-        expect(dialogService.close).toHaveBeenCalled();
-        expect(CtaasSetupComponentTestInstance.cancelEdit).toHaveBeenCalled();
     });
 });
 
@@ -165,11 +123,8 @@ describe('dialog calls and interactions', () => {
                 };
             });
         });
-        spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         fixture.detectChanges();
-
-        CtaasSetupComponentTestInstance.editForm();
 
         const form = CtaasSetupComponentTestInstance.setupForm;
         form.value.status = 'SETUP_READY';
@@ -193,13 +148,11 @@ describe('dialog calls and interactions', () => {
                 };
             });
         });
-        spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         fixture.detectChanges();
 
         // const ctaasSetups = CtaasSetupServiceMock.usersListValue.setups;
         // ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
-        CtaasSetupComponentTestInstance.editForm();
 
         const form = CtaasSetupComponentTestInstance.setupForm
         form.value.status = 'SETUP_READY';
@@ -225,7 +178,6 @@ describe('dialog calls and interactions', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
-        CtaasSetupComponentTestInstance.editForm();
         const form = CtaasSetupComponentTestInstance.setupForm
         form.value.status = 'SETUP_READY';
         fixture.detectChanges();
@@ -291,7 +243,6 @@ describe('check for error and success messages', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
-        CtaasSetupComponentTestInstance.editForm();
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
@@ -376,7 +327,6 @@ describe('check for error and success messages', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
-        CtaasSetupComponentTestInstance.editForm();
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
@@ -390,7 +340,6 @@ describe('check for error and success messages', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
-        CtaasSetupComponentTestInstance.editForm();
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
