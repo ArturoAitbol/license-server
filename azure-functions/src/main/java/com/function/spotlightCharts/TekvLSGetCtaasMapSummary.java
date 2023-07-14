@@ -144,7 +144,6 @@ public class TekvLSGetCtaasMapSummary {
         SelectQueryBuilder statsStmt = new SelectQueryBuilder(sqlStats, true);
         statsStmt.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
         statsStmt.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
-        //statsStmt.appendCustomCondition("sr.enddate <= CAST(? AS timestamp)", startDate);
         statsStmt.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates");
 
         SelectQueryBuilder testResultsStmt = new SelectQueryBuilder(sqlTestResults, true);
@@ -204,8 +203,6 @@ public class TekvLSGetCtaasMapSummary {
                 "GROUP BY fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates";
             context.getLogger().info("Execute map SQL statement: " + sqlUnifiedLocationsData);
 
-
-            JSONArray resultSeta = TAPClient.executeQuery(tapURL, sqlStats, context);
             JSONArray resultSet = TAPClient.executeQuery(tapURL, sqlUnifiedLocationsData, context);
             JSONArray result = new JSONArray();
             for (Object entry : resultSet) {
