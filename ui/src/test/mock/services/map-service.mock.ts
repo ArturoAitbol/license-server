@@ -395,6 +395,7 @@ const SELECTED_NODE = {
         "state": "IL"
     },
     "totalCalls": 2,
+    "totalCallTimes": 4000,
     "callsOriginated": {
         "passed": 2,
         "failed": 0,
@@ -458,6 +459,7 @@ const SELECTED_NODE = {
 
 const SELECTED_LINE = {
     "totalCalls": 4,
+    "totalCallTimes": 4000,
     "receivedPacketLoss": {
         "avg": 0,
         "max": 0,
