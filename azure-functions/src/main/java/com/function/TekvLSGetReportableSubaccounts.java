@@ -38,22 +38,20 @@ public class TekvLSGetReportableSubaccounts {
                     HttpMethod.GET }, authLevel = AuthorizationLevel.ANONYMOUS, route = "reportable_subaccounts") HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
-        // Claims tokenClaims = getTokenClaimsFromHeader(request, context);
-        // JSONArray roles = getRolesFromToken(tokenClaims, context);
-        // if (roles.isEmpty()) {
-        // JSONObject json = new JSONObject();
-        // context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
-        // json.put("error", MESSAGE_FOR_UNAUTHORIZED);
-        // return
-        // request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
-        // }
-        // if (!hasPermission(roles, Resource.GET_REPORTABLE_SUBACCOUNTS)) {
-        // JSONObject json = new JSONObject();
-        // context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
-        // json.put("error", MESSAGE_FOR_FORBIDDEN);
-        // return
-        // request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
-        // }
+        Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+        JSONArray roles = getRolesFromToken(tokenClaims, context);
+        if (roles.isEmpty()) {
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        }
+        if (!hasPermission(roles, Resource.GET_REPORTABLE_SUBACCOUNTS)) {
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
+            json.put("error", MESSAGE_FOR_FORBIDDEN);
+            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        }
 
         context.getLogger().info("Entering TekvLSGetReportableCustomers Azure function");
 
