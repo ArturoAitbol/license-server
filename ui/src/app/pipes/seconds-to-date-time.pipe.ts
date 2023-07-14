@@ -10,5 +10,4 @@ export class SecondsToDateTimePipe implements PipeTransform {
         newDate.setSeconds(seconds);
         return newDate;
   }
-
 }

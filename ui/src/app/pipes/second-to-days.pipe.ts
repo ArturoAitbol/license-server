@@ -5,9 +5,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class SecondToDaysPipe implements PipeTransform {
 
-  transform(value: number, ...args: unknown[]): number {
-    if (value) 
-      return (value / 86400) - (value / 86400) % 1;
+  transform(seconds: number, ...args: unknown[]): number {
+    if (seconds) 
+      return (seconds / 86400) - (seconds / 86400) % 1;
     return 0;
   }
 }
