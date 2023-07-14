@@ -78,7 +78,7 @@ public class TekvLSGetCtaasMapSummary {
         "	sum(count_packet_loss) as count_packet_loss, sum(max_packet_loss) as max_packet_loss, sum(avg_packet_loss) as avg_packet_loss,\n" +
         "	sum(count_round_trip) as count_round_trip, sum(max_round_trip) as max_round_trip, sum(avg_round_trip) as avg_round_trip,\n" +
         "	sum(count_bitrate) as count_bitrate, sum(avg_bitrate) as avg_bitrate,\n" +
-        "	sum(count_polqa) as count_polqa, sum(min_polqa) as min_polqa, sum(avg_polqa) as avg_polqa\n";
+        "	sum(count_polqa) as count_polqa, sum(min_polqa) as min_polqa, sum(avg_polqa) as avg_polqa, sum(total_call_time) as total_call_time \n";
 
         String sqlStats = "SELECT er.fromcity, er.fromstate, er.fromcountry, er.tocity, er.tostate, er.tocountry, er.fromcoordinates, er.tocoordinates,\n" +
             "	null as total_calls, null as passed, null as failed,\n" +
@@ -95,7 +95,8 @@ public class TekvLSGetCtaasMapSummary {
             "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate,\n" +
             "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then ms.parameter_name end) as count_polqa,\n" +
             "	min(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as min_polqa,\n" +
-            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as avg_polqa\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as avg_polqa,\n" +
+            "	null as total_call_time \n" +
             "FROM media_stats ms\n" +
             "	LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id\n" +
             "	LEFT JOIN sub_result sr ON trr.subresultid = sr.id\n" +
@@ -118,7 +119,8 @@ public class TekvLSGetCtaasMapSummary {
             "	null as count_packet_loss, null as max_packet_loss, null as avg_packet_loss,\n" +
             "	null as count_round_trip, null as max_round_trip, null as avg_round_trip,\n" +
             "	null as count_bitrate, null as avg_bitrate,\n" +
-            "	null as count_polqa, null as min_polqa, null as avg_polqa\n" +
+            "	null as count_polqa, null as min_polqa, null as avg_polqa,\n" +
+            "	sum( EXTRACT(EPOCH FROM (sr.enddate - sr.startdate)) ) as total_call_time \n" +
             "FROM execution_report er\n" +
             "	JOIN sub_result sr on sr.execution_report_id = er.id\n" +
             "	JOIN test_result tr ON sr.testresultid = tr.id\n" +
@@ -142,6 +144,7 @@ public class TekvLSGetCtaasMapSummary {
         SelectQueryBuilder statsStmt = new SelectQueryBuilder(sqlStats, true);
         statsStmt.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
         statsStmt.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+        //statsStmt.appendCustomCondition("sr.enddate <= CAST(? AS timestamp)", startDate);
         statsStmt.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates");
 
         SelectQueryBuilder testResultsStmt = new SelectQueryBuilder(sqlTestResults, true);
@@ -201,6 +204,8 @@ public class TekvLSGetCtaasMapSummary {
                 "GROUP BY fromcountry, fromstate, fromcity, tocountry, tostate, tocity, fromcoordinates, tocoordinates";
             context.getLogger().info("Execute map SQL statement: " + sqlUnifiedLocationsData);
 
+
+            JSONArray resultSeta = TAPClient.executeQuery(tapURL, sqlStats, context);
             JSONArray resultSet = TAPClient.executeQuery(tapURL, sqlUnifiedLocationsData, context);
             JSONArray result = new JSONArray();
             for (Object entry : resultSet) {
@@ -234,6 +239,7 @@ public class TekvLSGetCtaasMapSummary {
                     res.put("totalCalls", entryArr.get(8));
                     res.put("passed", entryArr.get(9));
                     res.put("failed", entryArr.get(10));
+                    res.put("totalCallTimes", entryArr.get(25));
                     JSONObject jitter = new JSONObject();
                     jitter.put("count", entryArr.get(11));
                     jitter.put("max", entryArr.get(12));

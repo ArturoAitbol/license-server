@@ -7,7 +7,7 @@
                     <table class="table custom-table table-bordered">
                         <thead style="border-top: 2px solid #dee2e6;">
                             <tr>
-                                <th colspan="3" class="text-center" style="border-top: 1px ;">
+                                <th colspan="4" class="text-center" style="border-top: 1px ;">
                                     <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Overall Calls</strong></h4>
                                 </th>
                             </tr>
@@ -30,6 +30,12 @@
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <strong style="font-weight:500;">Failed</strong>
                                         <p style="margin: 0; text-align: right;">{{totalFailedCalls}}</p>
+                                    </div>
+                                </td>
+                                <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong style="font-weight:500;">Total time</strong>
+                                        <p style="margin: 0; text-align: right;">{{ data.callDuration | secondToDays }} - {{ data.callDuration | secondsToDateTime | date:'HH:mm:ss'}}</p>
                                     </div>
                                 </td>
                             </tr>
