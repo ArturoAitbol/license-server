@@ -39,7 +39,7 @@ Feature: Stakeholders
   Scenario: Open a node and open the native dashboard
     Given I go to spotlight for customer "DashboardFunctionalTest" with subaccount "DashboardFunctionalTest"
     And I go to the spotlight "Map" tab
-    Then I open the native dashboard of the "Chicago" node
+    Then I open the native dashboard of the "Las Vegas" node
 
   @filterByRegionAndOpenNode @spotLightDashboard @test
   Scenario: Filter region and open a node

@@ -42,7 +42,7 @@ public class MapLine extends AbstractPageObject {
     WebElement cancelButton;
     String dateButtonLocatorString = "button[aria-label='%s']";
     String currentDate = "";
-
+    By linkTitle = By.xpath("//h1[@title='link-title']");
     public Map validateLinkData() {
         String POLQA = "Min: 1.49, Avg: 4.04";
         String Jitter= "Max: 13.18, Avg: 6.17";
@@ -54,7 +54,9 @@ public class MapLine extends AbstractPageObject {
         String callsFailed = "1";
         waitData();
         this.action.click(this.link);
-        this.action.click(this.link);
+        if(this.action.checkElement(this.linkTitle) != "ok") {
+            this.action.click(this.link);
+        }
         assertEquals("link POLQA isn't the same: ".concat(this.action.getText(linkPOLQA)),POLQA,this.action.getText(linkPOLQA));
         assertEquals("link Jitter isn't the same: ".concat(this.action.getText(linkJitter)),Jitter,this.action.getText(linkJitter));
         assertEquals("link Round Trip Time isn't the same: ".concat(this.action.getText(linkRoundTripTime)),RoundTripTime,this.action.getText(linkRoundTripTime));
@@ -71,7 +73,9 @@ public class MapLine extends AbstractPageObject {
         String callsFailed = "0";
         waitData();
         this.action.click(this.tampaChicago);
-        this.action.click(this.tampaChicago);
+        if(this.action.checkElement(this.linkTitle) != "ok") {
+            this.action.click(this.tampaChicago);
+        }
         assertEquals("link Passed Calls isn't the same: ".concat(this.action.getText(linkFailedCalls)),callsFailed,this.action.getText(linkFailedCalls));
         this.action.click(cancelButton);
         return new Map();

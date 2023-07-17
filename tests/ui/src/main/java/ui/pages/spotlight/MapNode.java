@@ -82,7 +82,7 @@ public class MapNode extends AbstractPageObject {
     WebElement previousMonthButton;
     String dateButtonLocatorString = "button[aria-label='%s']";
     String currentDate = "";
-
+    By nodeTitle = By.xpath("//h1[@title='node-title']");
     public Map openNodeAndValidateData() {
         String totalsCalls = "77";
         String passedCalls = "76";
@@ -108,7 +108,9 @@ public class MapNode extends AbstractPageObject {
         String tBitrate= "Avg: 37.11";
         waitData();
         this.action.click(this.node);
-        this.action.click(this.node);
+        if(this.action.checkElement(this.nodeTitle) != "ok") {
+            this.action.click(this.node);
+        }
         assertEquals("originated POLQA isn't the same: ".concat(this.action.getText(originatedPOLQA)),oPOLQA,this.action.getText(originatedPOLQA));
         assertEquals("originated Jitter isn't the same: ".concat(this.action.getText(originatedJitter)),oJitter,this.action.getText(originatedJitter));
         assertEquals("originated Round Trip Time isn't the same: ".concat(this.action.getText(originatedRoundTripTime)),oRoundTripTime,this.action.getText(originatedRoundTripTime));
@@ -141,7 +143,9 @@ public class MapNode extends AbstractPageObject {
         By selectedNode = By.xpath("//img[@title='" + node + "']");
         waitData();
         this.action.click(selectedNode);
-        this.action.click(selectedNode);
+        if(this.action.checkElement(this.nodeTitle) != "ok") {
+            this.action.click(selectedNode);
+        }
         String[] avgOriginatedPOLQA = this.action.getText(originatedPOLQA).split(", ");
         String[] avgTerminatedPOLQA = this.action.getText(terminatedPOLQA).split(", ");
         assertEquals("originated POLQA isn't the same: ".concat(avgOriginatedPOLQA[1]),orginatedAvg,avgOriginatedPOLQA[1]);
@@ -154,13 +158,15 @@ public class MapNode extends AbstractPageObject {
         By selectedNode = By.xpath("//img[@title='" + node + "']");
         String dateSelected = "6/24/2023";
         String report = "Daily Report | 06/24/2023";
-        String selectedRegion = "Chicago, Illinois, United States";
+        String selectedRegion = "Las Vegas, Nevada, United States";
         waitData();
         this.action.click(selectedNode);
-        this.action.click(selectedNode);
+        if(this.action.checkElement(this.nodeTitle) != "ok") {
+            this.action.click(selectedNode);
+        }
         this.action.click(dashboardButton);
         ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
-        driver.switchTo().window(tabs.get(2));
+        driver.switchTo().window(tabs.get(tabs.size() - 1));
         waitSpinner();
         String[] region = action.getText(matChipLabel).split("\n");
         String parsedRegion = region[0];

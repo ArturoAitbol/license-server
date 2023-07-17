@@ -179,7 +179,6 @@ public class WebDriverAction {
 
     public void waitPropertyToBe(WebElement element, String property, String value){
         wait.until(ExpectedConditions.domPropertyToBe(element, property, value));
-        System.out.println(element + ": enabled!");
     }
 
     public void scrollToElement(WebElement element) {
