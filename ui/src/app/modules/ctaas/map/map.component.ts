@@ -155,6 +155,7 @@ export class MapComponent implements OnInit, OnDestroy {
         let newRegionObj = {
           region: this.mapData[index].from,
           totalCalls: this.mapData[index].totalCalls,
+          totalCallTimes: this.mapData[index].totalCallTimes,
           callsOriginated: {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
@@ -188,6 +189,7 @@ export class MapComponent implements OnInit, OnDestroy {
       } else {
         this.updateRegionInformation(index, fromRegion, "callsOriginated");
         this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
+        this.nodesMap[fromRegion].totalCallTimes += this.mapData[index].totalCallTimes;
         if(fromRegion === toRegion) {
           this.nodesMap[fromRegion].callsOriginated.callsPassedToSameRegion += this.mapData[index].passed;
           this.nodesMap[fromRegion].callsOriginated.callsFailedToSameRegion += this.mapData[index].failed;
@@ -199,6 +201,7 @@ export class MapComponent implements OnInit, OnDestroy {
         let newRegionObj = {
           region: this.mapData[index].to,
           totalCalls: this.mapData[index].totalCalls,
+          totalCallTimes: this.mapData[index].totalCallTimes,
           callsOriginated: {
             passed: 0,failed: 0, total: 0, 
             polqa: { count: 0, min: "", avg: "" }, 
@@ -231,8 +234,10 @@ export class MapComponent implements OnInit, OnDestroy {
         this.nodesMap[toRegion] = newRegionObj;
       } else {
         this.updateRegionInformation(index, toRegion, "callsTerminated");
-        if (fromRegion !== toRegion)
+        if (fromRegion !== toRegion){
           this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
+          this.nodesMap[toRegion].totalCallTimes += this.mapData[index].totalCallTimes;
+        }
         else {
           this.nodesMap[toRegion].callsTerminated.callsPassedToSameRegion += this.mapData[index].passed;
           this.nodesMap[toRegion].callsTerminated.callsFailedToSameRegion += this.mapData[index].failed;
@@ -309,6 +314,7 @@ export class MapComponent implements OnInit, OnDestroy {
       this.linesMap[uniqueKey].passed += this.mapData[index].passed;
       this.linesMap[uniqueKey].failed += this.mapData[index].failed;
       this.linesMap[uniqueKey].totalCalls += this.mapData[index].totalCalls;
+      this.linesMap[uniqueKey].totalCallTimes += this.mapData[index].totalCallTimes;
       if (this.validMapDataMetric(index, "polqa")) {
         this.updateMetricDataInLinesMap(index, uniqueKey, "polqa");
       }

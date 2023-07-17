@@ -43,6 +43,12 @@
                                 </div>
                                 <div class="row-auto">
                                     <div class="col-12">
+                                        <th style="width: max-content;">Total time</th>
+                                        <td style="width: 78.75%;">{{data.totalCallTimes | secondsToTime }}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
                                         <th style="width: max-content;">POLQA</th>
                                         <td title="linkPOLQA" style="width: 85%;">Min: {{data.polqa.min | na}}, Avg: {{data.polqa.avg | number:'.0-2' | na}}</td>
                                     </div>
