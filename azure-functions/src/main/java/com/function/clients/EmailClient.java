@@ -124,7 +124,7 @@ public class EmailClient {
             msg.setSubject(subject, "UTF-8");
             msg.setSentDate(new Date());
             msg.setFrom(new InternetAddress(System.getenv("SMTP_USER")));
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse("arasguido@aitbol.com", false));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailList, false));
             if(!bccEmailList.isEmpty())
                 msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bccEmailList, false));
 
