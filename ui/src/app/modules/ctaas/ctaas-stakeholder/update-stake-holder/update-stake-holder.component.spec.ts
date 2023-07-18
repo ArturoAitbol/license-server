@@ -115,7 +115,7 @@ describe('modify stakeholder interactions', () => {
 
 describe('modify stakeholder - FromGroup verification test', () => {
     beforeEach(beforeEachFunction);
-    it('should make all the controls required', () => {
+    it('should make the necessary checks for Name and Email', () => {
         fixture.detectChanges();
         const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm
 
