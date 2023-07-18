@@ -60,6 +60,12 @@
                 <h1 class="text-center">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
                 </h1>
             </div>
+            <div class="row mb-2">
+                <div class="col d-flex justify-content-center align-items-center hint">
+                    <mat-icon>info_outline</mat-icon>
+                    <div>All results are displayed in UTC</div>
+                </div>                
+            </div>
             <div class="date-picker-form">
                 <form [formGroup]="filters">
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
