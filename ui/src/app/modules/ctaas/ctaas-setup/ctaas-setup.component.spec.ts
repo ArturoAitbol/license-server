@@ -109,6 +109,7 @@ describe('dialog calls and interactions', () => {
 
     // test 9
     it('should update setup details on "Update" button click, in case of one license', () => {
+        dialogService.expectedConfirmDialogValue = true;
         const response = { ctaasSetups: [CtaasSetupServiceMock.testSetup1] };
         spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(response));
 
@@ -137,6 +138,7 @@ describe('dialog calls and interactions', () => {
 
     // test 10
     it('should update setup details on "Update" button click, in case of more the one license', () => {
+        dialogService.expectedConfirmDialogValue = true;
         spyOn(LicenseServiceMock, 'getLicenseList').and.callFake(() => {
             return new Observable((observer) => {
                 observer.next({
@@ -164,6 +166,7 @@ describe('dialog calls and interactions', () => {
 
     // test 11
     it('should show error message in case there is no license', () => {
+        dialogService.expectedConfirmDialogValue = true;
         spyOn(LicenseServiceMock, 'getLicenseList').and.callFake(() => {
             return new Observable((observer) => {
                 observer.next({
@@ -237,6 +240,7 @@ describe('check for error and success messages', () => {
 
     // test 13
     it('should display a message when an error occured while updating setup details', () => {
+        dialogService.expectedConfirmDialogValue = true;
         const errorResponse = { error: 'some error' };
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(errorResponse));
@@ -244,7 +248,6 @@ describe('check for error and success messages', () => {
         fixture.detectChanges();
 
         CtaasSetupComponentTestInstance.submit();
-        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating UCaaS Continuous Testing Setup!');
     });
@@ -312,6 +315,7 @@ describe('check for error and success messages', () => {
     });
     // test 14
     it('should display a message when update is successful', () => {
+        dialogService.expectedConfirmDialogValue = true;
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.callFake(() => {
             return new Observable((observer) => {
@@ -328,12 +332,12 @@ describe('check for error and success messages', () => {
         fixture.detectChanges();
 
         CtaasSetupComponentTestInstance.submit();
-        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Setup edited successfully!', '');
     });
 
     it('should display a message when update is successful and the response is null', () => {
+        dialogService.expectedConfirmDialogValue = true;
         const testResponse = null;
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(testResponse));
@@ -341,7 +345,6 @@ describe('check for error and success messages', () => {
         fixture.detectChanges();
 
         CtaasSetupComponentTestInstance.submit();
-        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Setup edited successfully!', '');
     });
