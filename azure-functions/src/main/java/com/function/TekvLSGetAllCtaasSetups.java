@@ -8,9 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,6 +34,13 @@ public class TekvLSGetAllCtaasSetups {
 	* 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetups?subaccountId={subaccountId}
 	* 2. curl "{your host}/v1.0/ctaasSetups"
 	*/
+
+	private final String dbConnectionUrl = "jdbc:postgresql://" +
+			System.getenv("POSTGRESQL_SERVER") +"/licenses" +
+			System.getenv("POSTGRESQL_SECURITY_MODE")
+			+ "&user=" + System.getenv("POSTGRESQL_USER")
+			+ "&password=" + System.getenv("POSTGRESQL_PWD");
+
 	@FunctionName("TekvLSGetAllCtaasSetups")
 		public HttpResponseMessage run(
 		@HttpTrigger(
@@ -67,7 +72,9 @@ public class TekvLSGetAllCtaasSetups {
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
-  
+
+		Map<String, List<String>> supportEmailsMap = new HashMap<>();
+
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_setup");
 		SelectQueryBuilder verificationQueryBuilder = null;
@@ -93,9 +100,11 @@ public class TekvLSGetAllCtaasSetups {
 		if (id.equals("EMPTY")){
 			if (!subaccountId.isEmpty()) {
 				queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+				supportEmailsMap = loadSupportEmails("subaccountId",subaccountId,context);
 			}
 		}else{
 			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
+			supportEmailsMap = loadSupportEmails("ctaasSetupId",id,context);
 		}
 
 		if (verificationQueryBuilder != null) {
@@ -106,9 +115,6 @@ public class TekvLSGetAllCtaasSetups {
 		}
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement selectStmt = queryBuilder.build(connection)) {
@@ -143,6 +149,8 @@ public class TekvLSGetAllCtaasSetups {
 				item.put("tapUrl", rs.getString("tap_url"));
 				item.put("onBoardingComplete", rs.getBoolean("on_boarding_complete"));
 				item.put("maintenance", rs.getBoolean("maintenance"));
+				if(!subaccountId.isEmpty())
+					item.put("supportEmails", supportEmailsMap.get(rs.getString("id")));
 				array.put(item);
 			}
 
@@ -168,5 +176,28 @@ public class TekvLSGetAllCtaasSetups {
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
+	}
+
+	private Map<String, List<String>> loadSupportEmails(String idType,String id, ExecutionContext context) {
+		Map<String, List<String>> emailsMap = new HashMap<>();
+		SelectQueryBuilder queryBuilder;
+		if(idType.equals("subaccountId")){
+			queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_support_email cse, ctaas_setup cs WHERE cse.ctaas_setup_id = cs.id",true);
+			queryBuilder.appendEqualsCondition("subaccount_id", id, QueryBuilder.DATA_TYPE.UUID);
+		}else{
+			queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_support_email");
+			queryBuilder.appendEqualsCondition("ctaas_setup_id", id, QueryBuilder.DATA_TYPE.UUID);
+		}
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			 PreparedStatement statement = queryBuilder.build(connection)) {
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				emailsMap.computeIfAbsent(rs.getString("ctaas_setup_id"), k -> new ArrayList<>()).add(rs.getString("email"));
+			}
+		} catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+		}
+		return emailsMap;
 	}
 }
