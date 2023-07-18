@@ -29,7 +29,6 @@
                         [inputId]="'phoneNumber'"
                         [enablePlaceholder]="true"
                         [customPlaceholder]="'Phone Number'"
-                        required
                         formControlName="phoneNumber">
                     </ngx-intl-tel-input>
                 </div>
@@ -42,13 +41,13 @@
                 <div>
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label id="company-name-label">Company Name</mat-label>
-                        <input required matInput value="" formControlName="companyName" id="companyName">
+                        <input matInput value="" formControlName="companyName" id="companyName">
                     </mat-form-field>
                 </div>
                 <div>
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label id="job-title-label">Job Title</mat-label>
-                        <input required matInput value="" formControlName="jobTitle" id="jobTitle">
+                        <input matInput value="" formControlName="jobTitle" id="jobTitle">
                     </mat-form-field>
                 </div>
                 <div *lcCheckAccessFor="'changeSpotlightRole'">

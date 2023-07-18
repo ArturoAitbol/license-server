@@ -128,10 +128,10 @@ describe('modify stakeholder - FromGroup verification test', () => {
             role: '',
         });
         expect(modifyStakeholder.get('name').valid).toBeFalse();
-        expect(modifyStakeholder.get('jobTitle').valid).toBeFalse();
-        expect(modifyStakeholder.get('companyName').valid).toBeFalse();
+        expect(modifyStakeholder.get('jobTitle').valid).toBeTrue();
+        expect(modifyStakeholder.get('companyName').valid).toBeTrue();
         expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
-        expect(modifyStakeholder.get('phoneNumber').valid).toBeFalse();
+        expect(modifyStakeholder.get('phoneNumber').valid).toBeTrue();
     });
 
     it('it should enable the submit button', () => {

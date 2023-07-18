@@ -41,8 +41,8 @@ export class UpdateStakeHolderComponent implements OnInit {
   initializeForm(): void {
     this.updateStakeholderForm = this.formBuilder.group({
       name: ['', Validators.required],
-      jobTitle: ['', Validators.required],
-      companyName: [{ value: '' }, Validators.required],
+      jobTitle: [''],
+      companyName: [{ value: '' }],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       phoneNumber: [''],
       role: [''],

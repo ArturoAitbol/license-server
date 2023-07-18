@@ -34,9 +34,9 @@ export class AddStakeHolderComponent implements OnInit {
    */
   addStakeholderForm = this.formBuilder.group({
     name: ['', Validators.required],
-    jobTitle: ['', Validators.required],
+    jobTitle: [''],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-    companyName: ['', Validators.required],
+    companyName: [''],
     phoneNumber: ['']
   });
 
