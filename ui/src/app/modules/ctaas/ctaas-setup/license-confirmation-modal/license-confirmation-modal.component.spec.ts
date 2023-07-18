@@ -11,7 +11,7 @@ let licenseComponentTestInstance: LicenseConfirmationModalComponent;
 let fixture: ComponentFixture<LicenseConfirmationModalComponent>;
 const dialogService = new DialogServiceMock();
 
-const licenseList = LicenseServiceMock.licensesList
+const licenseList = JSON.parse(JSON.stringify(LicenseServiceMock.licensesList));
 const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
 
 const beforeEachFunction = () => {

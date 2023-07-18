@@ -8,6 +8,7 @@ const TEST_SETUP_1 = {
     status: 'SETUP_READY',
     subaccountId: 'fc7a78c2-d0b2-4c81-9538-321562d426c7',
     tapUrl: 'www.taptekvizion.com',
+    supportEmails:["test@example.com","test-2@example.com"]
 };
 const TEST_SETUP_2 = {   
     azureResourceGroup: 'ab-tap',
@@ -16,6 +17,7 @@ const TEST_SETUP_2 = {
     status: 'SETUP_READY',
     subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426f7',
     tapUrl: 'www.taptekvizion.com',
+    supportEmails:["test@example.com","test-2@example.com"]
 };
 const TEST_SETUP_3 ={   
     azureResourceGroup: 'aa-tap',
@@ -23,7 +25,8 @@ const TEST_SETUP_3 ={
     onBoardingComplete: true,
     status: 'SETUP_INPROGRESS',
     subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
-    tapUrl: 'www.taptekvizion.com'
+    tapUrl: 'www.taptekvizion.com',
+    supportEmails:["test@example.com","test-2@example.com"]
 };
 const TEST_SETUP_4 ={   
     azureResourceGroup: 'aa-tap',
@@ -31,7 +34,8 @@ const TEST_SETUP_4 ={
     onBoardingComplete: true,
     status: 'SETUP_READY',
     subaccountId: '11111111-1111-1111-1111-111111111111',
-    tapUrl: 'www.taptekvizion.com'
+    tapUrl: 'www.taptekvizion.com',
+    supportEmails:["test@example.com","test-2@example.com"]
 };
 const TEST_SETUP_5 ={   
     azureResourceGroup: 'ad-tap',
@@ -39,7 +43,8 @@ const TEST_SETUP_5 ={
     onBoardingComplete: false,
     status: 'SETUP_INPROGRESS',
     subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f',
-    tapUrl: 'www.taptekvizion.com'
+    tapUrl: 'www.taptekvizion.com',
+    supportEmails:["test@example.com","test-2@example.com"]
 };
 
 const TEST_SETUP_MAINTENANCE = {
@@ -49,6 +54,7 @@ const TEST_SETUP_MAINTENANCE = {
     status: 'SETUP_READY',
     subaccountId: 'fc7a78c2-d0b2-4c81-9538-321562d426c7',
     tapUrl: 'www.taptekvizion.com',
+    supportEmails:["test@example.com","test-2@example.com"],
     maintenance: true
 };
 

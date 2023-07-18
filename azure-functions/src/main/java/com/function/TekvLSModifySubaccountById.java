@@ -150,7 +150,7 @@ public class TekvLSModifySubaccountById {
 					if (rs.next()) {
 						final String adminEmail = rs.getString("subaccount_admin_email");
 						if (FeatureToggleService.isFeatureActiveBySubaccountId("welcomeEmail", id))
-							EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
+							EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, id, context);
 					}
 				}
 				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + customerDetailStatement);
