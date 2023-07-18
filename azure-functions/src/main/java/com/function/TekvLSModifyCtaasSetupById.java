@@ -283,7 +283,7 @@ public class TekvLSModifyCtaasSetupById {
                 GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
                         rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context);
                 // Send onboarding email with link to portal
-                EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, context);
+                EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, subaccountId, context);
             }
         }
     }
@@ -329,9 +329,9 @@ public class TekvLSModifyCtaasSetupById {
                     nameRs.next();
                     String subaccountName = nameRs.getString("name");
                     if (newMaintenanceState) {
-                        EmailClient.sendMaintenanceModeEnabledAlert(emails, subaccountName, context);
+                        EmailClient.sendMaintenanceModeEnabledAlert(emails, subaccountName, subaccountId, context);
                     } else {
-                        EmailClient.sendMaintenanceModeDisabledAlert(emails, subaccountName, context);
+                        EmailClient.sendMaintenanceModeDisabledAlert(emails, subaccountName, subaccountId, context);
                     }
 
                 }
