@@ -44,7 +44,7 @@ export class UpdateStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: [''],
       role: [''],
     });
     try {

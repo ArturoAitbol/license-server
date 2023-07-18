@@ -37,7 +37,7 @@ export class AddStakeHolderComponent implements OnInit {
     jobTitle: ['', Validators.required],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
     companyName: ['', Validators.required],
-    phoneNumber: ['', Validators.required]
+    phoneNumber: ['']
   });
 
   reports: any =  [
