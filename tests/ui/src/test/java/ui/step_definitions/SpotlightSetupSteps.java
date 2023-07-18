@@ -23,7 +23,7 @@ public class SpotlightSetupSteps {
         this.azureResourceGroup = setupDetails.get("azureResourceGroup");
         this.tapUrl = setupDetails.get("tapUrl");
         this.status = setupDetails.get("status");
-        this.setup.enableFieldsToEdit();
+//        this.setup.enableFieldsToEdit();
         this.setup.editSetupDetails(azureResourceGroup, tapUrl, status);
     }
 
