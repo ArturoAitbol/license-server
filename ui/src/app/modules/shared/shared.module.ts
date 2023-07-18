@@ -14,7 +14,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { GaugeChartComponent } from "../../generics/gauge-chart/gauge-chart.component";
 import { NgApexchartsModule } from "ng-apexcharts";
-
+import { SecondsToDateTimePipe } from 'src/app/pipes/seconds-to-date-time.pipe';
 
 @NgModule({
   declarations: [
@@ -27,6 +27,7 @@ import { NgApexchartsModule } from "ng-apexcharts";
     DateRangeDirective,
     TitleGetterPipe,
     GaugeChartComponent,
+    SecondsToDateTimePipe,
   ],
   imports: [
     CommonModule,
@@ -46,7 +47,8 @@ import { NgApexchartsModule } from "ng-apexcharts";
     DateRangeDirective,
     PowerBIEmbedModule,
     NgxIntlTelInputModule,
-    GaugeChartComponent
+    GaugeChartComponent,
+    SecondsToDateTimePipe,
   ]
 })
 export class SharedModule { }
