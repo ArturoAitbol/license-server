@@ -73,6 +73,24 @@ describe('UI verification test', () => {
         });
         expect(submitButton.disabled).toBeTrue();
     });
+
+    it('should make the necessary checks for Name and Email', () => {
+        fixture.detectChanges();
+        const modifyStakeholder = addStakeholderComponentTestInstance.addStakeholderForm
+
+        modifyStakeholder.setValue({
+            name: '',
+            jobTitle:'',
+            companyName:'',
+            subaccountAdminEmail:'',
+            phoneNumber:'',
+        });
+        expect(modifyStakeholder.get('name').valid).toBeFalse();
+        expect(modifyStakeholder.get('jobTitle').valid).toBeTrue();
+        expect(modifyStakeholder.get('companyName').valid).toBeTrue();
+        expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
+        expect(modifyStakeholder.get('phoneNumber').valid).toBeTrue();
+    });
 });
 
 describe('add stakeholder interactions', () => {

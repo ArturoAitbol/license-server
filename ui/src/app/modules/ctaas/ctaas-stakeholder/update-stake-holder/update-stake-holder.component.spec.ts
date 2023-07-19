@@ -115,7 +115,7 @@ describe('modify stakeholder interactions', () => {
 
 describe('modify stakeholder - FromGroup verification test', () => {
     beforeEach(beforeEachFunction);
-    it('should make all the controls required', () => {
+    it('should make the necessary checks for Name and Email', () => {
         fixture.detectChanges();
         const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm
 
@@ -128,10 +128,10 @@ describe('modify stakeholder - FromGroup verification test', () => {
             role: '',
         });
         expect(modifyStakeholder.get('name').valid).toBeFalse();
-        expect(modifyStakeholder.get('jobTitle').valid).toBeFalse();
-        expect(modifyStakeholder.get('companyName').valid).toBeFalse();
+        expect(modifyStakeholder.get('jobTitle').valid).toBeTrue();
+        expect(modifyStakeholder.get('companyName').valid).toBeTrue();
         expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
-        expect(modifyStakeholder.get('phoneNumber').valid).toBeFalse();
+        expect(modifyStakeholder.get('phoneNumber').valid).toBeTrue();
     });
 
     it('it should enable the submit button', () => {
