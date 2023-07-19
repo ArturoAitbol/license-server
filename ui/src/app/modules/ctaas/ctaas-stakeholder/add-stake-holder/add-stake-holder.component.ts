@@ -53,6 +53,7 @@ export class AddStakeHolderComponent implements OnInit {
     const subaccountUserProfileDetails = this.subaccountService.getSelectedSubAccount();
     if (subaccountUserProfileDetails) {
       const { companyName } = subaccountUserProfileDetails;
+      const { customerName } = subaccountUserProfileDetails;
       if (subaccountUserProfileDetails.id) {
         this.userprofileDetails = { subaccountId: subaccountUserProfileDetails.id };
       } else {
@@ -61,6 +62,9 @@ export class AddStakeHolderComponent implements OnInit {
       // check for company name and set it to form if company name has value
       if (companyName) {
         this.addStakeholderForm.patchValue({ companyName });
+      } else {
+        if(customerName)
+          this.addStakeholderForm.patchValue({ companyName: customerName });
       }
     }
   }
