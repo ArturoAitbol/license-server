@@ -50,7 +50,7 @@ public class Customers extends AbstractPageObject {
         customerRow.getSubaccountRow(customer, subaccount);
         return customerRow;
     }
-
+    
     public CustomerRow getCustomerSubaccount(String customerName, String subaccountName){
         CustomerRow customerRow = new CustomerRow(customerName);
         customerRow.getSubaccountRow(customerName, subaccountName);
