@@ -65,7 +65,9 @@ export const permissions = {
             'resetFilter',
             'maintenanceModeCheckbox',
             'viewDetailedReport',
-            'emailNotifications'
+            'emailNotifications',
+            'addSupportEmail',
+            'deleteSupportEmail',
         ],
         tables: {
             customerOptions: [
@@ -186,7 +188,8 @@ export const permissions = {
             'addTestSuite',
             'resetFilter',
             'maintenanceModeCheckbox',
-            'viewDetailedReport'
+            'viewDetailedReport',
+            'addSupportEmail'
         ],
         tables: {
             customerOptions: [
@@ -253,7 +256,8 @@ export const permissions = {
             'addLicenseConsumption',
             'addTestSuite',
             'resetFilter',
-            'maintenanceModeCheckbox'
+            'maintenanceModeCheckbox',
+            'addSupportEmail'
         ],
         tables: {
             customerOptions: [

@@ -388,6 +388,11 @@ CREATE TABLE public.ctaas_setup
     maintenance boolean default false
 );
 
+CREATE TABLE public.ctaas_support_email (
+	ctaas_setup_id  uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+	email VARCHAR
+);
+
 CREATE TABLE public.feature_toggle (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     status boolean DEFAULT false NOT NULL,
@@ -913,6 +918,9 @@ ALTER TABLE ONLY public.ctaas_run_instance
 ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT ctaas_setup_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY public.ctaas_support_email
+    ADD CONSTRAINT ctaas_support_email_pkey PRIMARY KEY (ctaas_setup_id, email);
+
 ALTER TABLE ONLY public.subaccount_admin_device
     ADD CONSTRAINT subaccount_admin_device_pkey PRIMARY KEY (subaccount_admin_email, device_token);
 
@@ -1040,6 +1048,9 @@ ALTER TABLE ONLY public.ctaas_test_suite
 
 ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.ctaas_support_email
+    ADD CONSTRAINT fk_ctaas_setup FOREIGN KEY (ctaas_setup_id) REFERENCES public.ctaas_setup(id) ON UPDATE CASCADE ON DELETE CASCADE;
 	
 ALTER TABLE ONLY public.ctaas_run_instance
 	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON UPDATE CASCADE ON DELETE CASCADE;

@@ -143,6 +143,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 							EmailClient.sendStakeholderWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value),
 																	jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value),
 																	jobj.getString(MANDATORY_PARAMS.NAME.value),
+																	subaccountId,
 																	context);
 					} catch (Exception e) {
 						context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());

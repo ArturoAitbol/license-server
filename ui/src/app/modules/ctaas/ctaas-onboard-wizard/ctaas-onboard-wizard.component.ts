@@ -84,10 +84,10 @@ export class OnboardWizardComponent implements OnInit {
         // report form
         this.userProfileForm = this.formbuilder.group({
             name: ['', Validators.required],
-            jobTitle: ['', Validators.required],
-            companyName: ['', Validators.required],
+            jobTitle: [''],
+            companyName: [''],
             email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', Validators.required],
+            phoneNumber: [''],
         });
         // add stake holder form
         this.stakeholderForm = this.formbuilder.group({

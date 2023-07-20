@@ -44,7 +44,7 @@
             <div class="col-12 col-sm-6">
                 <mat-form-field class="w-100" appearance="outline">
                     <mat-label id="name-label"> Name</mat-label>
-                    <input id="name" type="text" formControlName="name" matInput aria-label="Name">
+                    <input required id="name" type="text" formControlName="name" matInput aria-label="Name">
                 </mat-form-field>
             </div>
             <div class="col-12 col-sm-6">
@@ -68,7 +68,6 @@
                 [separateDialCode]="false"
                 [numberFormat]="PhoneNumberFormat.International"
                 [inputId]="'phone-number'"
-                required
                 formControlName="phoneNumber"
             >
             </ngx-intl-tel-input>
@@ -82,7 +81,7 @@
             <div class="col-12 col-sm-6">
                 <mat-form-field class="w-100" appearance="outline">
                     <mat-label id="email-label">Email</mat-label>
-                    <input id="email" type="email" formControlName="email" matInput aria-label="Email">
+                    <input required id="email" type="email" formControlName="email" matInput aria-label="Email">
                 </mat-form-field>
             </div>
             <div *lcCheckAccessFor="'emailNotifications'">
