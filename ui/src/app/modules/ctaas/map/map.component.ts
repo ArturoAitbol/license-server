@@ -14,7 +14,7 @@ import { SpotlightChartsService } from 'src/app/services/spotlight-charts.servic
 import { map, startWith } from 'rxjs/operators';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
-import { BannerService } from 'src/app/services/alert-banner.service';
+import { BannerService } from 'src/app/services/banner.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -620,7 +620,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId).subscribe(res => {
         const ctaasSetupDetails = res['ctaasSetups'][0];
         if (ctaasSetupDetails.maintenance) {
-            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy, "alert");
         }
     });
   }

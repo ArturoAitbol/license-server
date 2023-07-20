@@ -1,0 +1,10 @@
+<div [@growDown] class="banner-container" [ngClass]="['banner-'+type]" *ngIf="opened">
+        <p class="title" [innerHTML]="title" id="alert-banner-title"
+                [ngClass]="{'col-12': !displayClose, 'col-11' : displayClose === true }"></p>
+        <div class="col-1 d-flex justify-content-end" *ngIf="displayClose">
+                <button mat-icon-button title="Close Banner" (click)="close()">
+                        <mat-icon class="icon text-white-color">close</mat-icon>
+                </button>
+        </div>
+        <p class="message" [innerHTML]="message" id="alert-banner-message"></p>
+</div>
