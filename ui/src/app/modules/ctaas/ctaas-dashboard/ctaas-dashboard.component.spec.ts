@@ -168,7 +168,7 @@ describe('Ctaas Dashboard - maintenance mode', () => {
         spyOn(BannerServiceMock, "open").and.callThrough();
         fixture.detectChanges();
         tick();
-        expect(BannerServiceMock.open).toHaveBeenCalledWith('ALERT', Constants.MAINTENANCE_MODE_ALERT, jasmine.any(Object));
+        expect(BannerServiceMock.open).toHaveBeenCalledWith('ALERT', Constants.MAINTENANCE_MODE_ALERT, jasmine.any(Object), "alert");
         discardPeriodicTasks();
     }));
 });

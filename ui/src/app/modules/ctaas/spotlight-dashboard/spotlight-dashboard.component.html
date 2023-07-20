@@ -57,15 +57,9 @@
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center" title="report-title">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
+                <h1 class="text-center" title="report-title">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }} (UTC)
                 </h1>
-            </div>
-            <div class="row mb-2">
-                <div class="col d-flex justify-content-center align-items-center hint">
-                    <mat-icon>info_outline</mat-icon>
-                    <div>All results are displayed in UTC</div>
-                </div>                
-            </div>
+            </div>            
             <div class="date-picker-form">
                 <form [formGroup]="filters">
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
@@ -271,7 +265,7 @@
     <ng-container *ngIf="selectedPeriod === 'weekly'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span></h1>
+                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span> (UTC)</h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="weeklyFilters">

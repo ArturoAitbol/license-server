@@ -203,14 +203,11 @@ export class CtaasSetupComponent implements OnInit {
       if(confirmed){
         this.isDataLoading = true; 
         this.ctaasSupportEmailService.deleteSupportEmail(this.supportEmails[index]).subscribe((res: any) => {
-          if (!res?.error) {
-            this.snackBarService.openSnackBar('Support email deleted', '');
-            this.supportEmails.splice(index, 1)
-          } else
-            this.snackBarService.openSnackBar(res.error, 'Error while deleting support email!');
+          this.snackBarService.openSnackBar('Support email deleted');
+          this.supportEmails.splice(index, 1)
           this.isDataLoading = false;
         }, err => {
-          this.snackBarService.openSnackBar('Error deleting support email!');
+          this.snackBarService.openSnackBar(err.error, 'Error while deleting support email!');
           console.error('Error while deleting support email', err);
           this.isDataLoading = false;
         });
@@ -219,30 +216,22 @@ export class CtaasSetupComponent implements OnInit {
   }
 
   addSupportEmails() {
-    this.isDataLoading = true;
     if (this.emailForms.length > 0) {
+      this.isDataLoading = true;
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.ctaasSupportEmailService.createSupportEmail({
         supportEmail: value.email,
         ctaasSetupId: this.ctaasSetupId,
       }));
       forkJoin(requestsArray).subscribe((res: any) => {
-        const responseErrors = res.filter(response => response !== null);
-        if (responseErrors.length === 0) {
-          this.snackBarService.openSnackBar('Support emails edited successfully! ', '');
-          this.emailForms.clear();
-        } else {
-          responseErrors.forEach((response) => {
-            this.snackBarService.openSnackBar(response.error, 'Error while adding support emails!');
-          });
-        }
+        this.snackBarService.openSnackBar('Support emails added successfully!');
+        this.clearNewSupportEmails();
         this.fetchSetupInfo();
         this.isDataLoading = false;
       }, err => {
         this.isDataLoading = false;
-        console.error('error while editing support emails', err);
+        this.snackBarService.openSnackBar(err.error, 'Error while adding support email!');
+        console.error('error while adding support email', err);
       });
-    } else {
-      this.isDataLoading = false;
     }
   }
 
@@ -257,8 +246,8 @@ export class CtaasSetupComponent implements OnInit {
     this.emailForms.push(emailForm);
   }
 
-  deleteEmailForm(lessonIndex: number) {
-    this.emailForms.removeAt(lessonIndex);
+  deleteEmailForm(index: number) {
+    this.emailForms.removeAt(index);
   }
 
   clearNewSupportEmails(){
