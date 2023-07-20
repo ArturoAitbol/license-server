@@ -95,7 +95,6 @@ public class TekvLSModifyAuthUserProfile {
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement verificationStmt = verificationQueryBuilder.build(connection);
 			context.getLogger().info("Execute SQL role verification statement: " + verificationStmt);
-			context.getLogger().info("OBJ2 " + jobj);
 			ResultSet rs = verificationStmt.executeQuery();
 			if (!rs.next()) {
 				context.getLogger().info(LOG_MESSAGE_FOR_INVALID_EMAIL + authEmail);
