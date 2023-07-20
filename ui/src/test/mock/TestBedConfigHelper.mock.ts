@@ -31,7 +31,7 @@ import { ProjectService } from "../../app/services/project.service";
 import { CustomerService } from "../../app/services/customer.service";
 import { NoteServiceMock } from './services/ctaas-note-service.mock';
 import { ConsumptionServiceMock } from './services/license-consumption-service.mock';
-import { BannerService } from '../../app/services/alert-banner.service';
+import { BannerService } from '../../app/services/banner.service';
 import { BannerServiceMock } from './services/alert-banner-service.mock';
 import { FeatureToggleService } from '../../app/services/feature-toggle.service';
 import { FeatureToggleServiceMock } from './services/feature-toggle-service.mock';
