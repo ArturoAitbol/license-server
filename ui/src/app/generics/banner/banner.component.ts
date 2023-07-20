@@ -1,39 +1,39 @@
 import { Component } from '@angular/core';
 import { GROW_DOWN_ANIMATION } from "./animations";
 import { Observable, Subscription } from "rxjs";
-import { BannerService } from "../../services/alert-banner.service";
+import { BannerService } from "../../services/banner.service";
 
 @Component({
-  selector: "app-alert-banner-outlet",
-  templateUrl: "./alert-banner.component.html",
-  styleUrls: [ "./alert-banner.component.css" ],
-  animations: [ GROW_DOWN_ANIMATION ],
+  selector: "app-banner-outlet",
+  templateUrl: "./banner.component.html",
+  styleUrls: ["./banner.component.css"],
+  animations: [GROW_DOWN_ANIMATION],
 })
-export class AlertBannerComponent {
+export class BannerComponent {
   // Text title to display
   title?: string;
-
   // Text message to display
   message?: string;
-
   // List of button labels to show
   onComponentDestructionSubscription: Subscription;
-
   opened = false;
+  type: string;
+  displayClose = false;
 
   constructor(bannerService: BannerService) {
     bannerService.init(this);
   }
 
   // Open this banner with a message and at least one action
-  open(title: string, message: string, onComponentDestruction: Observable<void>) {
+  open(title: string, message: string, onComponentDestruction: Observable<void>, type: string, displayClose?: boolean) {
     if (this.opened) {
       console.error("Tried to open banner when outlet was already opened.");
     }
-
+    this.displayClose = displayClose ? displayClose : false;
     this.title = title;
     this.message = message;
     this.opened = true;
+    this.type = type;
     this.onComponentDestructionSubscription = onComponentDestruction.subscribe(() => this.close());
   }
 

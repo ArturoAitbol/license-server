@@ -34,7 +34,10 @@ export class Constants {
 
     // Alert messages
     public static readonly MAINTENANCE_MODE_ALERT = "The UCaaS Continuous Testing Service is currently experiencing limited functionality due to ongoing maintenance. " +
-        "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
+    "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
+    
+    // Info messages
+    public static readonly UTC_DATE_INFO = "All the following results are displayed in UTC Time Zone";
 
     // Types contants
     public static readonly SANDBOX_DEVICE_TYPE = 'Sandbox';
