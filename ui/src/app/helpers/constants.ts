@@ -37,7 +37,6 @@ export class Constants {
     "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
     
     // Info messages
-    UTC_DATE_INFO
     public static readonly UTC_DATE_INFO = "All the following results are displayed in UTC Time Zone";
 
     // Types contants
