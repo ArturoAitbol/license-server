@@ -189,7 +189,8 @@ export const permissions = {
             'resetFilter',
             'maintenanceModeCheckbox',
             'viewDetailedReport',
-            'addSupportEmail'
+            'addSupportEmail',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
