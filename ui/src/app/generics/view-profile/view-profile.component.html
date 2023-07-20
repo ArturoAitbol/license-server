@@ -56,6 +56,18 @@
                         <input matInput required formControlName="jobTitle">
                     </mat-form-field>
                 </div>
+                <div *lcCheckAccessFor="'emailNotifications'">
+                    <h2 id="subaccount-services" class="mt-3 mb-0 checkbox-title">Email Notifications</h2>
+                    <div style="margin-top: 3%;">
+                        <span class="fw-500" >Off</span>
+                        &nbsp;
+                        <mat-slide-toggle id="mat-toggle" [color]="'primary'" [checked]="emailNotifications" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
+                        &nbsp;
+                        <span class="fw-500 p-2" >On</span>
+                        &nbsp;
+                    </div>
+                    <br>
+                </div>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>

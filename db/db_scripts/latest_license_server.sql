@@ -353,7 +353,8 @@ CREATE TABLE public.subaccount (
 CREATE TABLE public.subaccount_admin (
     subaccount_admin_email character varying NOT NULL,
     subaccount_id uuid NOT NULL,
-    latest_callback_request_date timestamp without time zone
+    latest_callback_request_date timestamp without time zone,
+    email_notifications boolean DEFAULT true
 );
 
 CREATE TABLE public.ctaas_test_suite
