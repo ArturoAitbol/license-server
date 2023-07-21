@@ -63,6 +63,7 @@ public class TekvLSGetReportableSubaccounts {
                 "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
         selectStmnt.appendEqualsCondition(" cs.status", Constants.CTaaSSetupStatus.READY.value(),
                 QueryBuilder.DATA_TYPE.VARCHAR);
+        selectStmnt.appendEqualsCondition(" sa.email_notifications", "true", QueryBuilder.DATA_TYPE.BOOLEAN);
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement selectStmt = selectStmnt.build(connection)) {

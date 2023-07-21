@@ -172,7 +172,7 @@ export class OnboardWizardComponent implements OnInit {
                         this.interaction = '4';
                         this.stakeholderForm.reset();
                     } else {
-                        this.snackBarService.openSnackBar('The maximum amount of users per customer (' + limit + ') has been reached', '');
+                        this.snackBarService.openSnackBar('The maximum amount of users (' + limit + ') has been reached', '');
                     }
                 });
                 break;
