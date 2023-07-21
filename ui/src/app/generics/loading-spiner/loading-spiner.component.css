@@ -1,0 +1,49 @@
+.spinner {
+    display: block;
+    margin: 0 auto;
+}
+
+.loadingMessage{
+    font-size: 20px;
+    line-height: 32px;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    color: black;
+}
+
+.reportLoading{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.lights-container {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+.card-animation .lights-container {
+    z-index: 0 !important;
+    overflow: hidden;
+}
+
+.spotlight {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(65, 121, 204, 0.2), transparent);
+    position: absolute;
+    top: 70px;
+    right: 23%;
+}
+  
+.mirror-spotlight {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(65, 121, 204, 0.2), transparent);
+    position: absolute;
+    top: 70px;
+    left: 23%;
+}

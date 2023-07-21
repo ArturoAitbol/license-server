@@ -70,6 +70,7 @@ export class DetailedReportsComponent implements OnInit {
     packetLoss: {count: 0, sum: 0},
     bitrate: {count: 0, sum: 0},
   };
+  messageSpiner = 'Please wait while we prepare your call report.';
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
   constructor
@@ -147,15 +148,15 @@ export class DetailedReportsComponent implements OnInit {
       return Utility.getTAPTestPlaNameByReportTypeOrName(this.types);
   }
 
-  getAll() {
+  getAll(): void {
     this.status = '';
     this.failedIsChecked = false;
-    this.responseAll ? this.renderData(this.responseAll) : this.fetchDashboardReportDetails();
+    this.fetchDashboardReportDetails();
   }
-  getFailed() {
+  getFailed(): void {
     this.status = 'FAILED';
     this.failedIsChecked = true;
-    this.responseFailed ? this.renderData(this.responseFailed) : this.fetchDashboardReportDetails();
+    this.fetchDashboardReportDetails();
   }
   /**
    * fetch detailed dashboard report
