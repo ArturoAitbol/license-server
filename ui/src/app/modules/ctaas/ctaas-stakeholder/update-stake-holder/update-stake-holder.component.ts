@@ -136,7 +136,7 @@ export class UpdateStakeHolderComponent implements OnInit {
       subaccountAdminEmail: this.data.email, 
       emailNotifications: this.emailNotifications
     };
-    extraData.phoneNumber = this.updateStakeholderForm.get('phoneNumber').value.e164Number;
+    extraData.phoneNumber = this.updateStakeholderForm.get('phoneNumber').value ? this.updateStakeholderForm.get('phoneNumber').value.e164Number : '';
     if (this.previousFormValue.role === extraData.role) {
       extraData.role = null;
     }

@@ -146,7 +146,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 						context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
 						if (GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context))
 							EmailClient.sendStakeholderWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value),
-																	jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value),
+																	jobj.getString(OPTIONAL_PARAMS.COMPANY_NAME.value),
 																	jobj.getString(MANDATORY_PARAMS.NAME.value),
 																	subaccountId,
 																	context);
@@ -156,7 +156,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 					try {
 						context.getLogger().info("Updating user profile at Azure AD : " + jobj);
 						GraphAPIClient.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value),
-														jobj.getString(MANDATORY_PARAMS.JOB_TITLE.value), jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value), jobj.getString(MANDATORY_PARAMS.PHONE_NUMBER.value), context);
+														jobj.getString(OPTIONAL_PARAMS.JOB_TITLE.value), jobj.getString(OPTIONAL_PARAMS.COMPANY_NAME.value), jobj.getString(OPTIONAL_PARAMS.PHONE_NUMBER.value), context);
 						context.getLogger().info("Updated user profile at Azure AD : " + jobj);
 					} catch (Exception e) {
 						context.getLogger().info("Failed to update user at azure AD.  Exception: " + e.getMessage());
@@ -189,10 +189,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 	private enum MANDATORY_PARAMS {
 		SUBACCOUNT_ID("subaccountId"),
 		SUBACCOUNT_ADMIN_EMAIL("subaccountAdminEmail"),
-		NAME("name"),
-		JOB_TITLE("jobTitle"),
-		COMPANY_NAME("companyName"),
-		PHONE_NUMBER("phoneNumber");
+		NAME("name");
 
 		private final String value;
 
@@ -203,7 +200,10 @@ public class TekvLSCreateSubaccountStakeHolder {
 
 	private enum OPTIONAL_PARAMS {
 		NOTIFICATIONS("notifications"),
-		EMAIL_NOTIFICATIONS("emailNotifications");
+		EMAIL_NOTIFICATIONS("emailNotifications"),
+		JOB_TITLE("jobTitle"),
+		COMPANY_NAME("companyName"),
+		PHONE_NUMBER("phoneNumber");
 
 		private final String value;
 

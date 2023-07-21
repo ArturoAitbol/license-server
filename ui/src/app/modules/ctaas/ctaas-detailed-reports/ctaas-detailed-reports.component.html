@@ -5,8 +5,7 @@
 <ng-template #blankView>
     <div class="jumbotron d-flex align-items-center bg-transparent text-center">
         <div class="container">
-            <img *ngIf="isLoadingResults" height="80" width="80" src="assets/images/spinner.gif"
-                alt="loading spinner gif">
+            <app-loading-spiner [visible]="isLoadingResults" [message]="messageSpiner"></app-loading-spiner>
             <h2 *ngIf="!isLoadingResults">
                 Failed to load the detailed test report. Please reach out to TekVizion support.
             </h2>
@@ -18,10 +17,15 @@
     <div class="row mt-3">
         <div class="col-8">
             <h1 class="text-start text-s" id="title">{{title}}</h1>
-            <h2 class="text-start text-s2" *ngIf="status!=''" id="subtitle">Status: {{status}}</h2>
+            <h2 class="text-start text-s2" id="subtitle">Status:
+                <mat-button-toggle-group class="center-toggle" name="favoriteColor" aria-label="Favorite Color">
+                    <mat-button-toggle [checked]="!failedIsChecked" (click)="getAll()" value="green">All</mat-button-toggle>
+                    <mat-button-toggle [checked]="failedIsChecked" (click)="getFailed()"value="blue">Failed</mat-button-toggle>
+                </mat-button-toggle-group>
+            </h2>
         </div>
         <div class="col-4 text-right">
-            <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="downloadDetailedTestReportByType()">
+            <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="isConfirmationRequired()">
                 Download Report
                 <mat-icon>download</mat-icon>
             </button>
