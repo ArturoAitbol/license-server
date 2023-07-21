@@ -131,7 +131,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(jsonBody.has("licenses"));
 
         JSONArray licenses = jsonBody.getJSONArray("licenses");
-        assertEquals(2, licenses.length());
+        assertEquals(4, licenses.length());
 
         JSONObject license = licenses.getJSONObject(0);
         assertTrue(license.has("id"));
