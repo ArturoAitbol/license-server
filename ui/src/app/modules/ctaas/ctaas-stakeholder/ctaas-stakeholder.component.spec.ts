@@ -181,7 +181,7 @@ describe('dialog calls and interactions',() => {
         ctaasStakeholderComponentTestInstance.stakeholdersCount = Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
         ctaasStakeholderComponentTestInstance.addStakeholder();
 
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
     });
 
     it('should display an error message if an error ocurred in fetchStakeholderList', () => {

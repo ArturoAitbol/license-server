@@ -175,7 +175,7 @@ export class CtaasStakeholderComponent implements OnInit {
     if(this.stakeholdersCount < limit)
       this.openDialog(this.ADD_STAKEHOLDER);
     else
-      this.snackBarService.openSnackBar('The maximum amount of users per customer (' + limit + ') has been reached', '');
+      this.snackBarService.openSnackBar('The maximum amount of users (' + limit + ') has been reached', '');
   }
   /**
    * open dialog

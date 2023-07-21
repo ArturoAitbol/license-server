@@ -210,7 +210,7 @@ describe('testing the error thrown by the functions', () => {
         onboardWizardComponentInstance.addStakeholdersConfirmation('yes');
 
         expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
     });
 
     it('should thorw a error if something went wrong in updateOnboardingStatus', () => {

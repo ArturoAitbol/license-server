@@ -126,6 +126,7 @@ public class TAPClient {
     
             HashMap<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + token);
+            // context.getLogger().severe("TAP token: " + token);
     
             // disable SSL host verification
             TAPClient.disableSslVerification(context);
@@ -137,7 +138,8 @@ public class TAPClient {
             context.getLogger().info("Data were retrieved from the Automation Platform successfully");
             return response.getJSONArray("resultSet");            
         } catch (Exception e) {
-            context.getLogger().severe("Exception found on executeQuery: "+ e.getMessage());
+            context.getLogger().severe("Exception found on executeQuery, query: " + query);
+            context.getLogger().severe("Exception found on executeQuery, exception: "+ e.getMessage());
             throw e;
         }
     }

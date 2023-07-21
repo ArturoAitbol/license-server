@@ -10,6 +10,7 @@ public abstract class Constants {
     public static String DEFAULT_CONSUMPTION_TYPE = "Configuration";
     public static String DEFAULT_REPORT_NAME = "Calling Reliability + Feature Functionality + Voice Quality (POLQA)";
     public static int STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
+    public static int STAKEHOLDERS_LIMIT_PER_DEMO_SUBACCOUNT = 50;
     public static String TEMP_ONPOINT_USERNAME = "administrator@tekvizion.com";
     public static String TEMP_ONPOINT_PASSWORD = "admin123";
     public static String SPOTLIGHT_API_PATH = "v1/spotlight";
