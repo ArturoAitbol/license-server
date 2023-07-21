@@ -89,13 +89,12 @@ public class TekvLSCreateSubaccountStakeHolder {
 		}
 
 		String subaccountId = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value);
-
+		
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT COUNT(subaccount_admin_email) FROM subaccount_admin");
 		queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
-		
-		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid) RETURNING subaccount_admin_email;";
+		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, email_notifications) VALUES (?, ?::uuid, ?::boolean) RETURNING subaccount_admin_email;";
 		if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
-			sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, notifications) VALUES (?, ?::uuid, ?) RETURNING subaccount_admin_email;";
+			sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, notifications, email_notifications) VALUES (?, ?::uuid, ?, ?::boolean) RETURNING subaccount_admin_email;";
 		}
 
 		final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?:: uuid";
@@ -127,8 +126,10 @@ public class TekvLSCreateSubaccountStakeHolder {
 					statement.setString(2, subaccountId);
 					if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
 						statement.setString(3, jobj.getString(OPTIONAL_PARAMS.NOTIFICATIONS.value));
+						statement.setBoolean(4, jobj.getBoolean(OPTIONAL_PARAMS.EMAIL_NOTIFICATIONS.value));
+					} else {
+						statement.setBoolean(3, jobj.getBoolean(OPTIONAL_PARAMS.EMAIL_NOTIFICATIONS.value));
 					}
-
 					String userId = getUserIdFromToken(tokenClaims, context);
 					context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
 					ResultSet rs = statement.executeQuery();
@@ -194,6 +195,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 
 	private enum OPTIONAL_PARAMS {
 		NOTIFICATIONS("notifications"),
+		EMAIL_NOTIFICATIONS("emailNotifications"),
 		JOB_TITLE("jobTitle"),
 		COMPANY_NAME("companyName"),
 		PHONE_NUMBER("phoneNumber");

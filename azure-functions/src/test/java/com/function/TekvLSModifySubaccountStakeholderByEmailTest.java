@@ -37,6 +37,7 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         // When
@@ -67,6 +68,7 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -104,6 +106,7 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
         String bodyRequest = "{'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         // When
@@ -244,6 +247,7 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
@@ -276,6 +280,7 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

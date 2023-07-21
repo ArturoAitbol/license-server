@@ -86,6 +86,7 @@ public class TekvLSGetAuthUserProfile {
 				item.put("email", rs.getString("subaccount_admin_email"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("notifications", rs.getString("notifications"));
+				item.put("emailNotifications",  rs.getBoolean("email_notifications"));
 				if (rs.getString("latest_callback_request_date") != null)
 					item.put("latestCallbackRequest", Utils.millisecondsSinceDate(Utils.getDateFromString(rs.getString("latest_callback_request_date"))));
 				else
