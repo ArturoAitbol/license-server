@@ -182,7 +182,10 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.bannerService.open("Info", Constants.UTC_DATE_INFO, this.onDestroy, "info", true);
+    let closedBanner = localStorage.getItem("closedBanner") ? JSON.parse(localStorage.getItem("closedBanner")) : false;
+    let hiddenBanner = localStorage.getItem("hiddenBanner") ? JSON.parse(localStorage.getItem("hiddenBanner")) : false;    
+    if (!closedBanner && !hiddenBanner)
+      this.bannerService.open(Constants.UTC_DATE_INFO, "", this.onDestroy, "info", true);
     let currentEndDate;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     const accountDetails = this.getAccountDetails();
@@ -366,7 +369,6 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   selectedPeriodChange() {
-    this.bannerService.open("Info", Constants.UTC_DATE_INFO, this.onDestroy, "info", true);
     if (this.selectedPeriod == 'daily') {
       if (!this.isHistoricalView && this.filters.get('date').value.isSame(moment.utc(), 'day')) {
         this.filters.get('date').setValue(moment.utc());

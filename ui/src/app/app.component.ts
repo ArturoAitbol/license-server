@@ -41,7 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
     currentUser = false;
     userData: any;
-    isLoading:boolean = false;
+    isLoading: boolean = false;
     userProfileData: any;
     callbackEnabled = false;
     // added as part of spotlight feature
@@ -419,7 +419,7 @@ export class AppComponent implements OnInit, OnDestroy {
     initializeSideBarItems(): void {
         try {
             const accountDetails = this.getAccountDetails();
-            const { roles } = accountDetails.idTokenClaims; 
+            const { roles } = accountDetails.idTokenClaims;
             if (!this.subaccountId)
                 this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
@@ -445,7 +445,7 @@ export class AppComponent implements OnInit, OnDestroy {
             if (roles.length === 1 && roles.includes(Constants.SUBACCOUNT_STAKEHOLDER) && this.featureToggleService.isFeatureEnabled("multitenant-demo-subaccount", this.subaccountId))
                 disabledItems.push("stakeholders");
 
-            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length === 0 ? 
+            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length === 0 ?
                 this.fullSideBarItems.spotlight : this.fullSideBarItems.spotlight.filter((e: ISidebar) => !disabledItems.includes(e.path || e.element));
             this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST, this.featureToggleService, this.subaccountId));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main, this.featureToggleService, this.subaccountId));
@@ -479,9 +479,11 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     logout() {
         try {
+            let hiddenBanner = localStorage.getItem("hiddenBanner") ? JSON.parse(localStorage.getItem("hiddenBanner")) : false;
+            localStorage.clear();
+            localStorage.setItem("hiddenBanner", hiddenBanner.toString());
             sessionStorage.clear();
             this.msalService.logout();
-            localStorage.clear();
         } catch (error) {
             console.error('error while logout: ', error);
         }
@@ -521,18 +523,18 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    async requestCallback(){
+    async requestCallback() {
         this.isLoading = true;
         await this.fetchUserProfileDetails();
         this.isLoading = false
-        if(this.canRequestCallBack())
+        if (this.canRequestCallBack())
             this.confirmCallbackRequest();
         else
             this.preventCallbackRequest();
     }
 
 
-    private canRequestCallBack():boolean {
+    private canRequestCallBack(): boolean {
         if (this.userProfileData.userProfile.name && this.userProfileData.userProfile.latestCallbackRequest === undefined)
             return true;
         return this.userProfileData.userProfile.latestCallbackRequest > Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS;
@@ -558,9 +560,9 @@ export class AppComponent implements OnInit, OnDestroy {
      * @param item: any 
      */
     onSelectedNavItem(item: ISidebar): void {
-        if(item.element){
-            this.performAction(item.element); 
-        }else{
+        if (item.element) {
+            this.performAction(item.element);
+        } else {
             const { baseUrl, path } = item;
             const componentRoute = baseUrl + path;
             this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
@@ -572,7 +574,7 @@ export class AppComponent implements OnInit, OnDestroy {
      * perform a given action base on the input
      * @param action: string 
      */
-    performAction(action: string){
+    performAction(action: string) {
         switch (action) {
             case 'request-call':
                 this.requestCallback();
