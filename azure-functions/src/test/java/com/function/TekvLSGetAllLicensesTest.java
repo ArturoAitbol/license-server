@@ -141,7 +141,10 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
         String licenseId;
         List<String> expectedLicenses = Arrays.asList("ebc71e49-4f63-44b2-9c90-7750d3ccca05",
-                "d9cb5f93-c4d0-427e-8133-77905abd8487");
+                "d9cb5f93-c4d0-427e-8133-77905abd8487",
+                "16f4f014-5bed-4166-b10a-574b2e6655e5",
+                "16f4f014-5bed-4166-b10a-574b2e6655e4");
+        
         for (int i = 0; i < licenses.length();i++){
             licenseId = licenses.getJSONObject(i).getString("id");
             assertTrue(expectedLicenses.contains(licenseId),
