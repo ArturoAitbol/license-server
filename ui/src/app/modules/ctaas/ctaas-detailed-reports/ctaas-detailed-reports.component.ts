@@ -8,6 +8,8 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
 import moment, { Moment } from 'moment';
+import { DialogService } from 'src/app/services/dialog.service';
+import { ConfirmDialogConst, EndpointColumnsConst, SummaryColumnsConst, TestFeatureandCallReliability, StatsColumnsConst } from 'src/app/helpers/ctaas-detailed-reports';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
@@ -58,6 +60,9 @@ export class DetailedReportsComponent implements OnInit {
   urlEndValue: string;
   urlStartValueParsed;
   urlEndValueParsed;
+  responseAll: any = null;
+  responseFailed: any = null;
+  failedIsChecked = false;
   metricsObjTemplate = { 
     polqa: {count: 0, sum: 0},
     jitter: {count: 0, sum: 0},
@@ -67,11 +72,15 @@ export class DetailedReportsComponent implements OnInit {
   };
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
-  constructor(private msalService: MsalService,
+  constructor
+  (
+    private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
     private route: ActivatedRoute,
     private snackBarService: SnackBarService,
-    private subaccountService: SubAccountService) {}
+    private subaccountService: SubAccountService,
+    private dialogService: DialogService,
+  ) {}
   /**
    * get logged in account details
    * @returns: any | null
@@ -92,6 +101,7 @@ export class DetailedReportsComponent implements OnInit {
       if (params.regions && params.regions != '') this.regionsStr = params.regions;
       if (params.users && params.users != '') this.usersStr = params.users;
       if (params.polqaCalls && params.polqaCalls != '') this.polqaCalls = true;
+      this.failedIsChecked = params.status ? true : false;
       this.startDateStr = params.start;
       this.endDateStr = params.end;
       this.parseTitle();
@@ -137,6 +147,16 @@ export class DetailedReportsComponent implements OnInit {
       return Utility.getTAPTestPlaNameByReportTypeOrName(this.types);
   }
 
+  getAll() {
+    this.status = '';
+    this.failedIsChecked = false;
+    this.responseAll ? this.renderData(this.responseAll) : this.fetchDashboardReportDetails();
+  }
+  getFailed() {
+    this.status = 'FAILED';
+    this.failedIsChecked = true;
+    this.responseFailed ? this.renderData(this.responseFailed) : this.fetchDashboardReportDetails();
+  }
   /**
    * fetch detailed dashboard report
    */
@@ -145,158 +165,14 @@ export class DetailedReportsComponent implements OnInit {
     this.hasDashboardDetails = false;
     this.isLoadingResults = true;
     this.testPlanNames = this.parseTestPlanNames();
+
+    if (!this.status) {
+      this.getFailedData();
+    }
     this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, this.testPlanNames, this.startDateStr, this.endDateStr, this.status,
       this.regionsStr, this.usersStr, this.polqaCalls).subscribe((res: any) => {
-        this.isRequestCompleted = true;
-        this.isLoadingResults = false;
-        if (res.response.report && res.response.reportType) {
-          this.reportResponse = res.response.report;
-          const detailedResponseObj = JSON.parse(JSON.stringify(res.response.report));
-          this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
-          this.filename = res.response.reportType;
-          this.hasDashboardDetails = true;
-          if (this.reportResponse.endpoints && this.reportResponse.endpoints.length > 0) {
-            this.reportResponse.endpoints = this.reportResponse.endpoints.map((e: any) => {
-              if (e.city && e.country && e.state && e.zipcode) {
-                e.region = `${e.city}, ${e.state}, ${e.country}, ${e.zipcode}`;
-              } else {
-                e.region = "";
-              }
-              return e;
-            });
-          } else {
-            this.reportResponse.endpoints = [];
-          }
-          let minorTime: Moment;
-          let majorTime: Moment;
-          minorTime = moment(this.reportResponse.results[0].startTime, "MM-DD-YYYY HH:mm:ss");
-          majorTime = moment(this.reportResponse.results[this.reportResponse.results.length -1].endTime, "MM-DD-YYYY HH:mm:ss");
-
-          this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
-          this.detailedTestReport.forEach((testResult: any, index) => {
-            let fromObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
-            let toObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
-            let parsedJitter = 0;
-            let parsedRoundTrip = 0;
-            let parsedPacketLoss = 0;
-            let parsedBitrate = 0;
-            if (testResult.from?.mediaStats?.length > 0) {
-              testResult.from.mediaStats.forEach((mediaStatsObj: any) => {
-                if (!mediaStatsObj.data)
-                  return;
-                if (this.validMetric(mediaStatsObj.data, "Received Jitter")) {
-                  parsedJitter = Utility.parseMetric(mediaStatsObj.data, "Received Jitter" );
-                  testResult.maxJitterFrom = this.maxValue(parsedJitter, testResult.maxJitterFrom);
-                  this.updateMetricSum(parsedJitter, fromObj, "jitter");
-                }
-                if (this.validMetric(mediaStatsObj.data, "Round trip time")) {
-                  parsedRoundTrip = Utility.parseMetric(mediaStatsObj.data, "Round trip time" );
-                  testResult.maxRoundTripFrom = this.maxValue(parsedRoundTrip, testResult.maxRoundTripFrom );
-                  this.updateMetricSum(parsedRoundTrip, fromObj, "roundTrip");
-                }
-                if (this.validMetric(mediaStatsObj.data, "Received packet loss")) {
-                  parsedPacketLoss = Utility.parseMetric(mediaStatsObj.data, "Received packet loss");
-                  testResult.maxPacketLossFrom = this.maxValue(parsedPacketLoss, testResult.maxPacketLossFrom);
-                  this.updateMetricSum(parsedPacketLoss, fromObj, "packetLoss");
-                }
-                if (this.validMetric(mediaStatsObj.data, "Sent bitrate")) {
-                  parsedBitrate = Utility.parseMetric(mediaStatsObj.data, "Sent bitrate");
-                  this.updateMetricSum(parsedBitrate, fromObj, "bitrate");
-                }
-        
-                if (this.validMetric(mediaStatsObj.data, "POLQA")) {
-                  let parsedPolqa = Utility.parseMetric(mediaStatsObj.data, "POLQA");
-                  testResult.fromPolqaMin = this.minValue(parsedPolqa, testResult.fromPolqaMin);
-                  this.updateMetricSum(parsedPolqa, fromObj, "polqa");
-                }
-              });
-              testResult.from.mediaStats.sort((a, b) => {
-                return a.timestamp - b.timestamp
-              });
-            
-              testResult.fromPolqaAvg = this.average(fromObj.polqa.sum, fromObj.polqa.count);
-              testResult.fromAvgJitter = this.average(fromObj.jitter.sum, fromObj.jitter.count);
-              testResult.fromAvgRoundTrip = this.average(fromObj.roundTrip.sum, fromObj.roundTrip.count);
-              testResult.fromAvgPacketLoss = this.average(fromObj.packetLoss.sum, fromObj.packetLoss.count);
-              testResult.fromAvgBitrate = this.average(fromObj.bitrate.sum, fromObj.bitrate.count);
-              
-              testResult.fromJitter = this.dataToString(testResult.maxJitterFrom, testResult.fromAvgJitter, "Received Jitter");
-              testResult.fromRoundTrip = this.dataToString(testResult.maxRoundTripFrom, testResult.fromAvgRoundTrip, "Round trip time");
-              testResult.fromPacketLoss = this.dataToString(testResult.maxPacketLossFrom, testResult.fromAvgPacketLoss, "Received packet loss");
-              testResult.fromAvgBitrate = this.dataToString(0, testResult.fromAvgBitrate, "Sent bitrate");
-
-              testResult.fromnoDataFoundFlag = false;
-            } else
-              testResult.fromnoDataFoundFlag = true;
-            
-            if (testResult.to?.mediaStats?.length > 0) {
-              testResult.to.mediaStats.forEach((mediaStatsObj: any) => {
-                if (!mediaStatsObj.data)
-                  return;
-                if (this.validMetric(mediaStatsObj.data, "Received Jitter")) {
-                  parsedJitter = Utility.parseMetric(mediaStatsObj.data, "Received Jitter" );
-                  testResult.maxJitterTo = this.maxValue(parsedJitter, testResult.maxJitterTo);
-                  this.updateMetricSum(parsedJitter, toObj, "jitter");
-                }
-                if (this.validMetric(mediaStatsObj.data, "Round trip time")) {
-                  parsedRoundTrip = Utility.parseMetric(mediaStatsObj.data, "Round trip time" );
-                  testResult.maxRoundTripTo = this.maxValue(parsedRoundTrip, testResult.maxRoundTripTo );
-                  this.updateMetricSum(parsedRoundTrip, toObj, "roundTrip");
-                }
-                if (this.validMetric(mediaStatsObj.data, "Received packet loss")) {
-                  parsedPacketLoss = Utility.parseMetric(mediaStatsObj.data, "Received packet loss");
-                  testResult.maxPacketLossTo = this.maxValue(parsedPacketLoss, testResult.maxPacketLossTo);
-                  this.updateMetricSum(parsedPacketLoss, toObj, "packetLoss");
-                }
-                if (this.validMetric(mediaStatsObj.data, "Sent bitrate")) {
-                  parsedBitrate = Utility.parseMetric(mediaStatsObj.data, "Sent bitrate");
-                  this.updateMetricSum(parsedBitrate, toObj, "bitrate");
-                }
-        
-                if (this.validMetric(mediaStatsObj.data, "POLQA")) {
-                  let parsedPolqa = Utility.parseMetric(mediaStatsObj.data, "POLQA");
-                  testResult.toPolqaMin = this.minValue(parsedPolqa, testResult.toPolqaMin);
-                  this.updateMetricSum(parsedPolqa, toObj, "polqa");
-                }
-              });
-              testResult.to.mediaStats.sort((a, b) => {
-                return a.timestamp - b.timestamp
-              });
-
-              testResult.toPolqaAvg = this.average(toObj.polqa.sum, toObj.polqa.count);
-              testResult.toAvgJitter = this.average(toObj.jitter.sum, toObj.jitter.count);
-              testResult.toAvgRoundTrip = this.average(toObj.roundTrip.sum, toObj.roundTrip.count);
-              testResult.toAvgPacketLoss = this.average(toObj.packetLoss.sum, toObj.packetLoss.count);
-              testResult.toAvgBitrate = this.average(toObj.bitrate.sum, toObj.bitrate.count);
-
-              testResult.toJitter = this.dataToString(testResult.maxJitterTo, testResult.toAvgJitter, "Received Jitter");
-              testResult.toRoundTrip = this.dataToString(testResult.maxRoundTripTo, testResult.toAvgRoundTrip, "Round trip time");
-              testResult.toPacketLoss = this.dataToString(testResult.maxPacketLossTo, testResult.toAvgPacketLoss, "Received packet loss");
-              testResult.toAvgBitrate = this.dataToString(0, testResult.toAvgBitrate, "Sent bitrate");
-
-              testResult.tonoDataFoundFlag = false;
-            } else
-              testResult.tonoDataFoundFlag = true;
-
-            const startTime = moment(testResult.startTime, "MM-DD-YYYY HH:mm:ss");
-            const endTime = moment(testResult.endTime, "MM-DD-YYYY HH:mm:ss");
-            testResult.startTime = startTime.format("MM/DD/YYYY HH:mm:ss");
-            testResult.endTime = endTime.format("MM/DD/YYYY HH:mm:ss");
-            if (startTime < minorTime)
-              minorTime = startTime;
-            if (endTime >= majorTime)
-              majorTime = endTime;
-            testResult.closeKey = false;
-            testResult.otherPartynoDataFoundFlag = false;
-            testResult.panelOpenState = true;
-            testResult.otherParties = (testResult.otherParties && testResult.otherParties.length > 0) ? testResult.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
-          });
-          this.reportResponse.summary.summaryStartTime = minorTime.format("MM/DD/YYYY HH:mm:ss");
-          this.reportResponse.summary.summaryEndTime =  majorTime.format("MM/DD/YYYY HH:mm:ss");
-        } else {
-          this.hasDashboardDetails = false;
-          this.reportResponse = {};
-        }
+        this.status ? this.responseFailed = res : this.responseAll = res;
+        this.renderData(res);
       }, (error) => {
         this.hasDashboardDetails = false;
         this.isLoadingResults = false;
@@ -304,6 +180,174 @@ export class DetailedReportsComponent implements OnInit {
         console.error("Error while fetching dashboard report: " + error.error);
         this.snackBarService.openSnackBar("Error while fetching dashboard report",'');
       });
+  }
+
+  private getFailedData () {
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, this.testPlanNames, this.startDateStr, this.endDateStr, 'FAILED',
+        this.regionsStr, this.usersStr, this.polqaCalls).subscribe((res: any) => {
+          this.responseFailed = res;
+        }, (error) => {
+          this.hasDashboardDetails = false;
+          this.isLoadingResults = false;
+          this.isRequestCompleted = true;
+          console.error("Error while fetching dashboard report: " + error.error);
+          this.snackBarService.openSnackBar("Error while fetching dashboard report",'');
+        });
+  }
+
+  private renderData(res: any) {
+    this.isRequestCompleted = true;
+    this.isLoadingResults = false;
+    if (res.response.report && res.response.reportType) {
+      this.reportResponse = res.response.report;
+      const detailedResponseObj = JSON.parse(JSON.stringify(res.response.report));
+      this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
+      this.filename = res.response.reportType;
+      this.hasDashboardDetails = true;
+      if (this.reportResponse.endpoints && this.reportResponse.endpoints.length > 0) {
+        this.reportResponse.endpoints = this.reportResponse.endpoints.map((e: any) => {
+          if (e.city && e.country && e.state && e.zipcode) {
+            e.region = `${e.city}, ${e.state}, ${e.country}, ${e.zipcode}`;
+          } else {
+            e.region = "";
+          }
+          return e;
+        });
+      } else {
+        this.reportResponse.endpoints = [];
+      }
+      let minorTime: Moment;
+      let majorTime: Moment;
+      minorTime = moment(this.reportResponse.results[0].startTime, "MM-DD-YYYY HH:mm:ss");
+      majorTime = moment(this.reportResponse.results[this.reportResponse.results.length -1].endTime, "MM-DD-YYYY HH:mm:ss");
+
+      this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
+      this.detailedTestReport.forEach((testResult: any, index) => {
+        let fromObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
+        let toObj = JSON.parse(JSON.stringify(this.metricsObjTemplate));
+        let parsedJitter = 0;
+        let parsedRoundTrip = 0;
+        let parsedPacketLoss = 0;
+        let parsedBitrate = 0;
+        if (testResult.from?.mediaStats?.length > 0) {
+          testResult.from.mediaStats.forEach((mediaStatsObj: any) => {
+            if (!mediaStatsObj.data)
+              return;
+            if (this.validMetric(mediaStatsObj.data, "Received Jitter")) {
+              parsedJitter = Utility.parseMetric(mediaStatsObj.data, "Received Jitter");
+              testResult.maxJitterFrom = this.maxValue(parsedJitter, testResult.maxJitterFrom);
+              this.updateMetricSum(parsedJitter, fromObj, "jitter");
+            }
+            if (this.validMetric(mediaStatsObj.data, "Round trip time")) {
+              parsedRoundTrip = Utility.parseMetric(mediaStatsObj.data, "Round trip time");
+              testResult.maxRoundTripFrom = this.maxValue(parsedRoundTrip, testResult.maxRoundTripFrom);
+              this.updateMetricSum(parsedRoundTrip, fromObj, "roundTrip");
+            }
+            if (this.validMetric(mediaStatsObj.data, "Received packet loss")) {
+              parsedPacketLoss = Utility.parseMetric(mediaStatsObj.data, "Received packet loss");
+              testResult.maxPacketLossFrom = this.maxValue(parsedPacketLoss, testResult.maxPacketLossFrom);
+              this.updateMetricSum(parsedPacketLoss, fromObj, "packetLoss");
+            }
+            if (this.validMetric(mediaStatsObj.data, "Sent bitrate")) {
+              parsedBitrate = Utility.parseMetric(mediaStatsObj.data, "Sent bitrate");
+              this.updateMetricSum(parsedBitrate, fromObj, "bitrate");
+            }
+
+            if (this.validMetric(mediaStatsObj.data, "POLQA")) {
+              let parsedPolqa = Utility.parseMetric(mediaStatsObj.data, "POLQA");
+              testResult.fromPolqaMin = this.minValue(parsedPolqa, testResult.fromPolqaMin);
+              this.updateMetricSum(parsedPolqa, fromObj, "polqa");
+            }
+          });
+          testResult.from.mediaStats.sort((a, b) => {
+            return a.timestamp - b.timestamp
+          });
+
+          testResult.fromPolqaAvg = this.average(fromObj.polqa.sum, fromObj.polqa.count);
+          testResult.fromAvgJitter = this.average(fromObj.jitter.sum, fromObj.jitter.count);
+          testResult.fromAvgRoundTrip = this.average(fromObj.roundTrip.sum, fromObj.roundTrip.count);
+          testResult.fromAvgPacketLoss = this.average(fromObj.packetLoss.sum, fromObj.packetLoss.count);
+          testResult.fromAvgBitrate = this.average(fromObj.bitrate.sum, fromObj.bitrate.count);
+
+          testResult.fromJitter = this.dataToString(testResult.maxJitterFrom, testResult.fromAvgJitter, "Received Jitter");
+          testResult.fromRoundTrip = this.dataToString(testResult.maxRoundTripFrom, testResult.fromAvgRoundTrip, "Round trip time");
+          testResult.fromPacketLoss = this.dataToString(testResult.maxPacketLossFrom, testResult.fromAvgPacketLoss, "Received packet loss");
+          testResult.fromAvgBitrate = this.dataToString(0, testResult.fromAvgBitrate, "Sent bitrate");
+
+          testResult.fromnoDataFoundFlag = false;
+        }
+        else
+          testResult.fromnoDataFoundFlag = true;
+
+        if (testResult.to?.mediaStats?.length > 0) {
+          testResult.to.mediaStats.forEach((mediaStatsObj: any) => {
+            if (!mediaStatsObj.data)
+              return;
+            if (this.validMetric(mediaStatsObj.data, "Received Jitter")) {
+              parsedJitter = Utility.parseMetric(mediaStatsObj.data, "Received Jitter");
+              testResult.maxJitterTo = this.maxValue(parsedJitter, testResult.maxJitterTo);
+              this.updateMetricSum(parsedJitter, toObj, "jitter");
+            }
+            if (this.validMetric(mediaStatsObj.data, "Round trip time")) {
+              parsedRoundTrip = Utility.parseMetric(mediaStatsObj.data, "Round trip time");
+              testResult.maxRoundTripTo = this.maxValue(parsedRoundTrip, testResult.maxRoundTripTo);
+              this.updateMetricSum(parsedRoundTrip, toObj, "roundTrip");
+            }
+            if (this.validMetric(mediaStatsObj.data, "Received packet loss")) {
+              parsedPacketLoss = Utility.parseMetric(mediaStatsObj.data, "Received packet loss");
+              testResult.maxPacketLossTo = this.maxValue(parsedPacketLoss, testResult.maxPacketLossTo);
+              this.updateMetricSum(parsedPacketLoss, toObj, "packetLoss");
+            }
+            if (this.validMetric(mediaStatsObj.data, "Sent bitrate")) {
+              parsedBitrate = Utility.parseMetric(mediaStatsObj.data, "Sent bitrate");
+              this.updateMetricSum(parsedBitrate, toObj, "bitrate");
+            }
+
+            if (this.validMetric(mediaStatsObj.data, "POLQA")) {
+              let parsedPolqa = Utility.parseMetric(mediaStatsObj.data, "POLQA");
+              testResult.toPolqaMin = this.minValue(parsedPolqa, testResult.toPolqaMin);
+              this.updateMetricSum(parsedPolqa, toObj, "polqa");
+            }
+          });
+          testResult.to.mediaStats.sort((a, b) => {
+            return a.timestamp - b.timestamp;
+          });
+
+          testResult.toPolqaAvg = this.average(toObj.polqa.sum, toObj.polqa.count);
+          testResult.toAvgJitter = this.average(toObj.jitter.sum, toObj.jitter.count);
+          testResult.toAvgRoundTrip = this.average(toObj.roundTrip.sum, toObj.roundTrip.count);
+          testResult.toAvgPacketLoss = this.average(toObj.packetLoss.sum, toObj.packetLoss.count);
+          testResult.toAvgBitrate = this.average(toObj.bitrate.sum, toObj.bitrate.count);
+
+          testResult.toJitter = this.dataToString(testResult.maxJitterTo, testResult.toAvgJitter, "Received Jitter");
+          testResult.toRoundTrip = this.dataToString(testResult.maxRoundTripTo, testResult.toAvgRoundTrip, "Round trip time");
+          testResult.toPacketLoss = this.dataToString(testResult.maxPacketLossTo, testResult.toAvgPacketLoss, "Received packet loss");
+          testResult.toAvgBitrate = this.dataToString(0, testResult.toAvgBitrate, "Sent bitrate");
+
+          testResult.tonoDataFoundFlag = false;
+        }
+        else
+          testResult.tonoDataFoundFlag = true;
+
+        const startTime = moment(testResult.startTime, "MM-DD-YYYY HH:mm:ss");
+        const endTime = moment(testResult.endTime, "MM-DD-YYYY HH:mm:ss");
+        testResult.startTime = startTime.format("MM/DD/YYYY HH:mm:ss");
+        testResult.endTime = endTime.format("MM/DD/YYYY HH:mm:ss");
+        if (startTime < minorTime)
+          minorTime = startTime;
+        if (endTime >= majorTime)
+          majorTime = endTime;
+        testResult.closeKey = false;
+        testResult.otherPartynoDataFoundFlag = false;
+        testResult.panelOpenState = true;
+        testResult.otherParties = (testResult.otherParties && testResult.otherParties.length > 0) ? testResult.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
+      });
+      this.reportResponse.summary.summaryStartTime = minorTime.format("MM/DD/YYYY HH:mm:ss");
+      this.reportResponse.summary.summaryEndTime = majorTime.format("MM/DD/YYYY HH:mm:ss");
+    } else {
+      this.hasDashboardDetails = false;
+      this.reportResponse = {};
+    }
   }
 
   getSelectedFromTimeStamp(event) {
@@ -425,51 +469,10 @@ export class DetailedReportsComponent implements OnInit {
    * initialize the columns settings
    */
   initColumns(): void {
-    this.endpointDisplayedColumns = [
-      { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
-      { name: 'Model', dataKey: 'model', position: 'center', isSortable: true },
-      { name: 'DID', dataKey: 'did', position: 'center', isSortable: true },
-      { name: 'Firmware', dataKey: 'firmwareVersion', position: 'center', isSortable: true },
-      { name: 'Service Provider', dataKey: 'serviceProvider', position: 'center', isSortable: true },
-      { name: 'Domain', dataKey: 'domain', position: 'center', isSortable: true },
-      { name: 'Region', dataKey: 'region', position: 'center', isSortable: false }
-    ];
-
-    this.summaryDisplayedColumns = [
-      { header: 'Test Cases Executed', value: 'total' },
-      { header: 'Passed', value: 'passed' },
-      { header: 'Failed', value: 'failed' },
-      { header: 'Start Time', value: 'summaryStartTime' },
-      { header: 'End Time', value: 'summaryEndTime' }
-    ];
-
-    this.detailedTestFeatureandCallReliability = [
-      { header: 'Start Date', value: 'startTime' },
-      { header: 'End Date', value: 'endTime' },
-      { header: 'Status', value: 'status' },
-      { header: 'Call Type', value: 'callType' },
-      { header: 'Error Category', value: 'errorCategory' },
-      { header: 'Reason', value: 'errorReason' },
-      { header: 'From Jitter (ms)', value: 'fromJitter' },
-      { header: 'To Jitter (ms)', value: 'toJitter' },
-      { header: 'From Round trip time (ms)', value: 'fromRoundTrip' },
-      { header: 'To Round trip time (ms)', value: 'toRoundTrip' },
-      { header: 'From Packet Loss (%)', value: 'fromPacketLoss' },
-      { header: 'To Packet Loss (%)', value: 'toPacketLoss' },
-      { header: 'From Bitrate (kbps)', value: 'fromAvgBitrate' },
-      { header: 'To Bitrate (kbps)', value: 'toAvgBitrate' },
-    ];
-    this.mediaStatsDisplayedColumns = [
-      { header: 'Sent packets', value: 'Sent packets' },
-      { header: 'Received codec', value: 'Received codec' },
-      { header: 'Sent bitrate', value: 'Sent bitrate' },
-      { header: 'Received packet loss', value: 'Received packet loss' },
-      { header: 'Received Jitter', value: 'Received Jitter' },
-      { header: 'Sent codec', value: 'Sent codec' },
-      { header: 'Round trip time', value: 'Round trip time' },
-      { header: 'Received packets', value: 'Received packets' },
-      { header: 'POLQA', value: 'POLQA'}
-    ]
+    this.endpointDisplayedColumns = EndpointColumnsConst;
+    this.summaryDisplayedColumns = SummaryColumnsConst;
+    this.detailedTestFeatureandCallReliability = TestFeatureandCallReliability;
+    this.mediaStatsDisplayedColumns = StatsColumnsConst;
   }
   /**
    * download file as excel
@@ -490,14 +493,28 @@ export class DetailedReportsComponent implements OnInit {
     a.click();
     this.canDisableDownloadBtn = false;
   }
+
+  public isConfirmationRequired() {
+    this.status ? this.downloadDetailedTestReportByType() : this.showConfirmDialog();
+  }
+
+  private showConfirmDialog() {
+    this.dialogService.confirmDialog(ConfirmDialogConst).subscribe((confirmed) => {
+      this.downloadDetailedTestReportByType(confirmed);
+    });
+  }
   /**
    * fetch detailed test report excel sheet 
    */
-  public downloadDetailedTestReportByType(): void {
+  public downloadDetailedTestReportByType(confirm = true): void {
     try {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
-      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();      
+      let detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
+      if (!confirm) {
+        detailedResponseObj = this.responseFailed.response.report;
+      }
+      
       detailedResponseObj.summary.startTime = this.reportResponse.summary.summaryStartTime;
       detailedResponseObj.summary.endTime = this.reportResponse.summary.summaryEndTime;
       detailedResponseObj.type = this.testPlanNames;
