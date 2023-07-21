@@ -14,6 +14,8 @@ import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.clients.EmailClient;
 import com.function.util.Constants;
+import com.function.util.FeatureToggleService;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.function.auth.Resource;
@@ -112,7 +114,10 @@ public class TekvLSCreateSubaccountStakeHolder {
 			stakeholderset = subaccountStakeholders.executeQuery();
 			if (stakeholderset.next())
 				subaccountUsersCount = stakeholderset.getInt(1);
-			if (subaccountUsersCount < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT) {
+			int limit = Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
+			if (FeatureToggleService.isFeatureActiveBySubaccountId("multitenant-demo-subaccount", subaccountId))
+				limit = Constants.STAKEHOLDERS_LIMIT_PER_DEMO_SUBACCOUNT;
+			if (subaccountUsersCount < limit) {
 					context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 				// Check if ctaas_setup exists and is on Ready status else return Bad Request
@@ -164,7 +169,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 				}
 			} else {
 				JSONObject json = new JSONObject();
-				json.put("error", "The maximum amount of users per customer (" + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ") has been reached");
+				json.put("error", "The maximum amount of users (" + limit + ") has been reached");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}    	
 		} catch (SQLException e) {
