@@ -3,6 +3,7 @@ import { GROW_DOWN_ANIMATION } from "./animations";
 import { Observable, Subscription } from "rxjs";
 import { BannerService } from "../../services/banner.service";
 
+
 @Component({
   selector: "app-banner-outlet",
   templateUrl: "./banner.component.html",
@@ -19,6 +20,7 @@ export class BannerComponent {
   opened = false;
   type: string;
   displayClose = false;
+  hideForever = false;
 
   constructor(bannerService: BannerService) {
     bannerService.init(this);
@@ -40,5 +42,13 @@ export class BannerComponent {
   close() {
     this.opened = false;
     this.onComponentDestructionSubscription.unsubscribe();
+  }
+
+  regularClose() {
+    if (this.hideForever)
+      localStorage.setItem("hiddenBanner", "true");
+    else
+      localStorage.setItem("closedBanner", "true");
+    this.close();
   }
 }

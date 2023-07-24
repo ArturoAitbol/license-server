@@ -134,8 +134,9 @@ export class OnboardWizardComponent implements OnInit {
         this.configuredReports = true;
         this.isDataLoading = true;
         this.interaction = '3';
-        const userProfileObj = this.userProfileForm.value;
-        userProfileObj.phoneNumber = this.userProfileForm.get('phoneNumber').value.e164Number;
+        let userProfileObj = this.userProfileForm.value;
+        if (userProfileObj.phoneNumber && userProfileObj.phoneNumber !== '')
+            userProfileObj.phoneNumber = userProfileObj.phoneNumber.e164Number;
         let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications};
         if (detailedUserProfileObj.notifications.length > 0) {
             detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
@@ -192,8 +193,9 @@ export class OnboardWizardComponent implements OnInit {
         this.addAnotherStakeHolder = false;
         this.configuredReports = true;
         this.isDataLoading = true;
-        const requestPayload = this.stakeholderForm.value;
-        requestPayload.phoneNumber = this.stakeholderForm.get('phoneNumber').value.e164Number;
+        let requestPayload = this.stakeholderForm.value;
+        if (requestPayload.phoneNumber && requestPayload.phoneNumber !== '')
+            requestPayload.phoneNumber = requestPayload.phoneNumber.e164Number;
         let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications}
         detailedRequestPayload.subaccountId = this.subaccountId;
         if (detailedRequestPayload.notifications.length > 0) {

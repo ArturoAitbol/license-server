@@ -1,6 +1,6 @@
 <app-banner></app-banner>
 <mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
-<div class="container-fluid" *ngIf="!maintenanceModeEnabled">
+<div class="container-fluid" *ngIf="!maintenanceModeEnabled && showChartsFlag">
     <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
         <div class="card col-8">
             <div class="card-body">
@@ -160,7 +160,7 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
+                            <button title="Voice Quality Detailed Report" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
@@ -188,7 +188,7 @@
                                     <label class="ps-2">Total Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.total }}</p>
-                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">
+                                    <button title="Failed Calls Detailed Report" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">
                                         View Detailed Report
                                     </button>
                                 </div>
@@ -198,7 +198,7 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.failed }}</p>
-                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                                    <button title="Failed Calls" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
                                         View Detailed Report
                                     </button>
                                 </div>
