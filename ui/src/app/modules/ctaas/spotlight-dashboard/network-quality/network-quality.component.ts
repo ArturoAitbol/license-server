@@ -187,74 +187,82 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
     obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.averageSelected));
     obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.averageSelected));
     this.qualitySubscriber =  forkJoin(obs).subscribe((res: any) => {
-      const trendsData = res[0];
-      if(this.groupBy==='hour'){
-        this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories.map(category => category.split(" ")[1])};
-        this.commonChartOptions.xAxis.title.text = 'Hour';
+      try {
+        this.processData(res);
+      } catch (error) {
+        console.error(error);
       }
-      else{
-        this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories};
-        this.commonChartOptions.xAxis.title.text = 'Date';
-      }
-
-      this.initChartOptions();
-      this.receivedPacketLossChartOptions.series = [{
-        name: this.series.packetLoss.label,
-        data: trendsData.series[this.series.packetLoss.value]
-      }];
-      this.jitterChartOptions.series = [{
-        name: this.series.jitter.label,
-        data: trendsData.series[this.series.jitter.value]
-      }];
-      this.sentBitrateChartOptions.series = [{
-        name: this.series.sentBitrate.label,
-        data: trendsData.series[this.series.sentBitrate.value]
-      }];
-      this.roundTripChartOptions.series = [{
-        name: this.series.roundTripTime.label,
-        data: trendsData.series[this.series.roundTripTime.value]
-      }];
-
-      const summary = res[1];
-      this.summary.totalCalls = summary.totalCalls;
-      this.summary.overall.packetLoss = summary.maxPacketLoss;
-      this.summary.overall.jitter = summary.maxJitter;
-      this.summary.overall.roundTripTime = summary.maxRoundTripTime;
-      this.summary.overall.polqa = summary.minPolqa;
-      this.summary.overall.sendBitrate = summary.avgSentBitrate;
-      this.summary.aboveThreshold.jitter = summary.jitterAboveThld;
-      this.summary.aboveThreshold.packetLoss = summary.packetLossAboveThld;
-      this.summary.aboveThreshold.roundTripTime = summary.roundTripTimeAboveThld;
-
-      this.customerNetworkQualityData = res[2];
-      if(this.groupBy==='hour') {
-        this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1])};
-        this.polqaChartOptions.xAxis.title.text = 'Hour';
-      }
-      else{
-        this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories };
-        this.polqaChartOptions.xAxis.title.text = 'Date';
-      }
-
-      this.polqaChartOptions.series = [
-        {
-          name: this.series[this.selectedGraph].label,
-          data: this.customerNetworkQualityData.series[this.series[this.selectedGraph].value]
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        }
-      ];
-
-      this.isChartLoading = false;
-      this.hideChart = false;
-      this.chartLoadCompleted();
     }, error => {
       console.error(error);
       this.chartLoadCompleted();
       this.hideChart = false;
     });
+  }
+
+  private processData(res: any) {
+    const trendsData = res[0];
+    if(this.groupBy==='hour'){
+      this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories.map(category => category.split(" ")[1])};
+      this.commonChartOptions.xAxis.title.text = 'Hour';
+    }
+    else{
+      this.commonChartOptions.xAxis = {...this.commonChartOptions.xAxis, categories: trendsData.categories};
+      this.commonChartOptions.xAxis.title.text = 'Date';
+    }
+
+    this.initChartOptions();
+    this.receivedPacketLossChartOptions.series = [{
+      name: this.series.packetLoss.label,
+      data: trendsData.series[this.series.packetLoss.value]
+    }];
+    this.jitterChartOptions.series = [{
+      name: this.series.jitter.label,
+      data: trendsData.series[this.series.jitter.value]
+    }];
+    this.sentBitrateChartOptions.series = [{
+      name: this.series.sentBitrate.label,
+      data: trendsData.series[this.series.sentBitrate.value]
+    }];
+    this.roundTripChartOptions.series = [{
+      name: this.series.roundTripTime.label,
+      data: trendsData.series[this.series.roundTripTime.value]
+    }];
+
+    const summary = res[1];
+    this.summary.totalCalls = summary.totalCalls;
+    this.summary.overall.packetLoss = summary.maxPacketLoss;
+    this.summary.overall.jitter = summary.maxJitter;
+    this.summary.overall.roundTripTime = summary.maxRoundTripTime;
+    this.summary.overall.polqa = summary.minPolqa;
+    this.summary.overall.sendBitrate = summary.avgSentBitrate;
+    this.summary.aboveThreshold.jitter = summary.jitterAboveThld;
+    this.summary.aboveThreshold.packetLoss = summary.packetLossAboveThld;
+    this.summary.aboveThreshold.roundTripTime = summary.roundTripTimeAboveThld;
+
+    this.customerNetworkQualityData = res[2];
+    if(this.groupBy==='hour') {
+      this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1])};
+      this.polqaChartOptions.xAxis.title.text = 'Hour';
+    }
+    else{
+      this.polqaChartOptions.xAxis = {...this.polqaChartOptions.xAxis, categories: this.customerNetworkQualityData.categories };
+      this.polqaChartOptions.xAxis.title.text = 'Date';
+    }
+
+    this.polqaChartOptions.series = [
+      {
+        name: this.series[this.selectedGraph].label,
+        data: this.customerNetworkQualityData.series[this.series[this.selectedGraph].value]
+      },
+      {
+        name: 'POLQA',
+        data: this.customerNetworkQualityData.series['POLQA']
+      }
+    ];
+
+    this.isChartLoading = false;
+    this.hideChart = false;
+    this.chartLoadCompleted();
   }
 
   private initChartOptions() {

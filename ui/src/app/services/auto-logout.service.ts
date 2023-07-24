@@ -45,9 +45,11 @@ export class AutoLogoutService {
 
     public logout() {
         if (this.msalService.instance.getActiveAccount() != null) {
-            try {
-                this.msalService.logout();
+            try {                
+                let hiddenBanner = localStorage.getItem("hiddenBanner") ? JSON.parse(localStorage.getItem("hiddenBanner")) : false;
                 localStorage.clear();
+                localStorage.setItem("hiddenBanner", hiddenBanner.toString());
+                this.msalService.logout();
             } catch (error) {
                 console.error('error while logout: ', error);
             }
