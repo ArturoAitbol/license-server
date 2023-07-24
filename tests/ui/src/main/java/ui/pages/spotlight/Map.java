@@ -32,8 +32,8 @@ public class Map extends AbstractPageObject {
     By nodeTitle = By.xpath("//h1[@title='node-title']");
     By linkTitle = By.xpath("//h1[@title='link-title']");
     public void openNode(String regionFilter) {
-        waitData();
-        changeDate(regionFilter);
+        changeDate();
+        changeRegion(regionFilter);
         this.action.click(this.node);
         if(this.action.checkElement(this.nodeTitle) != "ok") {
             this.action.click(this.node);
@@ -43,7 +43,8 @@ public class Map extends AbstractPageObject {
 
     public void openLink(String regionFilter) {
         waitData();
-        changeDate(regionFilter);
+        changeDate();
+        changeRegion(regionFilter);
         this.action.click(this.link);
         if(this.action.checkElement(this.linkTitle) != "ok") {
             this.action.click(this.link);
@@ -51,7 +52,7 @@ public class Map extends AbstractPageObject {
         this.action.click(cancelButton);
     }
 
-    public void changeDate(String region){
+    public void changeDate(){
         By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
         this.action.click(calendarButton);
         boolean monthFound = false;
@@ -69,6 +70,15 @@ public class Map extends AbstractPageObject {
         DateTimeFormatter testDateFormat = DateTimeFormatter.ofPattern("MMMM d, uuuu", englishLocale);
         By dateButtonLocator = By.cssSelector(String.format(this.dateButtonLocatorString, testDateFormat.format(selectedDate)));
         this.action.click(dateButtonLocator);
+        By applyButtonSelector = By.cssSelector("button[id*=filter-button]");
+        this.action.click(applyButtonSelector);
+        this.action.waitSpinner(spinnerSelector);
+        this.action.waitPropertyToBe(this.datePicker, "disabled", "false");
+    }
+
+    public void changeRegion(String region) {
+        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
+
         By optionType = By.cssSelector(String.format("mat-option[title='%s']", region));
         this.action.selectOption(this.region, optionType);
         By applyButtonSelector = By.cssSelector("button[id*=filter-button]");
