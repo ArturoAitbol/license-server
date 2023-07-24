@@ -20,6 +20,8 @@ export class AddStakeHolderComponent implements OnInit {
   CountryISO = CountryISO;
   SearchCountryField = SearchCountryField;
   PhoneNumberFormat = PhoneNumberFormat;
+  emailNotifications: boolean = true;
+  toggleStatus = true;
   preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
   constructor(
     private formBuilder: FormBuilder,
@@ -27,8 +29,8 @@ export class AddStakeHolderComponent implements OnInit {
     private stakeholderService: StakeHolderService,
     public dialogRef: MatDialogRef<AddStakeHolderComponent>,
     private subaccountService: SubAccountService) {}
-  readonly type = 'TYPE:Detailed';
-  readonly notifications = 'DAILY_REPORTS';
+    readonly type = 'TYPE:Detailed';
+    readonly notifications = 'DAILY_REPORTS';
   /**
    * initialize update stake holder form
    */
@@ -40,11 +42,6 @@ export class AddStakeHolderComponent implements OnInit {
     phoneNumber: ['']
   });
 
-  reports: any =  [
-    { label: "Daily Reports", value: Report.DAILY_REPORTS},
-    { label: "Weekly Reports", value: Report.WEEKLY_REPORTS},
-    { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS}
-  ];
   
   /**
    * fetch user profile details
@@ -73,6 +70,15 @@ export class AddStakeHolderComponent implements OnInit {
     this.fetchUserProfileDetails();
   }
   
+  onChangeToggle(flag: boolean): void {
+    this.toggleStatus = flag;
+    if (flag) {
+        this.emailNotifications = true;
+    } else {
+        this.emailNotifications = false;
+    }
+  }
+  
   /**
    * close the open dialog 
    * @param type: string [optional] 
@@ -88,8 +94,8 @@ export class AddStakeHolderComponent implements OnInit {
       this.isDataLoading = true;
       const { subaccountId } = this.userprofileDetails;
       const stakeholderDetails = { ... this.addStakeholderForm.value };
-      stakeholderDetails.phoneNumber = this.addStakeholderForm.get('phoneNumber').value.e164Number;
-      let stakeholderNotificationsAndtype = {...stakeholderDetails, type: this.type, notifications: this.notifications};
+      stakeholderDetails.phoneNumber = this.addStakeholderForm.get('phoneNumber').value ? this.addStakeholderForm.get('phoneNumber').value.e164Number : '';
+      let stakeholderNotificationsAndtype = {...stakeholderDetails, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications};
       stakeholderNotificationsAndtype.subaccountId = subaccountId;
       if (stakeholderNotificationsAndtype.notifications.length > 0) {
         stakeholderNotificationsAndtype.notifications = stakeholderNotificationsAndtype.type + ',' + stakeholderNotificationsAndtype.notifications;

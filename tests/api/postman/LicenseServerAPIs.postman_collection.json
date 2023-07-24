@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "63317536-40d0-4bad-a582-ef63cb5537b9",
+		"_postman_id": "75b5bf3a-88e5-4110-bfa3-20129acb6bfe",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26252928"
+		"_exporter_id": "8463491"
 	},
 	"item": [
 		{
@@ -1088,7 +1088,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n    \"phoneNumber\": \"4434532455\",\r\n    \"type\": \"TYPE:High level\",\r\n    \"emailNotifications\": true,\r\n    \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1125,7 +1125,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n    \"type\": \"TYPE:High level\",\r\n    \"emailNotifications\": false,\r\n    \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

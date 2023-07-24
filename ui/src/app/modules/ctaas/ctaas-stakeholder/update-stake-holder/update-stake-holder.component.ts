@@ -19,6 +19,8 @@ export class UpdateStakeHolderComponent implements OnInit {
   updateStakeholderForm: FormGroup;
   previousFormValue: any;
   notificationsList: any;
+  toggleStatus = true;
+  emailNotifications: boolean;
   mappedNotificationsList: string[] = [];
   CountryISO = CountryISO;
   SearchCountryField = SearchCountryField;
@@ -60,6 +62,7 @@ export class UpdateStakeHolderComponent implements OnInit {
         });
         this.mappedNotificationsList = mappedNotifications;
       }
+      this.emailNotifications = this.data.emailNotifications;
       const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, role };
       this.updateStakeholderForm.patchValue(payload);
       if (this.data.restrictRole)
@@ -112,13 +115,28 @@ export class UpdateStakeHolderComponent implements OnInit {
       }
     });
   }
+
+  onChangeToggle(flag: boolean): void {
+    this.toggleStatus = flag;
+    if (flag) {
+        this.emailNotifications = true;
+    } else {
+        this.emailNotifications = false;
+    }
+  }
   /**
    * prepare an object with update values only
    * @returns: any 
    */
   preparePayload(): any {
-    const extraData = {...this.updateStakeholderForm.value, notifications:this.notifications, type:this.type, subaccountAdminEmail: this.data.email};
-    extraData.phoneNumber = this.updateStakeholderForm.get('phoneNumber').value.e164Number;
+    const extraData = {
+      ...this.updateStakeholderForm.value, 
+      notifications: this.notifications, 
+      type: this.type, 
+      subaccountAdminEmail: this.data.email, 
+      emailNotifications: this.emailNotifications
+    };
+    extraData.phoneNumber = this.updateStakeholderForm.get('phoneNumber').value ? this.updateStakeholderForm.get('phoneNumber').value.e164Number : '';
     if (this.previousFormValue.role === extraData.role) {
       extraData.role = null;
     }

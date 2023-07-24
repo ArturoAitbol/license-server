@@ -65,6 +65,7 @@ export const permissions = {
             'resetFilter',
             'maintenanceModeCheckbox',
             'viewDetailedReport',
+            'emailNotifications',
             'addSupportEmail',
             'deleteSupportEmail',
         ],
@@ -189,7 +190,8 @@ export const permissions = {
             'maintenanceModeCheckbox',
             'viewDetailedReport',
             'addSupportEmail',
-            'deleteSupportEmail'
+            'deleteSupportEmail',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -360,7 +362,8 @@ export const permissions = {
             'showLatestNote',
             'resetFilter',
             'request-call',
-            'viewDetailedReport'
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -418,7 +421,8 @@ export const permissions = {
             'showLatestNote',
             'resetFilter',
             'request-call',
-            'viewDetailedReport'
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -468,7 +472,8 @@ export const permissions = {
             'showLatestNote',
             'resetFilter',
             'request-call',
-            'viewDetailedReport'
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [],

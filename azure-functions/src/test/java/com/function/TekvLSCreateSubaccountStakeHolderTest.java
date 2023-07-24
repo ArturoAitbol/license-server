@@ -57,6 +57,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -263,6 +264,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
               "'name': 'test-customer-subaccount-stakeholder'," +
               "'jobTitle': 'Software Engineer'," +
               "'companyName': 'TekVizion'," +
+                 "'emailNotifications': false," +
               "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -286,6 +288,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
@@ -321,6 +324,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

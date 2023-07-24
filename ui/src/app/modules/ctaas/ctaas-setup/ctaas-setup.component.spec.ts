@@ -6,9 +6,11 @@ import { LicenseConfirmationModalComponent } from './license-confirmation-modal/
 import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { DialogService } from 'src/app/services/dialog.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { FeatureToggleServiceMock } from "../../../../test/mock/services/feature-toggle-service.mock";
 import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { CtaasSupportEmailService } from 'src/app/services/ctaas-support-email.service';
+import { CtaasSupportEmailServiceMock } from 'src/test/mock/services/ctaas-support-email.service.mock';
 
 let CtaasSetupComponentTestInstance: CtaasSetupComponent;
 let fixture: ComponentFixture<CtaasSetupComponent>;
@@ -17,6 +19,7 @@ const dialogService = new DialogServiceMock();
 const beforeEachFunction = () => {
     const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasSetupComponent);
     configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addProvider({provide: CtaasSupportEmailService, useValue: CtaasSupportEmailServiceMock})
     configBuilder.addDeclaration(LicenseConfirmationModalComponent);
     TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(CtaasSetupComponent);
@@ -30,9 +33,17 @@ describe('UI verification test', () => {
     //test 1
     it('should display essential UI and components', () => {
         fixture.detectChanges();
-        const h1 = fixture.nativeElement.querySelector('#setup-title');
-        expect(h1.textContent).toBe('UCaaS Continuous Testing Setup Details');
+        const setupTitle = fixture.nativeElement.querySelector('#setup-title');
+        const supportEmailsTitle = fixture.nativeElement.querySelector('#support-emails-title');
+        const addEmailButton = fixture.nativeElement.querySelector("#add-email-button");
+        const updateButton = fixture.nativeElement.querySelector("#update-button");
+        const cancelButton = fixture.nativeElement.querySelector("#cancel-button");
 
+        expect(setupTitle.textContent).toBe('UCaaS Continuous Testing Setup Details');
+        expect(supportEmailsTitle.textContent).toBe('Support Emails');
+        expect(addEmailButton).not.toBe(null);
+        expect(updateButton).not.toBe(null);
+        expect(cancelButton).not.toBe(null);
     });
 
     //test 2
@@ -349,3 +360,99 @@ describe('check for error and success messages', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Setup edited successfully!', '');
     });
 });
+
+describe('add support email flow', () => {
+    beforeEach(beforeEachFunction);
+
+    it('should create a formGroup with the necessary controls', () => {
+      fixture.detectChanges();
+      expect(CtaasSetupComponentTestInstance.supportEmailsForm.get('emails')).toBeTruthy();
+    });
+  
+    it('should add a new formControl after calling addEmailForm()',()=>{
+      spyOn(CtaasSetupComponentTestInstance, 'addEmailForm').and.callThrough();
+      const emailFormsInitialQuantity = CtaasSetupComponentTestInstance.emailForms.length;
+      CtaasSetupComponentTestInstance.addEmailForm();
+      expect(CtaasSetupComponentTestInstance.emailForms.length).toBe(emailFormsInitialQuantity+1);
+    });
+
+    it('should create a support email after calling addSupportEmails()', () => {
+      spyOn(CtaasSetupComponentTestInstance, 'addEmailForm').and.callThrough();
+      spyOn(CtaasSupportEmailServiceMock, 'createSupportEmail').and.callThrough();
+      spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+      fixture.detectChanges();
+
+      CtaasSetupComponentTestInstance.addEmailForm();
+      CtaasSetupComponentTestInstance.emailForms.controls[0].get('email').setValue('test@example.com');
+      CtaasSetupComponentTestInstance.addSupportEmails();
+  
+  
+      expect(CtaasSupportEmailServiceMock.createSupportEmail).toHaveBeenCalled();
+      expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Support emails added successfully!');
+      expect(CtaasSetupComponentTestInstance.isDataLoading).toBeFalse();
+    });
+  
+    it('should show a message if an error ocurred while adding a support email', () => {
+      spyOn(CtaasSetupComponentTestInstance, 'addEmailForm').and.callThrough();
+      spyOn(CtaasSupportEmailServiceMock, 'createSupportEmail').and.returnValue(throwError({error:'some error'}));
+      spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+      fixture.detectChanges();
+
+      CtaasSetupComponentTestInstance.addEmailForm();
+      const supportEmailsForm = CtaasSetupComponentTestInstance.supportEmailsForm;
+      supportEmailsForm.setValue({emails:[{email:"test@email.com"}]});
+      
+      CtaasSetupComponentTestInstance.addSupportEmails();
+  
+      expect(CtaasSupportEmailServiceMock.createSupportEmail).toHaveBeenCalled();
+      expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error','Error while adding support email!');
+      expect(CtaasSetupComponentTestInstance.isDataLoading).toBeFalse();
+    });
+  
+    it('should delete an email after calling deleteExistingEmail()', () => {
+      spyOn(CtaasSupportEmailServiceMock, 'deleteSupportEmail').and.callThrough();
+      spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+      dialogService.setExpectedConfirmDialogValue(true);
+      fixture.detectChanges();
+      
+      CtaasSetupComponentTestInstance.supportEmails = ['test@example.com','test@example.com'];
+      const supportEmails = CtaasSetupComponentTestInstance.supportEmails.length;
+
+      CtaasSetupComponentTestInstance.deleteExistingEmail(0);
+  
+      expect(CtaasSupportEmailServiceMock.deleteSupportEmail).toHaveBeenCalled();
+      expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Support email deleted');
+      expect(CtaasSetupComponentTestInstance.supportEmails.length).toBe(supportEmails-1);
+      expect(CtaasSetupComponentTestInstance.isDataLoading).toBeFalse();
+    });
+
+    it('should show a message if an error ocurred while deleting a support email', () => {
+      spyOn(CtaasSupportEmailServiceMock, 'deleteSupportEmail').and.returnValue(throwError({error: 'error message'}));
+      spyOn(CtaasSetupComponentTestInstance,'deleteExistingEmail').and.callThrough();
+      spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+      spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+      dialogService.setExpectedConfirmDialogValue(true);
+
+      fixture.detectChanges();
+
+      CtaasSetupComponentTestInstance.deleteExistingEmail(0);
+  
+      expect(CtaasSupportEmailServiceMock.deleteSupportEmail).toHaveBeenCalled();
+      expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('error message','Error while deleting support email!');
+    });
+
+    it('should remove a emailForm when calling deleteEmailForm()', () => {
+        CtaasSetupComponentTestInstance.addEmailForm();
+        CtaasSetupComponentTestInstance.addEmailForm();
+        CtaasSetupComponentTestInstance.deleteEmailForm(1);
+        expect(CtaasSetupComponentTestInstance.emailForms.controls.length).toBe(1);
+    });
+
+      
+    it('should remove all the emailForms when calling clearNewSupportEmails()', () => {
+        CtaasSetupComponentTestInstance.addEmailForm();
+        CtaasSetupComponentTestInstance.addEmailForm();
+        CtaasSetupComponentTestInstance.clearNewSupportEmails();
+        expect(CtaasSetupComponentTestInstance.emailForms.controls.length).toBe(0);
+    });
+  });

@@ -25,6 +25,8 @@ export class OnboardWizardComponent implements OnInit {
     readonly type = 'TYPE:Detailed';
     readonly notifications = 'DAILY_REPORTS';
     reportsNotificationsList: any = [];
+    emailNotifications: boolean = true;
+    toggleStatus = true;
     errorCreatingStakeholder = false;
     isDataLoading = false;
     errorMsg = '';
@@ -40,7 +42,7 @@ export class OnboardWizardComponent implements OnInit {
     SearchCountryField = SearchCountryField;
     PhoneNumberFormat = PhoneNumberFormat;
     preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
-
+    sendEmail: any =  ["on", "off"];
     constructor(
         private userprofileService: UserProfileService,
         private stakeholderService: StakeHolderService,
@@ -97,6 +99,14 @@ export class OnboardWizardComponent implements OnInit {
         });
     }
 
+    onChangeToggle(flag: boolean): void {
+        this.toggleStatus = flag;
+        if (flag) {
+            this.emailNotifications = true;
+        } else {
+            this.emailNotifications = false;
+        }
+    }
     /**
      * on accept onboarding flow
      * @param value: string
@@ -126,7 +136,7 @@ export class OnboardWizardComponent implements OnInit {
         this.interaction = '3';
         const userProfileObj = this.userProfileForm.value;
         userProfileObj.phoneNumber = this.userProfileForm.get('phoneNumber').value.e164Number;
-        let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications};
+        let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications};
         if (detailedUserProfileObj.notifications.length > 0) {
             detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
         }
@@ -162,7 +172,7 @@ export class OnboardWizardComponent implements OnInit {
                         this.interaction = '4';
                         this.stakeholderForm.reset();
                     } else {
-                        this.snackBarService.openSnackBar('The maximum amount of users per customer (' + limit + ') has been reached', '');
+                        this.snackBarService.openSnackBar('The maximum amount of users (' + limit + ') has been reached', '');
                     }
                 });
                 break;
@@ -184,7 +194,7 @@ export class OnboardWizardComponent implements OnInit {
         this.isDataLoading = true;
         const requestPayload = this.stakeholderForm.value;
         requestPayload.phoneNumber = this.stakeholderForm.get('phoneNumber').value.e164Number;
-        let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications}
+        let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications}
         detailedRequestPayload.subaccountId = this.subaccountId;
         if (detailedRequestPayload.notifications.length > 0) {
             detailedRequestPayload.notifications = detailedRequestPayload.type + ',' + detailedRequestPayload.notifications;

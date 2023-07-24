@@ -41,6 +41,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
                  "'name': 'test-customer-subaccount-stakeholder'," +
                  "'jobTitle': 'Software Engineer'," +
                  "'companyName': 'TekVizion'," +
+                 "'emailNotifications': true," +
                  "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage createResponse = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
