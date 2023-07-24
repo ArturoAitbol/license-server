@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
+
 import ui.core.AbstractPageObject;
 
 import java.util.HashMap;
@@ -146,5 +147,18 @@ public class NetworkQualityCharts extends AbstractPageObject {
             }
         }
         return graphsValues;
+    }
+
+    public void clickOnPolqaChartValue(String metric){
+        WebElement chartElement;
+        final String polqaChartXPath = "//div[@id=\"polqa-chart\"]/apx-chart";
+        this.action.scrollToElement(polqaChartTitles);
+        By metricButtonSelector = By.xpath(String.format("//mat-button-toggle/button/span[text()='%s']",metric));
+        this.action.click(metricButtonSelector);
+
+        By xpathSelector = By.xpath(polqaChartXPath.concat("//*[@seriesName=\"POLQA\"]//*[name()='g' and @class='apexcharts-series-markers']//*[@class!=\"apexcharts-nullpoint\"]"));
+        List<WebElement> dotsList = this.action.waitVisibilityElements(xpathSelector);
+        chartElement = dotsList.get(0);
+        chartElement.click();
     }
 }
