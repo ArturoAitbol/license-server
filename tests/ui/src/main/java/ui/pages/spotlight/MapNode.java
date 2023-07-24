@@ -157,7 +157,7 @@ public class MapNode extends AbstractPageObject {
     public Map openNativeDashboard(String node) {
         By selectedNode = By.xpath("//img[@title='" + node + "']");
         String dateSelected = "6/24/2023";
-        String report = "Daily Report | 06/24/2023";
+        String report = "Daily Report | 06/24/2023 (UTC)";
         String selectedRegion = "Las Vegas, Nevada, United States";
         waitData();
         this.action.click(selectedNode);

@@ -41,4 +41,17 @@ public class Subscriptions extends AbstractPageObject {
         }
         return message;
     }
+
+    public String getPageTitle(){
+        String message;
+        By messageSelector = By.id("title");
+        try{
+            message = this.action.getText(messageSelector);
+        } catch (Exception e){
+            System.out.println("Title couldn't be retrieved");
+            System.out.println(e.toString());
+            message = "None";
+        }
+        return message;
+    }
 }
