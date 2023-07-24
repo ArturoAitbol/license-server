@@ -104,6 +104,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   isloading = true;
   maintenanceModeEnabled = false;
+  showChartsFlag = true;
 
   currentDate: any;
   selectedRegion: any;
@@ -391,6 +392,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   loadCharts(showLoading = true) {
+    if (!this.showChartsFlag) return;
     if (this.chartsSubscription)
       this.chartsSubscription.unsubscribe();
     this.startTimer();
@@ -419,10 +421,14 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     }
 
     this.chartsSubscription = forkJoin(obs).subscribe((res: any) => {
-      if (this.selectedPeriod == "daily")
-        this.processDailyData(res);
-      else
-        this.processWeeklyData(res);
+      try {
+        if (this.selectedPeriod == "daily")
+          this.processDailyData(res);
+        else
+          this.processWeeklyData(res);
+      } catch (error) {
+        console.error(error);
+      }
       // common values
       const endTime = performance.now();
       this.loadingTime = (endTime - startTime) / 1000;
@@ -777,12 +783,19 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   private setupCustomerOnboardDetails(ctaasSetupDetails: any): void {
     // only open onboarding wizard dialog/modal when onboardingcomplete is f and user is SUBACCOUNT_ADMIN
     if ((!ctaasSetupDetails.onBoardingComplete && this.loggedInUserRoles.length === 1 && this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN))) {
-      const { id } = ctaasSetupDetails;
-      this.dialog.open(OnboardWizardComponent, {
+      this.showChartsFlag = false;
+      const dialogRef = this.dialog.open(OnboardWizardComponent, {
         width: '700px',
         maxHeight: '80vh',
         disableClose: true,
-        data: { ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountDetails.id }
+        data: { ctaasSetupId: ctaasSetupDetails.id, ctaasSetupSubaccountId: this.subaccountDetails.id }
+      });
+      dialogRef.afterClosed().subscribe(res => {
+        if (res) {
+          console.debug(`dialog closed: ${res}`);
+          this.showChartsFlag = true;
+          this.loadCharts();
+        }
       });
     }
   }
