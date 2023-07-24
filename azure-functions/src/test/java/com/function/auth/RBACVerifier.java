@@ -379,7 +379,7 @@ public class RBACVerifier {
                 verifiers.put(DELETE_CTAAS_SUPPORT_EMAIL, new ExpectedPermissions(
                         true,
                         false,
-                        false,
+                        true,
                         false,
                         false,
                         false,
