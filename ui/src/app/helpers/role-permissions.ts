@@ -190,6 +190,7 @@ export const permissions = {
             'maintenanceModeCheckbox',
             'viewDetailedReport',
             'addSupportEmail',
+            'deleteSupportEmail',
             'emailNotifications'
         ],
         tables: {
