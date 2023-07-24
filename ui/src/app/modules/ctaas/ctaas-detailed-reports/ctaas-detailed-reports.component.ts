@@ -197,6 +197,7 @@ export class DetailedReportsComponent implements OnInit {
   }
 
   private renderData(res: any) {
+    this.detailedTestReport = [];
     this.isRequestCompleted = true;
     this.isLoadingResults = false;
     if (res.response.report && res.response.reportType) {

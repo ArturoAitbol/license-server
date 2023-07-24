@@ -30,6 +30,11 @@ p.title {
     padding-left: 0;
 }
 
+p.hide-tag{
+    font-size: 10px;
+    cursor: pointer;   
+}
+
 .action-row {
     margin: 0 0 0 90px;
     flex-grow: 0;

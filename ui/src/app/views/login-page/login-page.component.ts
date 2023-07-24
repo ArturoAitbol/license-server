@@ -20,8 +20,10 @@ export class LoginPageComponent implements OnInit {
             this.router.navigate(['/']);
     }
 
-    ngOnInit() {
+    ngOnInit() {       
+        let hiddenBanner = localStorage.getItem("hiddenBanner") ? JSON.parse(localStorage.getItem("hiddenBanner")) : false;
         localStorage.clear();
+        localStorage.setItem("hiddenBanner", hiddenBanner.toString());
         setTimeout(() => {
             this.loading_status = true;
         }, 3000);
