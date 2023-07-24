@@ -105,6 +105,7 @@ public class Permissions {
                         DELETE_USAGE_DETAILS,
                         DELETE_SUBACCOUNT_STAKEHOLDER,
                         DELETE_CTAAS_TEST_SUITE,
+                        DELETE_CTAAS_SUPPORT_EMAIL,
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
