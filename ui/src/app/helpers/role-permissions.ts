@@ -188,7 +188,8 @@ export const permissions = {
             'resetFilter',
             'maintenanceModeCheckbox',
             'viewDetailedReport',
-            'addSupportEmail'
+            'addSupportEmail',
+            'deleteSupportEmail'
         ],
         tables: {
             customerOptions: [
