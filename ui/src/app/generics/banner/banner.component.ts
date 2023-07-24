@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { GROW_DOWN_ANIMATION } from "./animations";
 import { Observable, Subscription } from "rxjs";
 import { BannerService } from "../../services/banner.service";
-import { Constants } from 'src/app/helpers/constants';
-import { MsalService } from '@azure/msal-angular';
+
 
 @Component({
   selector: "app-banner-outlet",
@@ -23,8 +22,7 @@ export class BannerComponent {
   displayClose = false;
   hideForever = false;
 
-  constructor(bannerService: BannerService,
-    private msalService: MsalService) {
+  constructor(bannerService: BannerService) {
     bannerService.init(this);
   }
 
