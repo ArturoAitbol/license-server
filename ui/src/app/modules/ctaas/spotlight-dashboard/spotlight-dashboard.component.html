@@ -41,25 +41,13 @@
             </div>
         </ng-container>
     </ng-container>
-    <div class="lights-container" *ngIf="isloading">
-        <div>
-            <div class="spotlight"></div>
-        </div>
-        <div>
-            <div class="mirror-spotlight"></div>
-        </div>
-    </div>
-    <figure *ngIf="isloading" class="reportLoading">
-        <img class="spinner" height="80" width="80" src="assets/images/spinner.gif"
-        alt="loading spinner gif">
-        <figcaption class= "loadingMessage">Please wait while we prepare your UCaaS Continuous Testing Dashboard.</figcaption>
-    </figure>
+    <app-loading-spiner [visible]="isloading" [message]="messageSpiner"></app-loading-spiner>
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
+                <h1 class="text-center" title="report-title">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }} (UTC)
                 </h1>
-            </div>
+            </div>            
             <div class="date-picker-form">
                 <form [formGroup]="filters">
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
@@ -73,7 +61,7 @@
                                     <mat-label>Date</mat-label>
                                     <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
                                     <mat-hint>MM/DD/YYYY</mat-hint>
-                                    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                                    <mat-datepicker-toggle matSuffix [for]="dp" title="date-label"></mat-datepicker-toggle>
                                     <mat-datepicker #dp></mat-datepicker>
                                 </mat-form-field>
                             </div>
@@ -117,7 +105,7 @@
                         <mat-chip-list aria-label="Region selection">
                             <mat-chip
                               *ngFor="let region of preselectedRegions"
-                              (removed)="removeRegion(region)">
+                              (removed)="removeRegion(region)" title="mat-chip">
                               {{region.displayName}}
                               <button matChipRemove>
                                 <mat-icon>cancel</mat-icon>
@@ -265,7 +253,7 @@
     <ng-container *ngIf="selectedPeriod === 'weekly'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span></h1>
+                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span> (UTC)</h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="weeklyFilters">

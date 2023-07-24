@@ -118,7 +118,7 @@ describe('change dates of projects', () => {
 
     it('should reset the start and close dates and its limits according to the license selected when calling onLicenseChange()', () => {
         spyOn(modifyPorjectComponentTestInstance, 'onLicenseChange').and.callThrough();
-        modifyPorjectComponentTestInstance.licenses = LicenseServiceMock.licensesList.licenses;
+        modifyPorjectComponentTestInstance.licenses = JSON.parse(JSON.stringify(LicenseServiceMock.licensesList.licenses));
         const license = LicenseServiceMock.mockLicenseA;
         const startDate = new Date(license.startDate + " 00:00:00");
         const renewalDate = new Date(license.renewalDate + " 00:00:00");

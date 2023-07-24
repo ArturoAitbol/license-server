@@ -1,13 +1,16 @@
 package ui.step_definitions;
 
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import ui.pages.spotlight.Setup;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SpotlightSetupSteps {
     Setup setup;
@@ -23,8 +26,14 @@ public class SpotlightSetupSteps {
         this.azureResourceGroup = setupDetails.get("azureResourceGroup");
         this.tapUrl = setupDetails.get("tapUrl");
         this.status = setupDetails.get("status");
-        this.setup.enableFieldsToEdit();
+//        this.setup.enableFieldsToEdit();
         this.setup.editSetupDetails(azureResourceGroup, tapUrl, status);
+    }
+
+    @And("I add the following support emails")
+    public void iAddTheFollowingSupportEmails(DataTable dataTable){
+        List<String> newSupportEmails = dataTable.asList();
+        this.setup.addSupportEmails(newSupportEmails);
     }
 
     @Then("I should see the modified data in spotlight configuration view")
@@ -40,6 +49,15 @@ public class SpotlightSetupSteps {
         if (!this.status.equals("none")){
             String actualStatus = this.setup.getSelectedOption("status");
             assertEquals("UCaaS Continuous Testing doesn't have this status: ".concat(this.status),this.status,actualStatus);
+        }
+    }
+
+    @And("I should see the following emails in the support emails section")
+    public void iShouldSeeTheFollowingEmailsInTheSupportEmailsSection(DataTable dataTable){
+        List<String> expectedEmails = dataTable.asList();
+        List<String> actualEmails = this.setup.getSupportEmails();
+        for (String expectedEmail: expectedEmails) {
+            assertTrue("Expected email not found: " + expectedEmail,actualEmails.contains(expectedEmail));
         }
     }
 }

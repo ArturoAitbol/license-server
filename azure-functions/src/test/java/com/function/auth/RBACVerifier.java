@@ -149,6 +149,18 @@ public class RBACVerifier {
                                 false,
                                 false,
                                 true));
+                verifiers.put(CREATE_CTAAS_SUPPORT_EMAIL, new ExpectedPermissions(
+                        true,
+                        false,
+                        true,
+                        false,
+                        false,
+                        true,
+                        false,
+                        false,
+                        false,
+                        false,
+                        true));
                 verifiers.put(CREATE_CTAAS_TEST_SUITE, new ExpectedPermissions(
                                 true,
                                 false,
@@ -364,6 +376,18 @@ public class RBACVerifier {
                                 false,
                                 false,
                                 false));
+                verifiers.put(DELETE_CTAAS_SUPPORT_EMAIL, new ExpectedPermissions(
+                        true,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false));
                 verifiers.put(DELETE_CTAAS_TEST_SUITE, new ExpectedPermissions(
                                 true,
                                 false,

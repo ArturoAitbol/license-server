@@ -38,8 +38,10 @@ public class Hooks {
         WebDriver driver = DriverManager.getInstance().getDriver();
         ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
         if (tabs.size() > 1) {
-            driver.switchTo().window(tabs.get(1));
-            driver.close();
+            for (int i = tabs.size()-1; i > 0; i--) {
+                driver.switchTo().window(tabs.get(i));
+                driver.close();
+            }
             driver.switchTo().window(tabs.get(0));
         }
     }

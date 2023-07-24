@@ -82,7 +82,7 @@ describe('add projects interactions', () => {
     it('should reset the Start Date and its limist when calling onLicenseChange()',()=>{
         spyOn(addPorjectComponentTestInstance,'onLicenseChange').and.callThrough();
         const license = LicenseServiceMock.mockLicenseA;
-        addPorjectComponentTestInstance.licenses = LicenseServiceMock.licensesList.licenses;
+        addPorjectComponentTestInstance.licenses = JSON.parse(JSON.stringify(LicenseServiceMock.licensesList.licenses));
 
         addPorjectComponentTestInstance.onLicenseChange(license.id);
 

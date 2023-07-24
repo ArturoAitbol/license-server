@@ -10,4 +10,5 @@ export interface IStakeholder {
     role:string;
     parsedRole:string;
     latestCallbackRequestDate?:string;
+    emailNotifications?: any;
 }

@@ -33,7 +33,7 @@
                 formControlName="region"
                 [matAutocomplete]="regionAuto">
                 <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="addRegion()">
-                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region">
+                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region" title="{{region.displayName}}">
                         {{region.displayName}}
                     </mat-option>
                 </mat-autocomplete>
@@ -82,9 +82,9 @@
     </div>
   </div>
 </div>
-<div class="map-container">
-  <div class="loading-shade" *ngIf="isLoadingResults">
-    <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+<div class="map-container" id="map-container">
+  <div class="loading-shade" *ngIf="isLoadingResults" id="map-spinner">
+    <mat-spinner id="map-spinner" *ngIf="isLoadingResults"></mat-spinner>
   </div>
   <div id="map" ></div>
 </div>

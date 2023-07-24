@@ -16,6 +16,7 @@ public class Permissions {
                         CREATE_USAGE_DETAILS,
                         CREATE_PROJECT,
                         CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
                         CREATE_CTAAS_TEST_SUITE,
                         CREATE_SUBACCOUNT_STAKEHOLDER,
                         // CREATE_FEATURE_TOGGLE,
@@ -30,6 +31,7 @@ public class Permissions {
                         DELETE_LICENSE_USAGE,
                         DELETE_USAGE_DETAILS,
                         DELETE_CTAAS_SETUP,
+                        DELETE_CTAAS_SUPPORT_EMAIL,
                         DELETE_CTAAS_TEST_SUITE,
                         DELETE_SUBACCOUNT_STAKEHOLDER,
                         // DELETE_FEATURE_TOGGLE,
@@ -95,8 +97,8 @@ public class Permissions {
                         CREATE_PROJECT,
                         CREATE_USAGE_DETAILS,
                         CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
                         CREATE_CTAAS_TEST_SUITE,
-                        // CREATE
                         CREATE_SUBACCOUNT_STAKEHOLDER,
                         // DELETE
                         DELETE_LICENSE_USAGE,
@@ -176,6 +178,7 @@ public class Permissions {
                         CREATE_SUBACCOUNT_ADMIN_MAIL,
                         CREATE_LICENSE,
                         CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
@@ -293,6 +296,7 @@ public class Permissions {
                         CREATE_PROJECT,
                         CREATE_USAGE_DETAILS,
                         CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
                         CREATE_CTAAS_TEST_SUITE,
                         CREATE_SUBACCOUNT_STAKEHOLDER,
                         // DELETE

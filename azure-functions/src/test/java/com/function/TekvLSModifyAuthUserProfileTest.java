@@ -38,6 +38,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
 	        		 "'name': 'test-customer-subaccount-stakeholder'," +
 	                 "'jobTitle': 'Software Engineer'," +
 	                 "'companyName': 'TekVizion'," +
+                    "'emailNotifications': true," +
 	                 "'phoneNumber': '+12142425968'}";
 	        doReturn(Optional.of(bodyRequest)).when(request).getBody();
 	        HttpResponseMessage response = tekvLSModifyAuthUserProfile.run(this.request,this.context);
@@ -57,6 +58,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
                  "'name': 'test-customer-subaccount-stakeholder'," +
                  "'jobTitle': 'Software Engineer'," +
                  "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                  "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         //When
@@ -214,6 +216,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
        		 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);

@@ -8,4 +8,5 @@ export interface IUserProfile {
     type?: string;
     notifications?: string | [] | any;
     latestCallbackRequest?: number;
+    emailNotifications?:boolean;
 }

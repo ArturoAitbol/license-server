@@ -417,7 +417,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
             this.context.getLogger().info(response.getStatus().toString());
 
             //Then
-            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeEnabledAlert(emails, "Test SpotLight Setup 2", context));
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeEnabledAlert(emails, "Test SpotLight Setup 2","b5b91753-4c2b-43f5-afa0-feb22cefa901", context));
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
             assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -444,7 +444,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
             this.context.getLogger().info(response.getStatus().toString());
 
             //Then
-            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeEnabledAlert(emails, "Test SpotLight Setup 2", context));
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeEnabledAlert(emails, "Test SpotLight Setup 2","b5b91753-4c2b-43f5-afa0-feb22cefa901", context));
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
             assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -492,7 +492,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
             this.context.getLogger().info(response.getStatus().toString());
 
             //Then
-            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeDisabledAlert(emails, "Test SpotLight Setup 2", context));
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeDisabledAlert(emails, "Test SpotLight Setup 2","b5b91753-4c2b-43f5-afa0-feb22cefa901", context));
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
             assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -519,7 +519,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
             this.context.getLogger().info(response.getStatus().toString());
 
             //Then
-            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeDisabledAlert(emails, "Test SpotLight Setup 2", context));
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeDisabledAlert(emails, "Test SpotLight Setup 2","b5b91753-4c2b-43f5-afa0-feb22cefa901", context));
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
             assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));

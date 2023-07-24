@@ -137,6 +137,7 @@ public class TekvLSGetAllStakeholders {
                 item.put("email", rs.getString("subaccount_admin_email"));
                 item.put("subaccountId", rs.getString("subaccount_id"));
                 item.put("notifications", rs.getString("notifications"));
+                item.put("emailNotifications", rs.getBoolean("email_notifications"));
                 item.put("latestCallbackRequestDate", rs.getString("latest_callback_request_date"));
                 array.put(item);
             }

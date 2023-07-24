@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
 import { IDashboardImageResponse, IImage } from 'src/app/model/dashboard-image-response.model';
 import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
-import { BannerService } from "../../../services/alert-banner.service";
+import { BannerService } from "../../../services/banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
 import { Utility } from 'src/app/helpers/utils';
@@ -251,7 +251,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
                     this.onChangePowerBiButtonToggle();
-                    this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+                    this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy, "alert");
                     this.viewDashboardByMode();
                 }
             });

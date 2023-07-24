@@ -14,7 +14,7 @@ import { SpotlightChartsService } from 'src/app/services/spotlight-charts.servic
 import { map, startWith } from 'rxjs/operators';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
-import { BannerService } from 'src/app/services/alert-banner.service';
+import { BannerService } from 'src/app/services/banner.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -408,7 +408,7 @@ export class MapComponent implements OnInit, OnDestroy {
         iconAnchor: [25, 29]
       })
       let latlong = new L.LatLng(this.nodesMap[key].region.location.y, this.nodesMap[key].region.location.x)
-      let node = L.marker(latlong, {icon:customIcon}).on('click', (e) =>{
+      let node = L.marker(latlong, {icon:customIcon, title:this.nodesMap[key].region.city}).on('click', (e) =>{
         this.nodeDetails(key);
       }).addTo(this.map);
       this.nodesArray.push(node)
@@ -436,7 +436,8 @@ export class MapComponent implements OnInit, OnDestroy {
       let line = new L.Polyline(coordinatesArray, {
         color: lineState,
         weight: this.LINE_WEIGHT,
-        smoothFactor: this.LINE_SMOOTH_FACTOR
+        smoothFactor: this.LINE_SMOOTH_FACTOR,
+        className: `${this.linesMap[key].from.city} ${this.linesMap[key].to.city}`
       }).on('click', (e) =>{
         this.lineDetails(key);
       }).addTo(this.map);
@@ -607,7 +608,7 @@ export class MapComponent implements OnInit, OnDestroy {
     let lineData = {...this.linesMap[key], date: this.filteredDate};
     let dialogRef = this.dialog.open(LineDetailComponent, {
       width: '505px',
-      height: '82vh',
+      height: '89vh',
       maxHeight: '100vh',
       disableClose: true,
       autoFocus: false,
@@ -619,7 +620,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId).subscribe(res => {
         const ctaasSetupDetails = res['ctaasSetups'][0];
         if (ctaasSetupDetails.maintenance) {
-            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy, "alert");
         }
     });
   }
