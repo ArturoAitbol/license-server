@@ -1,4 +1,4 @@
-@CTaaSFeature @spotlightDetailedReportsTest
+@CTaaSFeature @spotlightDetailedReportsTest @feature-toggle
 Feature: spotlightDashboard
   Background: Login successfully with valid credentials
     Given I am on the landing page

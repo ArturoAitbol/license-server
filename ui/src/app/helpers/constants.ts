@@ -51,7 +51,7 @@ export class Constants {
     public static readonly DASHBOARD_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
     public static readonly DASHBOARD_NOTE_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
     public static readonly REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS = 30 * 60 * 1000; // 30 minutes * 60 seconds * 1000 milliseconds
-    public static readonly LOGIN_TIMEOUT = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
+    public static readonly LOGIN_TIMEOUT = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
 
 }
 
