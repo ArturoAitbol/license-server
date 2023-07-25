@@ -3,10 +3,10 @@ package ui.step_definitions;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
-import ui.pages.consumptions.Consumptions;
 import ui.pages.customer.Customers;
 import ui.pages.spotlight.Dashboard;
 import ui.pages.spotlight.spotlightDashboard.DailyPage;
+import ui.pages.spotlight.spotlightDashboard.DetailedReport;
 import ui.pages.spotlight.spotlightDashboard.GaugeChart;
 import ui.pages.spotlight.spotlightDashboard.NetworkQualityCharts;
 import java.util.List;
@@ -21,11 +21,11 @@ public class SpotlightDetailedReportsSteps {
     NetworkQualityCharts networkQualityCharts;
     String customerName, subaccountName;
     Apps apps;
-    Consumptions consumptions;
+    DetailedReport detailedReport;
     
-    public SpotlightDetailedReportsSteps(Apps apps, Consumptions consumptions) {
+    public SpotlightDetailedReportsSteps(Apps apps, DetailedReport detailedReport) {
         this.apps = apps;
-        this.consumptions = consumptions;
+        this.detailedReport = detailedReport;
     }
 
     @Then("I should see the {string} subtitle")
@@ -43,11 +43,11 @@ public class SpotlightDetailedReportsSteps {
         String expectedFailed = data.get("Failed");
         String expectedStartTime = data.get("Start Time");
         String expectedEndTime = data.get("End Time");
-        String testCases = this.consumptions.getTableValue("summary-table", "Test Cases Executed", 1);
-        String passed = this.consumptions.getTableValue("summary-table", "Passed", 2);
-        String failed = this.consumptions.getTableValue("summary-table", "Failed", 3);
-        String startTime = this.consumptions.getTableValue("summary-table", "Start Time", 4);
-        String endTime = this.consumptions.getTableValue("summary-table", "End Time", 5);
+        String testCases = this.detailedReport.getTableValue("summary-table", "Test Cases Executed", 1);
+        String passed = this.detailedReport.getTableValue("summary-table", "Passed", 2);
+        String failed = this.detailedReport.getTableValue("summary-table", "Failed", 3);
+        String startTime = this.detailedReport.getTableValue("summary-table", "Start Time", 4);
+        String endTime = this.detailedReport.getTableValue("summary-table", "End Time", 5);
         Assert.assertEquals(expectedTestCases, testCases);
         Assert.assertEquals(expectedPassed, passed);
         Assert.assertEquals(expectedFailed, failed);
@@ -62,7 +62,7 @@ public class SpotlightDetailedReportsSteps {
         int index = 0;
         for (String expectedValue : data) {
             expectedValue = data.get(index);
-            value = this.consumptions.getTableValueByTitle("endpoint-resources-table", expectedValue);
+            value = this.detailedReport.getTableValueByTitle("endpoint-resources-table", expectedValue);
             index++;
             Assert.assertEquals(expectedValue, value);
         }
@@ -76,7 +76,7 @@ public class SpotlightDetailedReportsSteps {
         int index = 0;
         for (String expectedValue : data) {
             expectedValue = data.get(index);
-            value = this.consumptions.getColumnValue(actualTitle + " Details", expectedValue + " Column");
+            value = this.detailedReport.getColumnValue(actualTitle + " Details", expectedValue + " Column");
             index++;
             Assert.assertEquals(expectedValue, value);
         }
@@ -94,14 +94,14 @@ public class SpotlightDetailedReportsSteps {
         String expectedToPOLQA = data.get("To POLQA");
         String expectedStatus = data.get("Status");
         String expectedCallType = data.get("Call Type");
-        String testCases = this.consumptions.getMatSpanValue(tableNane, expectedTestCases);
-        String startDate = this.consumptions.getMatPanelValue(tableNane, expectedStartDate);
-        String from = this.consumptions.getMatPanelValue(tableNane, expectedFrom);
-        String fromPOLQA = this.consumptions.getMatPanelValue(tableNane, "AVGFrom");
-        String to = this.consumptions.getMatPanelValue(tableNane, expectedTo);
-        String toPOLQA = this.consumptions.getMatPanelValue(tableNane, "AVGTo");
-        String status = this.consumptions.getMatPanelValue(tableNane, expectedStatus);
-        String callType = this.consumptions.getMatPanelValue(tableNane, expectedCallType);
+        String testCases = this.detailedReport.getMatSpanValue(tableNane, expectedTestCases);
+        String startDate = this.detailedReport.getMatPanelValue(tableNane, expectedStartDate);
+        String from = this.detailedReport.getMatPanelValue(tableNane, expectedFrom);
+        String fromPOLQA = this.detailedReport.getMatPanelValue(tableNane, "AVGFrom");
+        String to = this.detailedReport.getMatPanelValue(tableNane, expectedTo);
+        String toPOLQA = this.detailedReport.getMatPanelValue(tableNane, "AVGTo");
+        String status = this.detailedReport.getMatPanelValue(tableNane, expectedStatus);
+        String callType = this.detailedReport.getMatPanelValue(tableNane, expectedCallType);
         Assert.assertEquals(expectedTestCases, testCases);
         Assert.assertEquals(expectedStartDate, startDate);
         Assert.assertEquals(expectedFrom, from);
@@ -139,20 +139,20 @@ public class SpotlightDetailedReportsSteps {
         String expectedToPacketLoss = data.get("To Packet Loss (%)");
         String expectedFromBitrate = data.get("From Bitrate (kbps)");
         String expectedToBitrate = data.get("To Bitrate (kbps)");
-        String startDate = this.consumptions.getTableValueByTitle("detailed-row", "Start Date");
-        String endDate = this.consumptions.getTableValueByTitle("detailed-row", "End Date");
-        String status = this.consumptions.getTableValueByTitle("detailed-row", "Status");
-        String callType = this.consumptions.getTableValueByTitle("detailed-row", "Call Type");
-        String errorCategory = this.consumptions.getTableValueByTitle("detailed-row", "Error Category");
-        String reason = this.consumptions.getTableValueByTitle("detailed-row", "Reason");
-        String fromJitter = this.consumptions.getTableValueByTitle("detailed-row", "From Jitter (ms)");
-        String toJitter = this.consumptions.getTableValueByTitle("detailed-row", "To Jitter (ms)");
-        String fromRoundTrip = this.consumptions.getTableValueByTitle("detailed-row", "From Round trip time (ms)");
-        String toRoundTrip = this.consumptions.getTableValueByTitle("detailed-row", "To Round trip time (ms)");
-        String fromPacketLoss = this.consumptions.getTableValueByTitle("detailed-row", "From Packet Loss (%)");
-        String toPacketLoss = this.consumptions.getTableValueByTitle("detailed-row", "To Packet Loss (%)");
-        String fromBitrate = this.consumptions.getTableValueByTitle("detailed-row", "From Bitrate (kbps)");
-        String toBitrate = this.consumptions.getTableValueByTitle("detailed-row", "To Bitrate (kbps)");
+        String startDate = this.detailedReport.getTableValueByTitle("detailed-row", "Start Date");
+        String endDate = this.detailedReport.getTableValueByTitle("detailed-row", "End Date");
+        String status = this.detailedReport.getTableValueByTitle("detailed-row", "Status");
+        String callType = this.detailedReport.getTableValueByTitle("detailed-row", "Call Type");
+        String errorCategory = this.detailedReport.getTableValueByTitle("detailed-row", "Error Category");
+        String reason = this.detailedReport.getTableValueByTitle("detailed-row", "Reason");
+        String fromJitter = this.detailedReport.getTableValueByTitle("detailed-row", "From Jitter (ms)");
+        String toJitter = this.detailedReport.getTableValueByTitle("detailed-row", "To Jitter (ms)");
+        String fromRoundTrip = this.detailedReport.getTableValueByTitle("detailed-row", "From Round trip time (ms)");
+        String toRoundTrip = this.detailedReport.getTableValueByTitle("detailed-row", "To Round trip time (ms)");
+        String fromPacketLoss = this.detailedReport.getTableValueByTitle("detailed-row", "From Packet Loss (%)");
+        String toPacketLoss = this.detailedReport.getTableValueByTitle("detailed-row", "To Packet Loss (%)");
+        String fromBitrate = this.detailedReport.getTableValueByTitle("detailed-row", "From Bitrate (kbps)");
+        String toBitrate = this.detailedReport.getTableValueByTitle("detailed-row", "To Bitrate (kbps)");
         Assert.assertEquals(expectedStartDate, startDate);
         Assert.assertEquals(expectedEndDate, endDate);
         Assert.assertEquals(expectedStatus, status);
@@ -174,8 +174,8 @@ public class SpotlightDetailedReportsSteps {
         Map<String, String> data = dataTable.asMap(String.class, String.class);
         String expectedTestCases = data.get("From");
         String expectedPassed = data.get("To");
-        String testCases = this.consumptions.getDIDValue("DIDdetail","DIDFrom", "from");
-        String passed = this.consumptions.getDIDValue("DIDdetail","DIDTo", "to");
+        String testCases = this.detailedReport.getDIDValue("DIDdetail","DIDFrom", "from");
+        String passed = this.detailedReport.getDIDValue("DIDdetail","DIDTo", "to");
         Assert.assertEquals(expectedTestCases, testCases);
         Assert.assertEquals(expectedPassed, passed);
 
@@ -194,15 +194,15 @@ public class SpotlightDetailedReportsSteps {
         String expectedRoundTripTime = data.get("Round trip time");
         String expectedReceivedPackets = data.get("Received packets");
         String expectedPOLQA = data.get("POLQA");
-        String startDate = this.consumptions.getDIDTableData(location+"DIDTable", "Sent packets");
-        String endDate = this.consumptions.getDIDTableData(location+"DIDTable", "Received codec");
-        String status = this.consumptions.getDIDTableData(location+"DIDTable", "Sent bitrate");
-        String callType = this.consumptions.getDIDTableData(location+"DIDTable", "Received packet loss");
-        String errorCategory = this.consumptions.getDIDTableData(location+"DIDTable", "Received Jitter");
-        String reason = this.consumptions.getDIDTableData(location+"DIDTable", "Sent codec");
-        String fromJitter = this.consumptions.getDIDTableData(location+"DIDTable", "Round trip time");
-        String toJitter = this.consumptions.getDIDTableData(location+"DIDTable", "Received packets");
-        String fromRoundTrip = this.consumptions.getDIDTableData(location+"DIDTable", "POLQA");
+        String startDate = this.detailedReport.getDIDTableData(location+"DIDTable", "Sent packets");
+        String endDate = this.detailedReport.getDIDTableData(location+"DIDTable", "Received codec");
+        String status = this.detailedReport.getDIDTableData(location+"DIDTable", "Sent bitrate");
+        String callType = this.detailedReport.getDIDTableData(location+"DIDTable", "Received packet loss");
+        String errorCategory = this.detailedReport.getDIDTableData(location+"DIDTable", "Received Jitter");
+        String reason = this.detailedReport.getDIDTableData(location+"DIDTable", "Sent codec");
+        String fromJitter = this.detailedReport.getDIDTableData(location+"DIDTable", "Round trip time");
+        String toJitter = this.detailedReport.getDIDTableData(location+"DIDTable", "Received packets");
+        String fromRoundTrip = this.detailedReport.getDIDTableData(location+"DIDTable", "POLQA");
         Assert.assertEquals(expectedSentPackets, startDate);
         Assert.assertEquals(expectedReceivedCodec, endDate);
         Assert.assertEquals(expectedSetBitrate, status);
