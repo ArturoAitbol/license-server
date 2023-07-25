@@ -103,9 +103,7 @@ button:hover {
   letter-spacing: 0;
   text-decoration: underline;
 }
-::ng-deep powerbi-report > div {
-  height: 90vh !important;
-}
+
 .flex-container {
   display: flex;
   flex-wrap: wrap;

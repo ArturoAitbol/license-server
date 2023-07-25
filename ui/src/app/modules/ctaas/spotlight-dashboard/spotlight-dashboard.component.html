@@ -22,12 +22,6 @@
                 <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
-        <div *lcFeatureToggle="'powerbiRefreshFeature';subaccountId:getSubaccountId()" class="col-auto ms-auto timer">
-            <p style="display: inline-block;">Elapsed Time: {{ seconds }}s {{ milliseconds | number: '3.0' }}ms&emsp;</p>
-            <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="reloadCharts()">
-                <mat-icon>refresh</mat-icon>
-            </button>
-        </div>
     </div>
     <ng-container *ngIf="showNewNoteBtn && !isloading">
         <ng-container *lcCheckAccessFor="'addSpotlightNote'">

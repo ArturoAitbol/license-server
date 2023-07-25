@@ -53,14 +53,6 @@ export class AppComponent implements OnInit, OnDestroy {
         spotlight: [
             {
                 name: 'Dashboard',
-                path: 'visualization',
-                active: false,
-                materialIcon: 'analytics',
-                baseUrl: '/spotlight/',
-                isPreview: false
-            },
-            {
-                name: 'Dashboard',
                 path: 'spotlight-dashboard',
                 active: false,
                 materialIcon: 'analytics',
@@ -176,7 +168,7 @@ export class AppComponent implements OnInit, OnDestroy {
     displayedSideBarItems: any[] = [
         {
             name: 'Dashboard',
-            path: 'visualization',
+            path: Constants.SPOTLIGHT_DASHBOARD_PATH,
             active: true,
             materialIcon: 'dashboard'
         }
@@ -187,7 +179,6 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
     readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map';
-    readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = Constants.POWERBI_DASHBOARD_PATH;
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = Constants.STAKEHOLDERS_VIEW_PATH;
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
@@ -304,7 +295,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.hideToolbar = true;
                         this.enableSidebar();
                         break;
-                    case this.CTAAS_POWERBI_REPORT_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
                     case this.CTAAS_MAP_ROUTE_PATH:
@@ -429,11 +419,6 @@ export class AppComponent implements OnInit, OnDestroy {
                     toggleName: "mapFeature",
                     subaccountId: this.subaccountId,
                     item: "map"
-                },
-                {
-                    toggleName: "powerbiFeature",
-                    subaccountId: this.subaccountId,
-                    item: "visualization"
                 }
             ];
             featureToggleProtectedItems.forEach(featureToggle => {

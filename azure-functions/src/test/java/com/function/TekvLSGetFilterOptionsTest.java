@@ -2,7 +2,6 @@ package com.function;
 
 import com.function.auth.RoleAuthHandler;
 import com.function.spotlightCharts.TekvLSGetFilterOptions;
-import com.function.spotlightCharts.TekvLSGetNetworkQualityChart;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -12,7 +11,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

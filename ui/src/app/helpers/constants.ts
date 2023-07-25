@@ -12,7 +12,6 @@ export class Constants {
     // relevant URLs
     public static readonly CUSTOMERS_DASHBOARD_VIEW_PATH: string = '/customers-dashboard';
     public static readonly STAKEHOLDERS_VIEW_PATH: string = '/spotlight/stakeholders';
-    public static readonly POWERBI_DASHBOARD_PATH: string = '/spotlight/visualization';
     public static readonly SPOTLIGHT_DASHBOARD_PATH: string = '/spotlight/spotlight-dashboard';
 
     // Session Storage Keys

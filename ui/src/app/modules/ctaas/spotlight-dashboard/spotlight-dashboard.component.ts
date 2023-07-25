@@ -16,7 +16,7 @@ import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
 import { ReportName, ReportType } from "../../../helpers/report-type";
 import { FormBuilder } from "@angular/forms";
-import { catchError, map, startWith } from "rxjs/operators";
+import { map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
 import { ActivatedRoute } from '@angular/router';

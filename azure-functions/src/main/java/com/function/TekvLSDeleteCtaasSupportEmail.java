@@ -1,9 +1,6 @@
 package com.function;
 
 import com.function.auth.Resource;
-import com.function.clients.GraphAPIClient;
-import com.function.exceptions.ADException;
-import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;

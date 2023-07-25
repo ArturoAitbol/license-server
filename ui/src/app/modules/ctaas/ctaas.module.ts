@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CtaasRoutingModule } from './ctaas-routing.module';
-import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
@@ -36,7 +35,6 @@ import { LoadingSpinerComponent } from '../../generics/loading-spiner/loading-sp
 
 @NgModule({
   declarations: [
-    CtaasDashboardComponent,
     OnboardWizardComponent,
     CtaasTestSuitesComponent,
     CtaasStakeholderComponent,
