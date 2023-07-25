@@ -478,10 +478,11 @@ export class AppComponent implements OnInit, OnDestroy {
      * logout 
      */
     logout() {
-        try {
-            let hiddenBanner = localStorage.getItem("hiddenBanner") ? JSON.parse(localStorage.getItem("hiddenBanner")) : false;
+        try {            
+            let bannerArray = [];
+            Object.keys(localStorage).forEach(key => key.includes("-hiddenBanner") ? bannerArray.push({ key: key, value: localStorage[key] }) : '');
             localStorage.clear();
-            localStorage.setItem("hiddenBanner", hiddenBanner.toString());
+            bannerArray.forEach(item => localStorage.setItem(item.key, item.value));
             sessionStorage.clear();
             this.msalService.logout();
         } catch (error) {
