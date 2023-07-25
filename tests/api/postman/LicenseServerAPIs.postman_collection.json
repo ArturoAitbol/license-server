@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "75b5bf3a-88e5-4110-bfa3-20129acb6bfe",
+		"_postman_id": "9cb8dea0-3fd0-4a63-a501-b9810cb0d158",
 		"name": "LicenseServerAPIs",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "8463491"
 	},
 	"item": [
@@ -46,13 +46,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [
@@ -63,15 +59,7 @@
 						"disabled": true
 					}
 				],
-				"url": {
-					"raw": "{{HOST}}/testData",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"testData"
-					]
-				}
+				"url": "{{HOST}}/testData"
 			},
 			"response": []
 		},
@@ -127,13 +115,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -146,15 +130,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/bundles",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles"
-					]
-				}
+				"url": "{{HOST}}/bundles"
 			},
 			"response": []
 		},
@@ -163,13 +139,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "PUT",
 				"header": [],
@@ -182,16 +154,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
+				"url": "{{HOST}}/bundles/{{bundleId}}"
 			},
 			"response": []
 		},
@@ -200,26 +163,13 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
+				"url": "{{HOST}}/bundles/{{bundleId}}"
 			},
 			"response": []
 		},
@@ -243,13 +193,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -262,15 +208,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/devices",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices"
-					]
-				}
+				"url": "{{HOST}}/devices"
 			},
 			"response": []
 		},
@@ -294,13 +232,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -313,15 +247,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/consumptionMatrix",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"consumptionMatrix"
-					]
-				}
+				"url": "{{HOST}}/consumptionMatrix"
 			},
 			"response": []
 		},
@@ -393,15 +319,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/customers",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"customers"
-					]
-				}
+				"url": "{{HOST}}/customers"
 			},
 			"response": []
 		},
@@ -430,15 +348,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/customerAdminEmails",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"customerAdminEmails"
-					]
-				}
+				"url": "{{HOST}}/customerAdminEmails"
 			},
 			"response": []
 		},
@@ -471,15 +381,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/subaccounts",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccounts"
-					]
-				}
+				"url": "{{HOST}}/subaccounts"
 			},
 			"response": []
 		},
@@ -508,15 +410,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/subaccountAdminEmails",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccountAdminEmails"
-					]
-				}
+				"url": "{{HOST}}/subaccountAdminEmails"
 			},
 			"response": []
 		},
@@ -549,15 +443,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/licenses",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenses"
-					]
-				}
+				"url": "{{HOST}}/licenses"
 			},
 			"response": []
 		},
@@ -590,15 +476,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/notes",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"notes"
-					]
-				}
+				"url": "{{HOST}}/notes"
 			},
 			"response": []
 		},
@@ -631,15 +509,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/projects",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"projects"
-					]
-				}
+				"url": "{{HOST}}/projects"
 			},
 			"response": []
 		},
@@ -672,15 +542,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/ctaasTestSuites",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasTestSuites"
-					]
-				}
+				"url": "{{HOST}}/ctaasTestSuites"
 			},
 			"response": []
 		},
@@ -713,15 +575,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/ctaasSetups",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasSetups"
-					]
-				}
+				"url": "{{HOST}}/ctaasSetups"
 			},
 			"response": []
 		},
@@ -769,15 +623,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/licenseUsageDetails",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenseUsageDetails"
-					]
-				}
+				"url": "{{HOST}}/licenseUsageDetails"
 			},
 			"response": []
 		},
@@ -797,13 +643,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "PUT",
 				"header": [],
@@ -816,16 +658,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"consumptionMatrix",
-						"{{consumptionMatrixId}}"
-					]
-				}
+				"url": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}"
 			},
 			"response": []
 		},
@@ -854,16 +687,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/customers/{{customerId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"customers",
-						"{{customerId}}"
-					]
-				}
+				"url": "{{HOST}}/customers/{{customerId}}"
 			},
 			"response": []
 		},
@@ -892,16 +716,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/licenses/{{licenseId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenses",
-						"{{licenseId}}"
-					]
-				}
+				"url": "{{HOST}}/licenses/{{licenseId}}"
 			},
 			"response": []
 		},
@@ -939,16 +754,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenseUsageDetails",
-						"{{licenseUsageId}}"
-					]
-				}
+				"url": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}"
 			},
 			"response": []
 		},
@@ -977,16 +783,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/projects/{{projectId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"projects",
-						"{{projectId}}"
-					]
-				}
+				"url": "{{HOST}}/projects/{{projectId}}"
 			},
 			"response": []
 		},
@@ -1015,16 +812,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasTestSuites",
-						"{{ctaasTestSuitId}}"
-					]
-				}
+				"url": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}"
 			},
 			"response": []
 		},
@@ -1053,16 +841,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasSetups",
-						"{{ctaasSetupId}}"
-					]
-				}
+				"url": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}"
 			},
 			"response": []
 		},
@@ -1095,15 +874,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccountStakeHolders"
-					]
-				}
+				"url": "{{HOST}}/subaccountStakeHolders"
 			},
 			"response": []
 		},
@@ -1132,16 +903,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccountStakeHolders",
-						"{{name}}stakeholder@tekvizion.com"
-					]
-				}
+				"url": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com"
 			},
 			"response": []
 		},
@@ -1170,16 +932,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/subaccounts/{{subaccountId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccounts",
-						"{{subaccountId}}"
-					]
-				}
+				"url": "{{HOST}}/subaccounts/{{subaccountId}}"
 			},
 			"response": []
 		},
@@ -1203,15 +956,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/bundles",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles"
-					]
-				}
+				"url": "{{HOST}}/bundles"
 			},
 			"response": []
 		},
@@ -1235,15 +980,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/customers",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"customers"
-					]
-				}
+				"url": "{{HOST}}/customers"
 			},
 			"response": []
 		},
@@ -1266,15 +1003,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/vendors",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"vendors"
-					]
-				}
+				"url": "{{HOST}}/vendors"
 			},
 			"response": []
 		},
@@ -1297,15 +1026,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/devices",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices"
-					]
-				}
+				"url": "{{HOST}}/devices"
 			},
 			"response": []
 		},
@@ -1328,25 +1049,13 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/consumptionMatrix",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"consumptionMatrix"
-					]
-				}
+				"url": "{{HOST}}/consumptionMatrix"
 			},
 			"response": []
 		},
@@ -1369,15 +1078,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/licenses",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenses"
-					]
-				}
+				"url": "{{HOST}}/licenses"
 			},
 			"response": []
 		},
@@ -1479,17 +1180,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/ctassHistoricalDashboard/{{subaccountId}}/{{noteId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctassHistoricalDashboard",
-						"{{subaccountId}}",
-						"{{noteId}}"
-					]
-				}
+				"url": "{{HOST}}/ctassHistoricalDashboard/{{subaccountId}}/{{noteId}}"
 			},
 			"response": []
 		},
@@ -1550,15 +1241,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/subaccounts",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccounts"
-					]
-				}
+				"url": "{{HOST}}/subaccounts"
 			},
 			"response": []
 		},
@@ -1614,25 +1297,13 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_IGES}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_IGES}}"
+					}
 				},
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/reportable_subaccounts",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"reportable_subaccounts"
-					]
-				}
+				"url": "{{HOST}}/reportable_subaccounts"
 			},
 			"response": []
 		},
@@ -1767,16 +1438,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/usageDetails/{{licenseUsageId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"usageDetails",
-						"{{licenseUsageId}}"
-					]
-				}
+				"url": "{{HOST}}/usageDetails/{{licenseUsageId}}"
 			},
 			"response": []
 		},
@@ -1800,13 +1462,348 @@
 			"request": {
 				"method": "GET",
 				"header": [],
+				"url": "{{HOST}}/subscriptions"
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardCallsStatusSummary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"callingReliability\");\r",
+							"    pm.response.to.have.jsonBody(\"POLQA\");\r",
+							"    pm.response.to.have.jsonBody(\"featureFunctionality\");\r",
+							"    \r",
+							"\r",
+							"    pm.response.to.have.jsonBody(\"callingReliability.callsByType\");\r",
+							"    pm.response.to.have.jsonBody(\"callingReliability.callsByStatus\");\r",
+							"    pm.response.to.have.jsonBody(\"POLQA.callsByType\");\r",
+							"    pm.response.to.have.jsonBody(\"POLQA.callsByStatus\");\r",
+							"    pm.response.to.have.jsonBody(\"featureFunctionality.callsByType\");\r",
+							"    pm.response.to.have.jsonBody(\"featureFunctionality.callsByStatus\");\r",
+							"    \r",
+							"    pm.expect(pm.response.json().callingReliability.callsByType.onNet).to.eql(20);\r",
+							"    pm.expect(pm.response.json().callingReliability.callsByType.offNet).to.eql(2);\r",
+							"    pm.expect(pm.response.json().callingReliability.callsByType.p2p).to.eql(2);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().callingReliability.callsByStatus.FAILED).to.eql(0);\r",
+							"    pm.expect(pm.response.json().callingReliability.callsByStatus.PASSED).to.eql(24);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().POLQA.callsByType.onNet).to.eql(0);\r",
+							"    pm.expect(pm.response.json().POLQA.callsByType.offNet).to.eql(0);\r",
+							"    pm.expect(pm.response.json().POLQA.callsByType.p2p).to.eql(0);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().POLQA.callsByStatus.FAILED).to.eql(0);\r",
+							"    pm.expect(pm.response.json().POLQA.callsByStatus.PASSED).to.eql(0);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByType.onNet).to.eql(37);\r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByType.offNet).to.eql(0);\r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByType.p2p).to.eql(3);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByStatus.FAILED).to.eql(0);\r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByStatus.PASSED).to.eql(40);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
 				"url": {
-					"raw": "{{HOST}}/subscriptions",
+					"raw": "{{HOST}}/spotlightCharts/callsStatusSummary?startDate=2023-07-23%2000:00:00&endDate=2023-07-23%2023:59:59&subaccountId={{subaccountIdNativeDashboard}}&regions=%5B%7B%22country%22:%22United%20States%22,%22state%22:%22FL%22,%22city%22:%22Tampa%22,%22displayName%22:%22Tampa,%20FL,%20United%20States%22%7D%5D",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
-						"subscriptions"
+						"spotlightCharts",
+						"callsStatusSummary"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-23%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-23%2023:59:59"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						},
+						{
+							"key": "regions",
+							"value": "%5B%7B%22country%22:%22United%20States%22,%22state%22:%22FL%22,%22city%22:%22Tampa%22,%22displayName%22:%22Tampa,%20FL,%20United%20States%22%7D%5D"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardNetworkQualitySummary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"    \r",
+							"    pm.expect(pm.response.json().totalCalls).to.eql(81);\r",
+							"    pm.expect(pm.response.json().maxPacketLoss).to.eql(24.11);\r",
+							"    pm.expect(pm.response.json().avgSentBitrate).to.eql(36.6);\r",
+							"    pm.expect(pm.response.json().maxJitter).to.eql(14.52);\r",
+							"    pm.expect(pm.response.json().jitterAboveThld).to.eql(0);\r",
+							"    pm.expect(pm.response.json().packetLossAboveThld).to.eql(1);\r",
+							"    pm.expect(pm.response.json().minPolqa).to.eql(0);\r",
+							"    pm.expect(pm.response.json().roundTripTimeAboveThld).to.eql(0);\r",
+							"    pm.expect(pm.response.json().maxRoundTripTime).to.eql(286);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/networkQualitySummary?startDate=2023-07-20 00:00:00&endDate=2023-07-20 23:59:59&metric=Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate,POLQA&subaccountId={{subaccountIdNativeDashboard}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"networkQualitySummary"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-20 00:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-20 23:59:59"
+						},
+						{
+							"key": "metric",
+							"value": "Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate,POLQA"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardNetworkQualityChart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"\r",
+							"    pm.expect(pm.response.json()).to.have.all.keys(\"series\", \"categories\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series).to.be.an(\"object\");\r",
+							"    pm.expect(pm.response.json().series).to.have.all.keys(\"Received packet loss\", \"Sent bitrate\", \"Received Jitter\", \"Round trip time\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().categories).to.be.an(\"array\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Received packet loss\"][2]).to.eql(0);\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Sent bitrate\"][14]).to.eql(36.52);\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Received Jitter\"][15]).to.eql(14.37);\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Round trip time\"][21]).to.eql(227);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/networkQualityChart?startDate=2023-07-20%2000:00:00&endDate=2023-07-20%2023:59:59&metric=Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate&subaccountId={{subaccountIdNativeDashboard}}&groupBy=hour",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"networkQualityChart"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-20%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-20%2023:59:59"
+						},
+						{
+							"key": "metric",
+							"value": "Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						},
+						{
+							"key": "groupBy",
+							"value": "hour"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardVoiceQualityChart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"\r",
+							"    pm.expect(pm.response.json()).to.have.all.keys(\"summary\", \"numericValues\", \"percentages\", \"categories\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().categories).to.be.an(\"array\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().summary[\"calls\"]).to.eql(66);\r",
+							"    pm.expect(pm.response.json().summary[\"streams\"]).to.eql(132);\r",
+							"\r",
+							"    pm.expect(pm.response.json().numericValues[0]).to.eql(16);\r",
+							"\r",
+							"    pm.expect(pm.response.json().percentages[0]).to.eql(12.121212);\r",
+							"\r",
+							"    pm.expect(pm.response.json().categories).to.eql([\r",
+							"        \"Excellent [4-5]\",\r",
+							"        \"Good [3-4)\",\r",
+							"        \"Fair [2-3)\",\r",
+							"        \"Poor [0-2)\"\r",
+							"    ]);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/voiceQualityChart?startDate=2023-07-21%2000:00:00&endDate=2023-07-21%2018:28:46&subaccountId={{subaccountIdNativeDashboard}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"voiceQualityChart"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-21%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-21%2018:28:46"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardCallsStatusHeatMap",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"\r",
+							"    pm.expect(pm.response.json()).to.have.all.keys(\"summary\", \"series\", \"maxValues\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"total\"]).to.be.an(\"array\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"total\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
+							"    pm.expect(pm.response.json().series[\"total\"][0].data[0][\"y\"]).to.eql(0);\r",
+							"    pm.expect(pm.response.json().series[\"total\"][0].name).to.eql(\"07-15-2023\");\r",
+							"    \r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"failed\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
+							"    pm.expect(pm.response.json().series[\"failed\"][0].data[0][\"y\"]).to.eql(0);\r",
+							"    pm.expect(pm.response.json().series[\"failed\"][0].name).to.eql(\"07-15-2023\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"passed\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
+							"    pm.expect(pm.response.json().series[\"passed\"][0].data[0][\"y\"]).to.eql(0);\r",
+							"    pm.expect(pm.response.json().series[\"passed\"][0].name).to.eql(\"07-15-2023\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().summary[\"totalCalls\"]).to.eql(308);\r",
+							"    pm.expect(pm.response.json().summary[\"failedCalls\"]).to.eql(7);\r",
+							"\r",
+							"    pm.expect(pm.response.json().maxValues[\"total\"]).to.eql(10);\r",
+							"    pm.expect(pm.response.json().maxValues[\"failed\"]).to.eql(3);\r",
+							"    pm.expect(pm.response.json().maxValues[\"passed\"]).to.eql(10);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/callsStatusHeatMap?startDate=2023-07-15%2000:00:00&endDate=2023-07-21%2019:23:44&subaccountId={{subaccountIdNativeDashboard}}&regions=%5B%7B%22country%22:%22United%20States%22,%22state%22:%22IL%22,%22city%22:%22Chicago%22,%22displayName%22:%22Chicago,%20IL,%20United%20States%22%7D%5D",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"callsStatusHeatMap"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-15%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-21%2019:23:44"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						},
+						{
+							"key": "regions",
+							"value": "%5B%7B%22country%22:%22United%20States%22,%22state%22:%22IL%22,%22city%22:%22Chicago%22,%22displayName%22:%22Chicago,%20IL,%20United%20States%22%7D%5D"
+						}
 					]
 				}
 			},
@@ -1828,13 +1825,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "PUT",
 				"header": [],
@@ -1847,16 +1840,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/devices/{{deviceId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices",
-						"{{deviceId}}"
-					]
-				}
+				"url": "{{HOST}}/devices/{{deviceId}}"
 			},
 			"response": []
 		},
@@ -1876,16 +1860,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/customerAdminEmails/{{name}}admin2@tekvizion.com",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"customerAdminEmails",
-						"{{name}}admin2@tekvizion.com"
-					]
-				}
+				"url": "{{HOST}}/customerAdminEmails/{{name}}admin2@tekvizion.com"
 			},
 			"response": []
 		},
@@ -1914,16 +1889,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/subaccountAdminEmails/{{name}}subadmin2@tekvizion.com",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccountAdminEmails",
-						"{{name}}subadmin2@tekvizion.com"
-					]
-				}
+				"url": "{{HOST}}/subaccountAdminEmails/{{name}}subadmin2@tekvizion.com"
 			},
 			"response": []
 		},
@@ -1943,16 +1909,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenseUsageDetails",
-						"{{licenseUsageId}}"
-					]
-				}
+				"url": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}"
 			},
 			"response": []
 		},
@@ -1972,13 +1929,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [],
@@ -2006,16 +1959,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/notes/{{noteId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"notes",
-						"{{noteId}}"
-					]
-				}
+				"url": "{{HOST}}/notes/{{noteId}}"
 			},
 			"response": []
 		},
@@ -2035,26 +1979,13 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"consumptionMatrix",
-						"{{consumptionMatrixId}}"
-					]
-				}
+				"url": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}"
 			},
 			"response": []
 		},
@@ -2074,16 +2005,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/projects/{{projectId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"projects",
-						"{{projectId}}"
-					]
-				}
+				"url": "{{HOST}}/projects/{{projectId}}"
 			},
 			"response": []
 		},
@@ -2103,16 +2025,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/licenses/{{licenseId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenses",
-						"{{licenseId}}"
-					]
-				}
+				"url": "{{HOST}}/licenses/{{licenseId}}"
 			},
 			"response": []
 		},
@@ -2132,16 +2045,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/subaccounts/{{subaccountId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccounts",
-						"{{subaccountId}}"
-					]
-				}
+				"url": "{{HOST}}/subaccounts/{{subaccountId}}"
 			},
 			"response": []
 		},
@@ -2161,16 +2065,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasTestSuites",
-						"{{ctaasTestSuitId}}"
-					]
-				}
+				"url": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}"
 			},
 			"response": []
 		},
@@ -2190,16 +2085,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccountStakeHolders",
-						"{{name}}stakeholder@tekvizion.com"
-					]
-				}
+				"url": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com"
 			},
 			"response": []
 		},
@@ -2219,16 +2105,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/ctaasSetups/{{subaccountId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasSetups",
-						"{{subaccountId}}"
-					]
-				}
+				"url": "{{HOST}}/ctaasSetups/{{subaccountId}}"
 			},
 			"response": []
 		},
@@ -2327,13 +2204,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "POST",
 				"header": [],
@@ -2346,15 +2219,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/featureToggles",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"featureToggles"
-					]
-				}
+				"url": "{{HOST}}/featureToggles"
 			},
 			"response": []
 		},
@@ -2374,13 +2239,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "PUT",
 				"header": [],
@@ -2393,16 +2254,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/featureToggles/{{featureToggleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"featureToggles",
-						"{{featureToggleId}}"
-					]
-				}
+				"url": "{{HOST}}/featureToggles/{{featureToggleId}}"
 			},
 			"response": []
 		},
@@ -2425,15 +2277,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/featureToggles",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"featureToggles"
-					]
-				}
+				"url": "{{HOST}}/featureToggles"
 			},
 			"response": []
 		},
@@ -2453,39 +2297,22 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [],
-				"url": {
-					"raw": "{{HOST}}/featureToggles/{{featureToggleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"featureToggles",
-						"{{featureToggleId}}"
-					]
-				}
+				"url": "{{HOST}}/featureToggles/{{featureToggleId}}"
 			},
 			"response": []
 		}
 	],
 	"auth": {
 		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{access_token}}",
-				"type": "string"
-			}
-		]
+		"bearer": {
+			"token": "{{access_token}}"
+		}
 	},
 	"event": [
 		{
@@ -2603,6 +2430,11 @@
 		{
 			"key": "access_token_IGES",
 			"value": ""
+		},
+		{
+			"key": "subaccountIdNativeDashboard",
+			"value": "b5f9e7bc-b65b-4e3c-9c68-e9fb4dab8853",
+			"type": "string"
 		}
 	]
 }
