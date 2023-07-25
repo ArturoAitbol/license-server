@@ -129,7 +129,7 @@ export class UpdateStakeHolderComponent implements OnInit {
    * @returns: any 
    */
   preparePayload(): any {
-    const extraData = {
+    let extraData = {
       ...this.updateStakeholderForm.value, 
       notifications: this.notifications, 
       type: this.type, 

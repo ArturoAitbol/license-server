@@ -24,19 +24,16 @@ public class GraphAPIClient {
      * @return true if the user is created, false if the user already existed
      * @throws Exception
      */
-    static public boolean createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
+    static public void createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
         User user = getUserByEmail(userEmail,context);
         String userId;
-        boolean res = false;
         if (user != null) {
             context.getLogger().info("Guest user with email "+ userEmail +" already exists in Active Directory (AD). Getting id to assign proper role");
             userId = user.id;
         } else {
             userId = createGuestUser(userName,userEmail,context);
-            res = true;
         }
         assignRole(userId,role,context);
-        return res;
     }
 
     static public User getUserByEmail(String userEmail, ExecutionContext context) throws ADException {

@@ -1,10 +1,13 @@
 <div [@growDown] class="banner-container" [ngClass]="['banner-'+type]" *ngIf="opened">
         <p class="title" [innerHTML]="title" id="alert-banner-title"
                 [ngClass]="{'col-12': !displayClose, 'col-11' : displayClose === true }"></p>
-        <div class="col-1 d-flex justify-content-end" *ngIf="displayClose">
-                <button mat-icon-button title="Close Banner" (click)="close()">
-                        <mat-icon class="icon text-white-color">close</mat-icon>
-                </button>
+
+        <p class="message col-12" [innerHTML]="message" id="alert-banner-message"></p>
+        <div class="col-11 d-flex justify-content-start hide-tag" *ngIf="displayClose">
+                <mat-checkbox class="checkbox-margin" [color]="'primary'" [(ngModel)]="hideForever">Don't show
+                        again</mat-checkbox>
         </div>
-        <p class="message" [innerHTML]="message" id="alert-banner-message"></p>
+        <div class="col-1 d-flex justify-content-end" *ngIf="displayClose">
+                <button mat-raised-button title="Close Banner" color="warn" (click)="regularClose()">Close</button>
+        </div>
 </div>

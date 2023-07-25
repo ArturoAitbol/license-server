@@ -88,6 +88,7 @@ export class RedirectPageComponent implements OnInit {
         else
           this.currentSubaccountDetails.services = [];
         this.currentSubaccountDetails.customerName = this.currentSubaccountDetails.name;
+        this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
         this.customerService.getCustomerById(this.currentSubaccountDetails.customerId).subscribe((customersResp: any) => {
           const subaccountCustomer = customersResp.customers[0];
           this.currentSubaccountDetails.customerName = subaccountCustomer.name;
@@ -99,7 +100,6 @@ export class RedirectPageComponent implements OnInit {
           this.currentSubaccountDetails.subaccountId = this.currentSubaccountDetails.id;
           this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
         });
-        this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
         // enable/disable the available services
         this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
           if (this.currentSubaccountDetails.services.includes(e.value))
