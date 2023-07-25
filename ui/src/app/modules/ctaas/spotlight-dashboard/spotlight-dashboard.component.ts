@@ -185,7 +185,8 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     let closedBanner = localStorage.getItem("closedBanner") ? JSON.parse(localStorage.getItem("closedBanner")) : false;
-    let hiddenBanner = localStorage.getItem("hiddenBanner") ? JSON.parse(localStorage.getItem("hiddenBanner")) : false;    
+    let accountId = this.msalService.instance.getActiveAccount().localAccountId;
+    let hiddenBanner = localStorage.getItem(accountId + "-hiddenBanner") ? JSON.parse(localStorage.getItem(accountId + "-hiddenBanner")) : false;
     if (!closedBanner && !hiddenBanner)
       this.bannerService.open(Constants.UTC_DATE_INFO, "", this.onDestroy, "info", true);
     let currentEndDate;

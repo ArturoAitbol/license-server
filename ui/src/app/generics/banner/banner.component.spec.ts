@@ -6,6 +6,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BannerComponent } from "./banner.component";
 import { BannerService } from "../../services/banner.service";
 import { BannerServiceMock } from "../../../test/mock/services/alert-banner-service.mock";
+import { MsalService } from "@azure/msal-angular";
+import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { Subject } from "rxjs";
 
 let testInstance: BannerComponent;
@@ -18,6 +20,10 @@ const defaultTestBedConfig = {
         {
             provide: BannerService,
             useValue: BannerServiceMock
+        },
+        {
+            provide: MsalService,
+            useValue: MsalServiceMock
         },
     ]
 };

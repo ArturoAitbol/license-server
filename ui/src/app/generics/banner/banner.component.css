@@ -25,6 +25,10 @@ p.message, p.title {
     margin-bottom: 0;
 }
 
+.checkbox-margin {
+    margin: 8px 20px 0;
+}
+
 p.title {
     font-weight: bold;
     padding-left: 0;
