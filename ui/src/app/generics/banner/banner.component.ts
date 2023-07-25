@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { GROW_DOWN_ANIMATION } from "./animations";
 import { Observable, Subscription } from "rxjs";
 import { BannerService } from "../../services/banner.service";
+import { MsalService } from '@azure/msal-angular';
 
 
 @Component({
@@ -22,7 +23,8 @@ export class BannerComponent {
   displayClose = false;
   hideForever = false;
 
-  constructor(bannerService: BannerService) {
+  constructor(bannerService: BannerService,
+    private msalService: MsalService,) {
     bannerService.init(this);
   }
 
@@ -46,7 +48,7 @@ export class BannerComponent {
 
   regularClose() {
     if (this.hideForever)
-      localStorage.setItem("hiddenBanner", "true");
+      localStorage.setItem(this.msalService.instance.getActiveAccount().localAccountId + "-hiddenBanner", "true");
     else
       localStorage.setItem("closedBanner", "true");
     this.close();
