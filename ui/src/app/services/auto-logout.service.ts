@@ -45,10 +45,11 @@ export class AutoLogoutService {
 
     public logout() {
         if (this.msalService.instance.getActiveAccount() != null) {
-            try {                
-                let hiddenBanner = localStorage.getItem("hiddenBanner") ? JSON.parse(localStorage.getItem("hiddenBanner")) : false;
+            try {
+                let bannerArray = [];
+                Object.keys(localStorage).forEach(key => key.includes("-hiddenBanner") ? bannerArray.push({ key: key, value: localStorage[key] }) : '');
                 localStorage.clear();
-                localStorage.setItem("hiddenBanner", hiddenBanner.toString());
+                bannerArray.forEach(item => localStorage.setItem(item.key, item.value));
                 this.msalService.logout();
             } catch (error) {
                 console.error('error while logout: ', error);
