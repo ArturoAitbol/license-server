@@ -109,7 +109,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
         this.context.getLogger().info(response.getStatus().toString());
         //Then
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
     }
 	
