@@ -41,6 +41,7 @@ import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggl
 import { BannerComponent } from './generics/banner/banner.component';
 import { AcceptComponent } from './dialogs/accept/accept.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { OptionalComponent } from './dialogs/optional/optional.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -66,6 +67,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         AddFeatureToggleExceptionModalComponent,
         BannerComponent,
         AcceptComponent,
+        OptionalComponent,
     ],
     imports: [
         AppRoutingModule,

@@ -492,7 +492,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [Number((this.calls.failed / this.calls.total * 100 || 0).toFixed(2))];
-
+    this.vqChartOptions.chart.events = {
+        dataPointSelection: (event, chartContext, config) => {     
+        this.navigateToPOLQACallsDetailedTableFilter(config.dataPointIndex);
+      }
+    };
     if (this.selectedRegions.length > 0)
       this.reloadUserOptions(this.selectedRegions);
     else
@@ -596,17 +600,23 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
-  navigateToDetailedTable(reportType?: string, status?: string) {
+  navigateToDetailedTable(reportType?: string, status?: string, section?: boolean) {
     let reportFilter = "";
     if (reportType && reportType != "")
       reportFilter += "type=" + reportType;
     else if (status && status != "")
       reportFilter += "status=" + status;
+    if (section) reportFilter += "&sectionFailed=" + section;
     this.goToDetailedReportView(reportFilter);
   }
 
   navigateToPOLQACallsDetailedTable() {
     const reportFilter = "polqaCalls=true";
+    this.goToDetailedReportView(reportFilter);
+  }
+
+  private navigateToPOLQACallsDetailedTableFilter(position: number): void {
+    const reportFilter = `polqaCalls=true&avg=${position+1}`;
     this.goToDetailedReportView(reportFilter);
   }
 

@@ -192,7 +192,7 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.failed }}</p>
-                                    <button title="Failed Calls" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                                    <button title="Failed Calls" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED', true)">
                                         View Detailed Report
                                     </button>
                                 </div>
@@ -447,7 +447,7 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ heatMapCallsSummary.failed }}</p>
-                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
+                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED', true)">
                                         View Detailed Report
                                     </button>
                                 </div>
