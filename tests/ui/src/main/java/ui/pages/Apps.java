@@ -20,6 +20,8 @@ public class Apps extends AbstractPageObject {
     @FindBy(css = "#title")
     WebElement subTitle;
 
+    By loadingSelector = By.cssSelector("figcaption.loadingMessage");
+
     public boolean checkMyAppsView(){
         boolean response = false;
         try {
@@ -72,6 +74,7 @@ public class Apps extends AbstractPageObject {
     public void changeWindowToDetailedReport(){
         ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
         driver.switchTo().window(tabs.get(2));
+        this.action.waitSpinner(this.loadingSelector);
     }
 
     public void closeAllTabsButOne(){

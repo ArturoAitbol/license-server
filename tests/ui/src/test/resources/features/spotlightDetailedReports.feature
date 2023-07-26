@@ -1,12 +1,13 @@
-@CTaaSFeature @spotlightDetailedReportsTest @feature-toggle
+@CTaaSFeature @spotlightDetailedReportsTest @spotLightDashboard
 Feature: spotlightDashboard
   Background: Login successfully with valid credentials
     Given I am on the landing page
     When I try to login using a "FullAdministrator"
     Then I should see the "Customers" page
+    And I close all tabs but the current one
 
   @ValidateCallingReliability
-  Scenario: Go to the Spotlight Detailed Report
+  Scenario: Go to the Calling Reliability detailed report
     Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
     Then I click on "Calling Reliability Detailed Report" button
@@ -70,10 +71,9 @@ Feature: spotlightDashboard
     And I should see the following data in the DID section
     | From      | 2142428803           |
     | To        | 9725980054           |
-    And I close all tabs but the current one
 
   @validateFunctionality
-  Scenario: Go to the Spotlight Detailed Report
+  Scenario: Go to the Feature Funcionality detailed report
     Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
     Then I click on "Feature Functionality Detailed Report" button
@@ -150,11 +150,9 @@ Feature: spotlightDashboard
         | Round trip time	        | 134.00 ms     |
         | Received packets	        | 1465 packets  |
         | POLQA	                    | N/A           |
-    And I close all tabs but the current one
-
 
   @validateVoiceQuality
-  Scenario: Go to the Spotlight Detailed Report
+  Scenario: Go to the Voice Quality detailed report
     Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
     Then I click on "Voice Quality Detailed Report" button
@@ -240,11 +238,9 @@ Feature: spotlightDashboard
         | Round trip time	        | 116.00 ms     |
         | Received packets	        | 8 packets     |
         | POLQA	                    | N/A           |
-    And I close all tabs but the current one
-
 
   @validateTotalFailedCalls
-  Scenario: Go to the Spotlight Detailed Report
+  Scenario: Go to Total Failed Calls detailed report
     Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
     Then I click on "Failed Calls Detailed Report" button
@@ -304,11 +300,9 @@ Feature: spotlightDashboard
         | To Packet Loss (%)        | N/A                   |
         | From Bitrate (kbps)       | N/A                   |
         | To Bitrate (kbps)         | N/A                   |
-    And I close all tabs but the current one
-
 
   @validateFailedCalls
-  Scenario: Go to the Spotlight Detailed Report
+  Scenario: Go to the Failed Calls detailed report
     Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
     Then I click on "Failed Calls" button
