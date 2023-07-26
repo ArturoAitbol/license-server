@@ -39,7 +39,7 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @AfterEach
     void tearDown() {
-        if (!this.adminEmail.equals("EMPTY")){
+        if (!this.adminEmail.equals("EMPTY")) {
             TekvLSDeleteAdminEmail deleteBundleById = new TekvLSDeleteAdminEmail();
             HttpResponseMessage response = deleteBundleById.run(this.request, this.adminEmail, this.context);
             this.context.getLogger().info(response.getStatus().toString());
@@ -47,17 +47,19 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
-            assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+            assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
         }
     }
 
     @Test
     public void createAdminEmailTest() {
-        //Given - Arrange
+        // Given - Arrange
         this.adminEmail = name + "@test.com";
-        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(this.adminEmail, this.customerId);
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(
+                this.adminEmail, this.customerId);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -65,10 +67,10 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -76,9 +78,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void incompleteBodyTest() {
-        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(name + "@test.com", null);
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(
+                name + "@test.com", null);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -86,11 +90,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -106,10 +110,12 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void incompleteBodyTest2() {
-        //Given - Arrange
-        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(null, this.customerId);
+        // Given - Arrange
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(null,
+                this.customerId);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -117,11 +123,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -137,20 +143,21 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void NoBodyTest() {
-        //Given - Arrange
+        // Given - Arrange
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.empty()).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
             HttpStatus status = (HttpStatus) invocation.getArguments()[0];
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -166,11 +173,13 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void SqlExceptionTest() {
-        //Given - Arrange
+        // Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(name + "@test.com", "0000");
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(
+                name + "@test.com", "0000");
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -178,11 +187,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -199,11 +208,13 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void GenericExceptionTest() {
-        //Given - Arrange
+        // Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(name + "@test.com", this.customerId);
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(
+                name + "@test.com", this.customerId);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -212,11 +223,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
         }).when(request).createResponseBuilder(any(HttpStatus.class));
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -233,10 +244,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void UnauthorizedTest() {
-        //Given - Arrange
+        // Given - Arrange
         this.headers.remove("authorization");
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.of(new TekvLSCreateAdminEmail.CreateAdminRequest(null, null))).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -244,11 +256,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.UNAUTHORIZED;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -265,11 +277,12 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void ForbiddenTest() {
-        //Given - Arrange
+        // Given - Arrange
         this.headers.remove("authorization");
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(
+                HttpRequestMessage.class);
         doReturn(Optional.of(new TekvLSCreateAdminEmail.CreateAdminRequest(null, null))).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -277,11 +290,11 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.FORBIDDEN;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -298,7 +311,8 @@ class TekvLSCreateAdminEmailTest extends TekvLSTest {
 
     @Test
     public void createAdminRequestToStringTest() {
-        TekvLSCreateAdminEmail.CreateAdminRequest request = new TekvLSCreateAdminEmail.CreateAdminRequest("test@test.com", "00000000-0000-0000-0000-000000000000");
+        TekvLSCreateAdminEmail.CreateAdminRequest request = new TekvLSCreateAdminEmail.CreateAdminRequest(
+                "test@test.com", "00000000-0000-0000-0000-000000000000");
         String expectedResponse = "CreateAdminRequest{customerAdminEmail='test@test.com', customerId='00000000-0000-0000-0000-000000000000'}";
         assertEquals(expectedResponse, request.toString());
     }
