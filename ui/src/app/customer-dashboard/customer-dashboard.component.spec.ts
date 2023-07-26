@@ -19,6 +19,7 @@ import { FeatureToggleServiceMock } from 'src/test/mock/services/feature-toggle-
 import { environment } from 'src/environments/environment';
 import { TestBedConfigBuilder } from '../../test/mock/TestBedConfigHelper.mock';
 import { RouterMock } from '../../test/mock/Router.mock';
+import { Constants } from '../helpers/constants';
 
 let dashboardComponentTestInstance: CustomerDashboardComponent;
 let fixture: ComponentFixture<CustomerDashboardComponent>;
@@ -263,19 +264,12 @@ describe('routes to spotlight dashboard', () => {
         selectedOption: 'selectedTestOption', 
         selectedIndex: '0' }; 
         spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callFake((ftName, subaccountId) => {
-            if (ftName === 'powerbiFeature')
-                return true;
-            if (ftName === 'spotlight-dashboard')
-                return false;
-        });
         spyOn(RouterMock, 'navigate').and.callThrough();
         spyOn(window, 'open').and.returnValue(null);
 
-        const routePath = '/spotlight/visualization';
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(window.open).toHaveBeenCalledWith(`${environment.BASE_URL}/#${routePath}?subaccountId=${selectedTestData.selectedRow.subaccountId}`)
+        expect(window.open).toHaveBeenCalledWith(`${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${selectedTestData.selectedRow.subaccountId}`)
     });
 });
 

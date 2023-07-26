@@ -411,11 +411,12 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isDetailedConsumptionRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails with default queries when calling fetchDetailedConsumptionData() without arguments', () => {
+    it('should make a call to get licenseConsumptionDetails with default queries when calling fetchDetailedConsumptionData() without arguments', async () => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.fetchDetailedConsumptionData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();

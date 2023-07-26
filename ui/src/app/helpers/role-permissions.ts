@@ -29,7 +29,6 @@ export const permissions = {
     'tekvizion.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -121,7 +120,7 @@ export const permissions = {
     'tekvizion.SalesAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
+            'spotlight-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -163,7 +162,6 @@ export const permissions = {
     'tekvizion.ConfigTester': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -234,7 +232,6 @@ export const permissions = {
     'tekvizion.IGESAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -302,7 +299,6 @@ export const permissions = {
     'distributor.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -339,7 +335,6 @@ export const permissions = {
     'customer.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -398,7 +393,6 @@ export const permissions = {
     'customer.SubaccountAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -459,7 +453,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'visualization',
             'stakeholders',
             'notes',
             'details',

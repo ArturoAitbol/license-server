@@ -174,7 +174,6 @@ public class TekvLSGetNetworkQualityChartTest extends TekvLSTest {
     @Test
     public void sqlExceptionTest() {
         //Given
-        String subaccountId = "f5a60920-8b70-4a10-9dc8-9536bdb5652c";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
 
         //When - Action

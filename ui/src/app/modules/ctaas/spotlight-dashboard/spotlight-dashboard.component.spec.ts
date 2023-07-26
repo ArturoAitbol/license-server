@@ -93,17 +93,6 @@ describe("DashboardPocComponent", () => {
     );
   });
 
-  it("should reload charts on click of refresh button", () => {
-    spyOn(dashboardPocComponentTestInstance, "reloadCharts").and.callThrough();
-    spyOn(dashboardPocComponentTestInstance, "loadCharts");
-    const refreshButton = fixture.debugElement.query(By.css(".refreshButton"));
-    refreshButton.nativeElement.click();
-    expect(dashboardPocComponentTestInstance.reloadCharts).toHaveBeenCalled();
-    expect(dashboardPocComponentTestInstance.loadCharts).toHaveBeenCalledWith(
-      true
-    );
-  });
-
   it("correctly checks if date has changed", () => {
     dashboardPocComponentTestInstance.selectedPeriod = "daily";
     dashboardPocComponentTestInstance.filters

@@ -9,7 +9,6 @@ import { CheckAccessForDirective } from 'src/app/directives/check-access-for.dir
 import { DeleteCustomerModalComponent } from "../../dialogs/delete-customer/delete-customer-modal.component";
 import { FeatureToggleDirective } from "../../directives/feature-toggle.directive";
 import { DateRangeDirective } from 'src/app/directives/date-range-directive';
-import { PowerBIEmbedModule } from 'powerbi-client-angular';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { GaugeChartComponent } from "../../generics/gauge-chart/gauge-chart.component";
@@ -32,7 +31,6 @@ import { SecondsToDateTimePipe } from 'src/app/pipes/seconds-to-date-time.pipe';
   imports: [
     CommonModule,
     MaterialModule,
-    PowerBIEmbedModule,
     NgxMatTimepickerModule,
     NgxIntlTelInputModule,
     NgApexchartsModule
@@ -45,7 +43,6 @@ import { SecondsToDateTimePipe } from 'src/app/pipes/seconds-to-date-time.pipe';
     CheckAccessForDirective,
     FeatureToggleDirective,
     DateRangeDirective,
-    PowerBIEmbedModule,
     NgxIntlTelInputModule,
     GaugeChartComponent,
     SecondsToDateTimePipe,

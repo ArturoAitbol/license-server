@@ -78,11 +78,7 @@ export class MyAppsComponent implements OnInit {
             let routePath = service.routePath;
             // this is temporal validation meanwhile there is not an unified permanent dashboard
             if (service.value === tekVizionServices.SpotLight) {
-                routePath = Constants.STAKEHOLDERS_VIEW_PATH;
-                if(this.featureToggleService.isFeatureEnabled("powerbiFeature", this.subaccountId))
-                    routePath = Constants.POWERBI_DASHBOARD_PATH;
-                if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.subaccountId))
-                    routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
+                routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
             }
             this.router.navigate([routePath], {queryParams: {subaccountId: this.subaccountId}});
         }

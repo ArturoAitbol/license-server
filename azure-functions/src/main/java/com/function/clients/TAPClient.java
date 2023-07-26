@@ -2,7 +2,6 @@ package com.function.clients;
 
 import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpStatus;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

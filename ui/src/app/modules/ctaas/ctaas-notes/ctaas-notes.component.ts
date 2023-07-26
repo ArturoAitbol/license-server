@@ -165,7 +165,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      */
     viewDashboard(note: Note): void{
         if (this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id)) {
-            const featureUrl = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
+            const featureUrl = `${environment.BASE_URL}/#/spotlight/${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
             window.open(featureUrl);
         } else
             this.openDialog(this.VIEW_DASHBOARD,note);

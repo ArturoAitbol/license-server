@@ -6,14 +6,12 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
@@ -156,7 +154,6 @@ public class TekvLSGetCtaasMapSummaryTest extends TekvLSTest {
     @Test
     public void noTokenTest() {
         //Given
-        String subaccountId = "b5b91753-4c2b-43f5-afa0-feb00cefa981";
         this.headers.remove("authorization");
 
         //When
@@ -181,7 +178,6 @@ public class TekvLSGetCtaasMapSummaryTest extends TekvLSTest {
     @Test
     public void invalidRoleTest() {
         //Given
-        String subaccountId = "b5b91753-4c2b-43f5-afa0-feb00cefa981";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
