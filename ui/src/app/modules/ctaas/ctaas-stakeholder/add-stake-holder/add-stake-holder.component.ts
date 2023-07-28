@@ -95,7 +95,7 @@ export class AddStakeHolderComponent implements OnInit {
       const { subaccountId } = this.userprofileDetails;
       let stakeholderDetails = { ... this.addStakeholderForm.value };
       if (stakeholderDetails.phoneNumber && stakeholderDetails.phoneNumber !== '')
-        stakeholderDetails.phoneNumber = stakeholderDetails.phoneNumber.e164Number;
+        stakeholderDetails.phoneNumber = stakeholderDetails.phoneNumber.internationalNumber;
       let stakeholderNotificationsAndtype = {...stakeholderDetails, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications};
       stakeholderNotificationsAndtype.subaccountId = subaccountId;
       if (stakeholderNotificationsAndtype.notifications.length > 0) {
