@@ -188,7 +188,7 @@ public class RoleAuthHandler {
     public static String getEmailFromToken(Claims tokenClaims, ExecutionContext context) {
         if (tokenClaims != null) {
             try {
-                return tokenClaims.get("preferred_username").toString();
+                return tokenClaims.get("preferred_username").toString().toLowerCase();
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: Getting preferred_username claim failed.");
             }
