@@ -31,6 +31,8 @@ import { CallbackTimerComponent } from './callback/callback-timer/callback-timer
 import { NodeDetailComponent } from './map/node-detail/node-detail.component';
 import { LineDetailComponent } from './map/line-detail/line-detail.component';
 import { MapComponent } from './map/map.component';
+import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polqa-graphs/polqa-graphs.component';
+import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
 
 
 @NgModule({
@@ -59,6 +61,8 @@ import { MapComponent } from './map/map.component';
     CallbackTimerComponent,
     NodeDetailComponent,
     LineDetailComponent,
+    PolqaGraphsComponent,
+    NetworkTrendsComponent,
   ],
   imports: [
     CommonModule,
