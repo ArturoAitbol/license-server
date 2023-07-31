@@ -71,6 +71,8 @@ export class DetailedReportsComponent implements OnInit {
     bitrate: {count: 0, sum: 0},
   };
   messageSpiner = 'Please wait while we prepare your call report.';
+  filterByAvg = 0;
+  sectionFailed = false;
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
 
   constructor
@@ -102,6 +104,8 @@ export class DetailedReportsComponent implements OnInit {
       if (params.regions && params.regions != '') this.regionsStr = params.regions;
       if (params.users && params.users != '') this.usersStr = params.users;
       if (params.polqaCalls && params.polqaCalls != '') this.polqaCalls = true;
+      this.filterByAvg = params.avg ? params.avg : 0;
+      this.sectionFailed = params.sectionFailed ? params.sectionFailed : false;
       this.failedIsChecked = params.status ? true : false;
       this.startDateStr = params.start;
       this.endDateStr = params.end;
@@ -200,6 +204,7 @@ export class DetailedReportsComponent implements OnInit {
     this.detailedTestReport = [];
     this.isRequestCompleted = true;
     this.isLoadingResults = false;
+    var filterDID = [];
     if (res.response.report && res.response.reportType) {
       this.reportResponse = res.response.report;
       const detailedResponseObj = JSON.parse(JSON.stringify(res.response.report));
@@ -343,13 +348,51 @@ export class DetailedReportsComponent implements OnInit {
         testResult.otherPartynoDataFoundFlag = false;
         testResult.panelOpenState = true;
         testResult.otherParties = (testResult.otherParties && testResult.otherParties.length > 0) ? testResult.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
+        if (this.filterByAvg) {
+            this.insideTheScope(testResult);
+
+            if (testResult.filterByAvg && !filterDID.includes(testResult.from.DID)) {
+            filterDID.push(testResult.from.DID);
+          }
+        }
       });
+
+      if (this.filterByAvg) {
+        this.updateDataByAvg(filterDID);
+        detailedResponseObj.results = this.detailedTestReport;
+        detailedResponseObj.summary = this.reportResponse.summary;
+        detailedResponseObj.endpoints = this.reportResponse.endpoints;
+        this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
+      }
       this.reportResponse.summary.summaryStartTime = minorTime.format("MM/DD/YYYY HH:mm:ss");
       this.reportResponse.summary.summaryEndTime = majorTime.format("MM/DD/YYYY HH:mm:ss");
     } else {
       this.hasDashboardDetails = false;
       this.reportResponse = {};
     }
+  }
+
+  private updateDataByAvg(filterDID: any[]) {
+    this.detailedTestReport = this.detailedTestReport.filter(({ filterByAvg }) => filterByAvg);
+    const count = this.detailedTestReport.filter(item => {
+      return item.status === "PASSED";
+    }).length;
+    this.reportResponse.summary.total = this.detailedTestReport.length;
+    this.reportResponse.summary.passed = count;
+    this.reportResponse.summary.failed = this.detailedTestReport.length - count;
+    this.reportResponse.endpoints = this.reportResponse.endpoints.filter(item => filterDID.includes(item.did));
+  }
+    
+  private insideTheScope(testResult: any) {
+    testResult.filterByAvg = false;
+    if (Number(this.filterByAvg) == 1 && Number(testResult.fromPolqaAvg >= 4) && Number(testResult.fromPolqaAvg) <= 5)
+      testResult.filterByAvg = true;
+    if (Number(this.filterByAvg) == 2 && Number(testResult.fromPolqaAvg) >= 3 && Number(testResult.fromPolqaAvg) < 4)
+      testResult.filterByAvg = true;
+    if (Number(this.filterByAvg) == 3 && Number(testResult.fromPolqaAvg) >= 2 && Number(testResult.fromPolqaAvg) < 3)
+      testResult.filterByAvg = true;
+    if (Number(this.filterByAvg) == 4 && Number(testResult.fromPolqaAvg) >= 0 && Number(testResult.fromPolqaAvg) < 2)
+    testResult.filterByAvg = true;  
   }
 
   getSelectedFromTimeStamp(event) {
@@ -497,12 +540,17 @@ export class DetailedReportsComponent implements OnInit {
   }
 
   public isConfirmationRequired() {
-    this.status ? this.downloadDetailedTestReportByType() : this.showConfirmDialog();
+    if (!this.sectionFailed)
+      this.status ? this.downloadDetailedTestReportByType() : this.showConfirmDialog();
+    else
+      this.downloadDetailedTestReportByType();
   }
 
   private showConfirmDialog() {
-    this.dialogService.confirmDialog(ConfirmDialogConst).subscribe((confirmed) => {
-      this.downloadDetailedTestReportByType(confirmed);
+    this.dialogService.optionalDialog(ConfirmDialogConst).subscribe((result) => {
+      if (result.download) {
+        this.downloadDetailedTestReportByType(result.confirm);
+      }
     });
   }
   /**
