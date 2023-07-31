@@ -1,22 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LoadingSpinerComponent } from './loading-spiner.component';
+import { LoadingSpinnerComponent } from './loading-spinner.component';
 import { TestBedConfigBuilder } from 'src/test/mock/TestBedConfigHelper.mock';
 
-describe('LoadingSpinerComponent', () => {
-  let fixture: ComponentFixture<LoadingSpinerComponent>;
-  let loadingSpiner: LoadingSpinerComponent;
+describe('LoadingSpinnerComponent', () => {
+  let fixture: ComponentFixture<LoadingSpinnerComponent>;
+  let loadingSpinner: LoadingSpinnerComponent;
 
   const beforeEachFunction = () => {
-    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(LoadingSpinerComponent);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(LoadingSpinnerComponent);
     TestBed.configureTestingModule(configBuilder.getConfig());
-    fixture = TestBed.createComponent(LoadingSpinerComponent);
-    loadingSpiner = fixture.componentInstance;
-    loadingSpiner.message = 'Please wait...';
-    loadingSpiner.visible = true;
-    loadingSpiner.ngOnInit();
+    fixture = TestBed.createComponent(LoadingSpinnerComponent);
+    loadingSpinner = fixture.componentInstance;
+    loadingSpinner.message = 'Please wait...';
+    loadingSpinner.visible = true;
+    loadingSpinner.ngOnInit();
   }
 
-  describe('Verification test for loading spiner', () => {
+  describe('Verification test for loading spinner', () => {
     beforeEach(beforeEachFunction);
 
     it('should contain spinner and spotlight ', () => {
@@ -33,8 +33,8 @@ describe('LoadingSpinerComponent', () => {
       const spinnerLoading = fixture.nativeElement.querySelector('#spinnerLoading');
       const spotlightLoading = fixture.nativeElement.querySelector('#spotlightLoading');
 
-      expect(loadingSpiner.message).toBe('Please wait...');
-      expect(loadingSpiner.visible).toBe(true);
+      expect(loadingSpinner.message).toBe('Please wait...');
+      expect(loadingSpinner.visible).toBe(true);
   });
   });
 });

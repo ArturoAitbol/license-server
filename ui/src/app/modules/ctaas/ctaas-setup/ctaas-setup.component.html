@@ -5,23 +5,21 @@
             <mat-spinner></mat-spinner>
         </div>
         <div class="setup-container flex-sm-row flex-column">
-            <div class="group-btn-container d-flex justify-content-end">
-                <ng-container *lcFeatureToggle="'maintenanceMode'">
-                    <ng-container *lcCheckAccessFor="'maintenanceModeCheckbox'">
-                        <div *ngIf="!originalCtaasSetupDetails.maintenance">
-                            <button class="mx-1" mat-raised-button id="enable-maintenance-button"
-                                    (click)="maintenanceToggle('enable')">
-                                Enable Maintenance Mode
-                            </button>
-                        </div>
-                        <div *ngIf="originalCtaasSetupDetails.maintenance">
-                            <button class="mx-1" mat-raised-button id="disable-maintenance-button"
-                                    (click)="maintenanceToggle('disable')">
-                                Disable Maintenance Mode
-                            </button>
-                        </div>
-                    </ng-container>
-                </ng-container>
+            <div class="group-btn-container d-flex justify-content-end">                
+                <ng-container *lcCheckAccessFor="'maintenanceModeCheckbox'">
+                    <div *ngIf="!originalCtaasSetupDetails.maintenance">
+                        <button class="mx-1" mat-raised-button id="enable-maintenance-button"
+                                (click)="maintenanceToggle('enable')">
+                            Enable Maintenance Mode
+                        </button>
+                    </div>
+                    <div *ngIf="originalCtaasSetupDetails.maintenance">
+                        <button class="mx-1" mat-raised-button id="disable-maintenance-button"
+                                (click)="maintenanceToggle('disable')">
+                            Disable Maintenance Mode
+                        </button>
+                    </div>
+                </ng-container>                
             </div>
         </div>
         <br>
@@ -33,12 +31,10 @@
                     </mat-card-title>
                     <mat-card-content>
                         <form [formGroup]="setupForm" (ngSubmit)="submit()" id="setup-form">
-                            <div class="row">
-                                <ng-container *lcFeatureToggle="'maintenanceMode'">
-                                    <div *lcCheckAccessFor="'maintenanceModeCheckbox'" class="col-md-6 d-flex">
-                                        <mat-checkbox labelPosition="before" formControlName="maintenance">Maintenance Mode</mat-checkbox>
-                                    </div>
-                                </ng-container>
+                            <div class="row">                                
+                                <div *lcCheckAccessFor="'maintenanceModeCheckbox'" class="col-md-6 d-flex">
+                                    <mat-checkbox labelPosition="before" formControlName="maintenance">Maintenance Mode</mat-checkbox>
+                                </div>                                
                                 <div class="col-md-6 d-flex">
                                     <mat-checkbox labelPosition="before" formControlName="onBoardingComplete">On Boarding Complete</mat-checkbox>
                                 </div>

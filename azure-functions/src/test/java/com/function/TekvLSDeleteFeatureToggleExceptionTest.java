@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-public class TekvLSDeleteFetaureToggleExceptionTest extends TekvLSTest {
+public class TekvLSDeleteFeatureToggleExceptionTest extends TekvLSTest {
 
     private  final TekvLSCreateFeatureToggleException createFeatureToggleExceptionApi = new  TekvLSCreateFeatureToggleException();
 
@@ -26,7 +26,7 @@ public class TekvLSDeleteFetaureToggleExceptionTest extends TekvLSTest {
     public void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
-        String bodyRequest = "{ 'featureToggleId' : 74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb, 'subaccountId' : 96234b32-32d3-45a4-af26-4c912c0d6a06, 'status': false }";
+        String bodyRequest = "{ 'featureToggleId' : d43815a7-8927-4c8d-a75f-49e080493827, 'subaccountId' : 96234b32-32d3-45a4-af26-4c912c0d6a06, 'status': false }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = this.createFeatureToggleExceptionApi.run(this.request, this.context);
         HttpStatusType actualStatus = response.getStatus();
@@ -39,7 +39,7 @@ public class TekvLSDeleteFetaureToggleExceptionTest extends TekvLSTest {
     void tearDown() {
         if (!this.featureToggleId.equals("EMPTY")) {
             this.initTestParameters();
-            String bodyRequest = "{ 'featureToggleId' : 74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb, 'subaccountId' : 96234b32-32d3-45a4-af26-4c912c0d6a06}";
+            String bodyRequest = "{ 'featureToggleId' : d43815a7-8927-4c8d-a75f-49e080493827, 'subaccountId' : 96234b32-32d3-45a4-af26-4c912c0d6a06}";
             doReturn(Optional.of(bodyRequest)).when(request).getBody();
             this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
             HttpResponseMessage response = deleteFeatureToggleExceptionApi.run(this.request, this.context);
@@ -56,7 +56,7 @@ public class TekvLSDeleteFetaureToggleExceptionTest extends TekvLSTest {
     @Test
     public void deleteFeatureToggleExceptionSuccessfullyTest() {
         //When - Action
-        String bodyRequest = "{ 'featureToggleId' : 74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb, 'subaccountId' : 96234b32-32d3-45a4-af26-4c912c0d6a06}";
+        String bodyRequest = "{ 'featureToggleId' : d43815a7-8927-4c8d-a75f-49e080493827, 'subaccountId' : 96234b32-32d3-45a4-af26-4c912c0d6a06}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = deleteFeatureToggleExceptionApi.run(this.request, this.context);
 
@@ -111,7 +111,7 @@ public class TekvLSDeleteFetaureToggleExceptionTest extends TekvLSTest {
     @Test
     public void deleteFeatureToggleExceptionWithBadSubaccountIdTest() {
         //When - Action
-        String bodyRequest = "{ 'featureToggleId' : 74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb, 'subaccountId' : '1'}";
+        String bodyRequest = "{ 'featureToggleId' : d43815a7-8927-4c8d-a75f-49e080493827, 'subaccountId' : '1'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = deleteFeatureToggleExceptionApi.run(this.request, this.context);
 
@@ -124,7 +124,7 @@ public class TekvLSDeleteFetaureToggleExceptionTest extends TekvLSTest {
     @Test
     public void deleteFeatureToggleExceptionWithBadRequestTest() {
         //When - Action
-        String bodyRequest = "{ 'featureToggleId : 74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb, 'subaccountId' : '96234b32-32d3-45a4-af26-4c912c0d6a06'}";
+        String bodyRequest = "{ 'featureToggleId : d43815a7-8927-4c8d-a75f-49e080493827, 'subaccountId' : '96234b32-32d3-45a4-af26-4c912c0d6a06'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = deleteFeatureToggleExceptionApi.run(this.request, this.context);
 
