@@ -30,7 +30,8 @@
                     [separateDialCode]="false"
                     [numberFormat]="PhoneNumberFormat.International"
                     [inputId]="'phoneNumber'"
-                    required
+                    [enablePlaceholder]="true"
+                    [customPlaceholder]="'Phone Number'"
                     formControlName="phoneNumber"
                     >
                     </ngx-intl-tel-input>
