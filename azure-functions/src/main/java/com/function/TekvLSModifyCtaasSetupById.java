@@ -292,50 +292,48 @@ public class TekvLSModifyCtaasSetupById {
             throws SQLException {
         if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib)) {
             final String subaccountId = jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib);
-            // if (FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId)) {
-                String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
-                String customerAdminEmailsSql = null;
-                String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid";
-                if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation", subaccountId)) {
-                    customerAdminEmailsSql = "SELECT array_to_string(array_agg(distinct \"admin_email\"),',') AS emails FROM customer_admin "
-                            +
-                            "WHERE customer_id = (SELECT customer_id FROM subaccount WHERE id = ?::uuid LIMIT 1);";
-                }
-                try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountUserEmailsSql);
-                     PreparedStatement customerAdminEmailsStmt = customerAdminEmailsSql != null
-                             ? connection.prepareStatement(customerAdminEmailsSql)
-                             : null;
-                     PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)) {
-                    subaccountEmailsStmt.setString(1, subaccountId);
-                    boolean newMaintenanceState = jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib);
-                    context.getLogger()
-                            .info("Execute SQL subaccountEmailsStmt (User: " + userId + "): " + subaccountEmailsStmt);
-                    ResultSet rs = subaccountEmailsStmt.executeQuery();
+            String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
+            String customerAdminEmailsSql = null;
+            String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid";
+            if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation", subaccountId)) {
+                customerAdminEmailsSql = "SELECT array_to_string(array_agg(distinct \"admin_email\"),',') AS emails FROM customer_admin "
+                        +
+                        "WHERE customer_id = (SELECT customer_id FROM subaccount WHERE id = ?::uuid LIMIT 1);";
+            }
+            try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountUserEmailsSql);
+                 PreparedStatement customerAdminEmailsStmt = customerAdminEmailsSql != null
+                         ? connection.prepareStatement(customerAdminEmailsSql)
+                         : null;
+                 PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)) {
+                subaccountEmailsStmt.setString(1, subaccountId);
+                boolean newMaintenanceState = jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib);
+                context.getLogger()
+                        .info("Execute SQL subaccountEmailsStmt (User: " + userId + "): " + subaccountEmailsStmt);
+                ResultSet rs = subaccountEmailsStmt.executeQuery();
+                rs.next();
+                String emails = rs.getString("emails");
+                if (customerAdminEmailsStmt != null) {
+                    customerAdminEmailsStmt.setString(1, subaccountId);
+                    context.getLogger().info("Execute SQL customerAdminEmailsStmt (User: " + userId + "): "
+                            + customerAdminEmailsStmt);
+                    rs = customerAdminEmailsStmt.executeQuery();
                     rs.next();
-                    String emails = rs.getString("emails");
-                    if (customerAdminEmailsStmt != null) {
-                        customerAdminEmailsStmt.setString(1, subaccountId);
-                        context.getLogger().info("Execute SQL customerAdminEmailsStmt (User: " + userId + "): "
-                                + customerAdminEmailsStmt);
-                        rs = customerAdminEmailsStmt.executeQuery();
-                        rs.next();
-                        String customerAdminEmails = rs.getString("emails");
-                        emails = emails + "," + customerAdminEmails;
-                    }
-                    subaccountNameStmt.setString(1, subaccountId);
-                    context.getLogger()
-                            .info("Execute SQL subaccountNameStmt (User: " + userId + "): " + subaccountNameStmt);
-                    ResultSet nameRs = subaccountNameStmt.executeQuery();
-                    nameRs.next();
-                    String subaccountName = nameRs.getString("name");
-                    if (newMaintenanceState) {
-                        EmailClient.sendMaintenanceModeEnabledAlert(emails, subaccountName, subaccountId, context);
-                    } else {
-                        EmailClient.sendMaintenanceModeDisabledAlert(emails, subaccountName, subaccountId, context);
-                    }
-
+                    String customerAdminEmails = rs.getString("emails");
+                    emails = emails + "," + customerAdminEmails;
                 }
-            // }
+                subaccountNameStmt.setString(1, subaccountId);
+                context.getLogger()
+                        .info("Execute SQL subaccountNameStmt (User: " + userId + "): " + subaccountNameStmt);
+                ResultSet nameRs = subaccountNameStmt.executeQuery();
+                nameRs.next();
+                String subaccountName = nameRs.getString("name");
+                if (newMaintenanceState) {
+                    EmailClient.sendMaintenanceModeEnabledAlert(emails, subaccountName, subaccountId, context);
+                } else {
+                    EmailClient.sendMaintenanceModeDisabledAlert(emails, subaccountName, subaccountId, context);
+                }
+
+            }
         }
     }
 
