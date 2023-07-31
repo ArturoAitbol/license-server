@@ -163,14 +163,6 @@ public class TekvLSModifyCtaasSetupById {
                     null : verificationBuilder.build(connection)) {
 
             JSONObject json = new JSONObject();
-            
-            try {
-                TAPClient.getAccessToken(jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib), context);
-            } catch (Exception e) {
-                context.getLogger().info("info: the TAP is incorrect");
-                json.put("error", "The TAP is incorrect");
-                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-            }
 
             if (licenseVerificationStatement != null) {
                 ResultSet licenseQueryResult = licenseVerificationStatement.executeQuery();
@@ -193,6 +185,13 @@ public class TekvLSModifyCtaasSetupById {
             // check if TAP URL attribute exists
             if (jobj.has(OPTIONAL_PARAMS.TAP_URL.jsonAttrib)) {
                 final String TAP_URL = jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib);
+                try {
+                    TAPClient.getAccessToken(jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib), context);
+                } catch (Exception e) {
+                    context.getLogger().info("info: the TAP is incorrect");
+                    json.put("error", "The TAP is incorrect");
+                    return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+                }
                 // Build JSONObject from customer details result set
                 JSONObject customerDetailsJsonObject = null;
                 if (customerAndSubAccountDetails != null) {

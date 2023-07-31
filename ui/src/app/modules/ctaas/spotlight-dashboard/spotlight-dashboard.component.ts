@@ -189,13 +189,13 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     let accountId = this.msalService.instance.getActiveAccount().localAccountId;
     let hiddenBanner = localStorage.getItem(accountId + "-hiddenBanner") ? JSON.parse(localStorage.getItem(accountId + "-hiddenBanner")) : false;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.loggedInUserRoles = roles;
     this.checkSetupStatus();
     if (!closedBanner && !hiddenBanner && this.tapURLFlag)
       this.bannerService.open(Constants.UTC_DATE_INFO, "", this.onDestroy, "info", true);
     let currentEndDate;
-    const accountDetails = this.getAccountDetails();
-    const { idTokenClaims: { roles } } = accountDetails;
-    this.loggedInUserRoles = roles;
     this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
       if (params?.noteId) {
