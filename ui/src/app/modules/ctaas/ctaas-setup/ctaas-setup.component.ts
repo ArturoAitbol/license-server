@@ -99,7 +99,7 @@ export class CtaasSetupComponent implements OnInit {
   }
 
   maintenanceToggle(action: string) {
-    if (this.featureToggleService.isFeatureEnabled('maintenanceMode')) {
+    // if (this.featureToggleService.isFeatureEnabled('maintenanceMode')) {
       if (action === 'enable') {
         this.dialogService.confirmDialog({
           title: 'Confirm Maintenance Mode',
@@ -122,7 +122,7 @@ export class CtaasSetupComponent implements OnInit {
             this.updateMaintenanceMode(false);
           }
         });
-      }
+      // }
     }
   }
 

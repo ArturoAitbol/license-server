@@ -5,7 +5,7 @@
 <ng-template #blankView>
     <div class="jumbotron d-flex align-items-center bg-transparent text-center">
         <div class="container">
-            <app-loading-spiner [visible]="isLoadingResults" [message]="messageSpiner"></app-loading-spiner>
+            <app-loading-spinner [visible]="isLoadingResults" [message]="messageSpinner"></app-loading-spinner>
             <h2 *ngIf="!isLoadingResults">
                 Failed to load the detailed test report. Please reach out to TekVizion support.
             </h2>
