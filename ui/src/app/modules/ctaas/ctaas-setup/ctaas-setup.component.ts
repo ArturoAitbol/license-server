@@ -153,6 +153,10 @@ export class CtaasSetupComponent implements OnInit {
       }
       this.fetchSetupInfo();
       this.isDataLoading = false;
+    }, error => {
+      this.snackBarService.openSnackBar('The given TAP URL is wrong', '');
+      this.isDataLoading = false;
+      this.fetchSetupInfo();
     });
   }
 

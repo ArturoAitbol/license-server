@@ -4,11 +4,11 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Jitter",
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
         {
             name: "POLQA",
-            data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+            data: []
         },
     ],
     chart: {
@@ -116,17 +116,17 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Success %",
-            data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
+            data: [],
             type: "line"
         },
         {
             name: "Passed",
-            data: [ 110, 213, 40, 14, 167, 47, 165],
+            data: [],
             type: "column",
         },
         {
             name: "Failed",
-            data: [ 0, 0, 1, 14, 18, 0, 39],
+            data: [],
             type: "column",
         },
     ],
@@ -246,17 +246,17 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Success %",
-            data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
+            data: [],
             type: "line"
         },
         {
             name: "Passed",
-            data: [ 110, 213, 40, 14, 167, 47, 165],
+            data: [],
             type: "column",
         },
         {
             name: "Failed",
-            data: [ 0, 0, 1, 14, 18, 0, 39],
+            data: [],
             type: "column",
         },
     ],
