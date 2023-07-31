@@ -99,30 +99,28 @@ export class CtaasSetupComponent implements OnInit {
   }
 
   maintenanceToggle(action: string) {
-    // if (this.featureToggleService.isFeatureEnabled('maintenanceMode')) {
-      if (action === 'enable') {
-        this.dialogService.confirmDialog({
-          title: 'Confirm Maintenance Mode',
-          message: 'Enabling this mode triggers an email notification to the customer, and a corresponding alert will be displayed on both the dashboard and mobile app.',
-          confirmCaption: 'Confirm',
-          cancelCaption: 'Cancel',
-        }).subscribe((confirmed) => {
-          if (confirmed) {
-            this.updateMaintenanceMode(true);
-          }
-        });
-      } else if (action === 'disable'){
-        this.dialogService.confirmDialog({
-          title: 'Disable Maintenance Mode',
-          message: 'Before you disable the maintenance mode, please make sure that everything is operational and running smoothly.',
-          confirmCaption: 'Confirm',
-          cancelCaption: 'Cancel',
-        }).subscribe((confirmed) => {
-          if (confirmed) {
-            this.updateMaintenanceMode(false);
-          }
-        });
-      // }
+    if (action === 'enable') {
+      this.dialogService.confirmDialog({
+        title: 'Confirm Maintenance Mode',
+        message: 'Enabling this mode triggers an email notification to the customer, and a corresponding alert will be displayed on both the dashboard and mobile app.',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      }).subscribe((confirmed) => {
+        if (confirmed) {
+          this.updateMaintenanceMode(true);
+        }
+      });
+    } else if (action === 'disable'){
+      this.dialogService.confirmDialog({
+        title: 'Disable Maintenance Mode',
+        message: 'Before you disable the maintenance mode, please make sure that everything is operational and running smoothly.',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      }).subscribe((confirmed) => {
+        if (confirmed) {
+          this.updateMaintenanceMode(false);
+        }
+      });
     }
   }
 
