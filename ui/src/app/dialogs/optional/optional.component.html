@@ -1,0 +1,19 @@
+<div class="container">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="{confirm: false, download: false}">
+        <mat-icon class="close-icon" color="warn">close</mat-icon>
+      </button>
+    <h1 mat-dialig-title>{{data?.title}}</h1>
+    <div class="flex-container">
+        <mat-dialog-content>
+            <h3 [innerText]="data?.message"></h3>
+        </mat-dialog-content>
+    </div>
+    <mat-dialog-actions>
+        <button mat-raised-button [mat-dialog-close]="{confirm: false, download: true}" id="cancel">
+            {{data?.cancelCaption}}
+        </button>
+        <button class="btn-custom" mat-raised-button [mat-dialog-close]="{confirm: true, download: true}" id="confirm">
+            {{data?.confirmCaption}}
+        </button>
+    </mat-dialog-actions>
+</div>

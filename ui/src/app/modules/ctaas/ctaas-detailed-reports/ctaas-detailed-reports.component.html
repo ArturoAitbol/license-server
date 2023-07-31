@@ -5,8 +5,7 @@
 <ng-template #blankView>
     <div class="jumbotron d-flex align-items-center bg-transparent text-center">
         <div class="container">
-            <img *ngIf="isLoadingResults" height="80" width="80" src="assets/images/spinner.gif"
-                alt="loading spinner gif">
+            <app-loading-spiner [visible]="isLoadingResults" [message]="messageSpiner"></app-loading-spiner>
             <h2 *ngIf="!isLoadingResults">
                 Failed to load the detailed test report. Please reach out to TekVizion support.
             </h2>
@@ -18,10 +17,16 @@
     <div class="row mt-3">
         <div class="col-8">
             <h1 class="text-start text-s" id="title">{{title}}</h1>
-            <h2 class="text-start text-s2" *ngIf="status!=''" id="subtitle">Status: {{status}}</h2>
+            <h2 class="text-start text-s2" *ngIf="sectionFailed && status!==''" id="subtitle">Status: {{status}}</h2>
+            <h2 class="text-start text-s2" *ngIf="!sectionFailed" id="subtitle">Status:
+                <mat-button-toggle-group class="center-toggle" name="favoriteColor" aria-label="Favorite Color">
+                    <mat-button-toggle [checked]="!failedIsChecked" (click)="getAll()" value="green">All</mat-button-toggle>
+                    <mat-button-toggle [checked]="failedIsChecked" (click)="getFailed()"value="blue">Failed</mat-button-toggle>
+                </mat-button-toggle-group>
+            </h2>
         </div>
         <div class="col-4 text-right">
-            <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="downloadDetailedTestReportByType()">
+            <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="isConfirmationRequired()">
                 Download Report
                 <mat-icon>download</mat-icon>
             </button>
@@ -34,28 +39,32 @@
     <div class="row">
         <div class="col-4 table-max-size">
             <h1 class="text-start font-s">Summary</h1>
-            <mat-card class="card summary">
-                <mat-card-content class="summary-card-content">
-                    <table class="table table-hover">
-                        <tbody>
-                            <tr *ngFor="let item of summaryDisplayedColumns">
-                                <th>{{item.header}}</th>
-                                <td>{{reportResponse?.summary[item.value] | na}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </mat-card-content>
-            </mat-card>
+            <div id="summary-table" >
+                <mat-card class="card summary">
+                    <mat-card-content class="summary-card-content">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr *ngFor="let item of summaryDisplayedColumns">
+                                    <th>{{item.header}}</th>
+                                    <td id="{{item.header}}">{{reportResponse?.summary[item.value] | na}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+                </mat-card>
+            </div>
         </div>
         <div class="col-8 table-max-size">
             <h1 class="text-start font-s">Endpoint Resources</h1>
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
+                        <div id="endpoint-resources-table">
+                            <app-data-table id="{{title}} Endpoint Resources" class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
                             [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                             [tableColumns]="endpointDisplayedColumns" (sort)="sortData($event)"></app-data-table>
-                    </mat-card-content>
+                        </div>
+                        </mat-card-content>
                 </mat-card>
             </section>
         </div>
@@ -67,35 +76,35 @@
     <section class="table-section">
         <mat-card class="card" style="height: 400px;overflow: auto;">
             <div class="panel-title-container">
-                <mat-card-content  class="row">
+                <mat-card-content id ="{{title}} Details" class="row">
                 <div>
                     <ng-container class="column-content" *ngIf="detailedTestReport.length > 0" >
                         <div class="fix-header">
                             <mat-accordion class="accordian-container">
                                 <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
                                     <mat-expansion-panel-header>
-                                        <mat-panel-title  class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('testCaseName')"> Test Case
+                                        <mat-panel-title  id = "Test Case Column" class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('testCaseName')"> Test Case
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'testCaseName'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('startTime')"> Start Date
+                                        <mat-panel-title id = "Start Date Column" class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('startTime')"> Start Date
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'startTime'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('from')"> From
+                                        <mat-panel-title id = "From Column" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('from')"> From
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'from'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('fromPolqaAvg')"> From POLQA
+                                        <mat-panel-title id = "From POLQA Column" class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('fromPolqaAvg')"> From POLQA
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'fromPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('to')"> To
+                                        <mat-panel-title id = "To Column" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('to')"> To
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'to'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('toPolqaAvg')"> To POLQA
+                                        <mat-panel-title id = "To POLQA Column" class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('toPolqaAvg')"> To POLQA
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'toPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('status')"> Status
+                                        <mat-panel-title id = "Status Column" class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('status')"> Status
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'status'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
-                                        <mat-panel-title class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('callType')"> Call Type
+                                        <mat-panel-title id = "Call Type Column" class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('callType')"> Call Type
                                             <mat-icon class="small-icon" *ngIf="sortColumn === 'callType'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                                         </mat-panel-title>
                                     </mat-expansion-panel-header>
@@ -111,28 +120,28 @@
                                             {{item.testCaseName | na}}
                                         </span>
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-1 custom-col">
+                                    <mat-panel-title [title]="item.startTime" class="col-12 col-lg-2 col-md-2 col-sm-1 custom-col">
                                         {{item.startTime | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
+                                    <mat-panel-title [title]="item.from?.DID" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
                                         {{item.from?.DID | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="average-col col-xl-1 col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
+                                    <mat-panel-title [title]="'AVGFrom'" class="average-col col-xl-1 col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
                                         Min:{{item.fromPolqaMin | number:'.2' | na }}, Avg:{{item.fromPolqaAvg | number:'.2' | na }}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
+                                    <mat-panel-title [title]="item.to?.DID" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
                                         {{item.to?.DID | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="average-col col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col">
+                                    <mat-panel-title [title]="'AVGTo'" class="average-col col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col">
                                         Min:{{item.toPolqaMin | number:'.2' | na }}, Avg:{{item.toPolqaAvg | number:'.2' | na }}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
+                                    <mat-panel-title [title]="item.status" class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
                                         {{item.status | na}}
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col">
+                                    <mat-panel-title [title]="item.callType" class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col">
                                         {{item.callType | na}}
                                     </mat-panel-title>
-                                    <mat-icon class="arrow-button col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">
+                                    <mat-icon title="{{item.testCaseName}} drop-button" class="arrow-button col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">
                                         {{item.panelOpenState ?
                                         'keyboard_arrow_down' :
                                         'keyboard_arrow_up'
@@ -140,18 +149,18 @@
                                 </mat-expansion-panel-header>
                                 <div style="padding: 1%;">
                                     <div class="row">
-                                        <div class="col-6 chart-max-size">
+                                        <div id="detailed-row" class="col-6 chart-max-size">
                                             <table class="table table-hover">
                                                 <tbody>
                                                     <tr *ngFor="let subitems of detailedTestFeatureandCallReliability">
                                                         <th scope="row" style="width: 40%;"> {{subitems.header |
                                                             na}} </th>
-                                                        <td> {{item[subitems.value] | na}}</td>
+                                                        <td title="{{subitems.header}}"> {{item[subitems.value] | na}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-6 chart-max-size" *ngIf="!item.panelOpenState">
+                                        <div id="DIDdetail" class="col-6 chart-max-size" *ngIf="!item.panelOpenState">
                                             <table>
                                                 <tbody>
                                                     <tr>
@@ -163,13 +172,13 @@
                                                                     (click)="subpanelOpenState('from', i)">
                                                                     <mat-expansion-panel-header
                                                                         style="background-color: white;">
-                                                                        <mat-panel-title>
+                                                                        <mat-panel-title id="DIDFrom">
                                                                             <ul class="inner-accor">
                                                                                 <li> From </li>
-                                                                                <li> {{item.from?.DID | na}} </li>
+                                                                                <li title="from"> {{item.from?.DID | na}} </li>
                                                                             </ul>
                                                                         </mat-panel-title>
-                                                                        <mat-icon>{{getIconByType(item.frompanelOpenState)}}</mat-icon>
+                                                                        <mat-icon title="drop-from">{{getIconByType(item.frompanelOpenState)}}</mat-icon>
                                                                     </mat-expansion-panel-header>
                                                                     <ng-container
                                                                         *ngIf="item.from && item.from.mediaStats && item.from.mediaStats.length > 0; else noMediaStats">
@@ -190,15 +199,15 @@
                                                                                 </mat-select>
                                                                             </mat-form-field>
                                                                         </form>
-                                                                        <table class="table table-hover">
+                                                                        <table id="fromDIDTable" class="table table-hover">
                                                                             <tbody>
                                                                                 <tr
-                                                                                    *ngFor="let key of mediaStatsDisplayedColumns">
-                                                                                    <th scope="row">
-                                                                                        {{key.header}}
-                                                                                    </th>
-                                                                                    <td> {{selectedFromMediaStats[key.value]
-                                                                                        | na}} </td>
+                                                                                *ngFor="let key of mediaStatsDisplayedColumns">
+                                                                                <th scope="row">
+                                                                                    {{key.header}}
+                                                                                </th>
+                                                                                <td title="{{key.header}}"> {{selectedFromMediaStats[key.value]
+                                                                                    | na}} </td>
                                                                                 </tr>
                                                                             </tbody>
                                                                         </table>
@@ -216,13 +225,13 @@
                                                                     (click)="subpanelOpenState('to', i)">
                                                                     <mat-expansion-panel-header
                                                                         style="background-color: white;">
-                                                                        <mat-panel-title>
+                                                                        <mat-panel-title id="DIDTo">
                                                                             <ul class="inner-accor">
                                                                                 <li> To </li>
-                                                                                <li> {{item.to?.DID | na}} </li>
+                                                                                <li title="to">{{item.to?.DID | na}} </li>
                                                                             </ul>
                                                                         </mat-panel-title>
-                                                                        <mat-icon>{{getIconByType(item.topanelOpenState)}}</mat-icon>
+                                                                        <mat-icon title="drop-to">{{getIconByType(item.topanelOpenState)}}</mat-icon>
                                                                     </mat-expansion-panel-header>
                                                                     <ng-container
                                                                         *ngIf="item.to && item.to.mediaStats && item.to.mediaStats.length > 0; else noMediaStats">
@@ -239,19 +248,21 @@
                                                                                 </mat-option>
                                                                             </mat-select>
                                                                         </mat-form-field>
-                                                                        <table class="table table-hover">
-                                                                            <tbody>
-                                                                                <tr
+                                                                        <div id="toDID">
+                                                                            <table id="toDIDTable" class="table table-hover">
+                                                                                <tbody>
+                                                                                    <tr
                                                                                     *ngFor="let key of mediaStatsDisplayedColumns">
                                                                                     <th scope="row">
                                                                                         {{key.header}}
                                                                                     </th>
-                                                                                    <td> {{selectedToMediaStats[key.value]
+                                                                                    <td title="{{key.header}}"> {{selectedToMediaStats[key.value]
                                                                                         | na}}
                                                                                     </td>
                                                                                 </tr>
-                                                                            </tbody>
-                                                                        </table>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
                                                                     </ng-container>
                                                                 </mat-expansion-panel>
 

@@ -20,7 +20,6 @@ export class FeatureToggleGuard implements CanActivate, CanActivateChild {
             return true;
         } else {
             this.snackBarService.openSnackBar('Feature not available', 'Error');
-            console.log('Feature not available')
             return false;
         }
     }
@@ -32,7 +31,6 @@ export class FeatureToggleGuard implements CanActivate, CanActivateChild {
             return true;
         } else {
             this.snackBarService.openSnackBar('Feature not available', 'Error');
-            console.log('Feature not available')
             return false;
         }
     }

@@ -6,11 +6,18 @@
     flex-direction: row;
     align-items: center;
     overflow: hidden;
-    background: #FFBF00;
     margin: 0 0 10px;
     color: black;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     flex-wrap: wrap;
+}
+
+.banner-alert{
+    background: #FFBF00;
+}
+
+.banner-info{
+    background: #C3CBD5;
 }
 
 p.message, p.title {
@@ -18,9 +25,18 @@ p.message, p.title {
     margin-bottom: 0;
 }
 
+.checkbox-margin {
+    margin: 8px 20px 0;
+}
+
 p.title {
     font-weight: bold;
     padding-left: 0;
+}
+
+p.hide-tag{
+    font-size: 10px;
+    cursor: pointer;   
 }
 
 .action-row {

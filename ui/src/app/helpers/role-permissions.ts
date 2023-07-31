@@ -29,7 +29,6 @@ export const permissions = {
     'tekvizion.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -65,6 +64,7 @@ export const permissions = {
             'resetFilter',
             'maintenanceModeCheckbox',
             'viewDetailedReport',
+            'emailNotifications',
             'addSupportEmail',
             'deleteSupportEmail',
         ],
@@ -120,7 +120,7 @@ export const permissions = {
     'tekvizion.SalesAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
+            'spotlight-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -162,7 +162,6 @@ export const permissions = {
     'tekvizion.ConfigTester': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -188,7 +187,9 @@ export const permissions = {
             'resetFilter',
             'maintenanceModeCheckbox',
             'viewDetailedReport',
-            'addSupportEmail'
+            'addSupportEmail',
+            'deleteSupportEmail',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -231,7 +232,6 @@ export const permissions = {
     'tekvizion.IGESAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -299,7 +299,6 @@ export const permissions = {
     'distributor.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -336,7 +335,6 @@ export const permissions = {
     'customer.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -359,7 +357,8 @@ export const permissions = {
             'showLatestNote',
             'resetFilter',
             'request-call',
-            'viewDetailedReport'
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -394,7 +393,6 @@ export const permissions = {
     'customer.SubaccountAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -417,7 +415,8 @@ export const permissions = {
             'showLatestNote',
             'resetFilter',
             'request-call',
-            'viewDetailedReport'
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -454,7 +453,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'visualization',
             'stakeholders',
             'notes',
             'details',
@@ -467,7 +465,8 @@ export const permissions = {
             'showLatestNote',
             'resetFilter',
             'request-call',
-            'viewDetailedReport'
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [],

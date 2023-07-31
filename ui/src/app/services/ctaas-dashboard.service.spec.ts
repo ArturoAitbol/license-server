@@ -52,15 +52,6 @@ describe(' Ctaas dashboard http request test', () => {
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/ctaasDashboardReport' + `/${dashboardData.subAccountId}`, {params})
     });
 
-    it('should make the proper call on getCtaasPowerBiDashboardDetails', (done:DoneFn) => {
-        httpClientSpy.get.and.returnValue(CtaasDashboardServiceMock.getCtaasPowerBiDashboardDetails('fbb2d912-b202-432d-8c07-dce0dad51f7f'));
-        ctaasDashboardService.getCtaasPowerBiDashboardDetails('fbb2d912-b202-432d-8c07-dce0dad51f7f').subscribe({
-            next: () => { done(); },
-            error: done.fail
-        });
-        expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/spotlightDashboard' + `/${'fbb2d912-b202-432d-8c07-dce0dad51f7f'}`)
-    });
-
     it('should make the proper calls on downloadCtaasDashboardDetailedReport', (done: DoneFn) => {
         const blob = new Blob([JSON.stringify(CtaasDashboardServiceMock.dashboardDetailedReport, null, 2)], {
             type: "application/json",

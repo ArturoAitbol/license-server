@@ -25,9 +25,6 @@
     "TAP_PASSWORD": "spotlight123",
     "SUB_ACCOUNT_ADMIN_ANDROID": "test-spotlight-subaccount-admin@tekvizionlabs.com",
     "SUB_ACCOUNT_ADMIN_IOS": "test-functional-subaccount-admin@tekvizionlabs.com",
-    "POWER_BI_CLIENT_ID": "3f9f8d1d-d6d9-4a20-96a5-75788b040286",
-    "POWER_BI_CLIENT_SECRET": "pDHStJCLoW9G6nMaJdl0vysxOJwai2sxa9VM2FgBCeg=",
-    "POWER_BI_TENANT_ID": "079d8d84-e363-4942-8efc-cd1c6a1ea7e2",
       "GEO_CODE_API_KEY": "AAPKbcb7790d07d44f45b22761d4120bcabbsYqk6SpLHbk2fv4uwscansCTMuLM2PK39IutypfBaZ0pAeCt6koQYDbsy6T4wMUX"
   },
   "Host": {

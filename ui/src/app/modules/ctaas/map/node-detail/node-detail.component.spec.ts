@@ -34,10 +34,10 @@ describe('fetch the data for the node', () => {
     it('should open a new window with the data of the node', () => {
         spyOn(window, 'open').and.returnValue(null);
         spyOn(window, 'close').and.returnValue(null);
-        spyOn(nodeComponentInstance,'openNaviteDashboardWithSelectedData').and.callThrough();
+        spyOn(nodeComponentInstance,'openNativeDashboardWithSelectedData').and.callThrough();
 
         fixture.detectChanges();
-        nodeComponentInstance.openNaviteDashboardWithSelectedData();
+        nodeComponentInstance.openNativeDashboardWithSelectedData();
 
         expect(window.open).toHaveBeenCalled();
     });

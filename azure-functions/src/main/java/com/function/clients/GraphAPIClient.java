@@ -24,19 +24,16 @@ public class GraphAPIClient {
      * @return true if the user is created, false if the user already existed
      * @throws Exception
      */
-    static public boolean createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
-        User user = getUserByEmail(userEmail,context);
+    static public void createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
+        User user = getUserByEmail(userEmail, context);
         String userId;
-        boolean res = false;
         if (user != null) {
             context.getLogger().info("Guest user with email "+ userEmail +" already exists in Active Directory (AD). Getting id to assign proper role");
             userId = user.id;
         } else {
-            userId = createGuestUser(userName,userEmail,context);
-            res = true;
+            userId = createGuestUser(userName, userEmail, context);
         }
-        assignRole(userId,role,context);
-        return res;
+        assignRole(userId, role, context);
     }
 
     static public User getUserByEmail(String userEmail, ExecutionContext context) throws ADException {
@@ -52,16 +49,16 @@ public class GraphAPIClient {
     static public String createGuestUser(String userName, String userEmail, ExecutionContext context) throws ADException {
         String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
         try {
-            Invitation invitation = GraphAPIServiceClient.getInstance().inviteGuestUser(userName,userEmail,inviteRedirectUrl);
+            Invitation invitation = GraphAPIServiceClient.getInstance().inviteGuestUser(userName, userEmail, inviteRedirectUrl);
             User invitedUser = invitation.invitedUser;
             if (invitedUser == null) return null;
             context.getLogger().info("Guest user created successfully: " + invitedUser.id);
             return invitedUser.id;
         } catch (ClientException e) {
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("userName",userName);
-            jsonBody.put("userEmail",userEmail);
-            jsonBody.put("inviteRedirectUrl",inviteRedirectUrl);
+            jsonBody.put("userName", userName);
+            jsonBody.put("userEmail", userEmail);
+            jsonBody.put("inviteRedirectUrl", inviteRedirectUrl);
             context.getLogger().severe("Graph Method Called: inviteGuestUser, Request body: "+ jsonBody);
             context.getLogger().severe("Error Response:" + e.getMessage());
             throw new ADException("Create a guest user failed (AD): " + e.getMessage());
@@ -258,21 +255,29 @@ public class GraphAPIClient {
     } 
 	
 	static public User updateUserProfile(String userEmail, String displayName, String jobTitle, String companyName, String mobilePhone, ExecutionContext context) throws Exception {
-	     User user = getUserProfileByEmail(userEmail,context);
-	     if (user != null) {
-            try {
-                GraphAPIServiceClient.getInstance().updateUserProfile(user.id, displayName, jobTitle, companyName, mobilePhone);
-            } catch(Exception e) {
-                context.getLogger().severe("Request url: GraphServiceClient, Request params: "+ user.id + ", " + displayName + ", " + jobTitle + ", " + companyName + ", " + mobilePhone);
-                context.getLogger().severe("Error response: " + e.getMessage()); 
-                throw new	  ADException("Failed to update user details (AD): " + userEmail);
-            }
-	     } else {
-             context.getLogger().severe("No user found with given email (AD): " + userEmail);
-             throw new ADException("No user found with given email (AD): " + userEmail);
-	     }
-         return user;
+        User user = getUserProfileByEmail(userEmail,context);
+        if (user != null) {
+            updateUser(user.id, displayName, jobTitle, companyName, mobilePhone, context);
+        } else {
+            context.getLogger().severe("No user found with given email (AD): " + userEmail);
+            context.getLogger().info("Creating user with given email (AD): " + userEmail);
+            String userId = createGuestUser(displayName, userEmail, context);
+            assignRole(userId, SUBACCOUNT_ADMIN, context);
+            updateUser(userId, displayName, jobTitle, companyName, mobilePhone, context);
+            // throw new ADException("No user found with given email (AD): " + userEmail);
+        }
+        return user;
 	}
+    
+    static private void updateUser(String userId, String displayName, String jobTitle, String companyName, String mobilePhone, ExecutionContext context) throws Exception {
+        try {
+            GraphAPIServiceClient.getInstance().updateUserProfile(userId, displayName, jobTitle, companyName, mobilePhone);
+        } catch(Exception e) {
+            context.getLogger().severe("Request url: GraphServiceClient, Request params: "+ userId + ", " + displayName + ", " + jobTitle + ", " + companyName + ", " + mobilePhone);
+            context.getLogger().severe("Error response: " + e.getMessage()); 
+            throw new ADException("Failed to update user details (AD): " + userId);
+        }
+    }
 	
 	static public String getAppRole(String userId, String userEmail, ExecutionContext context) throws Exception {
 		List<AppRoleAssignment> appRoleAssignments = getUserAppRoleAssignments(userId,context);

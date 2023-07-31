@@ -163,21 +163,23 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
     obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, true));
     obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, true));
     this.qualitySubscriber =  forkJoin(obs).subscribe((res: any) => {
+      try {
+        this.networkTrendsData = res[0];
+        this.setSummaryData(res[1]);
+        this.customerNetworkQualityData = res[2];
 
-      this.networkTrendsData = res[0];
-      this.setSummaryData(res[1]);
-      this.customerNetworkQualityData = res[2];
-
-      this.isChartLoading = false;
-      this.hideChart = false;
-      this.chartLoadCompleted();
+        this.isChartLoading = false;
+        this.hideChart = false;
+        this.chartLoadCompleted();
+      } catch (error) {
+        console.error(error);
+      }
     }, error => {
       console.error(error);
       this.hideChart = false;
       this.chartLoadCompleted();
     });
   }
-
 
   setSummaryData(summary){
     this.summary.totalCalls = summary.totalCalls;

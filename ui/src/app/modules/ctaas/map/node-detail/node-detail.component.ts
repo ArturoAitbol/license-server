@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import moment from 'moment';
+import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
 
@@ -45,10 +46,10 @@ export class NodeDetailComponent implements OnInit {
     this.dialogRef.close(type);
   }
 
-  openNaviteDashboardWithSelectedData(){
+  openNativeDashboardWithSelectedData(){
     const startDate = moment.utc(this.data.date).format("YYYY-MM-DD HH:mm:ss");
     const location = this.data.region.city + ", " + this.data.region.state + ", " + this.data.region.country;
-    const url = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.selectedSubaccount.id}&location=${location}&date=${startDate}`;
+    const url = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.selectedSubaccount.id}&location=${location}&date=${startDate}`;
     window.open(url);
   }
 }

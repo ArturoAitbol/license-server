@@ -114,9 +114,8 @@ public class TekvLSModifyAuthUserProfile {
 					context.getLogger().info("Ignoring exception: " + e);
 				}
 			}
-			if (optionalParamsFound == 0) {
-				updateADUser(authEmail, subaccountId, jobj, context);
-				return request.createResponseBuilder(HttpStatus.OK).build();
+			if(jobj.has("emailNotifications")) {
+				queryBuilder.appendValueModification("email_notifications", String.valueOf(jobj.getBoolean("emailNotifications")), QueryBuilder.DATA_TYPE.BOOLEAN);
 			}
 			queryBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
 

@@ -1,6 +1,7 @@
 import { Utility } from "./utils";
 import { FormControl, FormGroup } from "@angular/forms";
 import { renewalDateValidator } from "./renewal-date.validator";
+import { Constants } from "./constants";
 
 describe('testing changing utils', () => {
 
@@ -109,7 +110,7 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions(['tekvizion.FullAdmin'], [{
             "name": "Dashboard",
-            "path": "visualization",
+            "path": Constants.SPOTLIGHT_DASHBOARD_PATH,
             "active": true,
             "materialIcon": "dashboard"
         }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");
@@ -121,7 +122,7 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions([null], [{
             "name": "Dashboard",
-            "path": "visualization",
+            "path": Constants.SPOTLIGHT_DASHBOARD_PATH,
             "active": true,
             "materialIcon": "dashboard"
         }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");

@@ -102,6 +102,9 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 				context.getLogger().info("Ignoring exception: " + e);
 			}
 		}
+		if (jobj.has("emailNotifications")) {
+			queryBuilder.appendValueModification("email_notifications", String.valueOf(jobj.getBoolean("emailNotifications")), QueryBuilder.DATA_TYPE.BOOLEAN);
+		}
 		queryBuilder.appendWhereStatement("subaccount_admin_email", email, QueryBuilder.DATA_TYPE.VARCHAR);
 
 		SelectQueryBuilder subaccountIdQuery = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
@@ -150,7 +153,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 
 	private enum OPTIONAL_PARAMS {
 		NOTIFICATIONS("notifications", "notifications", QueryBuilder.DATA_TYPE.VARCHAR);
-
+		
 		private final String jsonAttrib;
 		private final String columnName;
 		private final String dataType;

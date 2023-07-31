@@ -345,9 +345,7 @@ public class TekvLSModifyCtaasSetupById {
         TAP_URL("tapUrl", "tap_url", QueryBuilder.DATA_TYPE.VARCHAR),
         STATUS("status", "status", QueryBuilder.DATA_TYPE.VARCHAR),
         ON_BOARDING_COMPLETE("onBoardingComplete", "on_boarding_complete", QueryBuilder.DATA_TYPE.BOOLEAN),
-        MAINTENANCE("maintenance", "maintenance", QueryBuilder.DATA_TYPE.BOOLEAN),
-        POWERBI_WORKSPACE_ID("powerBiWorkspaceId", "powerbi_workspace_id", QueryBuilder.DATA_TYPE.VARCHAR),
-        POWERBI_REPORT_ID("powerBiReportId", "powerbi_report_id", QueryBuilder.DATA_TYPE.VARCHAR);
+        MAINTENANCE("maintenance", "maintenance", QueryBuilder.DATA_TYPE.BOOLEAN);
 
         private final String jsonAttrib;
         private final String columnName;

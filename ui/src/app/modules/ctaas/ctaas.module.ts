@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CtaasRoutingModule } from './ctaas-routing.module';
-import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
@@ -33,11 +32,11 @@ import { LineDetailComponent } from './map/line-detail/line-detail.component';
 import { MapComponent } from './map/map.component';
 import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polqa-graphs/polqa-graphs.component';
 import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
+import { LoadingSpinerComponent } from '../../generics/loading-spiner/loading-spiner.component';
 
 
 @NgModule({
   declarations: [
-    CtaasDashboardComponent,
     OnboardWizardComponent,
     CtaasTestSuitesComponent,
     CtaasStakeholderComponent,
@@ -63,6 +62,7 @@ import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/ne
     LineDetailComponent,
     PolqaGraphsComponent,
     NetworkTrendsComponent,
+    LoadingSpinerComponent,
   ],
   imports: [
     CommonModule,

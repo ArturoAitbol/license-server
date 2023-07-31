@@ -14,6 +14,8 @@ import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.clients.EmailClient;
 import com.function.util.Constants;
+import com.function.util.FeatureToggleService;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.function.auth.Resource;
@@ -89,13 +91,12 @@ public class TekvLSCreateSubaccountStakeHolder {
 		}
 
 		String subaccountId = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value);
-
+		
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT COUNT(subaccount_admin_email) FROM subaccount_admin");
 		queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
-		
-		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid) RETURNING subaccount_admin_email;";
+		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, email_notifications) VALUES (?, ?::uuid, ?::boolean) RETURNING subaccount_admin_email;";
 		if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
-			sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, notifications) VALUES (?, ?::uuid, ?) RETURNING subaccount_admin_email;";
+			sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, notifications, email_notifications) VALUES (?, ?::uuid, ?, ?::boolean) RETURNING subaccount_admin_email;";
 		}
 
 		final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?:: uuid";
@@ -113,7 +114,10 @@ public class TekvLSCreateSubaccountStakeHolder {
 			stakeholderset = subaccountStakeholders.executeQuery();
 			if (stakeholderset.next())
 				subaccountUsersCount = stakeholderset.getInt(1);
-			if (subaccountUsersCount < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT) {
+			int limit = Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
+			if (FeatureToggleService.isFeatureActiveBySubaccountId("multitenant-demo-subaccount", subaccountId))
+				limit = Constants.STAKEHOLDERS_LIMIT_PER_DEMO_SUBACCOUNT;
+			if (subaccountUsersCount < limit) {
 					context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 				// Check if ctaas_setup exists and is on Ready status else return Bad Request
@@ -127,8 +131,10 @@ public class TekvLSCreateSubaccountStakeHolder {
 					statement.setString(2, subaccountId);
 					if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
 						statement.setString(3, jobj.getString(OPTIONAL_PARAMS.NOTIFICATIONS.value));
+						statement.setBoolean(4, jobj.getBoolean(OPTIONAL_PARAMS.EMAIL_NOTIFICATIONS.value));
+					} else {
+						statement.setBoolean(3, jobj.getBoolean(OPTIONAL_PARAMS.EMAIL_NOTIFICATIONS.value));
 					}
-
 					String userId = getUserIdFromToken(tokenClaims, context);
 					context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
 					ResultSet rs = statement.executeQuery();
@@ -138,19 +144,16 @@ public class TekvLSCreateSubaccountStakeHolder {
 					json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
 					try {
 						context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
-						if (GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context))
-							EmailClient.sendStakeholderWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value),
-																	jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value),
-																	jobj.getString(MANDATORY_PARAMS.NAME.value),
-																	subaccountId,
-																	context);
+						GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context);
+						EmailClient.sendStakeholderWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(OPTIONAL_PARAMS.COMPANY_NAME.value),
+							jobj.getString(MANDATORY_PARAMS.NAME.value), subaccountId, context);
 					} catch (Exception e) {
 						context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
 					}
 					try {
 						context.getLogger().info("Updating user profile at Azure AD : " + jobj);
 						GraphAPIClient.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value),
-														jobj.getString(MANDATORY_PARAMS.JOB_TITLE.value), jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value), jobj.getString(MANDATORY_PARAMS.PHONE_NUMBER.value), context);
+							jobj.getString(OPTIONAL_PARAMS.JOB_TITLE.value), jobj.getString(OPTIONAL_PARAMS.COMPANY_NAME.value), jobj.getString(OPTIONAL_PARAMS.PHONE_NUMBER.value), context);
 						context.getLogger().info("Updated user profile at Azure AD : " + jobj);
 					} catch (Exception e) {
 						context.getLogger().info("Failed to update user at azure AD.  Exception: " + e.getMessage());
@@ -163,7 +166,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 				}
 			} else {
 				JSONObject json = new JSONObject();
-				json.put("error", "The maximum amount of users per customer (" + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ") has been reached");
+				json.put("error", "The maximum amount of users (" + limit + ") has been reached");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}    	
 		} catch (SQLException e) {
@@ -183,10 +186,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 	private enum MANDATORY_PARAMS {
 		SUBACCOUNT_ID("subaccountId"),
 		SUBACCOUNT_ADMIN_EMAIL("subaccountAdminEmail"),
-		NAME("name"),
-		JOB_TITLE("jobTitle"),
-		COMPANY_NAME("companyName"),
-		PHONE_NUMBER("phoneNumber");
+		NAME("name");
 
 		private final String value;
 
@@ -196,7 +196,11 @@ public class TekvLSCreateSubaccountStakeHolder {
 	}
 
 	private enum OPTIONAL_PARAMS {
-		NOTIFICATIONS("notifications");
+		NOTIFICATIONS("notifications"),
+		EMAIL_NOTIFICATIONS("emailNotifications"),
+		JOB_TITLE("jobTitle"),
+		COMPANY_NAME("companyName"),
+		PHONE_NUMBER("phoneNumber");
 
 		private final String value;
 

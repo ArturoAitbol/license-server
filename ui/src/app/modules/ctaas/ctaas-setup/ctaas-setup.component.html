@@ -85,7 +85,7 @@
             <div class="col-md-6">
                 <mat-card *ngIf="ctaasSetupId">
                     <mat-card-title>
-                        <h1 mat-dialig-title id="setup-title">Support Emails</h1>
+                        <h1 mat-dialig-title id="support-emails-title">Support Emails</h1>
                     </mat-card-title>
                     <mat-card-content>
                         <div class="row">
@@ -112,7 +112,7 @@
                                             <div class="form-row d-flex justify-content-center align-items-center" [formGroupName]="i">
                                                 <mat-form-field appearance="outline" class="col-10 mb-0">
                                                     <mat-label>Email</mat-label>
-                                                    <input id="email" type="email" placeholder="Enter a valid email" aria-label="Email" matInput
+                                                    <input [id]="'email-'+ i" type="email" placeholder="Enter a valid email" aria-label="Email" matInput
                                                             formControlName="email">
                                                     <mat-error *ngIf="emailForm.controls['email'].errors?.repeatedEmail">Support email already exists</mat-error>
                                                 </mat-form-field>
@@ -125,12 +125,12 @@
                                     </ng-container>
                                 </form>
                                 <div class="d-flex justify-content-between">
-                                    <button mat-mini-fab color="primary" type="button" class="mb-3 mt-3" id="addButton" title="Add email"
+                                    <button mat-mini-fab color="primary" type="button" class="mb-3 mt-3" id="add-email-button" title="Add email"
                                     (click)="addEmailForm()">
                                         <mat-icon>add</mat-icon>
                                     </button>
                                     <div *ngIf="emailForms.controls.length !== 0">
-                                        <button class="m-2" color="primary" mat-raised-button (click)="addSupportEmails()" [disabled]="!supportEmailsForm.valid" mat-button>
+                                        <button id="save-email-button" class="m-2" color="primary" mat-raised-button (click)="addSupportEmails()" [disabled]="!supportEmailsForm.valid" mat-button>
                                             Save
                                         </button>
                                         <button color="warn" mat-raised-button (click)="clearNewSupportEmails()" mat-button>

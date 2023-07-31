@@ -12,7 +12,6 @@ export class Constants {
     // relevant URLs
     public static readonly CUSTOMERS_DASHBOARD_VIEW_PATH: string = '/customers-dashboard';
     public static readonly STAKEHOLDERS_VIEW_PATH: string = '/spotlight/stakeholders';
-    public static readonly POWERBI_DASHBOARD_PATH: string = '/spotlight/visualization';
     public static readonly SPOTLIGHT_DASHBOARD_PATH: string = '/spotlight/spotlight-dashboard';
 
     // Session Storage Keys
@@ -34,7 +33,10 @@ export class Constants {
 
     // Alert messages
     public static readonly MAINTENANCE_MODE_ALERT = "The UCaaS Continuous Testing Service is currently experiencing limited functionality due to ongoing maintenance. " +
-        "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
+    "Please note that during this maintenance period, the dashboard, map, adding new notes and detailed test reports are not available.";
+    
+    // Info messages
+    public static readonly UTC_DATE_INFO = "All the following results are displayed in UTC Time Zone";
 
     // Types contants
     public static readonly SANDBOX_DEVICE_TYPE = 'Sandbox';
@@ -48,7 +50,7 @@ export class Constants {
     public static readonly DASHBOARD_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
     public static readonly DASHBOARD_NOTE_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
     public static readonly REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS = 30 * 60 * 1000; // 30 minutes * 60 seconds * 1000 milliseconds
-    public static readonly LOGIN_TIMEOUT = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
+    public static readonly LOGIN_TIMEOUT = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
 
 }
 

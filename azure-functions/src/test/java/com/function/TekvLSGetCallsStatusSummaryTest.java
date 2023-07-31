@@ -7,7 +7,6 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -125,7 +124,6 @@ public class TekvLSGetCallsStatusSummaryTest extends TekvLSTest {
     @Test
     public void sqlExceptionTest() {
         //Given
-        String subaccountId = "f5a60920-8b70-4a10-9dc8-9536bdb5652c";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
 
         //When - Action

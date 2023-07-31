@@ -1,0 +1,14 @@
+<div id="spotlightLoading" class="lights-container" *ngIf="visible">
+    <div>
+        <div class="spotlight"></div>
+    </div>
+    <div>
+        <div class="mirror-spotlight"></div>
+    </div>
+</div>
+
+<figure id="spinnerLoading" *ngIf="visible" class="reportLoading">
+    <img class="spinner" height="80" width="80" src="assets/images/spinner.gif"
+    alt="loading spinner gif">
+    <figcaption class= "loadingMessage">{{message}}</figcaption>
+</figure>

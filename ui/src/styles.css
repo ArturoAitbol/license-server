@@ -582,6 +582,13 @@ ngx-intl-tel-input input:focus {
 	box-shadow: 0 0 0 0 #000;
 }
 
+ngx-intl-tel-input input:invalid {
+	outline: none !important;
+	border-color: #f44336;
+  border-width: 2px;
+	box-shadow: 0 0 0 0 #000;
+}
+
 ngx-intl-tel-input input::-webkit-input-placeholder {
 	color: #8a8a8a;
 }

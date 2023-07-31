@@ -40,7 +40,13 @@ Feature: CtaasSetup
       | azureResourceGroup  | az_tap_rg                                  |
       | tapUrl              | https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT   |
       | status              | READY                                      |
+    And I add the following support emails
+      | test-1@example.com |
+      | test-2@example.com |
     Then I should see the modified data in spotlight configuration view
+    #And I should see the following emails in the support emails section
+    #  | test-1@example.com |
+    #  | test-2@example.com |
 
   @verifyLicenseConsumption
   Scenario: Verify license consumption created by spotlight setup

@@ -11,7 +11,7 @@ import {AddNotesComponent} from './add-notes/add-notes.component';
 import { Note } from 'src/app/model/note.model';
 import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { DatePipe } from '@angular/common';
-import { BannerService } from "../../../services/alert-banner.service";
+import { BannerService } from "../../../services/banner.service";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import { Subject } from "rxjs";
 import { Constants } from 'src/app/helpers/constants';
@@ -165,7 +165,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      */
     viewDashboard(note: Note): void{
         if (this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id)) {
-            const featureUrl = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
+            const featureUrl = `${environment.BASE_URL}/#/spotlight/${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
             window.open(featureUrl);
         } else
             this.openDialog(this.VIEW_DASHBOARD,note);
@@ -258,7 +258,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             const ctaasSetupDetails = res['ctaasSetups'][0];
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
-                this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+                this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy, "alert");
                 this.maintenanceModeEnabled = true;
             }
             this.getActionMenuOptions();
