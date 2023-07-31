@@ -61,7 +61,7 @@ const beforeEachFunction = waitForAsync(() => {
     });
 });
 
-fdescribe('PolqaGraphsComponent', () => {
+describe('PolqaGraphsComponent', () => {
   beforeEach(beforeEachFunction);
   beforeEach(() => {
     fixture.detectChanges();
