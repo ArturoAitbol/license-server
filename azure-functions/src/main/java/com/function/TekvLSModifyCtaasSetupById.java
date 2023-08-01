@@ -79,9 +79,9 @@ public class TekvLSModifyCtaasSetupById {
                 TAPClient.getAccessToken(jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib), context);
             }
         } catch (Exception e) {
-            context.getLogger().info("info: The provided TAP URL is incorrect");
+            context.getLogger().info("Couldn't connect with the TAP provided, please review it and try again");
             JSONObject json = new JSONObject();
-            json.put("error", "The provided TAP URL is incorrect");
+            json.put("error", "Couldn't connect with the TAP provided, please review it and try again");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
