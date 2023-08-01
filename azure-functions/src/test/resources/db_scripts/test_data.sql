@@ -233,13 +233,10 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	
 COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 34859fba-9987-4a1c-b176-14569b331653	f	pfernandez@tekvizionlabs.com	Subaccount User Creation For License Service	ad-license-service-user-creation
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
-74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb	t	vtorrico@tekvizionlabs.com	Portal Callback	callback
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
 e83e94d8-563f-4a06-8aa8-b7bfbaeb7f15	t	vtorrico@tekvizionlabs.com	map 	mapFeature
-0e709699-3dab-47f1-a710-ebd2ae78d57b	t	\N	Maintenance Mode	maintenanceMode
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Historical Native Dashboard for Notes	spotlight-historical-dashboard
-7564aab0-5331-4ab5-85f7-e37acbdfd90d	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
 be612704-c26e-48ea-ab9b-19312f03d644	t	pfernandez@tekvizionlabs.com	Send Welcome Email to SpotLight customers	welcomeEmail
 eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	t	pfernandez@tekvizionlabs.com	Multitenant demo subaccount for UCaaS CT	multitenant-demo-subaccount
 \.

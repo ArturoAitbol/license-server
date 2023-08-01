@@ -70,7 +70,7 @@ export class DetailedReportsComponent implements OnInit {
     packetLoss: {count: 0, sum: 0},
     bitrate: {count: 0, sum: 0},
   };
-  messageSpiner = 'Please wait while we prepare your call report.';
+  messageSpinner = 'Please wait while we prepare your call report.';
   filterByAvg = 0;
   sectionFailed = false;
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
