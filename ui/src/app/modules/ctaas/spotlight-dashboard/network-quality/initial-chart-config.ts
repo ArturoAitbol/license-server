@@ -104,7 +104,7 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "POLQA",
-            data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+            data: []
         }
     ],
     chart: {
@@ -184,7 +184,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: 'Packet Loss',
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
     ],
     yAxis: {
@@ -256,7 +256,7 @@ const defaultPolqaPacketLossChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: 'Packet Loss',
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
     ],
     yAxis: {
@@ -328,7 +328,7 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Jitter",
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
     ],
     yAxis:
@@ -401,7 +401,7 @@ const defaultPolqaJitterChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Jitter",
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
     ],
     yAxis:
@@ -474,7 +474,7 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Sent Bitrate",
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
     ],
     yAxis:
@@ -548,7 +548,7 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Round Trip Time",
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
     ],
     yAxis:
@@ -621,7 +621,7 @@ const defaultPolqaRoundtripTimeChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Round Trip Time",
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+            data: []
         },
     ],
     yAxis:
