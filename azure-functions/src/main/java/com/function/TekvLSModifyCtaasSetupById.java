@@ -74,6 +74,17 @@ public class TekvLSModifyCtaasSetupById {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
+        try {
+            if (jobj.has(OPTIONAL_PARAMS.TAP_URL.jsonAttrib)) {
+                TAPClient.getAccessToken(jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib), context);
+            }
+        } catch (Exception e) {
+            context.getLogger().info("info: The provided TAP URL is incorrect");
+            JSONObject json = new JSONObject();
+            json.put("error", "The provided TAP URL is incorrect");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
+
         // validate SpotLight setup completion
         Boolean isSetupReady = jobj.has(OPTIONAL_PARAMS.STATUS.jsonAttrib)
                 && jobj.getString(OPTIONAL_PARAMS.STATUS.jsonAttrib)
@@ -185,13 +196,6 @@ public class TekvLSModifyCtaasSetupById {
             // check if TAP URL attribute exists
             if (jobj.has(OPTIONAL_PARAMS.TAP_URL.jsonAttrib)) {
                 final String TAP_URL = jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib);
-                try {
-                    TAPClient.getAccessToken(jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib), context);
-                } catch (Exception e) {
-                    context.getLogger().info("info: the TAP is incorrect");
-                    json.put("error", "The TAP is incorrect");
-                    return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-                }
                 // Build JSONObject from customer details result set
                 JSONObject customerDetailsJsonObject = null;
                 if (customerAndSubAccountDetails != null) {
