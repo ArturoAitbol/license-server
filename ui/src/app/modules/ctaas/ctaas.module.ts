@@ -30,7 +30,7 @@ import { CallbackTimerComponent } from './callback/callback-timer/callback-timer
 import { NodeDetailComponent } from './map/node-detail/node-detail.component';
 import { LineDetailComponent } from './map/line-detail/line-detail.component';
 import { MapComponent } from './map/map.component';
-import { LoadingSpinerComponent } from '../../generics/loading-spiner/loading-spiner.component';
+import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-spinner.component';
 
 
 @NgModule({
@@ -58,7 +58,7 @@ import { LoadingSpinerComponent } from '../../generics/loading-spiner/loading-sp
     CallbackTimerComponent,
     NodeDetailComponent,
     LineDetailComponent,
-    LoadingSpinerComponent,
+    LoadingSpinnerComponent,
   ],
   imports: [
     CommonModule,
