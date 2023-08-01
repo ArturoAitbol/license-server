@@ -1751,7 +1751,7 @@
 							"    pm.expect(pm.response.json().series[\"total\"]).to.be.an(\"array\");\r",
 							"\r",
 							"    pm.expect(pm.response.json().series[\"total\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
-							"    pm.expect(pm.response.json().series[\"total\"][0].data[0][\"y\"]).to.eql(0);\r",
+							"    pm.expect(pm.response.json().series[\"total\"][0].data[0][\"y\"]).to.eql(2);\r",
 							"    pm.expect(pm.response.json().series[\"total\"][0].name).to.eql(\"07-15-2023\");\r",
 							"    \r",
 							"\r",
@@ -1760,15 +1760,15 @@
 							"    pm.expect(pm.response.json().series[\"failed\"][0].name).to.eql(\"07-15-2023\");\r",
 							"\r",
 							"    pm.expect(pm.response.json().series[\"passed\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
-							"    pm.expect(pm.response.json().series[\"passed\"][0].data[0][\"y\"]).to.eql(0);\r",
+							"    pm.expect(pm.response.json().series[\"passed\"][0].data[0][\"y\"]).to.eql(2);\r",
 							"    pm.expect(pm.response.json().series[\"passed\"][0].name).to.eql(\"07-15-2023\");\r",
 							"\r",
-							"    pm.expect(pm.response.json().summary[\"totalCalls\"]).to.eql(308);\r",
-							"    pm.expect(pm.response.json().summary[\"failedCalls\"]).to.eql(7);\r",
+							"    pm.expect(pm.response.json().summary[\"totalCalls\"]).to.eql(769);\r",
+							"    pm.expect(pm.response.json().summary[\"failedCalls\"]).to.eql(6);\r",
 							"\r",
-							"    pm.expect(pm.response.json().maxValues[\"total\"]).to.eql(10);\r",
-							"    pm.expect(pm.response.json().maxValues[\"failed\"]).to.eql(3);\r",
-							"    pm.expect(pm.response.json().maxValues[\"passed\"]).to.eql(10);\r",
+							"    pm.expect(pm.response.json().maxValues[\"total\"]).to.eql(14);\r",
+							"    pm.expect(pm.response.json().maxValues[\"failed\"]).to.eql(1);\r",
+							"    pm.expect(pm.response.json().maxValues[\"passed\"]).to.eql(14);\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1779,7 +1779,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/spotlightCharts/callsStatusHeatMap?startDate=2023-07-15%2000:00:00&endDate=2023-07-21%2019:23:44&subaccountId={{subaccountIdNativeDashboard}}&regions=%5B%7B%22country%22:%22United%20States%22,%22state%22:%22IL%22,%22city%22:%22Chicago%22,%22displayName%22:%22Chicago,%20IL,%20United%20States%22%7D%5D",
+					"raw": "{{HOST}}/spotlightCharts/callsStatusHeatMap?startDate=2023-07-15%2000:00:00&endDate=2023-07-21%2019:23:44&subaccountId={{subaccountIdNativeDashboard}}",
 					"host": [
 						"{{HOST}}"
 					],
@@ -1794,15 +1794,11 @@
 						},
 						{
 							"key": "endDate",
-							"value": "2023-07-21%2019:23:44"
+							"value": "2023-07-21%2023:59:59"
 						},
 						{
 							"key": "subaccountId",
 							"value": "{{subaccountIdNativeDashboard}}"
-						},
-						{
-							"key": "regions",
-							"value": "%5B%7B%22country%22:%22United%20States%22,%22state%22:%22IL%22,%22city%22:%22Chicago%22,%22displayName%22:%22Chicago,%20IL,%20United%20States%22%7D%5D"
 						}
 					]
 				}
