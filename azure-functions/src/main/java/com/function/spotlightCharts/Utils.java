@@ -75,7 +75,7 @@ public class Utils {
         MEDIA_STATS_METRICS.PACKET_LOSS.value() + "', '" + MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "', '" + 
         MEDIA_STATS_METRICS.BITRATE.value() + "', '" + MEDIA_STATS_METRICS.POLQA.value();
     // Default query clauses 
-    public static String CONSIDERED_FAILURES_SUBQUERY = "((sr.status = 'PASSED' AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype) = '')) OR sr.failingerrortype = 'Routing' OR sr.failingerrortype = 'Teams Client' OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')"; 
+    public static String CONSIDERED_FAILURES_SUBQUERY = "((sr.status = 'PASSED' AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype) = '')) OR sr.failingerrortype = 'Routing' OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')"; 
     public static String CONSIDERED_STATUS_SUBQUERY = "(sr.status = 'PASSED' OR sr.status = 'FAILED')"; 
     
     // Methods
