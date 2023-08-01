@@ -55,6 +55,15 @@ mat-form-field {
     color: #6E76B4;
 }
 
+.value-description{
+    font-size: 13px;
+    color: #8d8d8d;
+}
+
+.network-trends,.polqa-charts {
+    font-size: 22px;
+}
+
 @media (max-width: 600px) {
     .metrics-values mat-icon{
         align-items: center;

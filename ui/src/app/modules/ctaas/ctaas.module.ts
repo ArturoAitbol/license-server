@@ -30,6 +30,8 @@ import { CallbackTimerComponent } from './callback/callback-timer/callback-timer
 import { NodeDetailComponent } from './map/node-detail/node-detail.component';
 import { LineDetailComponent } from './map/line-detail/line-detail.component';
 import { MapComponent } from './map/map.component';
+import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polqa-graphs/polqa-graphs.component';
+import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
 import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-spinner.component';
 
 
@@ -58,6 +60,8 @@ import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-
     CallbackTimerComponent,
     NodeDetailComponent,
     LineDetailComponent,
+    PolqaGraphsComponent,
+    NetworkTrendsComponent,
     LoadingSpinnerComponent,
   ],
   imports: [

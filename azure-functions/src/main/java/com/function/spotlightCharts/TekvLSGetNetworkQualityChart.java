@@ -92,37 +92,42 @@ public class TekvLSGetNetworkQualityChart {
 		while (metricsArray.hasNext()) {
 			String metric = metricsArray.next();
 			String selector = "avg";
+			String avgSelector = "avg";
+			String value = "";
+			String conditionStatement = "(case when ms.parameter_name = '%s' " +
+					"then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"%s\"";
 			switch (metric) {
 				case "Received Jitter":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + 
-						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "\"");
-					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.JITTER.value());
+					selector = "max";
+					value = Utils.MEDIA_STATS_METRICS.JITTER.value();
 					break;
 				case "Received packet loss":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + 
-						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "\"");
-					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value());
+					selector = "max";
+					value = Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value();
 					break;
 				case "Round trip time":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + 
-						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "\"");
-					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value());
+					selector = "max";
+					value = Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value();
 					break;
 				case "Sent bitrate":
 					// here the average is always the most representative value
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + 
-						"' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "\"");
-					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.BITRATE.value());
+					value = Utils.MEDIA_STATS_METRICS.BITRATE.value();
 					break;
 				case "POLQA":
-					if (averageFlag.isEmpty()) selector = "min";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + 
-						"' then CAST(ms.parameter_value AS numeric) end) as \"" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "\"");
-					statisticsLabels.add(Utils.MEDIA_STATS_METRICS.POLQA.value());
+					selector = "min";
+					value = Utils.MEDIA_STATS_METRICS.POLQA.value();
+					conditionStatement = "(case when ms.parameter_name = '%s' then CAST(ms.parameter_value AS numeric) end) as \"%s\"";
 					break;
+			}
+			if(!value.isEmpty()){
+				if (!averageFlag.isEmpty() && !avgSelector.equals(selector)){
+					String columnName = avgSelector+ " " + value;
+					statistics.append(avgSelector).append(String.format(conditionStatement,value,columnName));
+					statistics.append(",");
+					statisticsLabels.add(columnName);
+				}
+				statistics.append(selector).append(String.format(conditionStatement,value,value));
+				statisticsLabels.add(value);
 			}
 			if (metricsArray.hasNext()) {
 				 statistics.append(",");

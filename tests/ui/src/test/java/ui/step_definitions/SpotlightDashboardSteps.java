@@ -153,28 +153,20 @@ public class SpotlightDashboardSteps {
     @And("I should see the POLQA charts with the following data")
     public void iShouldSeeThePolqaChartWithTheFollowingData(DataTable dataTable){
         List<Map<String, String>> expectedValues = dataTable.asMaps(String.class, String.class);
-        Map<String,Map<String, String>> jitterVsPolqa = this.networkQualityCharts.getPolqaChartValues("Jitter");
-        Map<String,Map<String, String>> packetLossVsPolqa = this.networkQualityCharts.getPolqaChartValues("Packet Loss");
-        Map<String,Map<String, String>> roundTripTimeVsPolqa = this.networkQualityCharts.getPolqaChartValues("Round Trip Time");
+        Map<String,Map<String, String>> polqaCallsMediaStats = this.networkQualityCharts.getPolqaChartValues();
+
+        List<String> metrics = Arrays.asList("Min. POLQA","Avg. POLQA",
+                                            "Max. Jitter","Avg. Jitter",
+                                            "Max. Packet Loss","Avg. Packet Loss",
+                                            "Max. Round Trip Time","Avg. Round Trip Time");
 
         for (Map<String, String> expectedValue : expectedValues) {
-            String timelapse = expectedValue.get("Timelapse");
-            Map<String, String> jitterVsPolqaValues = jitterVsPolqa.getOrDefault(timelapse,null);
-            Map<String, String> packetLossVsPolqaValues = packetLossVsPolqa.getOrDefault(timelapse,null);
-            Map<String, String> roundTripTimeVsPolqaValues = roundTripTimeVsPolqa.getOrDefault(timelapse,null);
-            if(expectedValue.get("POLQA").equals("null")){
-                assertNull("Jitter vs POLQA Error ("+timelapse+")",jitterVsPolqaValues);
-                assertNull("Packet Loss vs POLQA Error ("+timelapse+")",packetLossVsPolqaValues);
-                assertNull("Round Trip Time vs POLQA Error ("+timelapse+")",roundTripTimeVsPolqaValues);
-            }else{
-                assertEquals("POLQA Error ("+timelapse+")",expectedValue.get("POLQA"),jitterVsPolqaValues.get("POLQA:"));
-                assertEquals("Jitter Error ("+timelapse+")",expectedValue.get("Jitter"),jitterVsPolqaValues.get("Jitter:"));
+            for (String metric: metrics) {
+                Map<String, String> values = polqaCallsMediaStats.getOrDefault(metric,null);
 
-                assertEquals("POLQA Error ("+timelapse+")",expectedValue.get("POLQA"),packetLossVsPolqaValues.get("POLQA:"));
-                assertEquals("Packet Loss Error ("+timelapse+")",expectedValue.get("Packet Loss"),packetLossVsPolqaValues.get("Packet Loss:"));
-
-                assertEquals("POLQA Error ("+timelapse+")",expectedValue.get("POLQA"),roundTripTimeVsPolqaValues.get("POLQA:"));
-                assertEquals("Round Trip Time Error ("+timelapse+")",expectedValue.get("Round Trip Time"),roundTripTimeVsPolqaValues.get("Round Trip Time:"));
+                String errorMessage = metric.concat(" Error ("+ expectedValue.get("Timelapse") + ")");
+                assertNotNull(errorMessage,values);
+                assertEquals(errorMessage,expectedValue.get(metric),values.getOrDefault(expectedValue.get("Timelapse"),"null"));
             }
         }
     }
@@ -184,11 +176,15 @@ public class SpotlightDashboardSteps {
         List<Map<String, String>> expectedValues = dataTable.asMaps(String.class, String.class);
         Map<String,Map<String, String>> networkTrendsGraphsValues = this.networkQualityCharts.getNetworkTrendsGraphsValues();
 
-        List<String> metrics = Arrays.asList("Packet Loss","Jitter","Sent Bitrate","Round Trip Time");
+        List<String> metrics = Arrays.asList("Max. Packet Loss","Avg. Packet Loss",
+                                            "Max. Jitter","Avg. Jitter",
+                                            "Sent Bitrate",
+                                            "Max. Round Trip Time","Avg. Round Trip Time");
 
         for (Map<String, String> expectedValue : expectedValues) {
             for (String metric: metrics) {
                 Map<String, String> values = networkTrendsGraphsValues.getOrDefault(metric,null);
+
                 String errorMessage = metric.concat(" Error ("+ expectedValue.get("Timelapse") + ")");
                 assertNotNull(errorMessage,values);
                 assertEquals(errorMessage,expectedValue.get(metric),values.get(expectedValue.get("Timelapse")));

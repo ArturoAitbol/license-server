@@ -1,0 +1,10 @@
+.subtitle h2 {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.subtitle mat-icon {
+    margin-left: 10px;
+}

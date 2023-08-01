@@ -7,7 +7,8 @@ const trendsChartCommonOptions: Partial<ChartOptions> = {
     },
     stroke: {
         curve: "straight",
-        width: 2
+        width: 2,
+        dashArray: [0, 5]
     },
     grid: {
         row: {
@@ -39,13 +40,125 @@ const trendsChartCommonOptions: Partial<ChartOptions> = {
     legend: {
         position: 'top',
         horizontalAlign: 'right',
+        markers:{
+            radius:10
+        }
+    }
+};
+
+
+const polqaChartCommonOptions: Partial<ChartOptions> = {
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        curve: "straight",
+        width: 2,
+        dashArray: [0, 5]
+    },
+    grid: {
+        row: {
+            colors: [ "#f3f3f3", "transparent" ], // takes an array which will be repeated on columns
+            opacity: 0.5
+        }
+    },
+    xAxis: {
+        title: {
+            text: "Hours",
+            style: {
+                color: "#000000"
+            },
+        },
+        categories: [
+            "00:00-01:00",
+            "00:01-02:00",
+            "00:02-03:00",
+            "00:03-04:00",
+            "00:04-05:00",
+            "00:05-06:00",
+            "00:06-07:00",
+            "00:07-08:00",
+            "00:08-00:00",
+            "00:09-10:00",
+            "00:09-11:00",
+        ]
+    },
+    legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        markers:{
+            radius:10
+        }
+    }
+};
+
+
+const defaultPolqaChartOptions: Partial<ChartOptions> = {
+    title:{
+        text: "",
+        align: "center",
+        style: {
+            color: '#000000'
+        }
+    },
+    series: [
+        {
+            name: "POLQA",
+            data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+        }
+    ],
+    chart: {
+        type: "line",
+        id: "POLQA",
+        group: 'metrics-vs-polqa',
+        height: 300,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        },
+        events:
+        {
+            markerClick: function(event, chartContext, config){
+                console.log("POLQA");
+            }
+        }
+    },
+    colors: ["#6E76B4","#EC7C56"],
+    yAxis:{
+        axisTicks: {
+            show: true
+        },
+        axisBorder: {
+            show: true,
+            color: "#000000"
+        },
+        labels: {
+            style: {
+                colors: "#000000"
+            },
+            minWidth: 40
+        },
+        title: {
+            text: "POLQA",
+            style: {
+                color: "#000000"
+            }
+        },
+        forceNiceScale: true,
+    }
+    ,
+    markers: {
+        size: 4,
+        colors: ["#6E76B4","#EC7C56"],
     }
 };
 
 const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
-        id: 'Packet Loss',
+        id: 'Packet-Loss',
         group: 'network-quality-trends',
         height: 300,
         zoom: {
@@ -53,6 +166,11 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
         },
         toolbar: {
             show: false
+        },
+        events:{
+            markerClick:function(){
+                console.log("network trends - jitter")
+            }
         }
     },
     title: {
@@ -62,7 +180,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
             color: '#000000'
         }
     },
-    colors: ["#273176"],
+    colors: ["#6E76B4","#EC7C56"],
     series: [
         {
             name: 'Packet Loss',
@@ -102,13 +220,85 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: ["#273176"],
+        colors: ["#6E76B4","#EC7C56"],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.receivedPacketLoss,
-            borderColor: '#EC7C56',
-            fillColor: '#EC7C56',
+            borderColor: '#bb2426',
+            fillColor: '#bb2426',
+            strokeDashArray: 8,
+        }]
+    }
+};
+
+const defaultPolqaPacketLossChartOptions: Partial<ChartOptions> = {
+    chart: {
+        type: 'line',
+        id: 'polqa-packet-loss',
+        group: 'metrics-vs-polqa',
+        height: 300,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    title: {
+        text: "Max. Packet Loss (%)",
+        align: "center",
+        style: {
+            color: '#000000'
+        }
+    },
+    colors: ["#6E76B4","#EC7C56"],
+    series: [
+        {
+            name: 'Packet Loss',
+            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+        },
+    ],
+    yAxis: {
+            // min: 0,
+            // tickAmount: 4,
+            axisTicks: {
+                show: true
+            },
+            axisBorder: {
+                show: true,
+                color: "#000000"
+            },
+            labels: {
+                style: {
+                    colors: "#000000",
+                },
+                minWidth: 40,
+                formatter(val: number, opts?: any): string | string[] {
+                    if (val !== null && val !== undefined)
+                        return val + "%";
+                    return "--";
+                }
+            },
+            title: {
+                text: "Packet Loss",
+                style: {
+                    color: "#000000"
+                }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedPacketLoss ? max : MetricsThresholds.receivedPacketLoss
+        },
+    markers: {
+        size: 4,
+        colors: ["#6E76B4","#EC7C56"],
+    },
+    annotations: {
+        yaxis: [{
+            y: MetricsThresholds.receivedPacketLoss,
+            borderColor: '#bb2426',
+            fillColor: '#bb2426',
             strokeDashArray: 8,
         }]
     }
@@ -134,7 +324,7 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
             color: '#000000'
         }
     },
-    colors: ['#6E76B4'],
+    colors: ["#6E76B4","#EC7C56"],
     series: [
         {
             name: "Jitter",
@@ -175,13 +365,86 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: ["#6E76B4"],
+        colors: ["#6E76B4","#EC7C56"],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.receivedJitter,
-            borderColor: '#EC7C56',
-            fillColor: '#EC7C56',
+            borderColor: '#bb2426',
+            fillColor: '#bb2426',
+            strokeDashArray: 8,
+        }]
+    }
+};
+
+const defaultPolqaJitterChartOptions: Partial<ChartOptions> = {
+    chart: {
+        type: 'line',
+        id: 'polqa-jitter',
+        group: 'metrics-vs-polqa',
+        height: 300,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    title: {
+        text: "Max. Jitter (ms)",
+        align: "center",
+        style: {
+            color: '#000000'
+        }
+    },
+    colors: ['#6E76B4',"#EC7C56"],
+    series: [
+        {
+            name: "Jitter",
+            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+        },
+    ],
+    yAxis:
+        {
+            // min: 0,
+            // tickAmount: 4,
+            axisTicks: {
+                show: true
+            },
+            axisBorder: {
+                show: true,
+                color: "#000000"
+            },
+            labels: {
+                style: {
+                    colors: "#000000",
+                },
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
+            },
+            title: {
+                text: "Jitter",
+                style: {
+                    color: "#000000"
+                }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.receivedJitter ? max : MetricsThresholds.receivedJitter
+        },
+    markers: {
+        size: 4,
+        colors: ["#6E76B4","#EC7C56"],
+    },
+    annotations: {
+        yaxis: [{
+            y: MetricsThresholds.receivedJitter,
+            borderColor: '#bb2426',
+            fillColor: '#bb2426',
             strokeDashArray: 8,
         }]
     }
@@ -190,7 +453,7 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
 const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
-        id: 'Sent Bitrate',
+        id: 'Sent-Bitrate',
         group: 'network-quality-trends',
         height: 300,
         zoom: {
@@ -207,7 +470,7 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
             color: '#000000'
         }
     },
-    colors: ['#76BD83'],
+    colors: ["#6E76B4"],
     series: [
         {
             name: "Sent Bitrate",
@@ -248,13 +511,13 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: ["#76BD83"],
+        colors: ["#6E76B4"],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.minBitrate,
             y2: MetricsThresholds.maxBitrate,
-            borderColor: '#EC7C56',
+            borderColor: '#bb2426',
             fillColor: '#9ad5a5',
             strokeDashArray: 8,
         }]
@@ -264,7 +527,7 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
 const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
-        id: 'Round Trip Time',
+        id: 'Round-Trip-Time',
         group: 'network-quality-trends',
         height: 300,
         zoom: {
@@ -281,7 +544,7 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
             color: '#000000'
         }
     },
-    colors: ['#6CD6EC'],
+    colors: ["#6E76B4","#EC7C56"],
     series: [
         {
             name: "Round Trip Time",
@@ -322,16 +585,101 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: [ "#6CD6EC" ],
+        colors: [ "#6E76B4","#EC7C56" ],
     },
     annotations: {
         yaxis: [{
             y: MetricsThresholds.roundTripTime,
-            borderColor: '#EC7C56',
-            fillColor: '#EC7C56',
+            borderColor: '#bb2426',
+            fillColor: '#bb2426',
             strokeDashArray: 8,
         }]
     }
 };
 
-export { trendsChartCommonOptions, defaultReceivedPacketLossChartOptions, defaultJitterChartOptions, defaultRoundtripTimeChartOptions, defaultSentBitrateChartOptions }
+const defaultPolqaRoundtripTimeChartOptions: Partial<ChartOptions> = {
+    chart: {
+        type: 'line',
+        id: 'polqa-round-trip-time',
+        group: 'metrics-vs-polqa',
+        height: 300,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    title: {
+        text: "Max. Round Trip Time (ms)",
+        align: "center",
+        style: {
+            color: '#000000'
+        }
+    },
+    colors: ['#6E76B4',"#EC7C56"],
+    series: [
+        {
+            name: "Round Trip Time",
+            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+        },
+    ],
+    yAxis:
+        {
+            // min: 0,
+            // tickAmount: 4,
+            axisTicks: {
+                show: true
+            },
+            axisBorder: {
+                show: true,
+                color: "#000000"
+            },
+            labels: {
+                style: {
+                    colors: "#000000",
+                },
+                minWidth: 40,
+                formatter(val: number, opts?: any): any | any[] {
+                    if (val !== null && val !== undefined)
+                        return val;
+                    return "--";
+                }
+            },
+            title: {
+                text: "Round Trip Time",
+                style: {
+                    color: "#000000"
+                }
+            },
+            forceNiceScale: true,
+            min: 0,
+            max: max => max > MetricsThresholds.roundTripTime ? max : MetricsThresholds.roundTripTime
+        },
+    markers: {
+        size: 4,
+        colors: [ "#6E76B4", "#EC7C56" ],
+    },
+    annotations: {
+        yaxis: [{
+            y: MetricsThresholds.roundTripTime,
+            borderColor: '#bb2426',
+            fillColor: '#bb2426',
+            strokeDashArray: 8,
+        }]
+    }
+};
+
+export { trendsChartCommonOptions, 
+        defaultReceivedPacketLossChartOptions,
+        defaultJitterChartOptions,
+        defaultRoundtripTimeChartOptions,
+        defaultSentBitrateChartOptions,
+
+
+        polqaChartCommonOptions,
+        defaultPolqaChartOptions,
+        defaultPolqaPacketLossChartOptions,
+        defaultPolqaJitterChartOptions,
+        defaultPolqaRoundtripTimeChartOptions
+     }

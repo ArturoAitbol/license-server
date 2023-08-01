@@ -1,24 +1,10 @@
 import {
   ComponentFixture,
   TestBed,
-  fakeAsync,
-  tick,
   waitForAsync,
 } from "@angular/core/testing";
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  FormsModule,
-  FormControlDirective,
-} from "@angular/forms";
-import { of, throwError } from "rxjs";
+import { throwError } from "rxjs";
 import { By } from "@angular/platform-browser";
-import { HttpClientModule } from "@angular/common/http";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatIconModule } from "@angular/material/icon";
-import { MatSelectModule } from "@angular/material/select";
-import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
 
@@ -29,9 +15,7 @@ import moment, { Moment } from "moment";
 import { SimpleChange } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
-import { trendsChartCommonOptions } from "./initial-chart-config";
 import { Utility } from "src/app/helpers/utils";
-import { catchError } from "rxjs/operators";
 
 let networkQualityComponentTestInstance: NetworkQualityComponent;
 let fixture: ComponentFixture<NetworkQualityComponent>;
@@ -350,37 +334,11 @@ describe("NetworkQualityComponent", () => {
     ).toHaveBeenCalledTimes(3);
   });
 
-  it("should have correct labels for the selected filter", () => {
-    networkQualityComponentTestInstance.averageSelected = false;
+  it("should have correct labels", () => {
     networkQualityComponentTestInstance.ngOnInit();
-    expect(networkQualityComponentTestInstance.maxLabel).toEqual("Max.");
-    expect(networkQualityComponentTestInstance.minLabel).toEqual("Min.");
-    expect(networkQualityComponentTestInstance.avgLabel).toEqual("Avg.");
-
-    networkQualityComponentTestInstance.averageSelected = true;
-    networkQualityComponentTestInstance.ngOnInit();
-    expect(networkQualityComponentTestInstance.maxLabel).toEqual("");
-    expect(networkQualityComponentTestInstance.minLabel).toEqual("");
-    expect(networkQualityComponentTestInstance.avgLabel).toEqual("");
-  });
-
-  it("should have correct labels on quality charts", () => {
-    networkQualityComponentTestInstance.groupBy = "hour";
-    networkQualityComponentTestInstance.ngOnInit();
-    expect(
-      networkQualityComponentTestInstance.commonChartOptions.xAxis.title.text
-    ).toEqual("Hour");
-    expect(
-      networkQualityComponentTestInstance.commonChartOptions.xAxis.categories[0]
-    ).toBe("00:00-01:00");
-    networkQualityComponentTestInstance.groupBy = "date";
-    networkQualityComponentTestInstance.ngOnInit();
-    expect(
-      networkQualityComponentTestInstance.commonChartOptions.xAxis.title.text
-    ).toEqual("Date");
-    expect(
-      networkQualityComponentTestInstance.commonChartOptions.xAxis.categories[0]
-    ).toBe("06-15-2023");
+    expect(networkQualityComponentTestInstance.labels.maxLabel).toEqual("Max. ");
+    expect(networkQualityComponentTestInstance.labels.minLabel).toEqual("Min. ");
+    expect(networkQualityComponentTestInstance.labels.avgLabel).toEqual("Avg. ");
   });
 
   it("should clear preselectedUsers when clearUsersFilter is called", () => {
@@ -396,40 +354,6 @@ describe("NetworkQualityComponent", () => {
     expect(networkQualityComponentTestInstance.selectedUsers.length).toBe(0);
   });
 
-  it("should correctly set selected filter from drop down", () => {
-    const matSelect = fixture.debugElement.query(
-      By.css("mat-select")
-    ).nativeElement;
-    matSelect.click();
-    fixture.detectChanges();
-    const matOption = fixture.debugElement.queryAll(By.css("mat-option"));
-    matOption[1].nativeElement.click();
-    fixture.detectChanges();
-    const apply = fixture.debugElement.query(
-      By.css("#apply-network-filters-button")
-    ).nativeElement;
-    apply.click();
-    fixture.detectChanges();
-    expect(networkQualityComponentTestInstance.preselectedFilter).toBe(
-      "Average"
-    );
-    expect(networkQualityComponentTestInstance.averageSelected).toBe(true);
-  });
-
-  it('should change network quality graph when button toggle is changed', () => {
-    spyOn(networkQualityComponentTestInstance, 'changeGraph').and.callThrough();
-    expect(networkQualityComponentTestInstance.selectedGraph).toBe('jitter');
-    const matButtonToggles = fixture.debugElement.query(By.css("mat-button-toggle-group")).queryAll(By.css("mat-button-toggle"));
-    matButtonToggles[1].nativeElement.querySelector('button').click();
-    console.log(matButtonToggles[0].nativeElement.text);
-    fixture.detectChanges();
-    expect(networkQualityComponentTestInstance.selectedGraph).toBe('packetLoss');
-    expect(networkQualityComponentTestInstance.changeGraph).toHaveBeenCalled();
-    matButtonToggles[2].nativeElement.querySelector('button').click();
-    fixture.detectChanges();
-    expect(networkQualityComponentTestInstance.selectedGraph).toBe('roundTripTime');
-    expect(networkQualityComponentTestInstance.changeGraph).toHaveBeenCalled();
-  });
 
   it("should open detailed table when point is clicked on hourly polqa graph", () => {
     spyOn(window, "open");
@@ -442,7 +366,12 @@ describe("NetworkQualityComponent", () => {
     startDate = networkQualityComponentTestInstance.startDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]);
     endDate = Utility.setMinutesOfDate(networkQualityComponentTestInstance.endDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]));
     let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}&polqaCalls=true`;
-    networkQualityComponentTestInstance.navigateToDetailedTableFromPolqaChart("", chartContext, {seriesIndex: "", dataPointIndex: 0, config: ""})
+    const details = {
+      chartContext:chartContext,
+      dataPointIndex:0,
+      polqaCalls: true
+    };
+    networkQualityComponentTestInstance.navigateToDetailedTable(details);
     expect(window.open).toHaveBeenCalledWith(url);
   });
   it("should open correct detailed table when point is clicked on hourly network graph", () => {
@@ -456,7 +385,12 @@ describe("NetworkQualityComponent", () => {
     startDate = networkQualityComponentTestInstance.startDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]);
     endDate = Utility.setMinutesOfDate(networkQualityComponentTestInstance.endDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]));
     let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
-    networkQualityComponentTestInstance.navigateToDetailedTableFromNetworkChart("", chartContext, {seriesIndex: "", dataPointIndex: 0, config: ""})
+    const details = {
+      chartContext:chartContext,
+      dataPointIndex:0,
+      polqaCalls: false
+    };
+    networkQualityComponentTestInstance.navigateToDetailedTable(details)
     expect(window.open).toHaveBeenCalledWith(url);
   });
   it("should open correct detailed table when point is clicked on daily polqa graph", () => {
@@ -470,7 +404,12 @@ describe("NetworkQualityComponent", () => {
     startDate = moment.utc("06-23-2023").hour(0);
     endDate = Utility.setHoursOfDate(moment.utc("06-23-2023"));
     let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}&polqaCalls=true`;
-    networkQualityComponentTestInstance.navigateToDetailedTableFromPolqaChart("", chartContext, {seriesIndex: "", dataPointIndex: 0, config: ""})
+    const details = {
+      chartContext:chartContext,
+      dataPointIndex:0,
+      polqaCalls: true
+    };
+    networkQualityComponentTestInstance.navigateToDetailedTable(details);
     expect(window.open).toHaveBeenCalledWith(url);
   });
   it("should open correct detailed table when point is clicked on daily network graph", () => {
@@ -484,7 +423,12 @@ describe("NetworkQualityComponent", () => {
     startDate = moment.utc("06-23-2023").hour(0);
     endDate = Utility.setHoursOfDate(moment.utc("06-23-2023"));
     let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
-    networkQualityComponentTestInstance.navigateToDetailedTableFromNetworkChart("", chartContext, {seriesIndex: "", dataPointIndex: 0, config: ""})
+    const details = {
+      chartContext:chartContext,
+      dataPointIndex:0,
+      polqaCalls: false
+    };
+    networkQualityComponentTestInstance.navigateToDetailedTable(details);
     expect(window.open).toHaveBeenCalledWith(url);
   });
 

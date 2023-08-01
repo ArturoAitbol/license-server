@@ -1,0 +1,82 @@
+<div class="row">
+    <div class="col-12 mt-4">
+        <hr>
+    </div>
+    <div class="mt-4">
+        <div class="subtitle">
+            <h2 class="mb-3" id="networkTrendsTitle">Network Trends 
+                <mat-icon matTooltip="Represents detailed insight into the overall health of the network with Average versus Worst Case values of Received Packet Loss, Round Trip Time, Jitter and Sent Bit Rate.">
+                    info_outline
+                </mat-icon> 
+            </h2>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 mt-3" style="height: 300px" id="packetLossTrends">
+        <apx-chart
+                [series]="receivedPacketLossChartOptions.series"
+                [title]="receivedPacketLossChartOptions.title"
+                [chart]="receivedPacketLossChartOptions.chart"
+                [xaxis]="receivedPacketLossChartOptions.xAxis"
+                [yaxis]="receivedPacketLossChartOptions.yAxis"
+                [dataLabels]="receivedPacketLossChartOptions.dataLabels"
+                [grid]="receivedPacketLossChartOptions.grid"
+                [stroke]="receivedPacketLossChartOptions.stroke"
+                [markers]="receivedPacketLossChartOptions.markers"
+                [legend]="receivedPacketLossChartOptions.legend"
+                [annotations]="receivedPacketLossChartOptions.annotations"
+                [colors]="receivedPacketLossChartOptions.colors">
+        </apx-chart>
+    </div>
+    <div class="col-md-6 mt-3" style="height: 300px" id="jitterTrends">
+        <apx-chart
+                [series]="jitterChartOptions.series"
+                [title]="jitterChartOptions.title"
+                [chart]="jitterChartOptions.chart"
+                [xaxis]="jitterChartOptions.xAxis"
+                [yaxis]="jitterChartOptions.yAxis"
+                [dataLabels]="jitterChartOptions.dataLabels"
+                [grid]="jitterChartOptions.grid"
+                [stroke]="jitterChartOptions.stroke"
+                [markers]="jitterChartOptions.markers"
+                [legend]="jitterChartOptions.legend"
+                [annotations]="jitterChartOptions.annotations"
+                [colors]="jitterChartOptions.colors">
+        </apx-chart>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 mt-3" style="height: 300px" id="sentBitrateTrends">
+        <apx-chart
+                [series]="sentBitrateChartOptions.series"
+                [title]="sentBitrateChartOptions.title"
+                [chart]="sentBitrateChartOptions.chart"
+                [xaxis]="sentBitrateChartOptions.xAxis"
+                [yaxis]="sentBitrateChartOptions.yAxis"
+                [dataLabels]="sentBitrateChartOptions.dataLabels"
+                [grid]="sentBitrateChartOptions.grid"
+                [stroke]="sentBitrateChartOptions.stroke"
+                [markers]="sentBitrateChartOptions.markers"
+                [legend]="sentBitrateChartOptions.legend"
+                [annotations]="sentBitrateChartOptions.annotations"
+                [colors]="sentBitrateChartOptions.colors">
+        </apx-chart>
+    </div>
+    <div class="col-md-6 mt-3" style="height: 300px" id="roundTripTimeTrends">
+        <apx-chart
+                [series]="roundTripChartOptions.series"
+                [title]="roundTripChartOptions.title"
+                [chart]="roundTripChartOptions.chart"
+                [xaxis]="roundTripChartOptions.xAxis"
+                [yaxis]="roundTripChartOptions.yAxis"
+                [dataLabels]="roundTripChartOptions.dataLabels"
+                [grid]="roundTripChartOptions.grid"
+                [stroke]="roundTripChartOptions.stroke"
+                [markers]="roundTripChartOptions.markers"
+                [legend]="roundTripChartOptions.legend"
+                [annotations]="roundTripChartOptions.annotations"
+                [colors]="roundTripChartOptions.colors">
+        </apx-chart>
+    </div>
+</div>
