@@ -39,6 +39,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
             @BindingName("email") String email,
             final ExecutionContext context) {
 
+        email = email.toLowerCase();
         Claims tokenClaims = getTokenClaimsFromHeader(request,context);
         JSONArray roles = getRolesFromToken(tokenClaims,context);
         if(roles.isEmpty()){
