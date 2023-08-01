@@ -30,7 +30,8 @@
                     [separateDialCode]="false"
                     [numberFormat]="PhoneNumberFormat.International"
                     [inputId]="'phoneNumber'"
-                    required
+                    [enablePlaceholder]="true"
+                    [customPlaceholder]="'Phone Number'"
                     formControlName="phoneNumber"
                     >
                     </ngx-intl-tel-input>
@@ -46,14 +47,14 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label id="company-name-label">Company Name</mat-label>
-                        <input matInput required formControlName="companyName">
+                        <input matInput formControlName="companyName">
                     </mat-form-field>
                 </div>
                 <!-- job title -->
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label id="job-title-label">Job Title</mat-label>
-                        <input matInput required formControlName="jobTitle">
+                        <input matInput formControlName="jobTitle">
                     </mat-form-field>
                 </div>
                 <div *lcCheckAccessFor="'emailNotifications'">

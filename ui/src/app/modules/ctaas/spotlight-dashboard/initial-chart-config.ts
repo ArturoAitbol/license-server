@@ -646,7 +646,6 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
 };
 
 export {
-    defaultPolqaChartOptions,
     defaultWeeklyFeatureFunctionalityChartOptions,
     defaultWeeklyCallingReliabilityChartOptions,
     defaultWeeklyCallsStatusChartOptions,

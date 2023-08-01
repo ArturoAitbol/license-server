@@ -92,10 +92,10 @@ export class OnboardWizardComponent implements OnInit {
         // add stake holder form
         this.stakeholderForm = this.formbuilder.group({
             name: ['', Validators.required],
-            jobTitle: ['', Validators.required],
-            companyName: ['', Validators.required],
+            jobTitle: [''],
+            companyName: [''],
             subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', Validators.required],
+            phoneNumber: [''],
         });
     }
 

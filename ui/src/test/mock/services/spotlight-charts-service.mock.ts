@@ -1,10 +1,7 @@
 import { Observable } from "rxjs";
 import { Moment } from "moment";
-import { HttpHeaders, HttpParams } from "@angular/common/http";
 
-import { ReportName } from "src/app/helpers/report-type";
-
-const NETWORK_QUALITY_DATA = {
+const NETWORK_QUALITY_DATA_HOURLY = {
   series: {
     POLQA: [
       4.04,
@@ -106,6 +103,24 @@ const NETWORK_QUALITY_DATA = {
     "06-21-2023 15:00-16:00",
     "06-21-2023 16:00-17:00",
     "06-21-2023 17:00-18:00",
+  ],
+};
+
+const NETWORK_QUALITY_DATA_DAILY = {
+  series: {
+    "POLQA": [14, 30, 10, 24, 23, 17, 45],
+    "Received packet loss": [0, 0, 0, 0, 0, 0, 0],
+    "Received Jitter": [10.79, 10.71, 10.79, 11.31, 10.6, 10.71, 11.05],
+    "Round trip time": [1, 2, 1, 1, 2, 6, 1],
+  },
+  categories: [
+    "06-15-2023",
+    "06-16-2023",
+    "06-17-2023",
+    "06-18-2023",
+    "06-19-2023",
+    "06-20-2023",
+    "06-21-2023",
   ],
 };
 
@@ -2570,6 +2585,14 @@ const FILTER_OPTIONS = {
 };
 
 export class SpotlightChartsServiceMock {
+
+  dailyNetworkTrendsData = JSON.parse(JSON.stringify(NETWORK_TRENDS_DATA_HOURLY));
+  weeklyNetworkTrendsData = JSON.parse(JSON.stringify(NETWORK_TRENDS_DATA_DAILY));
+
+  dailyCustomerNetworkQualityData = JSON.parse(JSON.stringify(NETWORK_QUALITY_DATA_HOURLY));
+  weeklyCustomerNetworkQualityData = JSON.parse(JSON.stringify(NETWORK_QUALITY_DATA_DAILY));
+
+
   getCustomerNetworkQualityData(
     startDate: Moment,
     endDate: Moment,
@@ -2580,7 +2603,7 @@ export class SpotlightChartsServiceMock {
     selectedFilter: boolean
   ) {
     return new Observable((observer) => {
-      observer.next(NETWORK_QUALITY_DATA);
+      observer.next(NETWORK_QUALITY_DATA_HOURLY);
       observer.complete();
       return {
         unsubscribe() {
