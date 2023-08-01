@@ -74,41 +74,72 @@ public class TekvLSGetNetworkQualitySummary {
 		String metricsClause = metrics.replace(",", "', '");
 		String[] metricsArray = metrics.split(",");
 		StringBuilder statistics = new StringBuilder();
+		StringBuilder counts = new StringBuilder();
 		List<String> statisticsLabels = new ArrayList<>();
+		List<String> countsLabels = new ArrayList<>();
 		for (String metric: metricsArray) {
+
+			String selectorStatement = "(case when ms.parameter_name = '%s' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as %s, ";
+			String countStatement = "count(Distinct sr.id) FILTER (WHERE ms.parameter_name = '%s' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > %s) AS %s, ";
+			String avgCountStatement = "count(avg.id) FILTER (WHERE avg.parameter_name = '%s' AND average > %s) AS %s,";
 			String selector = "avg";
+			String avgSelector = "avg";
+			String value = "";
+			String threshold = "";
+			String metricName = "";
+			String thresholdColumnName = "";
+
 			switch (metric){
 				case "Received Jitter":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxJitter, ");
-					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.METRICS_THRESHOLDS.JITTER.value() + ") AS jitterAboveThld, ");
-					statisticsLabels.add("maxJitter");
-					statisticsLabels.add("jitterAboveThld");
+					value = Utils.MEDIA_STATS_METRICS.JITTER.value();
+					threshold = Utils.METRICS_THRESHOLDS.JITTER.value();
+					selector = "max";
+					metricName = "Jitter";
+					thresholdColumnName = "jitterAboveThld";
 					break;
 				case "Received packet loss":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxPacketLoss, ");
-					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.METRICS_THRESHOLDS.PACKET_LOSS.value() + ") AS packetLossAboveThld, ");
-					statisticsLabels.add("maxPacketLoss");
-					statisticsLabels.add("packetLossAboveThld");
+					value = Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value();
+					threshold = Utils.METRICS_THRESHOLDS.PACKET_LOSS.value();
+					selector = "max";
+					metricName = "PacketLoss";
+					thresholdColumnName = "packetLossAboveThld";
 					break;
 				case "Round trip time":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxRoundTripTime, ");
-					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.METRICS_THRESHOLDS.ROUND_TRIP_TIME.value() + ") AS roundTripTimeAboveThld, ");
-					statisticsLabels.add("maxRoundTripTime");
-					statisticsLabels.add("roundTripTimeAboveThld");
+					value = Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value();
+					threshold = Utils.METRICS_THRESHOLDS.ROUND_TRIP_TIME.value();
+					selector = "max";
+					metricName = "RoundTripTime";
+					thresholdColumnName = "roundTripTimeAboveThld";
 					break;
 				case "Sent bitrate":
 					// here the average is always the most representative value
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as avgSentBitrate, ");
-					statisticsLabels.add("avgSentBitrate");
+					value = Utils.MEDIA_STATS_METRICS.BITRATE.value();
+					metricName = "SentBitrate";
 					break;
 				case "POLQA":
-					if (averageFlag.isEmpty()) selector = "min";
-					statistics.append(selector + "(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as minPolqa, ");
-					statisticsLabels.add("minPolqa");
+					selectorStatement = "(case when ms.parameter_name = '%s' then CAST(ms.parameter_value AS numeric) end) as %s, ";
+					value = Utils.MEDIA_STATS_METRICS.POLQA.value();
+					selector = "min";
+					metricName = "Polqa";
 					break;
+			}
+			if(!value.isEmpty()){
+				String columnName = selector + metricName;
+				statistics.append(selector).append(String.format(selectorStatement,value,columnName));
+				statisticsLabels.add(columnName);
+
+				if (!averageFlag.isEmpty() && !selector.equals(avgSelector)){
+					columnName = avgSelector + metricName;
+					statistics.append(avgSelector).append(String.format(selectorStatement,value,columnName));
+					statisticsLabels.add(columnName);
+				}
+				if(!thresholdColumnName.isEmpty()){
+					statistics.append(String.format(countStatement,value,threshold,thresholdColumnName));
+					statisticsLabels.add(thresholdColumnName);
+
+					counts.append(String.format(avgCountStatement,value,threshold,"avg"+thresholdColumnName));
+					countsLabels.add("avg"+thresholdColumnName);
+				}
 			}
 		}
 		statistics.append("count(Distinct sr.id) totalCalls ");
@@ -125,20 +156,40 @@ public class TekvLSGetNetworkQualitySummary {
 				"WHERE sr.finalResult = true AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
 				" AND tp.name in ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND ms.parameter_name IN ('" + metricsClause + "')";
 
+		String avgQuery = "SELECT sr.id, ms.parameter_name, avg(CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric)) as average " +
+				"FROM media_stats ms " +
+				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
+				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
+				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
+				"LEFT JOIN project p ON r.projectid = p.id " +
+				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
+				"WHERE sr.finalResult = true AND " + Utils.CONSIDERED_STATUS_SUBQUERY + " AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
+				" AND tp.name in ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND ms.parameter_name IN ('" + metricsClause + "')";
 		if (!users.isEmpty()){
 			query += " AND trr.did IN ('"+ usersClause +"')";
+			avgQuery += " AND trr.did IN ('"+ usersClause +"')";
 		}
 
 		if(!regions.isEmpty()){
 			StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
-			if(regionCondition != null)
+			if(regionCondition != null){
 				query += " AND " + regionCondition;
+				avgQuery += " AND " + regionCondition;
+			}
+
 		}
 
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+
+		// Build SQL statement for average count
+		SelectQueryBuilder avgQueryBuilder = new SelectQueryBuilder(avgQuery,true);
+		avgQueryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+		avgQueryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+		avgQueryBuilder.appendGroupByMany("sr.id, ms.parameter_name");
 
 		// Build SQL statement to get the TAP URL
 		SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -201,6 +252,20 @@ public class TekvLSGetNetworkQualitySummary {
 					json.put(statisticsLabels.get(i),values.isNull(i) ? "--" : Float.parseFloat(df.format(values.getFloat(i))));
 				}
 			}
+
+			String avgCountsQuery = avgQueryBuilder.getQuery();
+			counts.deleteCharAt(counts.length()-1);
+			String countAvgStatement =  "SELECT "+ counts + " FROM (" + avgCountsQuery + ") avg";
+			// Retrieve the avg counts
+			context.getLogger().info("Execute SQL statement: " + countAvgStatement);
+			resultSet = TAPClient.executeQuery(tapURL,countAvgStatement,context);
+			for (Object resultElement:resultSet) {
+				JSONArray values = (JSONArray) resultElement;
+				for (int i = 0; i<countsLabels.size(); i++) {
+					json.put(countsLabels.get(i),values.isNull(i) ? "--" : Float.parseFloat(df.format(values.getFloat(i))));
+				}
+			}
+
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
