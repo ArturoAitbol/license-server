@@ -130,7 +130,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   isHistoricalView = false;
   note: Note;
   showNewNoteBtn = false;
-  messageSpiner = 'Please wait while we prepare your UCaaS Continuous Testing Dashboard.';
+  messageSpinner = 'Please wait while we prepare your UCaaS Continuous Testing Dashboard.';
 
   loggedInUserRoles: any;
 

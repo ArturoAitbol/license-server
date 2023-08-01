@@ -32,7 +32,7 @@ import { LineDetailComponent } from './map/line-detail/line-detail.component';
 import { MapComponent } from './map/map.component';
 import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polqa-graphs/polqa-graphs.component';
 import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
-import { LoadingSpinerComponent } from '../../generics/loading-spiner/loading-spiner.component';
+import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-spinner.component';
 
 
 @NgModule({
@@ -62,7 +62,7 @@ import { LoadingSpinerComponent } from '../../generics/loading-spiner/loading-sp
     LineDetailComponent,
     PolqaGraphsComponent,
     NetworkTrendsComponent,
-    LoadingSpinerComponent,
+    LoadingSpinnerComponent,
   ],
   imports: [
     CommonModule,
