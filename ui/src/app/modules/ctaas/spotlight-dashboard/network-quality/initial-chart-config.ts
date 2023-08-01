@@ -42,9 +42,6 @@ const trendsChartCommonOptions: Partial<ChartOptions> = {
         horizontalAlign: 'right',
         markers:{
             radius:10
-        },
-        formatter(legendName: string, opts?: any): string {
-            return legendName.includes("Avg.") ? "—	" + legendName : "- - " + legendName;
         }
     }
 };
@@ -91,9 +88,6 @@ const polqaChartCommonOptions: Partial<ChartOptions> = {
         horizontalAlign: 'right',
         markers:{
             radius:10
-        },
-        formatter(legendName: string, opts?: any): string {
-            return legendName.includes("Avg.") ? "—	" + legendName : "- - " + legendName;
         }
     }
 };
