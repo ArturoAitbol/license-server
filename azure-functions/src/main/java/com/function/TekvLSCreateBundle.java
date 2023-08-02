@@ -46,7 +46,9 @@ public class TekvLSCreateBundle {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateBundle Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -55,6 +57,7 @@ public class TekvLSCreateBundle {
             context.getLogger().info("Error: Request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "Request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
@@ -65,6 +68,7 @@ public class TekvLSCreateBundle {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -75,6 +79,7 @@ public class TekvLSCreateBundle {
                 context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
                 JSONObject json = new JSONObject();
                 json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -96,7 +101,6 @@ public class TekvLSCreateBundle {
             statement.setString(2, jobj.getString(MANDATORY_PARAMS.TOKENS.value));
             statement.setString(3, jobj.getString(MANDATORY_PARAMS.DEVICE_ACCESS_TOKEN.value));
 
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             ResultSet bundleRaw = statement.executeQuery();
 
@@ -104,18 +108,21 @@ public class TekvLSCreateBundle {
             JSONObject response = new JSONObject();
             response.put("id", bundleRaw.getString("id"));
 
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateBundle Azure function");
             return request.createResponseBuilder(HttpStatus.OK).body(response.toString()).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

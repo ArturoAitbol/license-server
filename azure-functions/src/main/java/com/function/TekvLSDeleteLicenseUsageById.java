@@ -56,7 +56,8 @@ public class TekvLSDeleteLicenseUsageById
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSDeleteLicenseUsageById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSDeleteLicenseUsageById Azure function");
 
 		String deleteDetailSql = "DELETE FROM usage_detail WHERE consumption_id = ?::uuid;";
 		String deleteLicenseSql = "DELETE FROM license_consumption WHERE id = ?::uuid;";
@@ -76,7 +77,6 @@ public class TekvLSDeleteLicenseUsageById
 			deleteLicenseStmt.setString(1, id);
 
 			// Delete usage details
-			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + deleteDetailStmt);
 			deleteDetailStmt.executeUpdate();
 			
@@ -85,18 +85,21 @@ public class TekvLSDeleteLicenseUsageById
 			deleteLicenseStmt.executeUpdate();
 			context.getLogger().info("License usage delete successfully."); 
 
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteLicenseUsageById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteLicenseUsageById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteLicenseUsageById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

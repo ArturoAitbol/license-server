@@ -55,7 +55,8 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteSubaccountStakeHolderByEmail Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSDeleteSubaccountStakeHolderByEmail Azure function");        
 
         String sql = "DELETE FROM subaccount_admin WHERE subaccount_admin_email = ?;";
         SelectQueryBuilder subaccountIdQuery = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
@@ -72,8 +73,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
 
             context.getLogger().info("Execute SQL statement: " + subaccountIdStmt);
             ResultSet subaccountIdRs = subaccountIdStmt.executeQuery();
-            if (subaccountIdRs.next()) {
-                String userId = getUserIdFromToken(tokenClaims,context);
+            if (subaccountIdRs.next()) {                
                 String subaccountId = subaccountIdRs.getString("subaccount_id");
                 if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation", subaccountId)) {
                     String searchAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE admin_email = ?;";
@@ -98,21 +98,25 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
                 statement.executeUpdate();
                 context.getLogger().info("Subaccount Stakeholder email deleted successfully.");
             }
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteSubaccountStakeHolderByEmail Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteSubaccountStakeHolderByEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (ADException e) {
             context.getLogger().info("AD exception when deleting Guest User Subaccount Stakeholder: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "AD Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteSubaccountStakeHolderByEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteSubaccountStakeHolderByEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

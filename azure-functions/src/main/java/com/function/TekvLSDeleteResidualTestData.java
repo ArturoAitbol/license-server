@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -47,7 +46,9 @@ public class TekvLSDeleteResidualTestData {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
-        context.getLogger().info("Entering TekvLSDeleteResidualTestData Azure function");
+        
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSDeleteResidualTestData Azure function");
 
         String deleteNoteSql = "DELETE FROM note WHERE (opened_by = ? OR opened_by = ?) " +
                 "AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
@@ -70,18 +71,21 @@ public class TekvLSDeleteResidualTestData {
             customerStatement.setString(2, "true");
             context.getLogger().info("Execute SQL statement: " + customerStatement);
             customerStatement.executeUpdate();
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteResidualTestData Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteResidualTestData Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteResidualTestData Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }
