@@ -122,7 +122,9 @@ public class TekvLSCreateSubaccount
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			// Set statement parameters
-			verifyEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+			final String subaccountAdminEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value).toLowerCase();
+
+			verifyEmailStmt.setString(1, subaccountAdminEmail);
 
 			context.getLogger().info("Execute SQL statement: " + verifyEmailStmt);
 			ResultSet rsEmails = verifyEmailStmt.executeQuery();
@@ -160,7 +162,7 @@ public class TekvLSCreateSubaccount
 			json.put("id", subaccountId);
 
 			//Insert parameters to statement
-			insertEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+			insertEmailStmt.setString(1, subaccountAdminEmail);
 			insertEmailStmt.setString(2, subaccountId);
 
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertEmailStmt);
@@ -183,10 +185,10 @@ public class TekvLSCreateSubaccount
 				String customerName = rs.getString("name");
 
 				if (FeatureToggleService.isFeatureActiveByName("welcomeEmail"))
-					EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName,subaccountId, context);
+					EmailClient.sendSpotlightWelcomeEmail(subaccountAdminEmail, customerName,subaccountId, context);
 			} else {
 				if (FeatureToggleService.isFeatureActiveByName("ad-license-service-user-creation"))
-					this.ADUserCreation(jobj,context);
+					this.ADUserCreation(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value), subaccountAdminEmail, context);
 			}
 			
 			context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateSubaccount Azure function");
@@ -223,10 +225,8 @@ public class TekvLSCreateSubaccount
 		return response;
 	}
 
-	private void ADUserCreation(JSONObject jobj, ExecutionContext context) throws Exception {
-		String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
-		String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
-		GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
+	private void ADUserCreation(String name, String email, ExecutionContext context) throws Exception {
+		GraphAPIClient.createGuestUserWithProperRole(name, email, SUBACCOUNT_ADMIN, context);
 		context.getLogger().info("Guest user created successfully (AD).");
 	}
 

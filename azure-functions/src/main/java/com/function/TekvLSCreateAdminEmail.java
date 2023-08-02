@@ -121,7 +121,7 @@ public class TekvLSCreateAdminEmail {
         private final String customerId;
 
         public CreateAdminRequest(String adminEmail, String customerId) {
-            this.customerAdminEmail = adminEmail;
+            this.customerAdminEmail = adminEmail != null? adminEmail.toLowerCase() : null;
             this.customerId = customerId;
         }
 

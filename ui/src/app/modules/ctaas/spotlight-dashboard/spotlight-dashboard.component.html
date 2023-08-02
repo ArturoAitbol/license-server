@@ -1,6 +1,6 @@
 <app-banner></app-banner>
-<mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
-<div class="container-fluid" *ngIf="!maintenanceModeEnabled && showChartsFlag">
+<mat-progress-bar *ngIf="autoRefresh && tapURLFlag" mode="indeterminate"></mat-progress-bar>
+<div class="container-fluid" *ngIf="!maintenanceModeEnabled && showChartsFlag && tapURLFlag">
     <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
         <div class="card col-8">
             <div class="card-body">
@@ -494,4 +494,17 @@
         </ng-container>
         <br>
     </ng-container>
+</div>
+<div *ngIf="tapURLFlag === false">
+    <div class='text-container'>
+        <mat-card class="missing-tap-card">
+            <mat-card-header>
+                <mat-card-title>Missing TAP URL</mat-card-title>
+                <mat-card-subtitle ></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p class='text-content1'>The TAP instance associated with this customer wasn't configured, please contact your service provider</p>
+            </mat-card-content>
+            </mat-card>
+    </div>
 </div>

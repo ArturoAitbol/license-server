@@ -130,7 +130,7 @@ public class TekvLSCreateSubaccountAdminEmail {
         private final String subaccountId;
 
         public CreateSubaccountAdminRequest(String subaccountAdminEmail, String subaccountId) {
-            this.subaccountAdminEmail = subaccountAdminEmail;
+            this.subaccountAdminEmail = subaccountAdminEmail != null? subaccountAdminEmail.toLowerCase() : null;
             this.subaccountId = subaccountId;
         }
 

@@ -120,7 +120,9 @@ public class TekvLSCreateCustomer
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			// Set statement parameters
-			verifyEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value));
+			final String adminEmail = jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value).toLowerCase();
+
+			verifyEmailStmt.setString(1, adminEmail);
 
 			context.getLogger().info("Execute SQL statement: " + verifyEmailStmt);
 			ResultSet rsEmails = verifyEmailStmt.executeQuery();
@@ -135,7 +137,7 @@ public class TekvLSCreateCustomer
 			
 			
 			if (jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value)) {
-				verifySubAdminEmailStmt.setString(1,jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+				verifySubAdminEmailStmt.setString(1, jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value).toLowerCase());
 
 				context.getLogger().info("Execute SQL statement: " + verifySubAdminEmailStmt);
 				ResultSet rsSubEmails = verifySubAdminEmailStmt.executeQuery();
@@ -168,7 +170,7 @@ public class TekvLSCreateCustomer
 			JSONObject json = new JSONObject();
 			json.put("id", customerId);
 
-			emailStatement.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value));
+			emailStatement.setString(1, adminEmail);
 			emailStatement.setString(2, customerId);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + emailStatement);
 			emailStatement.executeUpdate();
@@ -176,8 +178,7 @@ public class TekvLSCreateCustomer
 
 			if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation") && FeatureToggleService.isFeatureActiveByName("ad-license-service-user-creation")) {
 				String customerName = jobj.getString(MANDATORY_PARAMS.CUSTOMER_NAME.value);
-				String customerEmail = jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value);
-				GraphAPIClient.createGuestUserWithProperRole(customerName,customerEmail,CUSTOMER_FULL_ADMIN,context);
+				GraphAPIClient.createGuestUserWithProperRole(customerName, adminEmail, CUSTOMER_FULL_ADMIN, context);
 				context.getLogger().info("Guest user created successfully (AD).");
 			}
 
