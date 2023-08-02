@@ -348,6 +348,17 @@ export class DetailedReportsComponent implements OnInit {
         testResult.otherPartynoDataFoundFlag = false;
         testResult.panelOpenState = true;
         testResult.otherParties = (testResult.otherParties && testResult.otherParties.length > 0) ? testResult.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
+        if(testResult.status==="PASSED"){
+          testResult.color = "#d9ead3";
+          testResult.colorOnMouseOver = "#c4d4be";
+          testResult.colorOnMouseOut = "#d9ead3";
+
+        }
+        else {
+          testResult.color = "#fae8e8"
+          testResult.colorOnMouseOver = "#dbd0d0"
+          testResult.colorOnMouseOut = "#fae8e8";
+        }
         if (this.filterByAvg) {
             this.insideTheScope(testResult);
 
