@@ -53,7 +53,8 @@ public class TekvLSGetCtaasDashboard {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetCtaasDashboard Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetCtaasDashboard Azure function");
 
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -63,6 +64,7 @@ public class TekvLSGetCtaasDashboard {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if reportType is empty
@@ -70,6 +72,7 @@ public class TekvLSGetCtaasDashboard {
             context.getLogger().info("Report type cannot be empty");
             JSONObject json = new JSONObject();
             json.put("error", "Report type cannot be empty");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -120,6 +123,7 @@ public class TekvLSGetCtaasDashboard {
                     if (!rs.next()) {
                         context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
                         json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboard Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -140,6 +144,7 @@ public class TekvLSGetCtaasDashboard {
             if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
                 context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
                 json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboard Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
@@ -154,16 +159,19 @@ public class TekvLSGetCtaasDashboard {
                 jsonObject.put("endDateStr", base64Response.get("endDate"));
                 json.put("response", jsonObject);
             }
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetCtaasDashboard Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

@@ -42,7 +42,8 @@ public class TekvLSGetConsumptionMatrix {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetConsumptionMatrix Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetConsumptionMatrix Azure function");
 
         // Build SQL statement, customers left outer join subaccount, license, project, license_consumption
         SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM consumption_matrix", false);
@@ -57,7 +58,6 @@ public class TekvLSGetConsumptionMatrix {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Retrieve all customers.
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             ResultSet rs = statement.executeQuery();
 
@@ -74,17 +74,20 @@ public class TekvLSGetConsumptionMatrix {
             }
             json.put("consumptionMatrix", array);
 
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetConsumptionMatrix Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetConsumptionMatrix Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetConsumptionMatrix Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

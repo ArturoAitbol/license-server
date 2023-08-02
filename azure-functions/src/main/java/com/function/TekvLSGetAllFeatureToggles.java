@@ -8,6 +8,10 @@ import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+import static com.function.auth.RoleAuthHandler.*;
+
+import io.jsonwebtoken.Claims;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,7 +36,10 @@ public class TekvLSGetAllFeatureToggles {
             @BindingName("featureToggleId") String featureToggleId,
             final ExecutionContext context) {
 
-        context.getLogger().info("Entering TekvLSGetAllFeatureToggles Azure function");
+        Claims tokenClaims = getTokenClaimsFromHeader(request, context);    
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetAllFeatureToggles Azure function");
+        
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
@@ -101,16 +108,19 @@ public class TekvLSGetAllFeatureToggles {
             }
 
             json.put("featureToggles", array);
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllFeatureToggles Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllFeatureToggles Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllFeatureToggles Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

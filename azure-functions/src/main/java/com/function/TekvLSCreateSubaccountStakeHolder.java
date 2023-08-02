@@ -58,6 +58,8 @@ public class TekvLSCreateSubaccountStakeHolder {
 		    return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 		
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateSubaccountStakeHolder Azure function");
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
 		context.getLogger().info("Request body: " + requestBody);
@@ -65,6 +67,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountStakeHolder Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -76,6 +79,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountStakeHolder Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		
@@ -86,6 +90,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountStakeHolder Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
@@ -136,7 +141,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 					} else {
 						statement.setBoolean(3, jobj.getBoolean(OPTIONAL_PARAMS.EMAIL_NOTIFICATIONS.value));
 					}
-					String userId = getUserIdFromToken(tokenClaims, context);
+					
 					context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
 					ResultSet rs = statement.executeQuery();
 					context.getLogger().info("Subaccount Admin email (stakeHolder) inserted successfully.");
@@ -159,26 +164,31 @@ public class TekvLSCreateSubaccountStakeHolder {
 					} catch (Exception e) {
 						context.getLogger().info("Failed to update user at azure AD.  Exception: " + e.getMessage());
 					}
+					context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateSubaccountStakeHolder Azure function");
 					return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 				} else {
 					JSONObject json = new JSONObject();
 					json.put("error", "UCaaS Continuous Testing Setup does not exist or is not ready");
+					context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountStakeHolder Azure function with error");
 					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 				}
 			} else {
 				JSONObject json = new JSONObject();
 				json.put("error", "The maximum amount of users (" + limit + ") has been reached");
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountStakeHolder Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}    	
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountStakeHolder Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountStakeHolder Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 

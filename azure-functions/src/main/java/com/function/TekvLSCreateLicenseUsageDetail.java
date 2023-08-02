@@ -56,7 +56,8 @@ public class TekvLSCreateLicenseUsageDetail
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSCreateLicenseUsageDetail Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateLicenseUsageDetail Azure function");		
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -65,6 +66,7 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateLicenseUsageDetail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
@@ -75,6 +77,7 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateLicenseUsageDetail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -85,14 +88,15 @@ public class TekvLSCreateLicenseUsageDetail
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateLicenseUsageDetail Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
 
-		return createLicenseConsumptionEvent(tokenClaims, jobj, request, context);
+		return createLicenseConsumptionEvent(tokenClaims, jobj, request, context, userId);
 	}
 
-	public HttpResponseMessage createLicenseConsumptionEvent(Claims tokenClaims, JSONObject jobj, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) {
+	public HttpResponseMessage createLicenseConsumptionEvent(Claims tokenClaims, JSONObject jobj, HttpRequestMessage<Optional<String>> request, final ExecutionContext context, String userId ) {
 		String userEmail = getEmailFromToken(tokenClaims, context);
 		try{
 			// Connect to the database
@@ -110,8 +114,7 @@ public class TekvLSCreateLicenseUsageDetail
 			 PreparedStatement deviceTokensStmt = connection.prepareStatement(deviceTokensSql);
 			 PreparedStatement insertStmt = connection.prepareStatement(insertSql);
 			 PreparedStatement devicePerProjectStmt = connection.prepareStatement(devicePerProjectConsumptionSql)) {
-				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-				String userId = getUserIdFromToken(tokenClaims,context);
+				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));				
 				
 				int tokensToConsume;
 				String granularity;
@@ -148,7 +151,7 @@ public class TekvLSCreateLicenseUsageDetail
 						jobj.put("id", rs.getString("id"));
 						jobj.put("userEmail", userEmail);
 						jobj.put("userId", userId);
-						return this.createUsageDetail(jobj, connection, request, context);
+						return this.createUsageDetail(jobj, connection, request, context, userId);
 					}
 				}
 
@@ -172,24 +175,27 @@ public class TekvLSCreateLicenseUsageDetail
 				jobj.put("userEmail", userEmail);
 				jobj.put("userId", userId);
 				context.getLogger().info("tekToken consumption inserted successfully.");
-				return this.createUsageDetail(jobj, connection, request, context);
+				context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateLicenseUsageDetail Azure function");
+				return this.createUsageDetail(jobj, connection, request, context, userId);
 			}
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateLicenseUsageDetail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateLicenseUsageDetail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 
-	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Connection connection, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) throws SQLException {
+	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Connection connection, HttpRequestMessage<Optional<String>> request, final ExecutionContext context, String userId) throws SQLException {
 		String sql = "INSERT INTO usage_detail (consumption_id, usage_date, day_of_week,mac_address, serial_number, modified_date, modified_by) " +
 					 "VALUES (?::uuid, ?::date, ?, ?, ?, ?::timestamp, ?)";
 		LocalDate consumptionDate = LocalDate.parse(consumptionObj.getString("consumptionDate"));
@@ -223,6 +229,7 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("Execute create usages SQL statement (User: "+ consumptionObj.getString("userId") + "): " + insertUsageStmt);
 			insertUsageStmt.executeBatch();
 			context.getLogger().info("License usage details inserted successfully.");
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateLicenseUsageDetail Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e);
@@ -236,6 +243,7 @@ public class TekvLSCreateLicenseUsageDetail
 			}
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateLicenseUsageDetail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
