@@ -74,6 +74,17 @@ public class TekvLSModifyCtaasSetupById {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
+        try {
+            if (jobj.has(OPTIONAL_PARAMS.TAP_URL.jsonAttrib)) {
+                TAPClient.getAccessToken(jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib), context);
+            }
+        } catch (Exception e) {
+            context.getLogger().info("Couldn't connect with the TAP provided, please review it and try again");
+            JSONObject json = new JSONObject();
+            json.put("error", "Couldn't connect with the TAP provided, please review it and try again");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
+
         // validate SpotLight setup completion
         Boolean isSetupReady = jobj.has(OPTIONAL_PARAMS.STATUS.jsonAttrib)
                 && jobj.getString(OPTIONAL_PARAMS.STATUS.jsonAttrib)

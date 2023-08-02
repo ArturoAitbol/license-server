@@ -4,17 +4,17 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Success %",
-            data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
+            data: [],
             type: "line"
         },
         {
             name: "Passed",
-            data: [ 110, 213, 40, 14, 167, 47, 165],
+            data: [],
             type: "column",
         },
         {
             name: "Failed",
-            data: [ 0, 0, 1, 14, 18, 0, 39],
+            data: [],
             type: "column",
         },
     ],
@@ -134,17 +134,17 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Success %",
-            data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
+            data: [],
             type: "line"
         },
         {
             name: "Passed",
-            data: [ 110, 213, 40, 14, 167, 47, 165],
+            data: [],
             type: "column",
         },
         {
             name: "Failed",
-            data: [ 0, 0, 1, 14, 18, 0, 39],
+            data: [],
             type: "column",
         },
     ],

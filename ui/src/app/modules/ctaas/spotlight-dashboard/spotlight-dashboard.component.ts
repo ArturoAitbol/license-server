@@ -88,6 +88,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   });
 
   date: Moment;
+  tapURLFlag: boolean;
   regions: { country: string, state: string, city: string, displayName: string }[] = [];
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
@@ -187,14 +188,14 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     let closedBanner = localStorage.getItem("closedBanner") ? JSON.parse(localStorage.getItem("closedBanner")) : false;
     let accountId = this.msalService.instance.getActiveAccount().localAccountId;
     let hiddenBanner = localStorage.getItem(accountId + "-hiddenBanner") ? JSON.parse(localStorage.getItem(accountId + "-hiddenBanner")) : false;
-    if (!closedBanner && !hiddenBanner)
-      this.bannerService.open(Constants.UTC_DATE_INFO, "", this.onDestroy, "info", true);
-    let currentEndDate;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
     this.checkSetupStatus();
+    if (!closedBanner && !hiddenBanner && this.tapURLFlag)
+      this.bannerService.open(Constants.UTC_DATE_INFO, "", this.onDestroy, "info", true);
+    let currentEndDate;
     this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
       if (params?.noteId) {
@@ -785,6 +786,10 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       } else {
         this.setupCustomerOnboardDetails(ctaasSetupDetails);
       }
+      if(ctaasSetupDetails.tapUrl !== '' && ctaasSetupDetails.tapUrl !== undefined) 
+        this.tapURLFlag = true
+      else
+        this.tapURLFlag = false;
     });
   }
 
