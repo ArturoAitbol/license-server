@@ -60,7 +60,8 @@ public class TekvLSGetCtaasDashboardReport {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetCtaasDashboardReport Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetCtaasDashboardReport Azure function");
 
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String types = request.getQueryParameters().getOrDefault("reportType", 
@@ -77,6 +78,7 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if start date is null
@@ -84,6 +86,7 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info(MESSAGE_FOR_INVALID_START_DATE + " | Start Date: " + null);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_START_DATE);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if end date is null
@@ -91,6 +94,7 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info(MESSAGE_FOR_INVALID_END_DATE + " | End Date: " + null);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_END_DATE);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Build SQL statement
@@ -139,6 +143,7 @@ public class TekvLSGetCtaasDashboardReport {
                     if (!rs.next()) {
                         context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
                         json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -160,12 +165,14 @@ public class TekvLSGetCtaasDashboardReport {
             if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
                 context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
                 json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
             if (tapURL == null || tapURL.isEmpty()) {
                 context.getLogger().info(LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
                 json.put("error", MESSAGE_FOR_INVALID_TAP_URL);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             context.getLogger().info("Requesting TAP for detailed report. URL: " + tapURL);
@@ -185,16 +192,19 @@ public class TekvLSGetCtaasDashboardReport {
                 jsonObject.put("report", response);
                 json.put("response", jsonObject);
             }
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetCtaasDashboardReport Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

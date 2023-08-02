@@ -9,6 +9,9 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+
+import io.jsonwebtoken.Claims;
+
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
@@ -24,59 +27,60 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSGetAllBundles {
 	/**
-	 * This function listens at endpoint "/v1.0/bundles". Two ways to invoke it using "curl" command in bash:
+	 * This function listens at endpoint "/v1.0/bundles". Two ways to invoke it
+	 * using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/bundles
 	 * 2. curl "{your host}/v1.0/bundles"
 	 */
 	@FunctionName("TekvLSGetAllBundles")
 	public HttpResponseMessage run(
-		@HttpTrigger(
-			name = "req",
-			methods = {HttpMethod.GET},
-			authLevel = AuthorizationLevel.ANONYMOUS,
-			route = "bundles/{id=EMPTY}")
-		HttpRequestMessage<Optional<String>> request,
-		@BindingName("id") String id,
-		final ExecutionContext context) 
-   {
+			@HttpTrigger(name = "req", methods = {
+					HttpMethod.GET }, authLevel = AuthorizationLevel.ANONYMOUS, route = "bundles/{id=EMPTY}") HttpRequestMessage<Optional<String>> request,
+			@BindingName("id") String id,
+			final ExecutionContext context) {
 
-	   JSONArray roles = getRolesFromToken(request,context);
-	   if(roles.isEmpty()){
-		   JSONObject json = new JSONObject();
-		   context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
-		   json.put("error", MESSAGE_FOR_UNAUTHORIZED);
-		   return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
-	   }
-	   if(!hasPermission(roles, Resource.GET_ALL_BUNDLES)){
-		   JSONObject json = new JSONObject();
-		   context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
-		   json.put("error", MESSAGE_FOR_FORBIDDEN);
-		   return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
-	   }
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		JSONArray roles = getRolesFromToken(tokenClaims, context);
+		if (roles.isEmpty()) {
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if (!hasPermission(roles, Resource.GET_ALL_BUNDLES)) {
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
 
-	   context.getLogger().info("Entering TekvLSGetAllBundles Azure function");
-	   String name = request.getQueryParameters().getOrDefault("bundleName", "");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetAllBundles Azure function");
+		String name = request.getQueryParameters().getOrDefault("bundleName", "");
 
-	   // Build SQL statement
+		// Build SQL statement
 		String sql = "SELECT * FROM bundle";
 		if (!id.equals("EMPTY"))
 			sql += " WHERE id = ?::uuid";
-		else if(!name.isEmpty()){
+		else if (!name.isEmpty()) {
 			sql += " WHERE name = ?";
 		}
-		
+
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		context.getLogger().info("JDBC CONNECTION STRING: "+dbConnectionUrl);	
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
+				+ System.getenv("POSTGRESQL_SECURITY_MODE")
+				+ "&user=" + System.getenv("POSTGRESQL_USER")
+				+ "&password=" + System.getenv("POSTGRESQL_PWD");
+		context.getLogger().info("JDBC CONNECTION STRING: " + dbConnectionUrl);
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = connection.prepareStatement(sql)) {
-			
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			if (!id.equals("EMPTY")) statement.setString(1, id);
-			else if(!name.isEmpty()) statement.setString(1, name);
+			if (!id.equals("EMPTY"))
+				statement.setString(1, id);
+			else if (!name.isEmpty())
+				statement.setString(1, name);
 
 			// Retrive all bundles.
 			context.getLogger().info("Execute SQL statement: " + statement);
@@ -93,18 +97,20 @@ public class TekvLSGetAllBundles {
 				array.put(item);
 			}
 			json.put("bundles", array);
-			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
-		}
-		catch (SQLException e) {
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllBundles Azure function");
+			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
+					.body(json.toString()).build();
+		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllBundles Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllBundles Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

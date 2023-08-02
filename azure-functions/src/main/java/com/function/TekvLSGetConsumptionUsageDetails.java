@@ -55,8 +55,9 @@ public class TekvLSGetConsumptionUsageDetails {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-
-		context.getLogger().info("Entering TekvLSGetConsumptionUsageDetails Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetConsumptionUsageDetails Azure function");
+		
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM usage_detail");
 		queryBuilder.appendEqualsCondition("consumption_id", id, QueryBuilder.DATA_TYPE.UUID);
 
@@ -119,22 +120,26 @@ public class TekvLSGetConsumptionUsageDetails {
 				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
 				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
 				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				context.getLogger().info("User " + userId + " is leaving TekvLSGetConsumptionUsageDetails Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
 			json.put("usageDays", array);
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetConsumptionUsageDetails Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", "SQL exception:" + e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetConsumptionUsageDetails Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetConsumptionUsageDetails Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
