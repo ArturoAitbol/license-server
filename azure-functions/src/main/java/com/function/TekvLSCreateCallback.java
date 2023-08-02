@@ -59,6 +59,9 @@ public class TekvLSCreateCallback {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateBundle Azure function");
+
         // Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
 		context.getLogger().info("Request body: " + requestBody);
@@ -66,6 +69,7 @@ public class TekvLSCreateCallback {
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -76,6 +80,7 @@ public class TekvLSCreateCallback {
             long minutes = millisSinceLastRequest / 1000 / 60;
             long seconds = (millisSinceLastRequest / 1000) % 60;
             response.put("error", "Please wait for " + minutes + " and " + seconds + " seconds more to request a new call if you still need it.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(response.toString()).build();
         }
 
@@ -87,6 +92,7 @@ public class TekvLSCreateCallback {
             context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -96,6 +102,7 @@ public class TekvLSCreateCallback {
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParams.value);
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParams.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
         }
@@ -109,11 +116,13 @@ public class TekvLSCreateCallback {
                 pagerDutyMessage += " | Job Title = " + jobj.getString("jobTitle");
             context.getLogger().info(pagerDutyMessage);
             this.updateLatestCallbackRequestDate(authEmail, context, tokenClaims);
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateBundle Azure function");
             return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
         } catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateBundle Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
        }
 

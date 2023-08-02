@@ -60,7 +60,8 @@ public class TekvLSDeleteSubaccountById
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSDeleteSubaccountById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSDeleteSubaccountById Azure function");
 
 		String sql = "DELETE FROM subaccount WHERE id = ?::uuid;";
 
@@ -119,23 +120,25 @@ public class TekvLSDeleteSubaccountById
 
 			// Delete subaccount
 			statement.setString(1, id);
-			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount deleted successfully.");
 
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteSubaccountById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteSubaccountById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteSubaccountById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

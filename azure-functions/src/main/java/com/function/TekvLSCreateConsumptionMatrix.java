@@ -13,7 +13,6 @@ import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 
 public class TekvLSCreateConsumptionMatrix {
     /**
@@ -47,7 +46,8 @@ public class TekvLSCreateConsumptionMatrix {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateConsumptionMatrix Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateConsumptionMatrix Azure function");        
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -56,6 +56,7 @@ public class TekvLSCreateConsumptionMatrix {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateConsumptionMatrix Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -67,6 +68,7 @@ public class TekvLSCreateConsumptionMatrix {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateConsumptionMatrix Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -77,6 +79,7 @@ public class TekvLSCreateConsumptionMatrix {
                 context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
                 JSONObject json = new JSONObject();
                 json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCreateConsumptionMatrix Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -102,7 +105,6 @@ public class TekvLSCreateConsumptionMatrix {
             statement.setString(4, email);
 
             // Insert
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             ResultSet rs = statement.executeQuery();
             context.getLogger().info("Consumption matrix inserted successfully.");
@@ -111,16 +113,19 @@ public class TekvLSCreateConsumptionMatrix {
             rs.next();
             JSONObject json = new JSONObject();
             json.put("id", rs.getString("id"));
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateConsumptionMatrix Azure function");
             return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateConsumptionMatrix Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateConsumptionMatrix Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

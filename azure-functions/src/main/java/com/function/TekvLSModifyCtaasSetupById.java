@@ -52,8 +52,8 @@ public class TekvLSModifyCtaasSetupById {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
-
-        context.getLogger().info("Entering TekvLSModifyCtaasSetupById Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifyCtaasSetupById Azure function");        
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -62,6 +62,7 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
@@ -71,6 +72,7 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -83,6 +85,7 @@ public class TekvLSModifyCtaasSetupById {
                 context.getLogger().info("error: licenseId is missing.");
                 JSONObject json = new JSONObject();
                 json.put("error", "error: licenseId is missing.");
+                context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             if (!jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
@@ -98,6 +101,7 @@ public class TekvLSModifyCtaasSetupById {
                 context.getLogger().info("error: subaccountId is missing.");
                 JSONObject json = new JSONObject();
                 json.put("error", "error: subaccountId is missing.");
+                context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -139,6 +143,7 @@ public class TekvLSModifyCtaasSetupById {
             }
         }
         if (optionalParamsFound == 0) {
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyCtaasSetupById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
@@ -173,12 +178,12 @@ public class TekvLSModifyCtaasSetupById {
                 } else {
                     context.getLogger().info("info: the license provided does not match with the subaccount provided");
                     json.put("error", "The license provided does not belong to the subaccount");
+                    context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
                     return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                 }
             }
 
-            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            String userId = getUserIdFromToken(tokenClaims, context);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));            
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Ctaas_setup updated successfully.");
@@ -244,23 +249,27 @@ public class TekvLSModifyCtaasSetupById {
                 ctaasDevice.put("deviceId", rs.getString("id"));
                 json.put("deviceId", rs.getString("id"));
                 TekvLSCreateLicenseUsageDetail licenseUsageDetailCreator = new TekvLSCreateLicenseUsageDetail();
-                licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
+                licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context, userId);
 
                 this.ADUserCreation(jobj, context, connection);
 
+                context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyCtaasSetupById Azure function");
                 return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
             }
-
+            
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyCtaasSetupById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

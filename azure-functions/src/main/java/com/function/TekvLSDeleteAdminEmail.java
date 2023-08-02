@@ -47,7 +47,8 @@ public class TekvLSDeleteAdminEmail {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteAdminEmail Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSDeleteAdminEmail Azure function");
 
         String sql = "DELETE FROM customer_admin WHERE admin_email = ?;";
         // Connect to the database
@@ -74,25 +75,28 @@ public class TekvLSDeleteAdminEmail {
             }
             // Delete admin email
             statement.setString(1, email);
-            String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Admin email deleted successfully.");
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteAdminEmail Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (ADException e) {
             context.getLogger().info("AD exception when deleting Guest User Customer Admin: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "AD Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

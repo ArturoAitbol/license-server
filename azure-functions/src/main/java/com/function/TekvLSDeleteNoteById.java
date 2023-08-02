@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -50,7 +49,8 @@ public class TekvLSDeleteNoteById {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteNoteById Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSDeleteNoteById Azure function");
         String userEmail = getEmailFromToken(tokenClaims,context);
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("note");
         queryBuilder.appendValueModification("status","Closed","note_status_type_enum");
@@ -81,7 +81,6 @@ public class TekvLSDeleteNoteById {
             String noteContent = rs.getString("content");
 
             // Delete project
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Note deleted successfully.");
@@ -108,19 +107,21 @@ public class TekvLSDeleteNoteById {
                     context.getLogger().warning("Notification exception: " + e.getMessage());
                 }
             }
-
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteNoteById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteNoteById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteNoteById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

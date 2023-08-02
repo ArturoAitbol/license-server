@@ -65,7 +65,8 @@ public class TekvLSGetAllSubaccounts
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAllSubaccounts Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetAllSubaccounts Azure function");		
 
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -86,6 +87,7 @@ public class TekvLSGetAllSubaccounts
 				context.getLogger().info(MESSAGE_FOR_MISSING_CUSTOMER_EMAIL + " Email=" + email);
 				JSONObject json = new JSONObject();
 				json.put("error", MESSAGE_FOR_MISSING_CUSTOMER_EMAIL);
+				context.getLogger().info("User " + userId + " is leaving TekvLSGetAllSubaccounts Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
@@ -144,22 +146,26 @@ public class TekvLSGetAllSubaccounts
 				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
 				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN, SUBACCOUNT_STAKEHOLDER);
 				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				context.getLogger().info("User " + userId + " is leaving TekvLSGetAllSubaccounts Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
 			json.put("subaccounts", array);
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllSubaccounts Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllSubaccounts Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllSubaccounts Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
