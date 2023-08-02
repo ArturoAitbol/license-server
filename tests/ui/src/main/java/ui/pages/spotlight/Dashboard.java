@@ -9,6 +9,7 @@ import ui.core.AbstractPageObject;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Dashboard extends AbstractPageObject {
 
@@ -43,8 +44,9 @@ public class Dashboard extends AbstractPageObject {
 
         DateTimeFormatter webDateFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
         LocalDate selectedDate = LocalDate.parse("06/24/2023", webDateFormat);
+        Locale englishLocale = new Locale("en");
 
-        DateTimeFormatter testDateFormat = DateTimeFormatter.ofPattern("MMMM d, uuuu");
+        DateTimeFormatter testDateFormat = DateTimeFormatter.ofPattern("MMMM d, uuuu", englishLocale);
         LOGGER.info("Date to select: " + testDateFormat.format(selectedDate));
         By dateButtonLocator = By.cssSelector(String.format(this.dateButtonLocatorString, testDateFormat.format(selectedDate)));
         this.action.click(dateButtonLocator);
