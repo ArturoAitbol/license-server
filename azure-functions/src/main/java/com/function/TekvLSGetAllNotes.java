@@ -148,8 +148,6 @@ public class TekvLSGetAllNotes {
 				item.put("closeDate", closeDate != null ? closeDate.split(" ") : JSONObject.NULL);
 				closedBy = rs.getString("closed_by");
 				item.put("closedBy", closedBy != null ? closedBy : JSONObject.NULL);
-                reports = rs.getString("reports");
-                item.put("reports",reports != null ? new JSONArray(reports) : JSONObject.NULL);
                 notes.put(item);
             }
             context.getLogger().info("List total " + notes.length() + " notes");

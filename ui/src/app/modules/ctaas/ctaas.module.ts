@@ -17,7 +17,6 @@ import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirm
 import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/modify-test-suite.component';
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
-import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { DetailedReportsComponent } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-consolidated-report/search-consolidated-report.component';
@@ -47,7 +46,6 @@ import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-
     BannerComponent,
     CtaasNotesComponent,
     AddNotesComponent,
-    CtaasHistoricalDashboardComponent,
     DetailedReportsComponent,
     CtaasTestReportsComponent,
     SearchConsolidatedReportComponent,

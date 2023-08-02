@@ -63,7 +63,6 @@ public enum Resource {
         GET_ALL_SUBACCOUNT_STAKEHOLDER,//TekvLSGetAllStakeholders
         GET_AUTH_USER_PROFILE,//TekvLSGetAuthUserProfile
         GET_CTAAS_DASHBOARD,//TekvLSGetCtaasDashboard
-        GET_ALL_REPORTS,
         GET_ALL_FEATURE_TOGGLES,//TekvLSGetAllFeatureToggles
         GET_SUBSCRIPTIONS_OVERVIEW, //TeTekvLSGetSubscriptionsOverview
         GET_ALL_NOTES, //TeTekvLSGetAllNotes

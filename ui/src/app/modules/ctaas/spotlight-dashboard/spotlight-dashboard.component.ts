@@ -245,7 +245,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         this.setDate();
         this.loadCharts();
         this.showChildren = true;
-        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id) && !this.isHistoricalView;
+        this.showNewNoteBtn = !this.isHistoricalView;
         this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
           .subscribe(() => {
             this.disableFiltersWhileLoading = false;
@@ -389,7 +389,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   setNewNoteBtn(date: Moment) {
-    this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id) && !this.isHistoricalView && date.isSame(moment.utc(), 'day');
+    this.showNewNoteBtn = !this.isHistoricalView && date.isSame(moment.utc(), 'day');
   }
 
   loadCharts(showLoading = true) {
