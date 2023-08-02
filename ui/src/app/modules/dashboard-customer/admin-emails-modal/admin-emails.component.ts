@@ -81,7 +81,7 @@ export class AdminEmailsComponent implements OnInit {
       confirmCaption: 'Delete account',
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {
-      if(confirmed){
+      if(confirmed) {
         this.customerAdminEmailService.deleteAdminEmail(this.adminEmails[index]).subscribe((res: any) => {
           if (!res?.error) {
             this.snackBarService.openSnackBar('Customer administrator email deleted', '');
@@ -94,6 +94,8 @@ export class AdminEmailsComponent implements OnInit {
           console.error('Error while deleting administrator email', err);
           this.isDataLoading = false;
         });
+      } else {
+        this.isDataLoading = false;
       }
     });
     
