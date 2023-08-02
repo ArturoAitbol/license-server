@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 
 public class TekvLSModifyFeatureToggleById {
     /**
@@ -54,7 +53,8 @@ public class TekvLSModifyFeatureToggleById {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSModifyFeatureToggleById Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSModifyFeatureToggleById Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -63,6 +63,7 @@ public class TekvLSModifyFeatureToggleById {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleById Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
@@ -73,6 +74,7 @@ public class TekvLSModifyFeatureToggleById {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleById Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -104,23 +106,25 @@ public class TekvLSModifyFeatureToggleById {
              PreparedStatement statement = queryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Feature Toggle updated successfully.");
 
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyFeatureToggleById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

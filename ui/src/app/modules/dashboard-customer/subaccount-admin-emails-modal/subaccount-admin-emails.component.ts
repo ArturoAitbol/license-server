@@ -101,6 +101,8 @@ export class SubaccountAdminEmailsComponent implements OnInit {
           console.error('Error while deleting administrator email', err);
           this.isDataLoading = false;
         });
+      } else {
+        this.isDataLoading = false;
       }
     });
   }
