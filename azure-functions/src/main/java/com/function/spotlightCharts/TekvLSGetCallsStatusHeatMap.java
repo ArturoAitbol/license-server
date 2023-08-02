@@ -47,6 +47,7 @@ public class TekvLSGetCallsStatusHeatMap {
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		
 		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -59,8 +60,8 @@ public class TekvLSGetCallsStatusHeatMap {
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
-
-		context.getLogger().info("Entering TekvLSGetCallsStatusHeatMap Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetCallsStatusHeatMap Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
@@ -133,6 +134,7 @@ public class TekvLSGetCallsStatusHeatMap {
 					if (!rs.next()) {
 						context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
 						json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+						context.getLogger().info("User " + userId + " is leaving TekvLSGetCallsStatusHeatMap Azure function with error");
 						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 					}
 				}
@@ -148,6 +150,7 @@ public class TekvLSGetCallsStatusHeatMap {
 			if (tapURL == null || tapURL.isEmpty()) {
 				context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
 				json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
+				context.getLogger().info("User " + userId + " is leaving TekvLSGetCallsStatusHeatMap Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			context.getLogger().info("TAP URL for data query: " + tapURL);
@@ -242,18 +245,21 @@ public class TekvLSGetCallsStatusHeatMap {
 			json.put("series", series);
 			json.put("maxValues",maxValues);
 			json.put("summary",summary);
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetCallsStatusHeatMap Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", "SQL Exception: " + e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetCallsStatusHeatMap Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetCallsStatusHeatMap Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

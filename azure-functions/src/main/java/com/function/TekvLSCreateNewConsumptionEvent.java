@@ -53,7 +53,8 @@ public class TekvLSCreateNewConsumptionEvent {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSCreateNewConsumptionEvent Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateNewConsumptionEvent Azure function");
 
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -62,6 +63,7 @@ public class TekvLSCreateNewConsumptionEvent {
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
@@ -71,6 +73,7 @@ public class TekvLSCreateNewConsumptionEvent {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -81,6 +84,7 @@ public class TekvLSCreateNewConsumptionEvent {
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
@@ -90,6 +94,7 @@ public class TekvLSCreateNewConsumptionEvent {
 		if (dutType.isEmpty()) {
 			JSONObject json = new JSONObject();
 			json.put("error", "DUT provided doesn't exist");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -98,6 +103,7 @@ public class TekvLSCreateNewConsumptionEvent {
 		if (callingPlatformType.isEmpty()) {
 			JSONObject json = new JSONObject();
 			json.put("error", "Calling Platform provided doesn't exist");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -126,21 +132,24 @@ public class TekvLSCreateNewConsumptionEvent {
 			if (rs.next()) {
 				String consumptionMatrixId = rs.getString("id");
 				Integer tokens = rs.getInt("tokens");
-				return createLicenseConsumptionEvent(tokenClaims, jobj, consumptionMatrixId, tokens, request, context);
+				return createLicenseConsumptionEvent(tokenClaims, jobj, consumptionMatrixId, tokens, request, context, userId);
 			} else {
 				JSONObject json = new JSONObject();
 				json.put("error", "DUT + Calling platform types sent make an invalid combination.");
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
@@ -174,7 +183,7 @@ public class TekvLSCreateNewConsumptionEvent {
 
 	public HttpResponseMessage createLicenseConsumptionEvent(Claims tokenClaims, JSONObject jobj,
 			String consumptionMatrixId, Integer tokensFromMatrix, HttpRequestMessage<Optional<String>> request,
-			final ExecutionContext context) {
+			final ExecutionContext context, String userId) {
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
 				+ System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -191,7 +200,6 @@ public class TekvLSCreateNewConsumptionEvent {
 				PreparedStatement insertStmt = connection.prepareStatement(insertSql);
 				PreparedStatement devicePerProjectStmt = connection.prepareStatement(devicePerProjectConsumptionSql)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			String userId = getUserIdFromToken(tokenClaims, context);
 
 			// check if there was a consumption for this consumption matrix id in the same
 			// project and week previously.
@@ -234,18 +242,22 @@ public class TekvLSCreateNewConsumptionEvent {
 			jobj.put("userEmail", userEmail);
 			jobj.put("userId", userId);
 			context.getLogger().info("DUT consumption inserted successfully.");
-			if (!this.createUsageDetail(jobj, connection, context))
-				return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(jobj.toString()).build();
+			if (!this.createUsageDetail(jobj, connection, context)){
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
+				return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(jobj.toString()).build();}
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateNewConsumptionEvent Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateNewConsumptionEvent Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

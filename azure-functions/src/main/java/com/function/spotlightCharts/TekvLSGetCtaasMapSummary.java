@@ -45,7 +45,8 @@ public class TekvLSGetCtaasMapSummary {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
-        context.getLogger().info("Entering TekvLSGetCtaasMapSummary Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetCtaasMapSummary Azure function");
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
@@ -55,12 +56,14 @@ public class TekvLSGetCtaasMapSummary {
         if (subaccountId.isEmpty()) {
             JSONObject json = new JSONObject();
             json.put("error", "Missing mandatory parameter: subaccountId");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
         if (startDate.isEmpty()) {
             JSONObject json = new JSONObject();
             json.put("error", "Missing mandatory parameter: startDate");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         if (endDate.isEmpty()) {
@@ -175,6 +178,7 @@ public class TekvLSGetCtaasMapSummary {
                     if (!rs.next()) {
                         context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
                         json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -190,6 +194,7 @@ public class TekvLSGetCtaasMapSummary {
             if (tapURL == null || tapURL.isEmpty()) {
                 context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
                 json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             context.getLogger().info("TAP URL for data query: " + tapURL);
@@ -262,16 +267,19 @@ public class TekvLSGetCtaasMapSummary {
                     result.put(res);
                 }
             }
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetCtaasMapSummary Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(result.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }
