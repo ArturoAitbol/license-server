@@ -148,18 +148,21 @@ public class TekvLSCreateSubaccountStakeHolder {
 					rs.next();
 					JSONObject json = new JSONObject();
 					json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
+					final String name = jobj.getString(MANDATORY_PARAMS.NAME.value);
+					final String companyName = jobj.has(OPTIONAL_PARAMS.COMPANY_NAME.value)? jobj.getString(OPTIONAL_PARAMS.COMPANY_NAME.value) : null;
+					final String jobTitle = jobj.has(OPTIONAL_PARAMS.JOB_TITLE.value)? jobj.getString(OPTIONAL_PARAMS.JOB_TITLE.value) : null;
+					final String phoneNumber = jobj.has(OPTIONAL_PARAMS.PHONE_NUMBER.value)? jobj.getString(OPTIONAL_PARAMS.PHONE_NUMBER.value) : null;
 					try {
 						context.getLogger().info("Adding user to Azure AD: " + stakeholderEmail);
-						GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), stakeholderEmail, SUBACCOUNT_STAKEHOLDER, context);
-						EmailClient.sendStakeholderWelcomeEmail(stakeholderEmail, jobj.getString(OPTIONAL_PARAMS.COMPANY_NAME.value),
-							jobj.getString(MANDATORY_PARAMS.NAME.value), subaccountId, context);
+						GraphAPIClient.createGuestUserWithProperRole(name, stakeholderEmail, SUBACCOUNT_STAKEHOLDER, context);
+						final String emailCompany = companyName != null && !companyName.isEmpty()? companyName : "your company";
+						EmailClient.sendStakeholderWelcomeEmail(stakeholderEmail, emailCompany, name, subaccountId, context);
 					} catch (Exception e) {
 						context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
 					}
 					try {
 						context.getLogger().info("Updating user profile at Azure AD : " + jobj);
-						GraphAPIClient.updateUserProfile(stakeholderEmail, jobj.getString(MANDATORY_PARAMS.NAME.value),
-							jobj.getString(OPTIONAL_PARAMS.JOB_TITLE.value), jobj.getString(OPTIONAL_PARAMS.COMPANY_NAME.value), jobj.getString(OPTIONAL_PARAMS.PHONE_NUMBER.value), context);
+						GraphAPIClient.updateUserProfile(stakeholderEmail, name, jobTitle, companyName, phoneNumber, context);
 						context.getLogger().info("Updated user profile at Azure AD : " + jobj);
 					} catch (Exception e) {
 						context.getLogger().info("Failed to update user at azure AD.  Exception: " + e.getMessage());
