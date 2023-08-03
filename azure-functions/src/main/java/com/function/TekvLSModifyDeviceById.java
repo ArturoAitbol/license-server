@@ -58,7 +58,8 @@ public class TekvLSModifyDeviceById
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSModifyDeviceById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifyDeviceById Azure function");	
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -67,6 +68,7 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyDeviceById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
@@ -77,6 +79,7 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyDeviceById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -93,6 +96,7 @@ public class TekvLSModifyDeviceById
 			}
 		}
 		if (optionalParamsFound == 0) {
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyDeviceById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
@@ -105,25 +109,27 @@ public class TekvLSModifyDeviceById
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement statement = queryBuilder.build(connection)) {
 			
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			String userId = getUserIdFromToken(tokenClaims,context);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));			
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Device updated successfully."); 
 			JSONObject json = new JSONObject();
 			json.put("id", id);
+			context.getLogger().info("User " + userId + " is succesfully leaving TekvLSModifyDeviceById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyDeviceById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyDeviceById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

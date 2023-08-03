@@ -52,7 +52,8 @@ public class TekvLSGetCtaasHistoricalDashboard {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetCtaasHistoricalDashboard Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetCtaasHistoricalDashboard Azure function");
 
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -62,6 +63,7 @@ public class TekvLSGetCtaasHistoricalDashboard {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasHistoricalDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if noteId is empty
@@ -69,6 +71,7 @@ public class TekvLSGetCtaasHistoricalDashboard {
             context.getLogger().info("Note Id cannot be empty");
             JSONObject json = new JSONObject();
             json.put("error", "Note Id cannot be empty");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasHistoricalDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -119,6 +122,7 @@ public class TekvLSGetCtaasHistoricalDashboard {
                     if (!rs.next()) {
                         context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
                         json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasHistoricalDashboard Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -137,18 +141,20 @@ public class TekvLSGetCtaasHistoricalDashboard {
                 reports.put(report);
             }
             json.put("response",reports);
-
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetCtaasHistoricalDashboard Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasHistoricalDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasHistoricalDashboard Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

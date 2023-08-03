@@ -114,7 +114,8 @@
                         <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                             class="accordian-container">
                             <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
-                                <mat-expansion-panel-header class="text-container">
+                                <mat-expansion-panel-header [style.background-color] = "item.color" (mouseover)="item.color = item.colorOnMouseOver"
+                                (mouseout)="item.color = item.colorOnMouseOut"class="text-container">
                                     <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
                                         <span class="testcasename" [title]="item.testCaseName">
                                             {{item.testCaseName | na}}

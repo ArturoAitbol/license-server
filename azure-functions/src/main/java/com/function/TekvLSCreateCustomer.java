@@ -57,7 +57,8 @@ public class TekvLSCreateCustomer
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSCreateCustomer Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateCustomer Azure function");
 
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -66,6 +67,7 @@ public class TekvLSCreateCustomer
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateCustomer Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -77,6 +79,7 @@ public class TekvLSCreateCustomer
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateCustomer Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -87,6 +90,7 @@ public class TekvLSCreateCustomer
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateCustomer Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
@@ -127,6 +131,7 @@ public class TekvLSCreateCustomer
 				context.getLogger().severe("Administrator email already exists");
 				JSONObject json = new JSONObject();
 				json.put("error", "Administrator email already exists");
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateCustomer Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			
@@ -141,6 +146,7 @@ public class TekvLSCreateCustomer
 					context.getLogger().severe("Sub Account Admin email already exists");
 					JSONObject json = new JSONObject();
 					json.put("error", "Subaccount email already exists");
+					context.getLogger().info("User " + userId + " is leaving TekvLSCreateCustomer Azure function with error");
 					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 				}
 			}
@@ -154,7 +160,6 @@ public class TekvLSCreateCustomer
 				statement.setString(5, jobj.getString(OPTIONAL_PARAMS.CUSTOMER_ID.value));
 			
 			// Insert
-			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("Customer inserted successfully.");
@@ -176,12 +181,15 @@ public class TekvLSCreateCustomer
 				GraphAPIClient.createGuestUserWithProperRole(customerName, adminEmail, CUSTOMER_FULL_ADMIN, context);
 				context.getLogger().info("Guest user created successfully (AD).");
 			}
+
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateCustomer Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		catch (ADException e){
 			context.getLogger().info("AD exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateCustomer Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		catch (SQLException e) {
@@ -189,6 +197,7 @@ public class TekvLSCreateCustomer
 			JSONObject json = new JSONObject();
 			String modifiedResponse = customerUnique(e.getMessage());
 			json.put("error", modifiedResponse);
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateCustomer Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {

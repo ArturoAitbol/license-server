@@ -43,7 +43,8 @@ public class TekvLSDeleteSubaccountAdminDevice {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteSubaccountAdminDevice Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSDeleteSubaccountAdminDevice Azure function");
 
         String sql = "DELETE FROM subaccount_admin_device WHERE subaccount_admin_email = ? AND device_token = ?;";
 
@@ -63,16 +64,19 @@ public class TekvLSDeleteSubaccountAdminDevice {
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin device deleted successfully.");
 
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteSubaccountAdminDevice Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteSubaccountAdminDevice Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteSubaccountAdminDevice Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

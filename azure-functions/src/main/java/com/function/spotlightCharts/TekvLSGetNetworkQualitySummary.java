@@ -56,7 +56,8 @@ public class TekvLSGetNetworkQualitySummary {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetNetworkQualitySummary Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetNetworkQualitySummary Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
@@ -217,6 +218,7 @@ public class TekvLSGetNetworkQualitySummary {
 					if (!rs.next()) {
 						context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
 						json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+						context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualitySummary Azure function with error");
 						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 					}
 				}
@@ -232,6 +234,7 @@ public class TekvLSGetNetworkQualitySummary {
 			if (tapURL == null || tapURL.isEmpty()) {
 				context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
 				json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
+				context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualitySummary Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			context.getLogger().info("TAP URL for data query: " + tapURL);
@@ -265,19 +268,21 @@ public class TekvLSGetNetworkQualitySummary {
 					json.put(countsLabels.get(i),values.isNull(i) ? "--" : Float.parseFloat(df.format(values.getFloat(i))));
 				}
 			}
-
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetNetworkQualitySummary Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", "SQL Exception: " + e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualitySummary Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualitySummary Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

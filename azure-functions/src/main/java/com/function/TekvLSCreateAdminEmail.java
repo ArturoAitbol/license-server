@@ -47,11 +47,14 @@ public class TekvLSCreateAdminEmail {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateAdminEmail Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateAdminEmail Azure function");
+        
         context.getLogger().info("Request body: " + request);
 
         if (!request.getBody().isPresent()) {
             context.getLogger().info("error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"error: request body is empty.\"}")).build();
         }
 
@@ -60,10 +63,12 @@ public class TekvLSCreateAdminEmail {
         // Check mandatory params to be present
         if (createAdminRequest.getAdminEmail() == null) {
             context.getLogger().info("error: Missing customerAdminEmail parameter.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter customerAdminEmail.\"}")).build();
         }
         if (createAdminRequest.getCustomerId() == null) {
             context.getLogger().info("error: Missing customerId parameter.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter customerId.\"}")).build();
         }
 
@@ -79,7 +84,6 @@ public class TekvLSCreateAdminEmail {
             statement.setString(1, createAdminRequest.customerAdminEmail);
             statement.setString(2, createAdminRequest.customerId);
 
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Admin email inserted successfully.");
@@ -93,18 +97,20 @@ public class TekvLSCreateAdminEmail {
                         GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),createAdminRequest.customerAdminEmail, CUSTOMER_FULL_ADMIN, context);
                 }
             }
-
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateAdminEmail Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
 
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
 

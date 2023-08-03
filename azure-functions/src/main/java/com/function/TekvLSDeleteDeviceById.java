@@ -56,7 +56,8 @@ public class TekvLSDeleteDeviceById
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSDeleteDeviceById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSDeleteDeviceById Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
@@ -77,7 +78,6 @@ public class TekvLSDeleteDeviceById
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			// Delete device
-			String userId = getUserIdFromToken(tokenClaims,context);
 			if (deleteFlag) {
 				deleteStmt.setString(1, id);
 				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + deleteStmt);
@@ -90,19 +90,21 @@ public class TekvLSDeleteDeviceById
 			}
 			
 			context.getLogger().info("Device deleted successfully.");
-
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteDeviceById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteDeviceById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteDeviceById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
