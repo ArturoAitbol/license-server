@@ -39,6 +39,15 @@ public class SpotlightDashboardSteps {
         this.spotlightDashboard = actionMenu.goToSpotlightDashboard();
     }
 
+    @Given("I go to the spotlight view of subaccount {string} of customer {string}")
+    public void iGoToTheSpotlightViewOfSubaccountOfCustomer(String subaccountName, String customerName) {
+        this.subaccountName = subaccountName;
+        this.customerName = customerName;
+        CustomerRow customerRow = this.customers.getCustomerSubaccount(customerName, subaccountName);
+        ActionMenu actionMenu = customerRow.openActionMenu();
+        this.spotlightDashboard = actionMenu.goToSpotlightDashboard();
+    }
+
     @Given("I go to the spotlight dashboard of subaccount {string} of customer {string}")
     public void iGoToTheSpotlightDashboardOfSubaccountOfCustomer(String subaccountName, String customerName) {
         this.subaccountName = subaccountName;
@@ -47,6 +56,7 @@ public class SpotlightDashboardSteps {
         ActionMenu actionMenu = customerRow.openActionMenu();
         this.spotlightDashboard = actionMenu.goToSpotlightDashboard();
         this.spotlightDashboard.waitForDashboardToLoad();
+        this.spotlightDashboard.changeDate();
     }
 
 
