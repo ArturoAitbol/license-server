@@ -14,23 +14,6 @@ describe(' Ctaas dashboard http request test', () => {
         ctaasDashboardService = new CtaasDashboardService(httpClientSpy);
     });
 
-    it('should make the proper calls on getCtaasDashboardDetails', (done: DoneFn) => {
-        const dashboardData: any = {
-            reportType: 'Weekly-FeatureFunctionality',
-            subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f',
-            timestampId:'230129233129'
-        }
-        let params = new HttpParams();
-        params = params.set('timestampId','230129233129');
-
-        httpClientSpy.get.and.returnValue(CtaasDashboardServiceMock.getCtaasDashboardDetails('fbb2d912-b202-432d-8c07-dce0dad51f7f','Weekly-FeatureFunctionality','230129233129'));
-        ctaasDashboardService.getCtaasDashboardDetails('fbb2d912-b202-432d-8c07-dce0dad51f7f','Weekly-FeatureFunctionality','230129233129').subscribe({
-            next: () => { done(); },
-            error: done.fail
-        });
-        expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/ctaasDashboard' +`/${dashboardData.subaccountId}` + `/${dashboardData.reportType}`, {params});
-    });
-
     it('should make the proper calls on getCtaasDashboardDetailedReport', (done: DoneFn) => {
         const dashboardData: any = {
             reportType: 'Weekly-FeatureFunctionality',

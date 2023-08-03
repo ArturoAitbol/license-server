@@ -1,10 +1,10 @@
 <app-banner></app-banner>
 <mat-progress-bar *ngIf="autoRefresh && tapURLFlag" mode="indeterminate"></mat-progress-bar>
 <div class="container-fluid" *ngIf="!maintenanceModeEnabled && showChartsFlag && tapURLFlag">
-    <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
+    <div id="note-info" *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
         <div class="card col-8">
             <div class="card-body">
-                <span class="light-text">{{note.openDate.replace(" ", "T") | date:"medium"}}</span>
+                <span class="light-text" id="note-open-date">{{note.openDate.replace(" ", "T") | date:"medium"}}</span>
                 <br>
                 <h3 class="mb-0 note-content">
                     {{note.content}}

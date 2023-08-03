@@ -354,7 +354,6 @@ export const permissions = {
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
-            'showLatestNote',
             'resetFilter',
             'request-call',
             'viewDetailedReport',
@@ -412,7 +411,6 @@ export const permissions = {
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
-            'showLatestNote',
             'resetFilter',
             'request-call',
             'viewDetailedReport',
@@ -462,7 +460,6 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
-            'showLatestNote',
             'resetFilter',
             'request-call',
             'viewDetailedReport',
