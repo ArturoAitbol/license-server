@@ -172,9 +172,9 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	
 	private void updateADUser(String email, String subaccountId, JSONObject jobj, ExecutionContext context) {
 		try {
-			context.getLogger().info("Updating user profile at Azure AD : "+email);
+			context.getLogger().info("Updating user profile at Azure AD : " + email);
 			User user = GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"), getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
-			context.getLogger().info("Updated user profile at Azure AD : "+jobj);
+			context.getLogger().info("Updated user profile at Azure AD : " + jobj);
 			String newRole = getValue(jobj, "role");
 			if (newRole != null && user != null) {
 				context.getLogger().info("Updating user role at Azure AD : " + email);

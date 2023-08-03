@@ -6,8 +6,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
-import com.function.clients.EmailClient;
-import com.function.util.FeatureToggleService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +19,6 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
-import org.mockito.MockedStatic;
 
 public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
 
