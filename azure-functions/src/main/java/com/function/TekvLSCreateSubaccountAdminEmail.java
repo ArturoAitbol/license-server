@@ -48,11 +48,13 @@ public class TekvLSCreateSubaccountAdminEmail {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateSubaccountAdminEmail Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSCreateSubaccountAdminEmail Azure function");        
         context.getLogger().info("Request body: " + request);
 
         if (!request.getBody().isPresent()) {
             context.getLogger().info("error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"error: request body is empty.\"}")).build();
         }
 
@@ -60,10 +62,12 @@ public class TekvLSCreateSubaccountAdminEmail {
 
         if (createSubaccountAdminRequest.getAdminEmail() == null) {
             context.getLogger().info("error: Missing adminEmail parameter.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter subaccountAdminEmail.\"}")).build();
         }
         if (createSubaccountAdminRequest.getSubaccountId() == null) {
             context.getLogger().info("error: Missing subaccountId parameter.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter subaccountId.\"}")).build();
         }
 
@@ -78,7 +82,6 @@ public class TekvLSCreateSubaccountAdminEmail {
             statement.setString(1, createSubaccountAdminRequest.getAdminEmail());
             statement.setString(2, createSubaccountAdminRequest.getSubaccountId());
 
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
@@ -103,18 +106,20 @@ public class TekvLSCreateSubaccountAdminEmail {
                     }
                 }
             }
-
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateSubaccountAdminEmail Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
 
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
 
@@ -125,7 +130,7 @@ public class TekvLSCreateSubaccountAdminEmail {
         private final String subaccountId;
 
         public CreateSubaccountAdminRequest(String subaccountAdminEmail, String subaccountId) {
-            this.subaccountAdminEmail = subaccountAdminEmail;
+            this.subaccountAdminEmail = subaccountAdminEmail != null? subaccountAdminEmail.toLowerCase() : null;
             this.subaccountId = subaccountId;
         }
 

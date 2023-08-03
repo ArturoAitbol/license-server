@@ -67,6 +67,8 @@
                 [phoneValidation]="true"
                 [separateDialCode]="false"
                 [numberFormat]="PhoneNumberFormat.International"
+                [enablePlaceholder]="true"
+                [customPlaceholder]="'Phone Number'"
                 [inputId]="'phone-number'"
                 formControlName="phoneNumber"
             >
@@ -75,7 +77,7 @@
             <div class="col-12 col-sm-6">
                 <mat-form-field class="w-100" appearance="outline">
                     <mat-label id="job-title-label">Job Title</mat-label>
-                    <input  id="jobTitle" type="text" formControlName="jobTitle" matInput aria-label="Job Title">
+                    <input id="jobTitle" type="text" formControlName="jobTitle" matInput aria-label="Job Title">
                 </mat-form-field>
             </div>
             <div class="col-12 col-sm-6">
@@ -142,7 +144,7 @@
                 <div class="col-12 col-sm-6">
                     <mat-form-field class="w-100" appearance="outline">
                         <mat-label id="name-label"> Name</mat-label>
-                        <input id="name" type="text" formControlName="name" matInput value="" aria-label="Name">
+                        <input required id="name" type="text" formControlName="name" matInput value="" aria-label="Name">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-sm-6">
@@ -166,7 +168,8 @@
                         [separateDialCode]="false"
                         [numberFormat]="PhoneNumberFormat.International"
                         [inputId]="'phoneNumber'"
-                        required
+                        [enablePlaceholder]="true"
+                        [customPlaceholder]="'Phone Number'"
                         formControlName="phoneNumber"
                     >
                     </ngx-intl-tel-input>
@@ -180,7 +183,7 @@
                 <div class="col-12 col-sm-6">
                     <mat-form-field class="w-100" appearance="outline">
                         <mat-label id="email-label">Email</mat-label>
-                        <input id="email" type="email" formControlName="subaccountAdminEmail" matInput aria-label="Email">
+                        <input required id="email" type="email" formControlName="subaccountAdminEmail" matInput aria-label="Email">
                     </mat-form-field>
                 </div>
                 <div *lcCheckAccessFor="'emailNotifications'">

@@ -151,6 +151,8 @@ export class CtaasSetupComponent implements OnInit {
       }
       this.fetchSetupInfo();
       this.isDataLoading = false;
+    }, error => {
+      this.isDataLoading = false;
     });
   }
 

@@ -46,13 +46,15 @@ public class TekvLSCtaasDownloadTestReport {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCtaasDownloadTestReport Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSCtaasDownloadTestReport Azure function");
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
         if (requestBody.isEmpty()) {
             context.getLogger().info("Error: Request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "Request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCtaasDownloadTestReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
@@ -62,6 +64,7 @@ public class TekvLSCtaasDownloadTestReport {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCtaasDownloadTestReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check mandatory params to be present
@@ -71,6 +74,7 @@ public class TekvLSCtaasDownloadTestReport {
                 context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
                 JSONObject json = new JSONObject();
                 json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCtaasDownloadTestReport Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -79,6 +83,7 @@ public class TekvLSCtaasDownloadTestReport {
             JSONObject jsonObject = jobj.getJSONObject(MANDATORY_PARAMS.DETAILED_REPORT.value);
             if (jsonObject == null) {
                 json.put("error", "Detailed report response cannot be empty");
+                context.getLogger().info("User " + userId + " is leaving TekvLSCtaasDownloadTestReport Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             byte[] bytes = null;
@@ -94,14 +99,17 @@ public class TekvLSCtaasDownloadTestReport {
             if (bytes == null) {
                 context.getLogger().info(REPORT_NOT_FOUND);
                 json.put("error", REPORT_NOT_FOUND);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCtaasDownloadTestReport Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCtaasDownloadTestReport Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/vnd.ms-excel")
                     .body(bytes).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCtaasDownloadTestReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

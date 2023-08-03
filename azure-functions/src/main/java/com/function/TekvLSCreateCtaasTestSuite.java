@@ -51,7 +51,8 @@ public class TekvLSCreateCtaasTestSuite {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateCtaasTestSuite Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateCtaasTestSuite Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -60,6 +61,7 @@ public class TekvLSCreateCtaasTestSuite {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateCtaasTestSuite Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
@@ -70,6 +72,7 @@ public class TekvLSCreateCtaasTestSuite {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateCtaasTestSuite Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -80,6 +83,7 @@ public class TekvLSCreateCtaasTestSuite {
                 context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
                 JSONObject json = new JSONObject();
                 json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCreateCtaasTestSuite Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -97,7 +101,6 @@ public class TekvLSCreateCtaasTestSuite {
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            String userId = getUserIdFromToken(tokenClaims,context);
 
             // Set statement parameters
             insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
@@ -113,17 +116,20 @@ public class TekvLSCreateCtaasTestSuite {
             rs.next();
 			jobj.put("id", rs.getString("id"));
             context.getLogger().info("CtaaS Test Suite inserted successfully.");
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateCtaasTestSuite Azure function");
             return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
 
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateCtaasTestSuite Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateCtaasTestSuite Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
 

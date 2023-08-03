@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 
 public class TekvLSDeleteConsumptionMatrixById {
     /**
@@ -51,7 +50,8 @@ public class TekvLSDeleteConsumptionMatrixById {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteConsumptionMatrixById Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSDeleteConsumptionMatrixById Azure function");
 
         String sql = "DELETE FROM consumption_matrix WHERE id = ?::uuid;";
 
@@ -68,23 +68,24 @@ public class TekvLSDeleteConsumptionMatrixById {
             statement.setString(1, id);
 
             // Delete project
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Consumption Matrix deleted successfully.");
-
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteConsumptionMatrixById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteConsumptionMatrixById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteConsumptionMatrixById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

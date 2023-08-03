@@ -42,7 +42,8 @@ public class TekvLSGetSubscriptionsOverview {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetSubscriptionsOverview Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetSubscriptionsOverview Azure function");
 
         // Build SQL statement, customers left outer join subaccount, license, project, license_consumption
         SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT c.id as customer_id, c.name as customer_name, s.id as subaccount_id, s.name as subaccount_name, " +
@@ -104,16 +105,19 @@ public class TekvLSGetSubscriptionsOverview {
             }
 
             json.put("subscriptions", array);
+            context.getLogger().info("User " + userId + " is succesfully leaving TekvLSGetSubscriptionsOverview Azure function");        
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetSubscriptionsOverview Azure function with error");        
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetSubscriptionsOverview Azure function with error");        
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

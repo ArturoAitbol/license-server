@@ -58,13 +58,16 @@ public class TekvLSGetAllNotes {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetAllNotes Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetAllNotes Azure function");
+        
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
         if (subaccountId.isEmpty()) {
             JSONObject json = new JSONObject();
             json.put("error", "Missing mandatory parameter: subaccountId");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         
@@ -126,6 +129,7 @@ public class TekvLSGetAllNotes {
                     if (!rs.next()) {
                         context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + authEmail);
                         json.put("error", MESSAGE_FOR_INVALID_ID);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -152,16 +156,19 @@ public class TekvLSGetAllNotes {
             }
             context.getLogger().info("List total " + notes.length() + " notes");
             json.put("notes", notes);
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllNotes Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

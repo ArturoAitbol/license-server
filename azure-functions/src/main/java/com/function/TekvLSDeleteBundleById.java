@@ -47,11 +47,14 @@ public class TekvLSDeleteBundleById {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSDeleteBundle Azure function");
+        
         if (id.equals("EMPTY")) {
             context.getLogger().info("Error: There is no bundle id in the request.");
             JSONObject json = new JSONObject();
             json.put("error", "Please pass an id on the query string.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         String sql = "DELETE FROM bundle WHERE id = ?::uuid";
@@ -66,21 +69,23 @@ public class TekvLSDeleteBundleById {
 
             statement.setString(1, id);
 
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteBundle Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteBundle Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

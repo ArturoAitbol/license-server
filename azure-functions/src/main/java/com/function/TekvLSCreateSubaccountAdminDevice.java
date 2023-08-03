@@ -47,7 +47,8 @@ public class TekvLSCreateSubaccountAdminDevice {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateSubaccountAdminDevice Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSCreateSubaccountAdminDevice Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -56,6 +57,7 @@ public class TekvLSCreateSubaccountAdminDevice {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminDevice Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -67,6 +69,7 @@ public class TekvLSCreateSubaccountAdminDevice {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminDevice Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -77,6 +80,7 @@ public class TekvLSCreateSubaccountAdminDevice {
                 context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
                 JSONObject json = new JSONObject();
                 json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminDevice Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -98,25 +102,29 @@ public class TekvLSCreateSubaccountAdminDevice {
                     context.getLogger().info(DEVICE_ALREADY_REGISTERED_FOR_USER_MESSAGE);
                     JSONObject json = new JSONObject();
                     json.put("message", DEVICE_ALREADY_REGISTERED_FOR_USER_MESSAGE);
+                    context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateSubaccountAdminDevice Azure function");
                     return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
                 }
                 sql = "UPDATE subaccount_admin_device SET subaccount_admin_email = ? WHERE device_token = ?;";
             } else
-                sql = "INSERT INTO subaccount_admin_device (subaccount_admin_email, device_token) VALUES (?, ?);";
+            sql = "INSERT INTO subaccount_admin_device (subaccount_admin_email, device_token) VALUES (?, ?);";
             PreparedStatement updateStatement = connection.prepareStatement(sql);
             updateStatement.setString(1, userEmail);
             updateStatement.setString(2, jobj.getString(MANDATORY_PARAMS.DEVICE_TOKEN.value));
             updateStatement.execute();
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateSubaccountAdminDevice Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminDevice Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminDevice Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

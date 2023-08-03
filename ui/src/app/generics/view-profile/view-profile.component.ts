@@ -55,10 +55,10 @@ export class ViewProfileComponent implements OnInit {
   initializeFormDetails(): void {
     this.viewProfileForm = this.formBuilder.group({
       name: ['', Validators.required],
-      jobTitle: ['', Validators.required],
-      companyName: ['', Validators.required],
+      jobTitle: [''],
+      companyName: [''],
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required]
+      phoneNumber: ['']
     });
   }
  
