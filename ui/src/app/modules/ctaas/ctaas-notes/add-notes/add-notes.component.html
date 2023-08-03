@@ -13,9 +13,6 @@
                         <mat-hint align="end">{{noteInput.value?.length || 0}}/80</mat-hint>
                     </mat-form-field>
                 </div>
-                <div *ngIf="!nativeHistoricalDashboardActive">
-                    <app-ctaas-dashboard openedAsModal="true"></app-ctaas-dashboard>
-                </div>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
