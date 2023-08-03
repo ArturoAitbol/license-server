@@ -191,14 +191,6 @@ f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app de
 be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
 \.
 
---
--- Data for Name: historical_report; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.historical_report (id, subaccount_id, note_id, report_type, start_date, end_date, image) FROM stdin;
-4c027686-5951-43fb-a96b-9d9ccdcbfa52	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	be612704-c26e-48ea-ab9b-19312f03d644	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
-4c017683-5951-43ae-c45b-9f4ccfcbfa64	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
-\.
 
 --
 -- Data for Name: subaccount_admin_device; Type: TABLE DATA; Schema: public; Owner: -

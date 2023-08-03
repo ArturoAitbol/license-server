@@ -29,7 +29,6 @@ public class Dashboard extends AbstractPageObject {
     public void waitForDashboardToLoad(){
         this.action.waitSpinner(this.loadingSelector);
         this.action.waitPropertyToBe(this.datePicker, "disabled", "false");
-        this.changeDate();
     }
 
     public void changeDate(){
@@ -59,5 +58,24 @@ public class Dashboard extends AbstractPageObject {
     public String getReportType(){
         By columnSelector = By.xpath("//mat-button-toggle-group[@name=\"periodSelector\"]/descendant::button[@aria-pressed=\"true\"]/descendant::span");
         return this.action.getText(columnSelector);
+    }
+
+    public String getNoteContent(){
+        By noteContentSelector = By.xpath("//div[@id='note-info']//*[contains(@class,'note-content')]");
+        return this.action.getText(noteContentSelector);
+    }
+
+    public String getNoteOpenDate(){
+        By noteContentSelector = By.xpath("//div[@id='note-info']//*[@id='note-open-date']");
+        String noteOpenDate = this.action.getText(noteContentSelector);
+        DateTimeFormatter noteOpenDateFormat = DateTimeFormatter.ofPattern("MMM d, uuuu, K:mm:ss a");
+        LocalDate selectedDate = LocalDate.parse(noteOpenDate, noteOpenDateFormat);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
+        return dateFormat.format(selectedDate);
+    }
+
+    public String getDate(){
+        By dateSelector = By.xpath("//div[@class='date-field']//input");
+        return this.action.getAttribute(dateSelector,"value");
     }
 }
