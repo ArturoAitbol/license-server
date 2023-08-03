@@ -13,7 +13,7 @@ export class AutoLogoutService {
     acquireTokenTimeoutId: any = null;
 
     private readonly  LAST_ACTIVITY_TIMESTAMP_KEY = 'lastActivityTime';
-    constructor(private router: Router, private msalService: MsalService) {
+    constructor(private msalService: MsalService) {
     }
 
     public validateLastActivityTime(): void {
