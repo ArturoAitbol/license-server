@@ -114,17 +114,15 @@ public class TekvLSModifyAuthUserProfile {
 					context.getLogger().info("Ignoring exception: " + e);
 				}
 			}
-			if(jobj.has("emailNotifications")) {
-				queryBuilder.appendValueModification("email_notifications", String.valueOf(jobj.getBoolean("emailNotifications")), QueryBuilder.DATA_TYPE.BOOLEAN);
+			if (optionalParamsFound > 0) {
+				queryBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
+				PreparedStatement statement = queryBuilder.build(connection);
+				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+				String userId = getUserIdFromToken(tokenClaims,context);
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
+				statement.executeUpdate();
+				context.getLogger().info("Subaccount Admin email ( authenticated user ) updated successfully."); 
 			}
-			queryBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
-
-			PreparedStatement statement = queryBuilder.build(connection);
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			String userId = getUserIdFromToken(tokenClaims,context);
-			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
-			statement.executeUpdate();
-			context.getLogger().info("Subaccount Admin email ( authenticated user ) updated successfully."); 
 			updateADUser(authEmail, subaccountId, jobj, context);
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
@@ -137,7 +135,8 @@ public class TekvLSModifyAuthUserProfile {
 	}
 
 	private enum OPTIONAL_PARAMS {
-		NOTIFICATIONS("notifications", "notifications", QueryBuilder.DATA_TYPE.VARCHAR);
+		NOTIFICATIONS("notifications", "notifications", QueryBuilder.DATA_TYPE.VARCHAR),
+		EMAIL_NOTIFICATIONS("emailNotifications", "email_notifications", QueryBuilder.DATA_TYPE.BOOLEAN);
 
 		private final String jsonAttrib;
 		private final String columnName;
@@ -161,6 +160,6 @@ public class TekvLSModifyAuthUserProfile {
 	}
 	
 	private String getValue(JSONObject jobj, String key) {
-		return jobj.has(key)?jobj.getString(key):null;
+		return jobj.has(key)? jobj.getString(key) : null;
 	}
 }

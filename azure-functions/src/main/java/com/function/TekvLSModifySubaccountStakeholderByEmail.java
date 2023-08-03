@@ -191,6 +191,6 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	}
 	
 	private String getValue(JSONObject jobj, String key) {
-		return jobj.has(key)?jobj.getString(key):null;
+		return jobj.has(key)? jobj.getString(key) : null;
 	}
 }

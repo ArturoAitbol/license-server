@@ -90,7 +90,7 @@ public class TekvLSCreateAdminEmail {
                     customerNameStmt.setString(1,createAdminRequest.customerId);
                     ResultSet rs = customerNameStmt.executeQuery();
                     if(rs.next())
-                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),createAdminRequest.customerAdminEmail,CUSTOMER_FULL_ADMIN,context);
+                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),createAdminRequest.customerAdminEmail, CUSTOMER_FULL_ADMIN, context);
                 }
             }
 
