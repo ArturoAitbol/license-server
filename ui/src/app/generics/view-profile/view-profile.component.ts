@@ -86,8 +86,10 @@ export class ViewProfileComponent implements OnInit {
       this.isUpdatedClicked = true;
       let requestPayload = { ...this.viewProfileForm.value };
       delete requestPayload.type;
-      if (requestPayload.phoneNumber && requestPayload.phoneNumber !== '')
+      if (requestPayload.phoneNumber)
         requestPayload.phoneNumber = requestPayload.phoneNumber.e164Number;
+      else 
+        requestPayload.phoneNumber = "";
       requestPayload.emailNotifications = this.emailNotifications;
       this.userProfileService.updateUserProfile(requestPayload)
       .toPromise()
