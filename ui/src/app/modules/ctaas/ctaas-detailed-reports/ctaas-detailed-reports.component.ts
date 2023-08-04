@@ -572,8 +572,12 @@ export class DetailedReportsComponent implements OnInit {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
       let detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
+      let backup = this.ctaasDashboardService.getDetailedReportyObject();
       if (!confirm) {
-        detailedResponseObj = this.responseFailed.response.report;
+        this.renderData(this.responseFailed);
+        detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
+        this.ctaasDashboardService.setDetailedReportObject(backup);
+        this.renderData(this.responseAll);
       }
       
       detailedResponseObj.summary.startTime = this.reportResponse.summary.summaryStartTime;
