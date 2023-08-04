@@ -582,7 +582,7 @@ ngx-intl-tel-input input:focus {
 	box-shadow: 0 0 0 0 #000;
 }
 
-ngx-intl-tel-input input:invalid {
+ngx-intl-tel-input.ng-invalid input  {
 	outline: none !important;
 	border-color: #f44336;
   border-width: 2px;
