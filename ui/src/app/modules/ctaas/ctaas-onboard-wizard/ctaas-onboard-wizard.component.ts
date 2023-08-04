@@ -139,6 +139,12 @@ export class OnboardWizardComponent implements OnInit {
             userProfileObj.phoneNumber = userProfileObj.phoneNumber.e164Number;
         else
             userProfileObj.phoneNumber = "";
+
+        if (!userProfileObj.companyName)
+            userProfileObj.companyName = "";
+
+        if (!userProfileObj.jobTitle)
+            userProfileObj.jobTitle = "";
         let detailedUserProfileObj = { ...userProfileObj, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications };
         if (detailedUserProfileObj.notifications.length > 0) {
             detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
@@ -196,14 +202,10 @@ export class OnboardWizardComponent implements OnInit {
         this.configuredReports = true;
         this.isDataLoading = true;
         let requestPayload = this.stakeholderForm.value;
-        if (requestPayload.companyName)
-            requestPayload.companyName = requestPayload.companyName;
-        else
+        if (!requestPayload.companyName)
             requestPayload.companyName = "";
-        
-        if (requestPayload.jobTitle)
-            requestPayload.jobTitle = requestPayload.jobTitle;
-        else
+
+        if (!requestPayload.jobTitle)
             requestPayload.jobTitle = "";
 
         if (requestPayload.phoneNumber)
