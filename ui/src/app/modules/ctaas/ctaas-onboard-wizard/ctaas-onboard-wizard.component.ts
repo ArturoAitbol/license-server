@@ -135,8 +135,10 @@ export class OnboardWizardComponent implements OnInit {
         this.isDataLoading = true;
         this.interaction = '3';
         let userProfileObj = this.userProfileForm.value;
-        if (userProfileObj.phoneNumber && userProfileObj.phoneNumber !== '')
+        if (userProfileObj.phoneNumber)
             userProfileObj.phoneNumber = userProfileObj.phoneNumber.e164Number;
+        else 
+            userProfileObj.phoneNumber = "";
         let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications};
         if (detailedUserProfileObj.notifications.length > 0) {
             detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
@@ -194,8 +196,10 @@ export class OnboardWizardComponent implements OnInit {
         this.configuredReports = true;
         this.isDataLoading = true;
         let requestPayload = this.stakeholderForm.value;
-        if (requestPayload.phoneNumber && requestPayload.phoneNumber !== '')
+        if (requestPayload.phoneNumber)
             requestPayload.phoneNumber = requestPayload.phoneNumber.e164Number;
+        else 
+            requestPayload.phoneNumber = "";
         let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications}
         detailedRequestPayload.subaccountId = this.subaccountId;
         if (detailedRequestPayload.notifications.length > 0) {
