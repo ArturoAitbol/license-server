@@ -89,6 +89,8 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   date: Moment;
   tapURLFlag: boolean;
+  closedBanner: boolean;
+  hiddenBanner: boolean;
   regions: { country: string, state: string, city: string, displayName: string }[] = [];
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
@@ -186,16 +188,15 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    let closedBanner = localStorage.getItem("closedBanner") ? JSON.parse(localStorage.getItem("closedBanner")) : false;
+    this.closedBanner = localStorage.getItem("closedBanner") ? JSON.parse(localStorage.getItem("closedBanner")) : false;
     let accountId = this.msalService.instance.getActiveAccount().localAccountId;
-    let hiddenBanner = localStorage.getItem(accountId + "-hiddenBanner") ? JSON.parse(localStorage.getItem(accountId + "-hiddenBanner")) : false;
+    this.hiddenBanner = localStorage.getItem(accountId + "-hiddenBanner") ? JSON.parse(localStorage.getItem(accountId + "-hiddenBanner")) : false;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
     this.checkSetupStatus();
-    if (!closedBanner && !hiddenBanner && this.tapURLFlag)
-      this.bannerService.open(Constants.UTC_DATE_INFO, "", this.onDestroy, "info", true);
+
     let currentEndDate;
     this.disableFiltersWhileLoading = true;
     this.route.queryParams.subscribe(params => {
@@ -495,7 +496,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [Number((this.calls.failed / this.calls.total * 100 || 0).toFixed(2))];
     this.vqChartOptions.chart.events = {
-        dataPointSelection: (event, chartContext, config) => {     
+      dataPointSelection: (event, chartContext, config) => {
         this.navigateToPOLQACallsDetailedTableFilter(config.dataPointIndex);
       }
     };
@@ -584,7 +585,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       vqData.percentages.poor
     ];
     this.weeklyVQChartOptions.chart.events = {
-      dataPointSelection: (event, chartContext, config) => {     
+      dataPointSelection: (event, chartContext, config) => {
         this.navigateToPOLQACallsDetailedWeekly(config);
       }
     };
@@ -623,7 +624,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   private navigateToPOLQACallsDetailedTableFilter(position: number): void {
-    const reportFilter = `polqaCalls=true&avg=${position+1}`;
+    const reportFilter = `polqaCalls=true&avg=${position + 1}`;
     this.goToDetailedReportView(reportFilter);
   }
 
@@ -798,10 +799,12 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       } else {
         this.setupCustomerOnboardDetails(ctaasSetupDetails);
       }
-      if(ctaasSetupDetails.tapUrl !== '' && ctaasSetupDetails.tapUrl !== undefined) 
+      if (ctaasSetupDetails.tapUrl !== '' && ctaasSetupDetails.tapUrl !== undefined)
         this.tapURLFlag = true
       else
         this.tapURLFlag = false;
+      if (!this.closedBanner && !this.hiddenBanner && this.tapURLFlag)
+        this.bannerService.open(Constants.UTC_DATE_INFO, "", this.onDestroy, "info", true);
     });
   }
 
@@ -831,9 +834,9 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   private navigateToPOLQACallsDetailedWeekly(config): void {
     if (config) {
       this.isSelectedDayInWeekly = true;
-      this.selectedDayInWeekly = this.weeklyFilters.get('date').value.clone().subtract((6-config.dataPointIndex), 'days');
+      this.selectedDayInWeekly = this.weeklyFilters.get('date').value.clone().subtract((6 - config.dataPointIndex), 'days');
       var seriesIndex = config.seriesIndex;
-      const reportFilter = `polqaCalls=true&avg=${seriesIndex+1}`;
+      const reportFilter = `polqaCalls=true&avg=${seriesIndex + 1}`;
       this.goToDetailedReportView(reportFilter);
     }
   }
