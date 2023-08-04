@@ -498,6 +498,9 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     this.vqChartOptions.chart.events = {
       dataPointSelection: (event, chartContext, config) => {
         this.navigateToPOLQACallsDetailedTableFilter(config.dataPointIndex);
+      },
+      dataPointMouseEnter: (event, chartContext, config) => {  
+        event.target.style.cursor ='pointer';   
       }
     };
     if (this.selectedRegions.length > 0)
@@ -587,6 +590,9 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     this.weeklyVQChartOptions.chart.events = {
       dataPointSelection: (event, chartContext, config) => {
         this.navigateToPOLQACallsDetailedWeekly(config);
+      },
+      dataPointMouseEnter: (event, chartContext, config) => {  
+        event.target.style.cursor ='pointer';   
       }
     };
     this.weeklyVqNumericValues = [
