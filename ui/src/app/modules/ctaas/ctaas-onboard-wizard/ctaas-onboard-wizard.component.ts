@@ -201,10 +201,10 @@ export class OnboardWizardComponent implements OnInit {
         else
             requestPayload.companyName = "";
         
-        if (requestPayload.companyName)
-            requestPayload.companyName = requestPayload.companyName;
+        if (requestPayload.jobTitle)
+            requestPayload.jobTitle = requestPayload.jobTitle;
         else
-            requestPayload.companyName = "";
+            requestPayload.jobTitle = "";
 
         if (requestPayload.phoneNumber)
             requestPayload.phoneNumber = requestPayload.phoneNumber.e164Number;
