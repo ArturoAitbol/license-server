@@ -9,14 +9,11 @@ import {NoteService} from '../../../services/notes.service';
 import {SubAccountService} from '../../../services/sub-account.service';
 import {AddNotesComponent} from './add-notes/add-notes.component';
 import { Note } from 'src/app/model/note.model';
-import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { DatePipe } from '@angular/common';
 import { BannerService } from "../../../services/banner.service";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import { Subject } from "rxjs";
 import { Constants } from 'src/app/helpers/constants';
-import { FeatureToggleService } from "../../../services/feature-toggle.service";
-import { Router } from "@angular/router";
 import { environment } from 'src/environments/environment';
 import moment from 'moment';
 
@@ -36,7 +33,6 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     isRequestCompleted = false;
     toggleStatus = false;
     addNoteDisabled = false;
-    nativeHistoricalDashboardActive = false;
     maintenanceModeEnabled = false;
     private subaccountDetails: any;
     private onDestroy: Subject<void> = new Subject<void>();
@@ -56,10 +52,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         private noteService: NoteService,
         private subAccountService: SubAccountService,
         private bannerService: BannerService,
-        private ctaasSetupService: CtaasSetupService,
-        private ftService: FeatureToggleService,
-        private router: Router,
-        private datePipe: DatePipe) {}
+        private ctaasSetupService: CtaasSetupService) {}
     /**
      * calculate table height based on the window height
      */
@@ -121,7 +114,6 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
-        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id);
         this.calculateTableHeight();
         this.initColumns();
         this.fetchNoteList();
@@ -164,11 +156,8 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * @param note: Note
      */
     viewDashboard(note: Note): void{
-        if (this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id)) {
-            const featureUrl = `${environment.BASE_URL}/#/spotlight/${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
-            window.open(featureUrl);
-        } else
-            this.openDialog(this.VIEW_DASHBOARD,note);
+        const featureUrl = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
+        window.open(featureUrl);
     }
 
     /**
@@ -202,23 +191,14 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         });
     }
 
-    openDialog(type: string, selectedItemData?: any){
+    openDialog(type: string){
         let dialogRef;
         switch (type) {
             case this.ADD_NOTE:
                 dialogRef = this.dialog.open(AddNotesComponent, {
                     width: '85vw',
                     maxHeight: '90vh',
-                    maxWidth: this.nativeHistoricalDashboardActive ? '30vw' : '85vw',
-                    disableClose: false
-                });
-                break;
-            case this.VIEW_DASHBOARD:
-                dialogRef = this.dialog.open(CtaasHistoricalDashboardComponent, {
-                    data: selectedItemData,
-                    width: '100vw',
-                    height: '100vh',
-                    maxWidth: '100vw',
+                    maxWidth: '30vw',
                     disableClose: false
                 });
                 break;

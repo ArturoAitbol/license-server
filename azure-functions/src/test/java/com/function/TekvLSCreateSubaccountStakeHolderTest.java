@@ -79,6 +79,67 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
         assertEquals(stakeHolderEmail,this.stakeHolderEmail,"Actual email is not: ".concat(stakeHolderEmail));
     }
 
+    @Tag("acceptance")
+    @Test
+    void createStakeHolderWithOnlyOneOptionalParam() {
+        //Given
+    	String stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
+        String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+                "'subaccountAdminEmail': '"+stakeHolderEmail+"'," +
+                "'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'emailNotifications': true," +
+                "'phoneNumber': '+12142425968'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("subaccountAdminEmail"));
+
+        this.stakeHolderEmail = jsonBody.getString("subaccountAdminEmail");
+        assertNotNull(this.stakeHolderEmail);
+        assertEquals(stakeHolderEmail,this.stakeHolderEmail,"Actual email is not: ".concat(stakeHolderEmail));
+    }
+
+    @Tag("acceptance")
+    @Test
+    void createStakeHolderWithoutOptionalParam() {
+        //Given
+    	String stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
+        String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+                "'subaccountAdminEmail': '"+stakeHolderEmail+"'," +
+                "'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'emailNotifications': true}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("subaccountAdminEmail"));
+
+        this.stakeHolderEmail = jsonBody.getString("subaccountAdminEmail");
+        assertNotNull(this.stakeHolderEmail);
+        assertEquals(stakeHolderEmail,this.stakeHolderEmail,"Actual email is not: ".concat(stakeHolderEmail));
+    }
+
     @Test
     void bodyWithoutSubaccountTest() {
         //Given

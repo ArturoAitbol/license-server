@@ -429,22 +429,7 @@ CREATE TABLE public.note (
     open_date timestamp without time zone,
     opened_by character varying,
     close_date timestamp without time zone,
-    closed_by character varying,
-    reports character varying
-);
-
---
--- Name: historical_report; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.historical_report (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    subaccount_id uuid NOT NULL,
-	note_id uuid NOT NULL,
-    report_type character varying NOT NULL,
-	start_date character varying,
-	end_date character varying,
-    image bytea
+    closed_by character varying
 );
 
 
@@ -1093,20 +1078,6 @@ ALTER TABLE ONLY public.note
 
 ALTER TABLE ONLY public.subaccount_admin_device
     ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON UPDATE CASCADE ON DELETE CASCADE;
-
---
--- Name: historical_report fk_subaccount; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.historical_report
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
---
--- Name: historical_report fk_note; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.historical_report
-    ADD CONSTRAINT fk_note FOREIGN KEY (note_id) REFERENCES public.note(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- PostgreSQL database dump complete

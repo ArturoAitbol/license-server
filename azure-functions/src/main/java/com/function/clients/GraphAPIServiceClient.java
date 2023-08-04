@@ -44,11 +44,11 @@ public class GraphAPIServiceClient {
 		User user = new User();
 		if (displayName != null && !displayName.isEmpty())
 			user.displayName = displayName;
-		if (jobTitle != null && !jobTitle.isEmpty())
+		if (jobTitle != null)
 			user.jobTitle = jobTitle;
-		if (companyName != null && !companyName.isEmpty())
+		if (companyName != null)
 			user.companyName = companyName;
-		if (mobilePhone != null && !mobilePhone.isEmpty())
+		if (mobilePhone != null)
 			user.mobilePhone = mobilePhone;
 		graphClient.users(id).buildRequest().patch(user);
 	}

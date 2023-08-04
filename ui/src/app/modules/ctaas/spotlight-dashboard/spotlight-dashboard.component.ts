@@ -132,7 +132,8 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   note: Note;
   showNewNoteBtn = false;
   messageSpinner = 'Please wait while we prepare your UCaaS Continuous Testing Dashboard.';
-
+  isSelectedDayInWeekly = false;
+  selectedDayInWeekly: Moment = null;
   loggedInUserRoles: any;
 
   readonly ReportType = ReportType;
@@ -246,7 +247,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         this.setDate();
         this.loadCharts();
         this.showChildren = true;
-        this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id) && !this.isHistoricalView;
+        this.showNewNoteBtn = !this.isHistoricalView;
         this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
           .subscribe(() => {
             this.disableFiltersWhileLoading = false;
@@ -390,7 +391,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   setNewNoteBtn(date: Moment) {
-    this.showNewNoteBtn = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id) && !this.isHistoricalView && date.isSame(moment.utc(), 'day');
+    this.showNewNoteBtn = !this.isHistoricalView && date.isSame(moment.utc(), 'day');
   }
 
   loadCharts(showLoading = true) {
@@ -582,6 +583,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       vqData.percentages.fair,
       vqData.percentages.poor
     ];
+    this.weeklyVQChartOptions.chart.events = {
+      dataPointSelection: (event, chartContext, config) => {     
+        this.navigateToPOLQACallsDetailedWeekly(config);
+      }
+    };
     this.weeklyVqNumericValues = [
       vqData.numericValues.excellent,
       vqData.numericValues.good,
@@ -628,8 +634,14 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       startDate = this.selectedDate.clone().utc().startOf('day');
       endDate = this.selectedDate.clone().utc();
     } else {
-      startDate = this.getStartWeekDate();
-      endDate = this.getEndWeekDate();
+      if (this.isSelectedDayInWeekly) {
+        startDate = this.selectedDayInWeekly.clone().utc().startOf('day');
+        endDate = this.selectedDayInWeekly.clone().utc().endOf('day');
+        this.isSelectedDayInWeekly = false;
+      } else {
+        startDate = this.getStartWeekDate();
+        endDate = this.getEndWeekDate();
+      }
     }
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
@@ -813,6 +825,16 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
           this.loadCharts();
         }
       });
+    }
+  }
+
+  private navigateToPOLQACallsDetailedWeekly(config): void {
+    if (config) {
+      this.isSelectedDayInWeekly = true;
+      this.selectedDayInWeekly = this.weeklyFilters.get('date').value.clone().subtract((6-config.dataPointIndex), 'days');
+      var seriesIndex = config.seriesIndex;
+      const reportFilter = `polqaCalls=true&avg=${seriesIndex+1}`;
+      this.goToDetailedReportView(reportFilter);
     }
   }
 

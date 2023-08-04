@@ -58,7 +58,7 @@
                 <app-data-table [tableData]="dateListBK" [tableColumns]="displayedColumns" [isFilterable]="false"
                     [isPageable]="false" [isLoadingResults]="isLoadingResults" (rowAction)="rowAction($event)" [isRequestCompleted]="isRequestCompleted"
                     [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
-                    [rowActionIcon]="actionMenuOptions.length == 0&&'search'">
+                    [rowActionIcon]="actionMenuOptions.length === 0 && 'search'">
                 </app-data-table>
             </div>
         </section>

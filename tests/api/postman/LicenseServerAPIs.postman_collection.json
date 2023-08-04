@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "9cb8dea0-3fd0-4a63-a501-b9810cb0d158",
+		"_postman_id": "25001a07-e7b5-4c78-9aac-282e534d8c5a",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "8463491"
+		"_exporter_id": "8463466"
 	},
 	"item": [
 		{
@@ -1158,29 +1158,6 @@
 						}
 					]
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "ctaasHistoricalDashboard",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"response\");\r",
-							"    pm.expect(pm.response.json().response).to.be.an(\"array\")\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "{{HOST}}/ctassHistoricalDashboard/{{subaccountId}}/{{noteId}}"
 			},
 			"response": []
 		},
