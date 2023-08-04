@@ -118,6 +118,10 @@ public class TekvLSModifyAuthUserProfile {
 					context.getLogger().info("Ignoring exception: " + e);
 				}
 			}
+			if (jobj.has("emailNotifications")) {
+				queryBuilder.appendValueModification("email_notifications", String.valueOf(jobj.getBoolean("emailNotifications")), QueryBuilder.DATA_TYPE.BOOLEAN);
+				optionalParamsFound++;
+			}
 			if (optionalParamsFound > 0) {
 				queryBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
 				PreparedStatement statement = queryBuilder.build(connection);
@@ -140,8 +144,7 @@ public class TekvLSModifyAuthUserProfile {
 	}
 
 	private enum OPTIONAL_PARAMS {
-		NOTIFICATIONS("notifications", "notifications", QueryBuilder.DATA_TYPE.VARCHAR),
-		EMAIL_NOTIFICATIONS("emailNotifications", "email_notifications", QueryBuilder.DATA_TYPE.BOOLEAN);
+		NOTIFICATIONS("notifications", "notifications", QueryBuilder.DATA_TYPE.VARCHAR);
 
 		private final String jsonAttrib;
 		private final String columnName;
