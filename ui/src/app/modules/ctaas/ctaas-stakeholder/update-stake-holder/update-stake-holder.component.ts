@@ -113,6 +113,8 @@ export class UpdateStakeHolderComponent implements OnInit {
         this.snackBarService.openSnackBar('Updated stake holder details successfully', '');
         this.onCancel('closed');
       }
+    }, (error) => {
+      this.isDataLoading = false;
     });
   }
 
@@ -138,7 +140,7 @@ export class UpdateStakeHolderComponent implements OnInit {
     };
     extraData.phoneNumber = this.updateStakeholderForm.get('phoneNumber').value ? this.updateStakeholderForm.get('phoneNumber').value.internationalNumber : '';
     if (this.previousFormValue.role === extraData.role) {
-      extraData.role = null;
+      delete extraData.role;
     }
     return extraData;
   }
