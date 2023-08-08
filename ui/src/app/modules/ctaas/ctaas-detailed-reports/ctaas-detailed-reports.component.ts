@@ -363,8 +363,11 @@ export class DetailedReportsComponent implements OnInit {
             this.insideTheScope(testResult);
 
             if (testResult.filterByAvg && !filterDID.includes(testResult.from.DID)) {
-            filterDID.push(testResult.from.DID);
-          }
+              filterDID.push(testResult.from.DID);
+            }
+            if (testResult.filterByAvg && !filterDID.includes(testResult.to.DID)) {
+              filterDID.push(testResult.to.DID);
+            }
         }
       });
 
