@@ -1,0 +1,47 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+}
+.flex-container > div {
+  margin: 10px;
+  text-align: center;
+}
+.btn-custom {
+  background: rgb(39, 49, 118);
+  color: white;
+}
+
+
+
+
+
+
+.close-button{
+  float: right;
+  top:-17px;
+  right:-27px;
+}
+
+.close-icon {
+  transition: 1s ease-in-out;
+}
+
+.close-icon:hover {
+  transform: rotate(180deg);
+}
+
+::ng-deep .icon-outside .close-button{
+  float: right;
+  top:-52px;
+  right:-52px;
+}
+
+::ng-deep .icon-outside .mat-dialog-container {
+ overflow: unset
+}

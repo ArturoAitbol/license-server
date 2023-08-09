@@ -32,7 +32,7 @@ COPY public.customer (id, name, type, tombstone, distributor_id, test_customer) 
 0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848	Test Customer	MSP	f	\N	t
 cb1b268a-850a-4459-8033-09854d9ac015	Test NoDistributor	MSP	f	\N	t
 9f6ff46a-5f19-4bcf-9f66-c5f29b800205	Test Distributor	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
-f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	Test Subaccount	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
+f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	DashboardFunctionalTest	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 b995ecaa-d64e-4067-90e5-cbc80935d1e0	SpotLight Demo-1	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 950f47c7-a477-455b-b65b-331ecacc88dd	Customer01	MSP	f	\N	f
 \.
@@ -61,7 +61,7 @@ maintenance_test2@test.com	950f47c7-a477-455b-b65b-331ecacc88dd
 COPY public.subaccount (id, name, customer_id, services) FROM stdin;
 f5a609c0-8b70-4a10-9dc8-9536bdb5652c	Test RealCustomer - 360 Small	7d133fd2-8228-44ff-9636-1881f58f2dbb	tokenConsumption,spotlight
 cebe6542-2032-4398-882e-ffb44ade169d	Test Subaccount2	9f6ff46a-5f19-4bcf-9f66-c5f29b800205	tokenConsumption
-96234b32-32d3-45a4-af26-4c912c0d6a06	Test Subaccount	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	tokenConsumption
+96234b32-32d3-45a4-af26-4c912c0d6a06	DashboardFunctionalTest	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	tokenConsumption,spotlight
 ac7a78c2-d0b2-4c81-9538-321562d426c7	Default	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848	tokenConsumption
 069dc3aa-dcb1-45e6-886f-be8f2345080f	Default	0856df81-8d32-4adb-941a-c0d9187f36a7	tokenConsumption
 8acb6997-4d6a-4427-ba2c-7bf463fa08ec	Test Subaccount3	b995ecaa-d64e-4067-90e5-cbc80935d1e0	tokenConsumption,spotlight
@@ -110,6 +110,8 @@ a3475bf9-41d5-432a-ae2d-ccf7681385cf	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-1
 ebc71e49-4f63-44b2-9c90-7750d3ccca05	cebe6542-2032-4398-882e-ffb44ade169d	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Expired	Expired2
 d9cb5f93-c4d0-427e-8133-77905abd8487	96234b32-32d3-45a4-af26-4c912c0d6a06	2021-12-26 04:00:00	Small	2022-01-22 04:00:00	150	5000	Expired	Expired3
 16f4f014-5bed-4166-b10a-574b2e6655e3	b5b91753-4c2b-43f5-afa0-feb22cefa901	2022-08-01 04:00:00	Small	2023-09-30 04:00:00	150	5000	Active	License5
+16f4f014-5bed-4166-b10a-574b2e6655e4	b5b91753-4c2b-43f5-afa0-feb00cefa981	2023-06-01 04:00:00	Small	2030-09-30 04:00:00	150	5000	Active	License1
+16f4f014-5bed-4166-b10a-574b2e6655e5	96234b32-32d3-45a4-af26-4c912c0d6a06	2023-06-01 04:00:00	Small	2030-09-30 04:00:00	150	5000	Active	License1
 \.
 
 
@@ -160,8 +162,9 @@ COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_
 836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-tap-peerless-customer1.centralindia.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
 2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7
 39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
-78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d
-b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-tap-peerless-customer1.centralindia.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981
+78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	false	cebe6542-2032-4398-882e-ffb44ade169d
+b079c3a9-66c7-424f-aa1b-fdc2565d613a	az_tap_rg	https://tekvizion-ap-tap-peerless-customer1.centralindia.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	96234b32-32d3-45a4-af26-4c912c0d6a06
+b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-tap-peerless-customer1.centralindia.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb00cefa981
 a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901
 b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90
 c079c3a9-66c7-424f-aa1b-fdc2565d617a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
@@ -188,14 +191,6 @@ f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app de
 be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
 \.
 
---
--- Data for Name: historical_report; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.historical_report (id, subaccount_id, note_id, report_type, start_date, end_date, image) FROM stdin;
-4c027686-5951-43fb-a96b-9d9ccdcbfa52	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	be612704-c26e-48ea-ab9b-19312f03d644	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
-4c017683-5951-43ae-c45b-9f4ccfcbfa64	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
-\.
 
 --
 -- Data for Name: subaccount_admin_device; Type: TABLE DATA; Schema: public; Owner: -
@@ -215,7 +210,7 @@ be612704-c26e-48ea-ab9b-19312f03d644	Test	Cisco Webex  Windows Client	1.0	Soft C
 eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	Test	HylaFAX Enterprise	6.2	BYOC	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
 3ad3f83e-2654-466d-b9e9-9cd8ded28110	Test	Multitech FAX Finder IP FAX server	5.0	Application	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
 34859fba-9987-4a1c-b176-14569b331653	Test	OpenText-Right FAX	20.2	Headset	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
-b66edd36-ee7f-42e7-bfb4-41810ea69fe6	Test	Xmedius FAX server	9.0	Video Collab Device	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+b66edd36-ee7f-42e7-bfb4-41810ea69fe6	Test	Xmedius FAX server	9.0	Video Collab Device (ROW)	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
 7f6c9fec-978f-41a6-ba38-117611f0dfa3	Test	Genesys Pure Cloud	1.0.0.10206	Contact Center	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
 1ba09c6f-9a2a-4181-ac1e-b7217763df96	Test	Adtran NetVanta Series (7100)	11.10.3	UCaaS	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
 0e709699-3dab-47f1-a710-ebd2ae78d57b	Test	Alcatel Lucent OmniPCX/OpenTouch.OXE	12.4	CCaaS	week	4	2022-06-17 15:42:48.550405	infinity	\N	f
@@ -230,18 +225,12 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	
 COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 34859fba-9987-4a1c-b176-14569b331653	f	pfernandez@tekvizionlabs.com	Subaccount User Creation For License Service	ad-license-service-user-creation
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
-74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb	t	vtorrico@tekvizionlabs.com	Portal Callback	callback
-3c9d0d97-7878-4f1f-8ca5-18bf93069691	f	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
 e83e94d8-563f-4a06-8aa8-b7bfbaeb7f15	t	vtorrico@tekvizionlabs.com	map 	mapFeature
-b66edd36-ee7f-42e7-bfb4-41810ea69fe6	f	\N	Refresh button for Power Bi Dashboard	powerbiRefreshFeature
-7f6c9fec-978f-41a6-ba38-117611f0dfa3	f	\N	By enabling this feature toggle will have 2 more toggles buttons in PowerBi Dashboard.	powerbiTestReport
-0e709699-3dab-47f1-a710-ebd2ae78d57b	t	\N	Maintenance Mode	maintenanceMode
-ea00b987-0f14-4888-a0ce-f963d1eb7592	t	\N	Native Dashboard	spotlight-dashboard
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Historical Native Dashboard for Notes	spotlight-historical-dashboard
-7564aab0-5331-4ab5-85f7-e37acbdfd90d	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
-be612704-c26e-48ea-ab9b-19312f03d644	t	\N	Send Welcome Email to SpotLight customers	welcomeEmail
+be612704-c26e-48ea-ab9b-19312f03d644	t	pfernandez@tekvizionlabs.com	Send Welcome Email to SpotLight customers	welcomeEmail
+eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	t	pfernandez@tekvizionlabs.com	Multitenant demo subaccount for UCaaS CT	multitenant-demo-subaccount
 \.
 
 --

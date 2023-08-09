@@ -433,12 +433,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
                 case this.VIEW_CTAAS_DASHBOARD:
                     const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                     if (hasCtaasService) {
-                        let routePath = Constants.STAKEHOLDERS_VIEW_PATH;
-                        if(this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id))
-                            routePath = Constants.POWERBI_DASHBOARD_PATH;
-                        if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.selectedSubaccount.id))
-                            routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
-                        const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
+                        const url = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.selectedSubaccount.id}`;
                         window.open(url);
                     } else this.snackBarService.openSnackBar('UCaaS Continuous Testing Service is not available for this Subaccount', '');
                     break;

@@ -94,7 +94,7 @@ public class RoleAuthHandler {
                     return role;
             }
         }
-        return roles.getString(0);
+        return "";
     }
 
     public static String evaluateRoles(JSONArray roles) {
@@ -111,14 +111,9 @@ public class RoleAuthHandler {
         }
         if (configTesterFound)
             return CONFIG_TESTER;
-        List<String> customerRoles = getCustomerRoles();
-        for (String customerRole : customerRoles) {
-            for (int i = 0; i < roles.length(); i++) {
-                roleIt = roles.getString(i);
-                if (roleIt.equals(customerRole))
-                    return roleIt;
-            }
-        }
+        String customerRole = evaluateCustomerRoles(roles);
+        if (!customerRole.isEmpty())
+            return customerRole;
         return roles.getString(0);
     }
 
@@ -193,7 +188,7 @@ public class RoleAuthHandler {
     public static String getEmailFromToken(Claims tokenClaims, ExecutionContext context) {
         if (tokenClaims != null) {
             try {
-                return tokenClaims.get("preferred_username").toString();
+                return tokenClaims.get("preferred_username").toString().toLowerCase();
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: Getting preferred_username claim failed.");
             }

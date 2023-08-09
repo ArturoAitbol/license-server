@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { map } from 'rxjs/operators';
 import { Constants } from '../helpers/constants';
 import { IService } from '../model/service.model';
-import { SubAccount } from '../model/subaccount.model';
 import { SubAccountService } from '../services/sub-account.service';
 import { AvailableServicesService } from '../services/available-services.service';
 import { UserProfileService } from '../services/user-profile.service';
 import { tekVizionServices } from '../helpers/tekvizion-services';
-import { FeatureToggleService } from "../services/feature-toggle.service";
+import { CustomerService } from '../services/customer.service';
 @Component({
   selector: 'app-redirect-page',
   templateUrl: './redirect-page.component.html',
@@ -21,15 +19,15 @@ export class RedirectPageComponent implements OnInit {
   private readonly APPS_ROUTE_PATH: string = '/apps';
   private readonly  CONSUMPTION_MATRIX_PATH = '/consumption-matrix';
   loggedInUserRoles: string[] = [];
-  currentSubaccountDetails: SubAccount;
+  currentSubaccountDetails: any;
   availableServices: IService[] = [];
   constructor(
     private router: Router,
     private msalService: MsalService,
     private subaccountService: SubAccountService,
+    private customerService: CustomerService,
     private userProfileService: UserProfileService,
     private availabeService: AvailableServicesService,
-    private featureTogglesService: FeatureToggleService,
   ) { }
 
   ngOnInit(): void {
@@ -38,7 +36,7 @@ export class RedirectPageComponent implements OnInit {
       const accountDetails = this.getAccountDetails();
       const { idTokenClaims: { roles } } = accountDetails;
       this.loggedInUserRoles = roles;
-      if (this.loggedInUserRoles.length == 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
+      if (this.loggedInUserRoles.length === 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
         // Devices admin does not have permission to access dashboard, so it's a special case
         this.router.navigate([ this.CONSUMPTION_MATRIX_PATH ]);
       } else {
@@ -68,26 +66,47 @@ export class RedirectPageComponent implements OnInit {
    * get logged in user's subaccount details
    */
   private getSubAccountDetails(): void {
-    this.subaccountService.getSubAccountList().pipe(map((e: SubAccount) => {
-        const { services } = e['subaccounts'][0];
-        if (services) {
-          e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
-        } else {
-          e['subaccounts'][0]['services'] = [];
+    this.subaccountService.getSubAccountListForCustomerUser().subscribe((subaccountsResp: any) => {
+      if (subaccountsResp) {
+        let indexOfLastCustomerWithServices: number = 0;
+        for (let i = 0; i < subaccountsResp.subaccounts.length; i++) {
+          const services: string = subaccountsResp.subaccounts[i].services;
+          if (services.includes(tekVizionServices.SpotLight)) {
+            this.currentSubaccountDetails = subaccountsResp.subaccounts[i];
+            break;
+          }
+          if (services !== "")
+            indexOfLastCustomerWithServices = i;
         }
-        return e;
-      })).subscribe((res: any) => {
-      if (res) {
-        const { subaccounts } = res;
-        this.currentSubaccountDetails = subaccounts[0];
+        if (!this.currentSubaccountDetails) {
+          this.currentSubaccountDetails = subaccountsResp.subaccounts[indexOfLastCustomerWithServices];
+          this.navigateToDashboard();
+          return;
+        }
+        if (this.currentSubaccountDetails.services)
+          this.currentSubaccountDetails.services = this.currentSubaccountDetails.services.split(',').map((e: string) => e.trim());
+        else
+          this.currentSubaccountDetails.services = [];
+        this.currentSubaccountDetails.customerName = this.currentSubaccountDetails.name;
         this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
+        this.customerService.getCustomerById(this.currentSubaccountDetails.customerId).subscribe((customersResp: any) => {
+          const subaccountCustomer = customersResp.customers[0];
+          this.currentSubaccountDetails.customerName = subaccountCustomer.name;
+          this.currentSubaccountDetails.testCustomer = subaccountCustomer.testCustomer;
+          this.currentSubaccountDetails.customerType = subaccountCustomer.customerType;
+          this.currentSubaccountDetails.distributorId = subaccountCustomer.distributorId;
+          this.currentSubaccountDetails.adminEmails = subaccountCustomer.adminEmails;
+          this.currentSubaccountDetails.customerId = this.currentSubaccountDetails.customerId;
+          this.currentSubaccountDetails.subaccountId = this.currentSubaccountDetails.id;
+          this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
+        });
         // enable/disable the available services
         this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
           if (this.currentSubaccountDetails.services.includes(e.value))
             e.access = true;
         });
-        this.navigationCheckPoint();
-      }
+        this.navigateToMyApps();
+  }
     });
   }
   /**
@@ -102,32 +121,25 @@ export class RedirectPageComponent implements OnInit {
    */
   private navigateToDashboard(): void { this.router.navigate([this.DASHBOARD_ROUTE_PATH]); }
   /**
-   * check point where based on roles, it will redirect to apps/tekToken Consumption portal
-   */
-  private navigationCheckPoint(): void {
-    // checking that user has subaccount role to send it to apps page 
-    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER)) {
-      this.navigateToMyApps();
-    } else {
-      this.navigateToDashboard();
-    }
-  }
-  /**
    * navigate to my apps page
    */
   private navigateToMyApps(): void {
     const { services } = this.currentSubaccountDetails;
-    if (!this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) && services.length > 0) {
+    if (this.loggedInUserRoles.length > 1) {
+      this.router.navigate([this.APPS_ROUTE_PATH]);
+      return;
+    }
+    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) && services.length > 0) {
       const serviceObj: IService = this.availableServices.find((e: any) => e.value === tekVizionServices.SpotLight);
       const { routePath } = serviceObj;
-      this.router.navigate([routePath]);
+      this.router.navigate([routePath], { queryParams: { subaccountId: this.currentSubaccountDetails.id } });
     } else {
       if (services.length > 1) {
         this.router.navigate([this.APPS_ROUTE_PATH]);
       } else if (services.length === 1) {
         const serviceObj: IService = this.availableServices.find((e: any) => e.value === services[0]);
         const { routePath } = serviceObj;
-        this.router.navigate([routePath]);
+        this.router.navigate([routePath], { queryParams: { subaccountId: this.currentSubaccountDetails.id } });
       }
     }
   }

@@ -1,0 +1,77 @@
+<div class="row" id="polqa-chart-titles">
+    <div class="col-12 mt-4"><hr></div>
+    <div class="justify-content-center mt-4">
+        <div class="subtitle">
+            <h2> POLQA Calls Media Stats
+                <mat-icon matTooltip="Average versus Worst Case values histogram for POLQA and Network Metrics in Voice Quality (POLQA) tests.">
+                    info_outline
+                </mat-icon>
+            </h2>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div id="polqa-chart" class="col-md-6 mt-3" style="height: 300px">
+        <apx-chart
+            [series]="polqaChartOptions.series"
+            [title]="polqaChartOptions.title"
+            [chart]="polqaChartOptions.chart"
+            [xaxis]="polqaChartOptions.xAxis"
+            [yaxis]="polqaChartOptions.yAxis"
+            [dataLabels]="polqaChartOptions.dataLabels"
+            [grid]="polqaChartOptions.grid"
+            [stroke]="polqaChartOptions.stroke"
+            [markers]="polqaChartOptions.markers"
+            [legend]="polqaChartOptions.legend"
+            [annotations]="polqaChartOptions.annotations"
+            [colors]="polqaChartOptions.colors">
+        </apx-chart>
+    </div>
+    <div id="polqa-jitter-chart" class="col-md-6 mt-3" style="height: 300px">
+        <apx-chart
+                [series]="polqaJitterChartOptions.series"
+                [title]="polqaJitterChartOptions.title"
+                [chart]="polqaJitterChartOptions.chart"
+                [xaxis]="polqaJitterChartOptions.xAxis"
+                [yaxis]="polqaJitterChartOptions.yAxis"
+                [dataLabels]="polqaJitterChartOptions.dataLabels"
+                [grid]="polqaJitterChartOptions.grid"
+                [stroke]="polqaJitterChartOptions.stroke"
+                [markers]="polqaJitterChartOptions.markers"
+                [legend]="polqaJitterChartOptions.legend"
+                [colors]="polqaJitterChartOptions.colors">
+        </apx-chart>
+    </div>
+</div>
+<div class="row">
+    <div id="polqa-packet-loss-chart" class="col-md-6 mt-3" style="height: 300px">
+        <apx-chart
+            [series]="polqaPacketLossChartOptions.series"
+            [title]="polqaPacketLossChartOptions.title"
+            [chart]="polqaPacketLossChartOptions.chart"
+            [xaxis]="polqaPacketLossChartOptions.xAxis"
+            [yaxis]="polqaPacketLossChartOptions.yAxis"
+            [dataLabels]="polqaPacketLossChartOptions.dataLabels"
+            [grid]="polqaPacketLossChartOptions.grid"
+            [stroke]="polqaPacketLossChartOptions.stroke"
+            [markers]="polqaPacketLossChartOptions.markers"
+            [legend]="polqaPacketLossChartOptions.legend"
+            [colors]="polqaPacketLossChartOptions.colors">
+        </apx-chart>
+    </div>
+    <div id="polqa-rtt-chart" class="col-md-6 mt-3" style="height: 300px">
+        <apx-chart
+                [series]="polqaRoundTripChartOptions.series"
+                [title]="polqaRoundTripChartOptions.title"
+                [chart]="polqaRoundTripChartOptions.chart"
+                [xaxis]="polqaRoundTripChartOptions.xAxis"
+                [yaxis]="polqaRoundTripChartOptions.yAxis"
+                [dataLabels]="polqaRoundTripChartOptions.dataLabels"
+                [grid]="polqaRoundTripChartOptions.grid"
+                [stroke]="polqaRoundTripChartOptions.stroke"
+                [markers]="polqaRoundTripChartOptions.markers"
+                [legend]="polqaRoundTripChartOptions.legend"
+                [colors]="polqaRoundTripChartOptions.colors">
+        </apx-chart>
+    </div>
+</div>

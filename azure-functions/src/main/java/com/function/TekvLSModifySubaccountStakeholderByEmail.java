@@ -53,7 +53,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 				@BindingName("email") String email,
 				final ExecutionContext context)
 	{
-
+		email = email.toLowerCase();
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		JSONArray roles = getRolesFromToken(tokenClaims,context);
 		if(roles.isEmpty()){
@@ -69,7 +69,8 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSModifySubaccountStakeholderByEmail Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifySubaccountStakeholderByEmail Azure function");		
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -78,6 +79,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountStakeholderByEmail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
@@ -88,6 +90,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountStakeholderByEmail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -101,6 +104,9 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 			} catch (Exception e) {
 				context.getLogger().info("Ignoring exception: " + e);
 			}
+		}
+		if (jobj.has("emailNotifications")) {
+			queryBuilder.appendValueModification("email_notifications", String.valueOf(jobj.getBoolean("emailNotifications")), QueryBuilder.DATA_TYPE.BOOLEAN);
 		}
 		queryBuilder.appendWhereStatement("subaccount_admin_email", email, QueryBuilder.DATA_TYPE.VARCHAR);
 
@@ -116,7 +122,6 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 			 PreparedStatement subaccountIdStmt = subaccountIdQuery.build(connection)){
 
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			String userId = getUserIdFromToken(tokenClaims,context);
 
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + subaccountIdStmt);
 			ResultSet subaccountIdRs = subaccountIdStmt.executeQuery();
@@ -132,25 +137,28 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount Admin email (stakeholder) updated successfully."); 
 			updateADUser(email, subaccountId, jobj, context);
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifySubaccountStakeholderByEmail Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountStakeholderByEmail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountStakeholderByEmail Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 
 	private enum OPTIONAL_PARAMS {
 		NOTIFICATIONS("notifications", "notifications", QueryBuilder.DATA_TYPE.VARCHAR);
-
+		
 		private final String jsonAttrib;
 		private final String columnName;
 		private final String dataType;
@@ -164,9 +172,9 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	
 	private void updateADUser(String email, String subaccountId, JSONObject jobj, ExecutionContext context) {
 		try {
-			context.getLogger().info("Updating user profile at Azure AD : "+email);
+			context.getLogger().info("Updating user profile at Azure AD : " + email);
 			User user = GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"), getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
-			context.getLogger().info("Updated user profile at Azure AD : "+jobj);
+			context.getLogger().info("Updated user profile at Azure AD : " + jobj);
 			String newRole = getValue(jobj, "role");
 			if (newRole != null && user != null) {
 				context.getLogger().info("Updating user role at Azure AD : " + email);
@@ -188,6 +196,6 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	}
 	
 	private String getValue(JSONObject jobj, String key) {
-		return jobj.has(key)?jobj.getString(key):null;
+		return jobj.has(key)? jobj.getString(key) : null;
 	}
 }

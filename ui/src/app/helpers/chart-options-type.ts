@@ -30,6 +30,7 @@ export type ChartOptions = {
     legend: ApexLegend,
     tooltip: ApexTooltip,
     annotations: ApexAnnotations,
-    toolbar: any
-    colors: any
+    toolbar: any,
+    colors: any,
+    events: any,
 };

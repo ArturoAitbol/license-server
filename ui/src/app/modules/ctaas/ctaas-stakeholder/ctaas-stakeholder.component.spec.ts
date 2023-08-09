@@ -14,6 +14,7 @@ import { delay } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { CallbackService } from "src/app/services/callback.service";
 import { CallbackServiceMock } from "src/test/mock/services/callback-service.mock";
+import { FeatureToggleServiceMock } from "src/test/mock/services/feature-toggle-service.mock";
 
 let ctaasStakeholderComponentTestInstance: CtaasStakeholderComponent;
 let fixture: ComponentFixture<CtaasStakeholderComponent>;
@@ -112,7 +113,7 @@ describe('dialog calls and interactions',() => {
         selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Deleted Stakeholder successfully', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Stakeholder deleted successfully!', '');
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
 
@@ -171,12 +172,16 @@ describe('dialog calls and interactions',() => {
 
     it('should throw a error if you exceeded the amount of stakeholders created', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callFake((ftName, subaccountId) => {
+            if (ftName === 'multitenant-demo-subaccount')
+                return false;
+        });
 
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.stakeholdersCount = Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
         ctaasStakeholderComponentTestInstance.addStakeholder();
 
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
     });
 
     it('should display an error message if an error ocurred in fetchStakeholderList', () => {
@@ -197,7 +202,6 @@ describe('calls with customer subaccount admin role', () => {
         spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
-        ctaasStakeholderComponentTestInstance.toggleStatus = true;
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount({
             "subaccountId": "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",

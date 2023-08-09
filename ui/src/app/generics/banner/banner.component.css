@@ -1,0 +1,46 @@
+.banner-container {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 8px 8px 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+    margin: 0 0 10px;
+    color: black;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    flex-wrap: wrap;
+}
+
+.banner-alert{
+    background: #FFBF00;
+}
+
+.banner-info{
+    background: #C3CBD5;
+}
+
+p.message, p.title {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+.checkbox-margin {
+    margin: 8px 20px 0;
+}
+
+p.title {
+    font-weight: bold;
+    padding-left: 0;
+}
+
+p.hide-tag{
+    font-size: 10px;
+    cursor: pointer;   
+}
+
+.action-row {
+    margin: 0 0 0 90px;
+    flex-grow: 0;
+    white-space: nowrap;
+}

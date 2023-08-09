@@ -41,7 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
     currentUser = false;
     userData: any;
-    isLoading:boolean = false;
+    isLoading: boolean = false;
     userProfileData: any;
     callbackEnabled = false;
     // added as part of spotlight feature
@@ -51,14 +51,6 @@ export class AppComponent implements OnInit, OnDestroy {
     @ViewChild('sidenav') sidenav: MatSidenav;
     fullSideBarItems: any = {
         spotlight: [
-            {
-                name: 'Dashboard',
-                path: 'visualization',
-                active: false,
-                materialIcon: 'analytics',
-                baseUrl: '/spotlight/',
-                isPreview: false
-            },
             {
                 name: 'Dashboard',
                 path: 'spotlight-dashboard',
@@ -176,7 +168,7 @@ export class AppComponent implements OnInit, OnDestroy {
     displayedSideBarItems: any[] = [
         {
             name: 'Dashboard',
-            path: 'visualization',
+            path: Constants.SPOTLIGHT_DASHBOARD_PATH,
             active: true,
             materialIcon: 'dashboard'
         }
@@ -187,7 +179,6 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
     readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map';
-    readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = Constants.POWERBI_DASHBOARD_PATH;
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = Constants.STAKEHOLDERS_VIEW_PATH;
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
@@ -229,7 +220,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     //if old subaccount details are empty set only the id before requesting the rest of the data 
                     this.subaccountService.setSelectedSubAccount({ id: this.subaccountId });
                     this.retrieveSubaccountDetails();
-                } else if (oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name) {
+                } else if (oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name || !oldSubaccountDetails.customerName) {
                     //if old selected subaccount id is different to the new selected subaccount id retrieve the rest of the details
                     this.retrieveSubaccountDetails();
                 }
@@ -266,6 +257,12 @@ export class AppComponent implements OnInit, OnDestroy {
     private retrieveSubaccountDetails() {
         this.subaccountService.getSubAccountDetails(this.subaccountId).subscribe((subaccountsResp: any) => {
             let selectedSubAccount = subaccountsResp.subaccounts[0];
+            if (selectedSubAccount.services) {
+                selectedSubAccount.services = selectedSubAccount.services.split(',').map((e: string) => e.trim());
+            } else {
+                selectedSubAccount.services = [];
+            }
+            selectedSubAccount.customerName = selectedSubAccount.name;
             this.customerService.getCustomerById(selectedSubAccount.customerId).subscribe((customersResp: any) => {
                 const subaccountCustomer = customersResp.customers[0];
                 selectedSubAccount.id = this.subaccountId;
@@ -298,7 +295,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.hideToolbar = true;
                         this.enableSidebar();
                         break;
-                    case this.CTAAS_POWERBI_REPORT_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
                     case this.CTAAS_MAP_ROUTE_PATH:
@@ -382,6 +378,7 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe((result: EventMessage) => {
             // Do something with event payload here 
             this.initializeSideBarItems();
+            this.autoLogoutService.cancelAcquireTokenTimeout();
         });
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
@@ -389,6 +386,20 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe(event => {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
+            this.autoLogoutService.cancelLoginTimeout();
+        });
+
+        this.broadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_START),
+            takeUntil(this._destroying$)
+        ).subscribe((result: EventMessage) => {
+            this.autoLogoutService.initLoginTimeout();
+        });
+        this.broadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_START),
+            takeUntil(this._destroying$)
+        ).subscribe((result: EventMessage) => {
+            this.autoLogoutService.initAcquireTokenTimeout();
         });
     }
 
@@ -398,30 +409,29 @@ export class AppComponent implements OnInit, OnDestroy {
     initializeSideBarItems(): void {
         try {
             const accountDetails = this.getAccountDetails();
-            const { roles } = accountDetails.idTokenClaims; 
+            const { roles } = accountDetails.idTokenClaims;
+            if (!this.subaccountId)
+                this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
-            let featureToggleProtectedItems = [
+            let disabledItems: any[] = [];
+            const featureToggleProtectedItems = [
                 {
-                    toggleName:"mapFeature",
-                    subaccountId:this.subaccountId,
-                    item:"map"
-                }, 
-                {
-                    toggleName:"powerbiFeature",
-                    subaccountId:this.subaccountId,
-                    item:"visualization"
+                    toggleName: "mapFeature",
+                    subaccountId: this.subaccountId,
+                    item: "map"
                 }
             ];
-
-            let disabledItems:any[]=[];
             featureToggleProtectedItems.forEach(featureToggle => {
-                if(!this.featureToggleService.isFeatureEnabled(featureToggle.toggleName, featureToggle.subaccountId)){
+                if (!this.featureToggleService.isFeatureEnabled(featureToggle.toggleName, featureToggle.subaccountId))
                     disabledItems.push(featureToggle.item);
-                }
             });
 
-            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length===0 ? this.fullSideBarItems.spotlight 
-                                             : this.fullSideBarItems.spotlight.filter((e: ISidebar) => !disabledItems.includes(e.path || e.element));
+            // disable stakeholders view for Stakeholders users only if subaccount is multitenant-demo-subaccount
+            if (roles.length === 1 && roles.includes(Constants.SUBACCOUNT_STAKEHOLDER) && this.featureToggleService.isFeatureEnabled("multitenant-demo-subaccount", this.subaccountId))
+                disabledItems.push("stakeholders");
+
+            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length === 0 ?
+                this.fullSideBarItems.spotlight : this.fullSideBarItems.spotlight.filter((e: ISidebar) => !disabledItems.includes(e.path || e.element));
             this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST, this.featureToggleService, this.subaccountId));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main, this.featureToggleService, this.subaccountId));
         } catch (e) {
@@ -453,10 +463,13 @@ export class AppComponent implements OnInit, OnDestroy {
      * logout 
      */
     logout() {
-        try {
+        try {            
+            let bannerArray = [];
+            Object.keys(localStorage).forEach(key => key.includes("-hiddenBanner") ? bannerArray.push({ key: key, value: localStorage[key] }) : '');
+            localStorage.clear();
+            bannerArray.forEach(item => localStorage.setItem(item.key, item.value));
             sessionStorage.clear();
             this.msalService.logout();
-            localStorage.clear();
         } catch (error) {
             console.error('error while logout: ', error);
         }
@@ -496,18 +509,18 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    async requestCallback(){
+    async requestCallback() {
         this.isLoading = true;
         await this.fetchUserProfileDetails();
         this.isLoading = false
-        if(this.canRequestCallBack())
+        if (this.canRequestCallBack())
             this.confirmCallbackRequest();
         else
             this.preventCallbackRequest();
     }
 
 
-    private canRequestCallBack():boolean {
+    private canRequestCallBack(): boolean {
         if (this.userProfileData.userProfile.name && this.userProfileData.userProfile.latestCallbackRequest === undefined)
             return true;
         return this.userProfileData.userProfile.latestCallbackRequest > Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS;
@@ -533,9 +546,9 @@ export class AppComponent implements OnInit, OnDestroy {
      * @param item: any 
      */
     onSelectedNavItem(item: ISidebar): void {
-        if(item.element){
-            this.performAction(item.element); 
-        }else{
+        if (item.element) {
+            this.performAction(item.element);
+        } else {
             const { baseUrl, path } = item;
             const componentRoute = baseUrl + path;
             this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
@@ -547,7 +560,7 @@ export class AppComponent implements OnInit, OnDestroy {
      * perform a given action base on the input
      * @param action: string 
      */
-    performAction(action: string){
+    performAction(action: string) {
         switch (action) {
             case 'request-call':
                 this.requestCallback();

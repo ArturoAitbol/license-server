@@ -1,23 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RoleGuard } from 'src/app/security/role.guard';
-import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.component';
 import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.component';
 import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
 import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
-import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
+import { DetailedReportsComponent } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { MapComponent } from './map/map.component';
 import { SpotlightDashboardComponent } from "./spotlight-dashboard/spotlight-dashboard.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: 'visualization', pathMatch: 'full' },
-  {
-    path: 'visualization',
-    component: CtaasDashboardComponent,
-    canActivate: [RoleGuard]
-  },
+  { path: '', redirectTo: 'spotlight-dashboard', pathMatch: 'full' },
   {
     path: 'spotlight-dashboard',
     component: SpotlightDashboardComponent,
@@ -50,7 +44,7 @@ const routes: Routes = [
   },
   {
     path: 'details',
-    component: DetailedReportsCompoment,
+    component: DetailedReportsComponent,
     canActivate: [RoleGuard]
   },
   {

@@ -1,92 +1,144 @@
-<app-banner [stylesflag] = "'setup'" *lcCheckAccessFor="'showBanner'"></app-banner>
+<app-banner [stylesflag] = "'setup'"></app-banner>
 <div class="container-fluid">
     <div class="flex-container">
         <div class="loading-shade" *ngIf="isDataLoading">
-            <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            <mat-spinner></mat-spinner>
         </div>
         <div class="setup-container flex-sm-row flex-column">
-            <div>
-                <h1 mat-dialig-title id="setup-title">UCaaS Continuous Testing Setup Details</h1>
-            </div>
-            <div>
-                <div *ngIf="!isEditing" class="group-btn-container d-flex justify-content-end">
-                    <ng-container *lcFeatureToggle="'maintenanceMode'">
-                        <ng-container *lcCheckAccessFor="'maintenanceModeCheckbox'">
-                            <div *ngIf="!originalCtaasSetupDetails.maintenance">
-                                <button class="mx-1" mat-raised-button id="enable-maintenance-button"
-                                        (click)="maintenanceToggle('enable')">
-                                    Enable Maintenance Mode
-                                </button>
-                            </div>
-                            <div *ngIf="originalCtaasSetupDetails.maintenance">
-                                <button class="mx-1" mat-raised-button id="disable-maintenance-button"
-                                        (click)="maintenanceToggle('disable')">
-                                    Disable Maintenance Mode
-                                </button>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                    <button class="col-auto" mat-raised-button id="edit-details-button" (click)="editForm()">
-                        Edit Setup Details
-                    </button>
-                </div>
-            </div>
-            <div *ngIf="isEditing" class="group-btn-container d-flex justify-content-end">
-                <ng-container>
-                    <div class="col-auto">
-                        <button color="primary" mat-raised-button id="update-button" (click)="submit()" [disabled]="!setupForm.valid">
-                            Update
+            <div class="group-btn-container d-flex justify-content-end">                
+                <ng-container *lcCheckAccessFor="'maintenanceModeCheckbox'">
+                    <div *ngIf="!originalCtaasSetupDetails.maintenance">
+                        <button class="mx-1" mat-raised-button id="enable-maintenance-button"
+                                (click)="maintenanceToggle('enable')">
+                            Enable Maintenance Mode
                         </button>
                     </div>
-                    <div class="col-auto">
-                        <button color="warn" mat-raised-button id="cancel-button" (click)="cancelEdit()">
-                            Cancel
+                    <div *ngIf="originalCtaasSetupDetails.maintenance">
+                        <button class="mx-1" mat-raised-button id="disable-maintenance-button"
+                                (click)="maintenanceToggle('disable')">
+                            Disable Maintenance Mode
                         </button>
                     </div>
-                </ng-container>
+                </ng-container>                
             </div>
         </div>
         <br>
-        <div *ngIf="!isDataLoading">
-            <form [formGroup]="setupForm" (ngSubmit)="submit()" id="setup-form">
-                <div class="row">
-                    <ng-container *lcFeatureToggle="'maintenanceMode'">
-                        <div *lcCheckAccessFor="'maintenanceModeCheckbox'" class="col-md-6 d-flex">
-                            <mat-checkbox labelPosition="before" formControlName="maintenance">Maintenance Mode</mat-checkbox>
+        <div class="row">
+            <div class="col-md-6">
+                <mat-card *ngIf="ctaasSetupId">
+                    <mat-card-title>
+                        <h1 mat-dialig-title id="setup-title">UCaaS Continuous Testing Setup Details</h1>
+                    </mat-card-title>
+                    <mat-card-content>
+                        <form [formGroup]="setupForm" (ngSubmit)="submit()" id="setup-form">
+                            <div class="row">                                
+                                <div *lcCheckAccessFor="'maintenanceModeCheckbox'" class="col-md-6 d-flex">
+                                    <mat-checkbox labelPosition="before" formControlName="maintenance">Maintenance Mode</mat-checkbox>
+                                </div>                                
+                                <div class="col-md-6 d-flex">
+                                    <mat-checkbox labelPosition="before" formControlName="onBoardingComplete">On Boarding Complete</mat-checkbox>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label id="azure-resource-group-label">Azure Resource Group</mat-label>
+                                        <input matInput required formControlName="azureResourceGroup" id="azure-resource-group">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label id="tap-url-label">TAP URL</mat-label>
+                                        <input matInput required formControlName="tapUrl" id="tap-url">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label id="status-label">Status</mat-label>
+                                        <mat-select required formControlName="status" id="status">
+                                            <mat-option *ngFor="let status of statusOptions | keyvalue" [value]="status.key" id="{{status.value.label}}">
+                                                {{status.value.label}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button color="primary" mat-raised-button id="update-button" (click)="submit()" [disabled]="!setupForm.valid" mat-button>
+                            Update
+                        </button>
+                        <button color="warn" mat-raised-button id="cancel-button" (click)="cancelEdit()" mat-button>
+                            Cancel
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+            <div class="col-md-6">
+                <mat-card *ngIf="ctaasSetupId">
+                    <mat-card-title>
+                        <h1 mat-dialig-title id="support-emails-title">Support Emails</h1>
+                    </mat-card-title>
+                    <mat-card-content>
+                        <div class="row">
+                            <div *ngFor="let email of supportEmails; let emailIndex = index" class="col-xl-6">
+                                <div class="email-info" title="{{email}}">
+                                    <div class="row d-flex justify-content-between align-items-center">
+                                        <label class="col-8"><div class="email-label">Email:</div>{{email}}</label>
+                                        <div class="col-4 d-flex justify-content-end">
+                                            <button id="clearButton" *lcCheckAccessFor="'deleteSupportEmail'" mat-icon-button color="primary" title="Delete email"
+                                            (click)="deleteExistingEmail(emailIndex)">
+                                            <mat-icon>clear</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *lcCheckAccessFor="'addSupportEmail'">
+                                <div class="mb-2" *ngIf="supportEmails.length>0">
+                                    <mat-divider></mat-divider>
+                                </div>
+                                <form [formGroup]="supportEmailsForm">
+                                    <ng-container formArrayName="emails">
+                                        <ng-container *ngFor="let emailForm of emailForms.controls; let i = index;">
+                                            <div class="form-row d-flex justify-content-center align-items-center" [formGroupName]="i">
+                                                <mat-form-field appearance="outline" class="col-10 mb-0">
+                                                    <mat-label>Email</mat-label>
+                                                    <input [id]="'email-'+ i" type="email" placeholder="Enter a valid email" aria-label="Email" matInput
+                                                            formControlName="email">
+                                                    <mat-error *ngIf="emailForm.controls['email'].errors?.repeatedEmail">Support email already exists</mat-error>
+                                                </mat-form-field>
+                                                <button mat-icon-button color="primary" title="Remove email"
+                                                    (click)="deleteEmailForm(i)" class="col-2 delete-button">
+                                                    <mat-icon>clear</mat-icon>
+                                                </button>
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+                                </form>
+                                <div class="d-flex justify-content-between">
+                                    <button mat-mini-fab color="primary" type="button" class="mb-3 mt-3" id="add-email-button" title="Add email"
+                                    (click)="addEmailForm()">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                    <div *ngIf="emailForms.controls.length !== 0">
+                                        <button id="save-email-button" class="m-2" color="primary" mat-raised-button (click)="addSupportEmails()" [disabled]="!supportEmailsForm.valid" mat-button>
+                                            Save
+                                        </button>
+                                        <button color="warn" mat-raised-button (click)="clearNewSupportEmails()" mat-button>
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </ng-container>
-                    <div class="col-md-6 d-flex">
-                        <mat-checkbox labelPosition="before" formControlName="onBoardingComplete">On Boarding Complete</mat-checkbox>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline">
-                            <mat-label id="azure-resource-group-label">Azure Resource Group</mat-label>
-                            <input matInput required formControlName="azureResourceGroup" id="azure-resource-group">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline">
-                            <mat-label id="tap-url-label">TAP URL</mat-label>
-                            <input matInput required formControlName="tapUrl" id="tap-url">
-                        </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline">
-                            <mat-label id="status-label">Status</mat-label>
-                            <mat-select required formControlName="status" id="status">
-                                <mat-option *ngFor="let status of statusOptions | keyvalue" [value]="status.key" id="{{status.value.label}}">
-                                    {{status.value.label}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </div>
-            </form>
+                    </mat-card-content>
+                </mat-card>
+            </div>
         </div>
     </div>
 </div>

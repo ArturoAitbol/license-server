@@ -151,7 +151,6 @@ export class LicensesComponent implements OnInit {
    * @param license: License
    */
   onDelete(license: License): void {
-    console.log(license);
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',

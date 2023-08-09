@@ -61,7 +61,8 @@ public class TekvLSCreateSubaccount
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSCreateSubaccount Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateSubaccount Azure function");
 
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -70,6 +71,7 @@ public class TekvLSCreateSubaccount
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccount Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -81,6 +83,7 @@ public class TekvLSCreateSubaccount
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccount Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -91,6 +94,7 @@ public class TekvLSCreateSubaccount
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccount Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
@@ -118,7 +122,9 @@ public class TekvLSCreateSubaccount
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			// Set statement parameters
-			verifyEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+			final String subaccountAdminEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value).toLowerCase();
+
+			verifyEmailStmt.setString(1, subaccountAdminEmail);
 
 			context.getLogger().info("Execute SQL statement: " + verifyEmailStmt);
 			ResultSet rsEmails = verifyEmailStmt.executeQuery();
@@ -126,6 +132,7 @@ public class TekvLSCreateSubaccount
 			if (rsEmails.getInt(1) > 0){
 				JSONObject json = new JSONObject();
 				json.put("error", "Subaccount email already exists");
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccount Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
@@ -144,7 +151,6 @@ public class TekvLSCreateSubaccount
 			
 
 			// Insert
-			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
 			ResultSet rs = insertStmt.executeQuery();
 			context.getLogger().info("Subaccount inserted successfully.");
@@ -156,7 +162,7 @@ public class TekvLSCreateSubaccount
 			json.put("id", subaccountId);
 
 			//Insert parameters to statement
-			insertEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+			insertEmailStmt.setString(1, subaccountAdminEmail);
 			insertEmailStmt.setString(2, subaccountId);
 
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertEmailStmt);
@@ -179,19 +185,20 @@ public class TekvLSCreateSubaccount
 				String customerName = rs.getString("name");
 
 				if (FeatureToggleService.isFeatureActiveByName("welcomeEmail"))
-					EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
+					EmailClient.sendSpotlightWelcomeEmail(subaccountAdminEmail, customerName,subaccountId, context);
 			} else {
 				if (FeatureToggleService.isFeatureActiveByName("ad-license-service-user-creation"))
-					this.ADUserCreation(jobj,context);
+					this.ADUserCreation(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value), subaccountAdminEmail, context);
 			}
 			
-
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateSubaccount Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		catch (ADException e){
 			context.getLogger().info("AD exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccount Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		catch (SQLException e) {
@@ -199,6 +206,7 @@ public class TekvLSCreateSubaccount
 			JSONObject json = new JSONObject();
 			String modifiedResponse= subaccountUnique(e.getMessage());
 			json.put("error", modifiedResponse);
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccount Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
@@ -217,10 +225,8 @@ public class TekvLSCreateSubaccount
 		return response;
 	}
 
-	private void ADUserCreation(JSONObject jobj, ExecutionContext context) throws Exception {
-		String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
-		String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
-		GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
+	private void ADUserCreation(String name, String email, ExecutionContext context) throws Exception {
+		GraphAPIClient.createGuestUserWithProperRole(name, email, SUBACCOUNT_ADMIN, context);
 		context.getLogger().info("Guest user created successfully (AD).");
 	}
 

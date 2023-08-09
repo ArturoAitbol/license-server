@@ -52,8 +52,8 @@ public class TekvLSModifyCtaasSetupById {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
-
-        context.getLogger().info("Entering TekvLSModifyCtaasSetupById Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifyCtaasSetupById Azure function");        
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -62,6 +62,7 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
@@ -71,6 +72,18 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
+
+        try {
+            if (jobj.has(OPTIONAL_PARAMS.TAP_URL.jsonAttrib)) {
+                TAPClient.getAccessToken(jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib), context);
+            }
+        } catch (Exception e) {
+            context.getLogger().info("Couldn't connect with the TAP provided, please review it and try again");
+            JSONObject json = new JSONObject();
+            json.put("error", "Couldn't connect with the TAP provided, please review it and try again");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -83,6 +96,7 @@ public class TekvLSModifyCtaasSetupById {
                 context.getLogger().info("error: licenseId is missing.");
                 JSONObject json = new JSONObject();
                 json.put("error", "error: licenseId is missing.");
+                context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             if (!jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
@@ -98,6 +112,7 @@ public class TekvLSModifyCtaasSetupById {
                 context.getLogger().info("error: subaccountId is missing.");
                 JSONObject json = new JSONObject();
                 json.put("error", "error: subaccountId is missing.");
+                context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -139,6 +154,7 @@ public class TekvLSModifyCtaasSetupById {
             }
         }
         if (optionalParamsFound == 0) {
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyCtaasSetupById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
@@ -173,12 +189,12 @@ public class TekvLSModifyCtaasSetupById {
                 } else {
                     context.getLogger().info("info: the license provided does not match with the subaccount provided");
                     json.put("error", "The license provided does not belong to the subaccount");
+                    context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
                     return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                 }
             }
 
-            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            String userId = getUserIdFromToken(tokenClaims, context);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));            
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Ctaas_setup updated successfully.");
@@ -244,23 +260,27 @@ public class TekvLSModifyCtaasSetupById {
                 ctaasDevice.put("deviceId", rs.getString("id"));
                 json.put("deviceId", rs.getString("id"));
                 TekvLSCreateLicenseUsageDetail licenseUsageDetailCreator = new TekvLSCreateLicenseUsageDetail();
-                licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
+                licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context, userId);
 
                 this.ADUserCreation(jobj, context, connection);
 
+                context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyCtaasSetupById Azure function");
                 return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
             }
-
+            
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyCtaasSetupById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasSetupById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }
@@ -280,10 +300,10 @@ public class TekvLSModifyCtaasSetupById {
             String customerName = customerNameRs.getString("name");
             ResultSet rs = subaccountEmailsStmt.executeQuery();
             while (rs.next()) {
-                if (GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
-                        rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context))
-                    // Send second email with link to portal
-                    EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, context);
+                GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
+                        rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context);
+                // Send onboarding email with link to portal
+                EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, subaccountId, context);
             }
         }
     }
@@ -292,49 +312,47 @@ public class TekvLSModifyCtaasSetupById {
             throws SQLException {
         if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib)) {
             final String subaccountId = jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib);
-            if (FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId)) {
-                String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
-                String customerAdminEmailsSql = null;
-                String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid";
-                if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation", subaccountId)) {
-                    customerAdminEmailsSql = "SELECT array_to_string(array_agg(distinct \"admin_email\"),',') AS emails FROM customer_admin "
-                            +
-                            "WHERE customer_id = (SELECT customer_id FROM subaccount WHERE id = ?::uuid LIMIT 1);";
-                }
-                try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountUserEmailsSql);
-                     PreparedStatement customerAdminEmailsStmt = customerAdminEmailsSql != null
-                             ? connection.prepareStatement(customerAdminEmailsSql)
-                             : null;
-                     PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)) {
-                    subaccountEmailsStmt.setString(1, subaccountId);
-                    boolean newMaintenanceState = jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib);
-                    context.getLogger()
-                            .info("Execute SQL subaccountEmailsStmt (User: " + userId + "): " + subaccountEmailsStmt);
-                    ResultSet rs = subaccountEmailsStmt.executeQuery();
+            String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
+            String customerAdminEmailsSql = null;
+            String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid";
+            if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation", subaccountId)) {
+                customerAdminEmailsSql = "SELECT array_to_string(array_agg(distinct \"admin_email\"),',') AS emails FROM customer_admin "
+                        +
+                        "WHERE customer_id = (SELECT customer_id FROM subaccount WHERE id = ?::uuid LIMIT 1);";
+            }
+            try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountUserEmailsSql);
+                 PreparedStatement customerAdminEmailsStmt = customerAdminEmailsSql != null
+                         ? connection.prepareStatement(customerAdminEmailsSql)
+                         : null;
+                 PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)) {
+                subaccountEmailsStmt.setString(1, subaccountId);
+                boolean newMaintenanceState = jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib);
+                context.getLogger()
+                        .info("Execute SQL subaccountEmailsStmt (User: " + userId + "): " + subaccountEmailsStmt);
+                ResultSet rs = subaccountEmailsStmt.executeQuery();
+                rs.next();
+                String emails = rs.getString("emails");
+                if (customerAdminEmailsStmt != null) {
+                    customerAdminEmailsStmt.setString(1, subaccountId);
+                    context.getLogger().info("Execute SQL customerAdminEmailsStmt (User: " + userId + "): "
+                            + customerAdminEmailsStmt);
+                    rs = customerAdminEmailsStmt.executeQuery();
                     rs.next();
-                    String emails = rs.getString("emails");
-                    if (customerAdminEmailsStmt != null) {
-                        customerAdminEmailsStmt.setString(1, subaccountId);
-                        context.getLogger().info("Execute SQL customerAdminEmailsStmt (User: " + userId + "): "
-                                + customerAdminEmailsStmt);
-                        rs = customerAdminEmailsStmt.executeQuery();
-                        rs.next();
-                        String customerAdminEmails = rs.getString("emails");
-                        emails = emails + "," + customerAdminEmails;
-                    }
-                    subaccountNameStmt.setString(1, subaccountId);
-                    context.getLogger()
-                            .info("Execute SQL subaccountNameStmt (User: " + userId + "): " + subaccountNameStmt);
-                    ResultSet nameRs = subaccountNameStmt.executeQuery();
-                    nameRs.next();
-                    String subaccountName = nameRs.getString("name");
-                    if (newMaintenanceState) {
-                        EmailClient.sendMaintenanceModeEnabledAlert(emails, subaccountName, context);
-                    } else {
-                        EmailClient.sendMaintenanceModeDisabledAlert(emails, subaccountName, context);
-                    }
-
+                    String customerAdminEmails = rs.getString("emails");
+                    emails = emails + "," + customerAdminEmails;
                 }
+                subaccountNameStmt.setString(1, subaccountId);
+                context.getLogger()
+                        .info("Execute SQL subaccountNameStmt (User: " + userId + "): " + subaccountNameStmt);
+                ResultSet nameRs = subaccountNameStmt.executeQuery();
+                nameRs.next();
+                String subaccountName = nameRs.getString("name");
+                if (newMaintenanceState) {
+                    EmailClient.sendMaintenanceModeEnabledAlert(emails, subaccountName, subaccountId, context);
+                } else {
+                    EmailClient.sendMaintenanceModeDisabledAlert(emails, subaccountName, subaccountId, context);
+                }
+
             }
         }
     }
@@ -345,9 +363,7 @@ public class TekvLSModifyCtaasSetupById {
         TAP_URL("tapUrl", "tap_url", QueryBuilder.DATA_TYPE.VARCHAR),
         STATUS("status", "status", QueryBuilder.DATA_TYPE.VARCHAR),
         ON_BOARDING_COMPLETE("onBoardingComplete", "on_boarding_complete", QueryBuilder.DATA_TYPE.BOOLEAN),
-        MAINTENANCE("maintenance", "maintenance", QueryBuilder.DATA_TYPE.BOOLEAN),
-        POWERBI_WORKSPACE_ID("powerBiWorkspaceId", "powerbi_workspace_id", QueryBuilder.DATA_TYPE.VARCHAR),
-        POWERBI_REPORT_ID("powerBiReportId", "powerbi_report_id", QueryBuilder.DATA_TYPE.VARCHAR);
+        MAINTENANCE("maintenance", "maintenance", QueryBuilder.DATA_TYPE.BOOLEAN);
 
         private final String jsonAttrib;
         private final String columnName;

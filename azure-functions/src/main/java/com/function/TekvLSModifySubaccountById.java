@@ -59,7 +59,8 @@ public class TekvLSModifySubaccountById {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSModifySubaccountById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifySubaccountById Azure function");
 
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -68,6 +69,7 @@ public class TekvLSModifySubaccountById {
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
@@ -77,6 +79,7 @@ public class TekvLSModifySubaccountById {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		SelectQueryBuilder selectQueryBuilder = new SelectQueryBuilder(
@@ -95,6 +98,7 @@ public class TekvLSModifySubaccountById {
 			}
 		}
 		if (optionalParamsFound == 0) {
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifySubaccountById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		selectQueryBuilder.appendEqualsCondition("s.id", id, QueryBuilder.DATA_TYPE.UUID);
@@ -120,7 +124,6 @@ public class TekvLSModifySubaccountById {
 				PreparedStatement adminEmailStmt = connection.prepareStatement(adminEmailSql);
 				PreparedStatement customerDetailStatement = selectQueryBuilder.build(connection)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			String userId = getUserIdFromToken(tokenClaims, context);
 			context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount updated successfully.");
@@ -131,8 +134,7 @@ public class TekvLSModifySubaccountById {
 
 				context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
 				ResultSet rsCtassSetup = verifyCtassSetupStmt.executeQuery();
-				rsCtassSetup.next();
-				if (rsCtassSetup.getInt(1) == 0) {
+				if (!rsCtassSetup.next() || rsCtassSetup.getInt(1) == 0) {
 					insertCtassSetupStmt.setString(1, id);
 					insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
 					insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
@@ -148,11 +150,11 @@ public class TekvLSModifySubaccountById {
 					final String customerName = rs.getString("name");
 					adminEmailStmt.setString(1, id);
 					rs = adminEmailStmt.executeQuery();
-					rs.next();
-					final String adminEmail = rs.getString("subaccount_admin_email");
-
-					if (FeatureToggleService.isFeatureActiveBySubaccountId("welcomeEmail", id))
-						EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
+					if (rs.next()) {
+						final String adminEmail = rs.getString("subaccount_admin_email");
+						if (FeatureToggleService.isFeatureActiveBySubaccountId("welcomeEmail", id))
+							EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, id, context);
+					}
 				}
 				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + customerDetailStatement);
 				ResultSet customerAndSubQueryResult = customerDetailStatement.executeQuery();
@@ -169,16 +171,19 @@ public class TekvLSModifySubaccountById {
 				}
 			}
 
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifySubaccountById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifySubaccountById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

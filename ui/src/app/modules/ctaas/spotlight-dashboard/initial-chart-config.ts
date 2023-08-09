@@ -1,132 +1,20 @@
 import { ChartOptions } from "../../../helpers/chart-options-type";
 
-const defaultPolqaChartOptions: Partial<ChartOptions> = {
-    series: [
-        {
-            name: "Jitter",
-            data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
-        },
-        {
-            name: "POLQA",
-            data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
-        },
-    ],
-    chart: {
-        type: "line",
-        height: 450,
-        zoom: {
-            enabled: false
-        },
-        toolbar: {
-            show: false
-        }
-    },
-    colors: ["#6E76B4", "#76BD83"],
-    dataLabels: {
-        enabled: false
-    },
-    stroke: {
-        curve: "straight",
-        width: 2
-    },
-    grid: {
-        row: {
-            colors: [ "#f3f3f3", "transparent" ], // takes an array which will be repeated on columns
-            opacity: 0.5
-        }
-    },
-    xAxis: {
-        title: {
-            text: "Hours",
-            style: {
-                color: "#000000"
-            },
-        },
-        categories: [
-            "00:00-01:00",
-            "00:01-02:00",
-            "00:02-03:00",
-            "00:03-04:00",
-            "00:04-05:00",
-            "00:05-06:00",
-            "00:06-07:00",
-            "00:07-08:00",
-            "00:08-00:00",
-            "00:09-10:00",
-            "00:09-11:00",
-        ]
-    },
-    yAxis: [
-        {
-            axisTicks: {
-                show: true
-            },
-            axisBorder: {
-                show: true,
-                color: "#000000"
-            },
-            labels: {
-                style: {
-                    colors: "#000000"
-                }
-            },
-            title: {
-                text: "Jitter",
-                style: {
-                    color: "#000000"
-                }
-            }
-        },
-        {
-            // min: 0,
-            // max: 5,
-            // tickAmount: 5,
-            opposite: true,
-            axisTicks: {
-                show: true
-            },
-            axisBorder: {
-                show: true,
-                color: "#000000"
-            },
-            labels: {
-                style: {
-                    colors: "#000000"
-                }
-            },
-            title: {
-                text: "POLQA",
-                style: {
-                    color: "#000000"
-                }
-            }
-        }
-    ],
-    markers: {
-        size: 4,
-        colors: ["#6E76B4", "#76BD83"],
-    },
-    legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-    }
-};
-
 const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Success %",
-            data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
+            data: [],
             type: "line"
         },
         {
             name: "Passed",
-            data: [ 110, 213, 40, 14, 167, 47, 165],
+            data: [],
             type: "column",
         },
         {
             name: "Failed",
-            data: [ 0, 0, 1, 14, 18, 0, 39],
+            data: [],
             type: "column",
         },
     ],
@@ -246,17 +134,17 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
     series: [
         {
             name: "Success %",
-            data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
+            data: [],
             type: "line"
         },
         {
             name: "Passed",
-            data: [ 110, 213, 40, 14, 167, 47, 165],
+            data: [],
             type: "column",
         },
         {
             name: "Failed",
-            data: [ 0, 0, 1, 14, 18, 0, 39],
+            data: [],
             type: "column",
         },
     ],
@@ -646,7 +534,6 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
 };
 
 export {
-    defaultPolqaChartOptions,
     defaultWeeklyFeatureFunctionalityChartOptions,
     defaultWeeklyCallingReliabilityChartOptions,
     defaultWeeklyCallsStatusChartOptions,

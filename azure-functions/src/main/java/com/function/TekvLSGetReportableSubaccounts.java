@@ -53,16 +53,18 @@ public class TekvLSGetReportableSubaccounts {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetReportableCustomers Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetReportableCustomers Azure function");
 
         SelectQueryBuilder selectStmnt = new SelectQueryBuilder(
-                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" , sa.subaccount_admin_email AS \"lsSubAccountAdminEmail\" , cs.maintenance "
+                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" , sa.subaccount_admin_email AS \"lsSubAccountAdminEmail\" , cs.maintenance, cse.email AS \"lsSupportEmails\" "
                         +
-                        "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id LEFT JOIN subaccount_admin sa ON s.id = sa.subaccount_id");
+                        "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id LEFT JOIN subaccount_admin sa ON s.id = sa.subaccount_id LEFT JOIN ctaas_support_email cse ON cs.id = cse.ctaas_setup_id");
         selectStmnt.appendCustomCondition("s.services LIKE ?",
                 "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
         selectStmnt.appendEqualsCondition(" cs.status", Constants.CTaaSSetupStatus.READY.value(),
                 QueryBuilder.DATA_TYPE.VARCHAR);
+        selectStmnt.appendEqualsCondition(" sa.email_notifications", "true", QueryBuilder.DATA_TYPE.BOOLEAN);
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement selectStmt = selectStmnt.build(connection)) {
@@ -77,34 +79,45 @@ public class TekvLSGetReportableSubaccounts {
                 if (itemIndex != -1) {
                     JSONObject existingObject = array.getJSONObject(itemIndex);
                     JSONArray existingMails = existingObject.getJSONArray("emails");
-                    existingMails.put(rs.getString("lsSubAccountAdminEmail"));
+                    JSONArray existingSupportMails = existingObject.getJSONArray("supportEmails");
+                    if (rs.getString("lsSubAccountAdminEmail") != null)
+                        existingMails.put(rs.getString("lsSubAccountAdminEmail"));
+                    if (rs.getString("lsSupportEmails") != null)
+                        existingSupportMails.put(rs.getString("lsSupportEmails"));
                     existingObject.put("emails", existingMails);
+                    existingObject.put("supportEmails", existingSupportMails);
                     array.put(itemIndex, existingObject);
                 } else {
                     JSONArray emails = new JSONArray();
+                    JSONArray supportEmails = new JSONArray();
                     item.put("subAccountId", rs.getString("lsSubAccountId"));
                     item.put("subAccountName", rs.getString("lsSubAccountName"));
                     item.put("customerName", rs.getString("lsCustomerName"));
                     item.put("customerId", rs.getString("lsCustomerId"));
                     item.put("maintenance", rs.getBoolean("maintenance"));
                     emails.put(rs.getString("lsSubAccountAdminEmail"));
+                    supportEmails.put(rs.getString("lsSupportEmails"));
                     item.put("emails", emails);
+                    item.put("supportEmails", supportEmails);
                     array.put(item);
                 }
             }
 
             json.put("subaccounts", array);
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetReportableCustomers Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
                     .body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetReportableCustomers Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetReportableCustomers Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

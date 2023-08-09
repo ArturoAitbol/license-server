@@ -1,5 +1,6 @@
 package ui.pages;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.openqa.selenium.By;
@@ -30,22 +31,20 @@ public class LoginForm extends AbstractPageObject {
         this.action.sendText(emailInput, email);
         By acceptButton = By.cssSelector(".win-button[type='submit']");
         this.action.click(acceptButton);
-
 /*        String loginHeader = this.action.getText(formTitle);
         if (loginHeader.contains("trouble locating you account"))
             this.action.click(accountSelector);*/
         By passwordInput = By.cssSelector("input[type='password']");
         this.action.sendText(passwordInput, password);
         this.action.click(acceptButton);
-
 /*        String loginHeader = this.action.getText(formTitle);
         if (loginHeader.contains("Permission requested"))
             this.action.forceClick(permissionButton);*/
-
         By stayedSigned = By.cssSelector(".win-button#idBtn_Back");
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
-        assertTrue(this.action.checkTitle("TekVizion 360 Portal"));
+        By settingsSelector = By.cssSelector("#settings-button");
+        assertEquals("Verification of login process has failed", "ok", this.action.checkElement(settingsSelector));
         return new Customers();
     }
 }

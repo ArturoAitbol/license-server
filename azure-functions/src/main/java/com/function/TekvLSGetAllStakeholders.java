@@ -63,7 +63,9 @@ public class TekvLSGetAllStakeholders {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetAllStakeholders Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetAllStakeholders Azure function");
+        
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
@@ -123,6 +125,7 @@ public class TekvLSGetAllStakeholders {
                     if (!rs.next()) {
                         context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + authEmail);
                         json.put("error", MESSAGE_FOR_INVALID_ID);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetAllStakeholders Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -137,6 +140,7 @@ public class TekvLSGetAllStakeholders {
                 item.put("email", rs.getString("subaccount_admin_email"));
                 item.put("subaccountId", rs.getString("subaccount_id"));
                 item.put("notifications", rs.getString("notifications"));
+                item.put("emailNotifications", rs.getBoolean("email_notifications"));
                 item.put("latestCallbackRequestDate", rs.getString("latest_callback_request_date"));
                 array.put(item);
             }
@@ -145,21 +149,25 @@ public class TekvLSGetAllStakeholders {
                 context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + authEmail);
                 List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN, CUSTOMER_FULL_ADMIN, SUBACCOUNT_ADMIN, SUBACCOUNT_STAKEHOLDER);
                 json.put("error", customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetAllStakeholders Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             JSONArray stakeHolders = getStakeholdersInfo(array, context);
             context.getLogger().info("List total " + stakeHolders.length() + " stakeholders");
             json.put("stakeHolders", stakeHolders);
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllStakeholders Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllStakeholders Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllStakeholders Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

@@ -61,7 +61,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAllLicenseUsageDetails Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetAllLicenseUsageDetails Azure function");
 
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -74,6 +75,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		if (subaccountId.isEmpty()) {
 			JSONObject json = new JSONObject();
 			json.put("error", "Missing mandatory parameter: subaccountId");
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllLicenseUsageDetails Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -148,6 +150,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					if (!rs.next()) {
 						context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
 						json.put("error", MESSAGE_FOR_INVALID_ID);
+						context.getLogger().info("User " + userId + " is leaving TekvLSGetAllLicenseUsageDetails Azure function with error");
 						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 					}
 				}
@@ -407,18 +410,20 @@ public class TekvLSGetAllLicenseUsageDetails {
 				}
 					break;
 			}
-
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllLicenseUsageDetails Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
 					.body(json.toString()).build();
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllLicenseUsageDetails Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllLicenseUsageDetails Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

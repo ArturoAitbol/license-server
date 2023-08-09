@@ -32,6 +32,7 @@ public class TekvLSDeleteAdminEmail {
             @BindingName("email") String email,
             final ExecutionContext context) {
 
+        email = email.toLowerCase();
         Claims tokenClaims = getTokenClaimsFromHeader(request,context);
         JSONArray roles = getRolesFromToken(tokenClaims,context);
         if(roles.isEmpty()){
@@ -47,7 +48,8 @@ public class TekvLSDeleteAdminEmail {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteAdminEmail Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSDeleteAdminEmail Azure function");
 
         String sql = "DELETE FROM customer_admin WHERE admin_email = ?;";
         // Connect to the database
@@ -56,48 +58,46 @@ public class TekvLSDeleteAdminEmail {
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
              PreparedStatement statement = connection.prepareStatement(sql)) {
-
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
+			if (FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
                 String searchSubaccountAdminEmailSql = "SELECT subaccount_admin_email FROM subaccount_admin WHERE subaccount_admin_email = ?;";
-                try(PreparedStatement emailStatement = connection.prepareStatement(searchSubaccountAdminEmailSql)){
-                    emailStatement.setString(1, email);
-                    context.getLogger().info("Execute SQL statement: " + emailStatement);
-                    ResultSet rs = emailStatement.executeQuery();
-                    if(rs.next()){
-                        GraphAPIClient.removeRole(email,CUSTOMER_FULL_ADMIN,context);
-                        context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+email+").");
-                    }else{
-                        GraphAPIClient.deleteGuestUser(email,context);
-                        context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
-                    }
-                }catch (ADException e){
-                    context.getLogger().info("AD exception: " + e.getMessage());
-                    JSONObject json = new JSONObject();
-                    json.put("error", "AD Exception: " + e.getMessage());
-                    return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-                }
+                PreparedStatement emailStatement = connection.prepareStatement(searchSubaccountAdminEmailSql);
+                emailStatement.setString(1, email);
+                context.getLogger().info("Execute SQL statement: " + emailStatement);
+                ResultSet rs = emailStatement.executeQuery();
+                if (rs.next()) {
+                    GraphAPIClient.removeRole(email, CUSTOMER_FULL_ADMIN, context);
+                    context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+email+").");
+                } else {
+                    GraphAPIClient.deleteGuestUser(email, true, false, context);
+                    context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
+                } 
             }
-
-            statement.setString(1, email);
-
             // Delete admin email
-            String userId = getUserIdFromToken(tokenClaims, context);
+            statement.setString(1, email);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Admin email deleted successfully.");
-
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteAdminEmail Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", "SQL Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteAdminEmail Azure function with error");
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+        } catch (ADException e) {
+            context.getLogger().info("AD exception when deleting Guest User Customer Admin: " + e.getMessage());
+            JSONObject json = new JSONObject();
+            json.put("error", "AD Exception: " + e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

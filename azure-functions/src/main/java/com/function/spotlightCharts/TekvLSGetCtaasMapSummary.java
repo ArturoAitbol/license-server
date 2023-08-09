@@ -17,8 +17,6 @@ import org.json.JSONObject;
 import java.sql.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -47,7 +45,8 @@ public class TekvLSGetCtaasMapSummary {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
-        context.getLogger().info("Entering TekvLSGetCtaasMapSummary Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetCtaasMapSummary Azure function");
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
@@ -57,12 +56,14 @@ public class TekvLSGetCtaasMapSummary {
         if (subaccountId.isEmpty()) {
             JSONObject json = new JSONObject();
             json.put("error", "Missing mandatory parameter: subaccountId");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
         if (startDate.isEmpty()) {
             JSONObject json = new JSONObject();
             json.put("error", "Missing mandatory parameter: startDate");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         if (endDate.isEmpty()) {
@@ -78,24 +79,25 @@ public class TekvLSGetCtaasMapSummary {
         "	sum(count_packet_loss) as count_packet_loss, sum(max_packet_loss) as max_packet_loss, sum(avg_packet_loss) as avg_packet_loss,\n" +
         "	sum(count_round_trip) as count_round_trip, sum(max_round_trip) as max_round_trip, sum(avg_round_trip) as avg_round_trip,\n" +
         "	sum(count_bitrate) as count_bitrate, sum(avg_bitrate) as avg_bitrate,\n" +
-        "	sum(count_polqa) as count_polqa, sum(min_polqa) as min_polqa, sum(avg_polqa) as avg_polqa\n";
+        "	sum(count_polqa) as count_polqa, sum(min_polqa) as min_polqa, sum(avg_polqa) as avg_polqa, sum(total_call_time) as total_call_time \n";
 
         String sqlStats = "SELECT er.fromcity, er.fromstate, er.fromcountry, er.tocity, er.tostate, er.tocountry, er.fromcoordinates, er.tocoordinates,\n" +
             "	null as total_calls, null as passed, null as failed,\n" +
-            "	count(case when ms.parameter_name = 'Received Jitter' then ms.parameter_name end) as count_jitter,\n" +
-            "	max(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_jitter,\n" +
-            "	avg(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_jitter,\n" +
-            "	count(case when ms.parameter_name = 'Received packet loss' then ms.parameter_name end) as count_packet_loss,\n" +
-            "	max(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_packet_loss,\n" +
-            "	avg(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_packet_loss,\n" +
-            "	count(case when ms.parameter_name = 'Round trip time' then ms.parameter_name end) as count_round_trip,\n" +
-            "	max(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_round_trip,\n" +
-            "	avg(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_round_trip,\n" +
-            "	count(case when ms.parameter_name = 'Sent bitrate' then ms.parameter_name end) as count_bitrate,\n" +
-            "	avg(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate,\n" +
-            "	count(case when ms.parameter_name = 'POLQA' then ms.parameter_name end) as count_polqa,\n" +
-            "	min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as min_polqa,\n" +
-            "	avg(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as avg_polqa\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then ms.parameter_name end) as count_jitter,\n" +
+            "	max(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_jitter,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.JITTER.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_jitter,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then ms.parameter_name end) as count_packet_loss,\n" +
+            "	max(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_packet_loss,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_packet_loss,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then ms.parameter_name end) as count_round_trip,\n" +
+            "	max(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as max_round_trip,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_round_trip,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "' then ms.parameter_name end) as count_bitrate,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.BITRATE.value() + "' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as avg_bitrate,\n" +
+            "	count(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then ms.parameter_name end) as count_polqa,\n" +
+            "	min(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as min_polqa,\n" +
+            "	avg(case when ms.parameter_name = '" + Utils.MEDIA_STATS_METRICS.POLQA.value() + "' then CAST(ms.parameter_value AS numeric) end) as avg_polqa,\n" +
+            "	null as total_call_time \n" +
             "FROM media_stats ms\n" +
             "	LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id\n" +
             "	LEFT JOIN sub_result sr ON trr.subresultid = sr.id\n" +
@@ -106,7 +108,7 @@ public class TekvLSGetCtaasMapSummary {
             "	LEFT JOIN execution_report er on sr.execution_report_id = er.id\n" +
             "WHERE sr.finalResult = true AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND " + Utils.CONSIDERED_STATUS_SUBQUERY + "\n" +
             "	AND " + Utils.CONSIDERED_FAILURES_SUBQUERY + "\n" +
-            "	AND ms.parameter_name IN ('Received Jitter', 'Received packet loss', 'Round trip time', 'Sent bitrate', 'POLQA')\n";
+            "	AND ms.parameter_name IN ('" + Utils.DEFAULT_METRICS + "')\n";
 
         String sqlTestResults = "SELECT er.fromcity, er.fromstate, er.fromcountry,\n" +
             "	er.tocity, er.tostate, er.tocountry,\n" +
@@ -118,7 +120,8 @@ public class TekvLSGetCtaasMapSummary {
             "	null as count_packet_loss, null as max_packet_loss, null as avg_packet_loss,\n" +
             "	null as count_round_trip, null as max_round_trip, null as avg_round_trip,\n" +
             "	null as count_bitrate, null as avg_bitrate,\n" +
-            "	null as count_polqa, null as min_polqa, null as avg_polqa\n" +
+            "	null as count_polqa, null as min_polqa, null as avg_polqa,\n" +
+            "	sum( EXTRACT(EPOCH FROM (sr.enddate - sr.startdate)) ) as total_call_time \n" +
             "FROM execution_report er\n" +
             "	JOIN sub_result sr on sr.execution_report_id = er.id\n" +
             "	JOIN test_result tr ON sr.testresultid = tr.id\n" +
@@ -130,18 +133,12 @@ public class TekvLSGetCtaasMapSummary {
 
         if (!regions.isEmpty()) {
             StringBuilder innerQueryBuilder = new StringBuilder("SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE ");
-            List<String> conditions = new ArrayList<>();
-            if (!regions.isEmpty()) {
-                StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
-                if(regionCondition != null)
-                    conditions.add(regionCondition.toString());
-            }
-            for (int i=0;i<conditions.size();i++) {
-                if(i!=0)
-                    innerQueryBuilder.append(" AND ");
-                innerQueryBuilder.append(conditions.get(i));
-            }
-            sqlStats += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
+            String condition = "";
+            StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
+            if(regionCondition != null)
+                condition = regionCondition.toString();
+            innerQueryBuilder.append(condition);
+            sqlStats += " AND " + regionCondition;
             sqlTestResults += "\tAND sr.id IN (" + innerQueryBuilder + ")\n";
         }
 
@@ -181,6 +178,7 @@ public class TekvLSGetCtaasMapSummary {
                     if (!rs.next()) {
                         context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
                         json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -196,6 +194,7 @@ public class TekvLSGetCtaasMapSummary {
             if (tapURL == null || tapURL.isEmpty()) {
                 context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
                 json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             context.getLogger().info("TAP URL for data query: " + tapURL);
@@ -240,6 +239,7 @@ public class TekvLSGetCtaasMapSummary {
                     res.put("totalCalls", entryArr.get(8));
                     res.put("passed", entryArr.get(9));
                     res.put("failed", entryArr.get(10));
+                    res.put("totalCallTimes", entryArr.get(25));
                     JSONObject jitter = new JSONObject();
                     jitter.put("count", entryArr.get(11));
                     jitter.put("max", entryArr.get(12));
@@ -267,16 +267,19 @@ public class TekvLSGetCtaasMapSummary {
                     result.put(res);
                 }
             }
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetCtaasMapSummary Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(result.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasMapSummary Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

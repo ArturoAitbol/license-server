@@ -25,6 +25,8 @@ export class ViewProfileComponent implements OnInit {
   isUpdatedClicked: boolean = false;
   missingDataFlag:boolean;
   selectedNotifications = new SelectionModel<INotification[]>(true, []);
+  toggleStatus = true;
+  emailNotifications: boolean;
 
   CountryISO = CountryISO;
   SearchCountryField = SearchCountryField;
@@ -53,10 +55,10 @@ export class ViewProfileComponent implements OnInit {
   initializeFormDetails(): void {
     this.viewProfileForm = this.formBuilder.group({
       name: ['', Validators.required],
-      jobTitle: ['', Validators.required],
-      companyName: ['', Validators.required],
+      jobTitle: [''],
+      companyName: [''],
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required]
+      phoneNumber: ['']
     });
   }
  
@@ -69,6 +71,7 @@ export class ViewProfileComponent implements OnInit {
       this.isDataLoading = false;
       if(this.data){
         this.viewProfileForm.patchValue(this.data);
+        this.emailNotifications = this.data.emailNotifications;
       }
     } catch (error) {
       console.error('Error while fetching user profile details | ', error);
@@ -81,9 +84,13 @@ export class ViewProfileComponent implements OnInit {
   updateProfile(): void {
     try {
       this.isUpdatedClicked = true;
-      const requestPayload = { ...this.viewProfileForm.value };
+      let requestPayload = { ...this.viewProfileForm.value };
       delete requestPayload.type;
-      requestPayload.phoneNumber = this.viewProfileForm.get('phoneNumber').value.e164Number;
+      if (requestPayload.phoneNumber)
+        requestPayload.phoneNumber = requestPayload.phoneNumber.e164Number;
+      else 
+        requestPayload.phoneNumber = "";
+      requestPayload.emailNotifications = this.emailNotifications;
       this.userProfileService.updateUserProfile(requestPayload)
       .toPromise()
       .then((response: any) => {
@@ -103,6 +110,15 @@ export class ViewProfileComponent implements OnInit {
       this.onCancel('error');
     }
   }
+
+  onChangeToggle(flag: boolean): void {
+    this.toggleStatus = flag;
+    if (flag) {
+        this.emailNotifications = true;
+    } else {
+        this.emailNotifications = false;
+    }
+}
   /**
    * close the open dialog 
    * @param type: string [optional] 

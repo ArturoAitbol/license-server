@@ -9,7 +9,7 @@ import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-import { BannerService } from "../../../services/alert-banner.service";
+import { BannerService } from "../../../services/banner.service";
 import { MatDialog } from '@angular/material/dialog';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
 import { ReportType } from 'src/app/helpers/report-type';
@@ -154,7 +154,7 @@ export class CtaasTestReportsComponent implements OnInit {
         else 
           this.tapURLFlag = 'withoutTapURL';
         if (res.ctaasSetups[0].maintenance) {
-          this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.unsubscribe);
+          this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.unsubscribe, "alert");
           this.maintenanceModeEnabled = true;
         }
       } else {
@@ -174,7 +174,6 @@ export class CtaasTestReportsComponent implements OnInit {
 
   todayReport() {
     const todayDetails = this.filterForm.value
-    console.log(todayDetails)
     let reportType;
     switch (todayDetails.todayReportType) {
       case this.FEATURE:
@@ -210,8 +209,8 @@ export class CtaasTestReportsComponent implements OnInit {
   onClickMoreDetails(selectedReport: any): void {
     const startDate = selectedReport.startDate.split('UTC')[0];
     const endDate = selectedReport.endDate.split('UTC')[0];
-    const startTime = Utility.parseReportDate(moment(startDate));
-    const endTime = Utility.parseReportDate(moment(endDate));
+    const startTime = Utility.parseReportDate(moment(startDate,'MM-DD-YYYY HH:mm:ss'));
+    const endTime = Utility.parseReportDate(moment(endDate,'MM-DD-YYYY HH:mm:ss'));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
 }

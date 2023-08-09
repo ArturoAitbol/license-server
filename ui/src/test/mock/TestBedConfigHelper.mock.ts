@@ -31,7 +31,7 @@ import { ProjectService } from "../../app/services/project.service";
 import { CustomerService } from "../../app/services/customer.service";
 import { NoteServiceMock } from './services/ctaas-note-service.mock';
 import { ConsumptionServiceMock } from './services/license-consumption-service.mock';
-import { BannerService } from '../../app/services/alert-banner.service';
+import { BannerService } from '../../app/services/banner.service';
 import { BannerServiceMock } from './services/alert-banner-service.mock';
 import { FeatureToggleService } from '../../app/services/feature-toggle.service';
 import { FeatureToggleServiceMock } from './services/feature-toggle-service.mock';
@@ -52,6 +52,10 @@ import { UserProfileService } from '../../app/services/user-profile.service';
 import { UserProfileServiceMock } from './services/user-profile.mock';
 import { CallbackService } from "src/app/services/callback.service";
 import { CallbackServiceMock } from "./services/callback-service.mock";
+import { MapService } from "src/app/services/map.service";
+import { MapServiceMock } from "./services/map-service.mock";
+import { SpotlightChartsService } from "src/app/services/spotlight-charts.service";
+import { SpotlightChartsServiceMock } from "./services/spotlightCharts-service.mock";
 
 export class TestBedConfigBuilder {
     testBedConfig:{declarations:Array<any>, schema?:Array<any>, imports:Array<any>, providers:Array<any>};
@@ -82,6 +86,8 @@ export class TestBedConfigBuilder {
                 { provide: NoteService, useValue: NoteServiceMock },
                 { provide: StakeHolderService, useValue: StakeHolderServiceMock },
                 { provide: LicenseService, useValue: LicenseServiceMock },
+                { provide: MapService, useValue: MapServiceMock},
+                { provide: SpotlightChartsService, useValue: SpotlightChartsServiceMock},
                 { provide: LicenseConsumptionService, useValue: ConsumptionServiceMock },
                 { provide: ProjectService, useValue: ProjectServiceMock },
                 { provide: CustomerService, useValue: CustomerServiceMock },

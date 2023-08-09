@@ -6,9 +6,7 @@ import { SnackBarServiceMock } from "../../../../../test/mock/services/snack-bar
 import { SubaccountServiceMock } from "../../../../../test/mock/services/subaccount-service.mock";
 import { DialogServiceMock } from "../../../../../test/mock/services/dialog-service.mock";
 import { TestBedConfigBuilder } from "../../../../../test/mock/TestBedConfigHelper.mock";
-import { CtaasDashboardServiceMock } from "../../../../../test/mock/services/ctaas-dashboard-service.mock";
 import { NoteServiceMock } from "../../../../../test/mock/services/ctaas-note-service.mock";
-import { FeatureToggleServiceMock } from "../../../../../test/mock/services/feature-toggle-service.mock";
 
 let addNotesComponentInstance: AddNotesComponent;
 let fixture : ComponentFixture<AddNotesComponent>;
@@ -58,7 +56,6 @@ describe('addNote', () => {
     beforeEach(beforeEachFunction);
     it('should call proper services when the note content is valid', () => {
         spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
-        spyOn(CtaasDashboardServiceMock, 'getReports').and.callThrough();
         spyOn(NoteServiceMock, 'createNote').and.callThrough();
 
         addNotesComponentInstance.noteForm.setValue({
@@ -67,35 +64,17 @@ describe('addNote', () => {
         addNotesComponentInstance.addNote();
 
         expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
-        expect(CtaasDashboardServiceMock.getReports).toHaveBeenCalled();
         expect(NoteServiceMock.createNote).toHaveBeenCalled();
-    });
-
-    it('should call error snackbar for null report response', () => {
-        spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
-        spyOn(CtaasDashboardServiceMock, 'getReports').and.returnValue(null);
-        spyOn(SnackBarServiceMock, 'openSnackBar');
-        spyOn(NoteServiceMock, 'createNote').and.callThrough();
-        addNotesComponentInstance.nativeHistoricalDashboardActive = false;
-
-        addNotesComponentInstance.addNote();
-
-        expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
-        expect(CtaasDashboardServiceMock.getReports).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Reports are missing', 'Error adding note!');
-        expect(NoteServiceMock.createNote).not.toHaveBeenCalled();
     });
 
     it('should call error snackbar when the api response return an error', () => {
         spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
-        spyOn(CtaasDashboardServiceMock, 'getReports').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
         spyOn(NoteServiceMock, 'createNote').and.callFake(NoteServiceMock.errorResponse);
 
         addNotesComponentInstance.addNote();
 
         expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
-        expect(CtaasDashboardServiceMock.getReports).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(NoteServiceMock.errorMsg, 'Error adding note!');
     });
 

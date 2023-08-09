@@ -23,7 +23,7 @@ public enum Resource {
         CREATE_SUBACCOUNT_ADMIN_DEVICE, //TekvLSCreateSubaccountAdminDevice
         CREATE_CONSUMPTION_MATRIX, //TekvLSCreateConsumptionMatrix
         CREATE_CALLBACK, //TekvLSCallback
-
+        CREATE_CTAAS_SUPPORT_EMAIL, //TekvLSCreateCtaasSupportEmail
         // DELETE
         DELETE_ADMIN_EMAIL,//TekvLSDeleteAdminEmail
         DELETE_CUSTOMER,//TekvLSDeleteCustomerById
@@ -44,6 +44,7 @@ public enum Resource {
         DELETE_SUBACCOUNT_ADMIN_DEVICE, // TekvLSDeleteSubaccountAdminDevice
         DELETE_CONSUMPTION_MATRIX, //TekvLSDeleteConsumptionMatrix
         DELETE_RESIDUAL_TEST_DATA, //TekvLSDeleteResidualTestData
+        DELETE_CTAAS_SUPPORT_EMAIL, //TekvLSDeleteCtaasSupportEmail
 
         // READ
         GET_ALL_BUNDLES,//TekvLSGetAllBundles
@@ -62,7 +63,6 @@ public enum Resource {
         GET_ALL_SUBACCOUNT_STAKEHOLDER,//TekvLSGetAllStakeholders
         GET_AUTH_USER_PROFILE,//TekvLSGetAuthUserProfile
         GET_CTAAS_DASHBOARD,//TekvLSGetCtaasDashboard
-        GET_ALL_REPORTS,
         GET_ALL_FEATURE_TOGGLES,//TekvLSGetAllFeatureToggles
         GET_SUBSCRIPTIONS_OVERVIEW, //TeTekvLSGetSubscriptionsOverview
         GET_ALL_NOTES, //TeTekvLSGetAllNotes

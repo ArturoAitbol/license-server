@@ -1,5 +1,6 @@
 package com.function.util;
 
+import com.function.util.Constants.ReportTypes;
 import com.microsoft.azure.functions.ExecutionContext;
 
 import java.sql.Connection;
@@ -47,5 +48,15 @@ public class Utils {
 
     public static long millisecondsSinceDate(Date date) throws Exception {
         return getDateFromString(LocalDateTime.now(Clock.systemUTC()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).getTime() - date.getTime();
+    }
+
+    public static String getReportNameByTestPlan(String testPlan) {
+        if (testPlan.equals(ReportTypes.CALLING_RELIABILITY.value()))
+            return "Calling Reliability";
+        if (testPlan.equals(ReportTypes.FEATURE_FUNCTIONALITY.value()))
+            return "Feature Functionality";
+        if (testPlan.equals(ReportTypes.POLQA.value()))
+            return "Voice Quality (POLQA)";
+        return testPlan;
     }
 }

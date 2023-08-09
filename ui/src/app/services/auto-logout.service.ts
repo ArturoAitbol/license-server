@@ -9,9 +9,11 @@ import moment from "moment";
 })
 export class AutoLogoutService {
     timeoutId: any = null;
+    loginTimeoutId: any = null;
+    acquireTokenTimeoutId: any = null;
 
     private readonly  LAST_ACTIVITY_TIMESTAMP_KEY = 'lastActivityTime';
-    constructor(private router: Router, private msalService: MsalService) {
+    constructor(private msalService: MsalService) {
     }
 
     public validateLastActivityTime(): void {
@@ -44,11 +46,34 @@ export class AutoLogoutService {
     public logout() {
         if (this.msalService.instance.getActiveAccount() != null) {
             try {
-                this.msalService.logout();
+                let bannerArray = [];
+                Object.keys(localStorage).forEach(key => key.includes("-hiddenBanner") ? bannerArray.push({ key: key, value: localStorage[key] }) : '');
                 localStorage.clear();
+                bannerArray.forEach(item => localStorage.setItem(item.key, item.value));
+                this.msalService.logout();
             } catch (error) {
                 console.error('error while logout: ', error);
             }
         }
+    }
+
+    public initLoginTimeout(){
+        clearTimeout(this.loginTimeoutId);
+        this.loginTimeoutId = setTimeout(()=> window.location.reload(), Constants.LOGIN_TIMEOUT);
+    }
+
+    public cancelLoginTimeout(){
+        clearTimeout(this.loginTimeoutId);
+        this.loginTimeoutId = null;
+    }
+
+    public initAcquireTokenTimeout(){
+        clearTimeout(this.acquireTokenTimeoutId);
+        this.acquireTokenTimeoutId = setTimeout(()=> this.logout(), Constants.LOGIN_TIMEOUT);
+    }
+
+    public cancelAcquireTokenTimeout(){
+        clearTimeout(this.acquireTokenTimeoutId);
+        this.acquireTokenTimeoutId = null;
     }
 }

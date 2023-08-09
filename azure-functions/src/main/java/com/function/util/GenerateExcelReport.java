@@ -224,10 +224,21 @@ public class GenerateExcelReport {
         int columnnum = row.getRowNum() + 1;
         summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "J" + columnnum));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
-        final String REPORT_TYPE = jsonObject.get("type").toString().equalsIgnoreCase("LTS") ? "Feature Functionality"
-                : "Calling Reliability";
+        String reportTypeParam = jsonObject.get("type").toString();
+        String reportTypesHeader;
+        if (reportTypeParam.isEmpty()){
+            reportTypesHeader = Constants.DEFAULT_REPORT_NAME;
+        } else {
+            String[] reportTypes = reportTypeParam.split(",");
+            reportTypesHeader = "";
+            for (int i = 0; i < reportTypes.length; i++) {
+                reportTypesHeader += Utils.getReportNameByTestPlan(reportTypes[i]);
+                if (i + 1 < reportTypes.length)
+                    reportTypesHeader += " + ";
+            }
+        }
         if (jsonObject.get("results") != null)
-            addCell(row, null, whiteLabel, count++, REPORT_TYPE);
+            addCell(row, null, whiteLabel, count++, reportTypesHeader);
         count = 0;
         row = summarySheet.createRow(index++);
         for (String header : iterationTestResultHeaders) {
@@ -370,7 +381,7 @@ public class GenerateExcelReport {
             newstyle.setWrapText(true);
             newstyle.setVerticalAlignment(VerticalAlignment.TOP);
             newstyle.setAlignment(HorizontalAlignment.LEFT);
-            newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 102), new DefaultIndexedColorMap()));
+            newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(39, 49, 118), new DefaultIndexedColorMap()));
             newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Font newFont = workbook.createFont();
             newFont.setBold(true);

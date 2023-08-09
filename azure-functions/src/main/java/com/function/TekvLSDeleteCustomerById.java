@@ -2,6 +2,7 @@ package com.function;
 
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
+import com.function.exceptions.ADException;
 import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
@@ -59,7 +60,8 @@ public class TekvLSDeleteCustomerById
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSDeleteCustomerById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSDeleteCustomerById Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
@@ -85,47 +87,77 @@ public class TekvLSDeleteCustomerById
 						"JOIN subaccount s ON sa.subaccount_id = s.id " +
 						"FULL JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
 						"WHERE s.customer_id = ?::uuid OR ca.customer_id = ?::uuid;";
-				try(PreparedStatement getAllEmailsStmt = connection.prepareStatement(getAllEmailsSql)){
-					getAllEmailsStmt.setString(1, id);
-					getAllEmailsStmt.setString(2, id);
-					ResultSet resultSet = getAllEmailsStmt.executeQuery();
-					while (resultSet.next()){
-						String adminCustomerId =  resultSet.getString("customer_id");
-						String adminEmail = resultSet.getString("admin_email");
-						String subaccountAdminCustomerId =  resultSet.getString("subaccount_customer_id");
-						String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
+				PreparedStatement getAllEmailsStmt = connection.prepareStatement(getAllEmailsSql);
+				getAllEmailsStmt.setString(1, id);
+				getAllEmailsStmt.setString(2, id);
+				ResultSet resultSet = getAllEmailsStmt.executeQuery();
+				while (resultSet.next()){
+					String adminCustomerId =  resultSet.getString("customer_id");
+					String adminEmail = resultSet.getString("admin_email");
+					String subaccountAdminCustomerId =  resultSet.getString("subaccount_customer_id");
+					String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
+					String lastUsedEmail = ""; // For error handling only
 
-						// if adminCustomerId IS selected id AND (email IS NOT used as subaccount admin)
-						if(id.equals(adminCustomerId) && (subaccountAdminCustomerId == null)) {
-							// if ad-customer-user-creation toggle IS enabled => delete user
-							if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
-								GraphAPIClient.deleteGuestUser(adminEmail, context);
+					try {
+						if (id.equals(adminCustomerId)) { // if email IS used as customer admin
+							lastUsedEmail = adminEmail;
+							if (subaccountAdminCustomerId == null) { // if email IS NOT used as subaccount admin)
+								GraphAPIClient.deleteGuestUser(adminEmail, true, false, context);
 								context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + adminEmail + ").");
-								continue;
-							}
-						}
-
-						// if subaccountAdminCustomerId IS selected id
-						if(id.equals(subaccountAdminCustomerId)) {
-							if(adminCustomerId == null || adminCustomerId.equals(id) || id.equals(subaccountAdminCustomerId) && FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
-								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
+							} else if (id.equals(subaccountAdminCustomerId)) { // OR if email IS used as both customer and subaccount admin in the same customer
+								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, true, true, context);
 								context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + subaccountAdminEmail + ").");
-							} else {
-								// else delete subaccount admin role 
-								GraphAPIClient.removeRole(subaccountAdminEmail, SUBACCOUNT_ADMIN, context);
-								context.getLogger().info("Guest User Role (Subaccount Admin) removed successfully from Active Directory (email: " + subaccountAdminEmail + ").");
+							} else { // else delete customer admin role 
+								GraphAPIClient.removeRole(adminEmail, CUSTOMER_FULL_ADMIN, context);
+								context.getLogger().info("Guest User Role (Customer Admin) removed successfully from Active Directory (email: " + adminEmail + ").");
 							}
-							continue;
+						} else if (id.equals(subaccountAdminCustomerId)) { // if email IS used as subaccount admin
+							if (adminCustomerId == null) { // if email IS NOT used as customer admin
+								lastUsedEmail = subaccountAdminEmail;
+								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, false, true, context);
+								context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + subaccountAdminEmail + ").");
+							} else { // else delete subaccount roles 
+								int count = 0;
+								try {
+									GraphAPIClient.removeRole(subaccountAdminEmail, SUBACCOUNT_ADMIN, context);
+								} catch (ADException e) {
+									count++;
+									context.getLogger().info("Error removing Subaccount Admin role for user: " + subaccountAdminEmail);
+									context.getLogger().info("AD exception: " + e.getMessage());
+								}
+								try {
+									GraphAPIClient.removeRole(subaccountAdminEmail, SUBACCOUNT_STAKEHOLDER, context);
+								} catch (ADException e) {
+									count++;
+									context.getLogger().info("Error removing Subaccount Stakeholder role for user: " + subaccountAdminEmail);
+									context.getLogger().info("AD exception: " + e.getMessage());
+								}
+								if (count > 1)
+									context.getLogger().severe("Delete a guest user role failed (AD): No Role found for Email=" + subaccountAdminEmail);
+								else 
+									context.getLogger().info("Guest User Role Subaccount Admin/Stakeholder removed successfully from Active Directory (email: " + subaccountAdminEmail + ").");
+							}
 						}
-
-						// if adminCustomerId IS selected id AND ad-customer-user-creation toggle IS enabled
-						// but there IS a subaccountAdmin with diferent Customer ID
-						// then delete customer admin role 
-						if(adminCustomerId.equals(id) && FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
-							GraphAPIClient.removeRole(adminEmail, CUSTOMER_FULL_ADMIN, context);
-							context.getLogger().info("Guest User Role (Customer Admin) removed successfully from Active Directory (email: " + adminEmail + ").");
-							continue;
-						}
+					} catch (ADException e) {
+						context.getLogger().severe("Delete a guest user failed (AD): " + lastUsedEmail);
+						context.getLogger().severe("AD exception: " + e.getMessage());
+					}
+				}
+			} else {
+				String getAllEmailsSql = "SELECT sa.subaccount_admin_email " +
+						"FROM subaccount_admin sa JOIN subaccount s ON sa.subaccount_id = s.id " +
+						"WHERE s.customer_id = ?::uuid";
+				PreparedStatement getAllEmailsStmt = connection.prepareStatement(getAllEmailsSql);
+				getAllEmailsStmt.setString(1, id);
+				ResultSet resultSet = getAllEmailsStmt.executeQuery();
+				while (resultSet.next()) {
+					String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
+					try {
+						GraphAPIClient.deleteGuestUser(subaccountAdminEmail, false, true, context);
+						context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + subaccountAdminEmail + ").");
+					} catch (ADException e) {
+						context.getLogger().severe("Delete a guest user failed (AD): " + subaccountAdminEmail);
+						context.getLogger().severe("AD exception: " + e.getMessage());
 					}
 				}
 			}
@@ -141,31 +173,31 @@ public class TekvLSDeleteCustomerById
 				context.getLogger().info("test_customer is: " + deleteFlag);
 			}
 			// Delete customer
-			String userId = getUserIdFromToken(tokenClaims,context);
 			if (deleteFlag) {
 				deleteStmt.setString(1, id);
-				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + deleteStmt);
+				context.getLogger().info("Execute SQL Delete Customer statement (User: "+ userId + "): " + deleteStmt);
 				deleteStmt.executeUpdate();
-			}
-			else {
+			} else {
 				tombstoneStmt.setString(1, id);
-				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + tombstoneStmt);
+				context.getLogger().info("Execute SQL Tombstone Customer statement (User: "+ userId + "): " + tombstoneStmt);
 				tombstoneStmt.executeUpdate();
 			}
 			context.getLogger().info("Customer delete successfully."); 
-
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteCustomerById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", "SQL Exception: " + e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteCustomerById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSDeleteCustomerById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

@@ -65,21 +65,8 @@ export class MyAppsComponent implements OnInit {
      */
     private getAvailableServices(roles?: string) {
         const response = this.availabeService.fetchAllAvailabeServices();
-        if (response.length > 0) {
+        if (response.length > 0)
             this.availableServices = response.filter((x: IService) => x.enabled === true);
-            // get the current logged in subaccount details
-            if (this.currentSubaccountDetails) {
-                let {services} = this.currentSubaccountDetails;
-                if ((services === undefined || services === null) && roles)
-                    services = roles.includes(Constants.SUBACCOUNT_STAKEHOLDER) ? [tekVizionServices.SpotLight] : [];
-                // enable respective access to activated service here
-                this.availableServices = this.availableServices.map(e => {
-                    if (services.includes(e.value))
-                        e.access = true;
-                    return e;
-                });
-            }
-        }
     }
 
     /**
@@ -91,11 +78,7 @@ export class MyAppsComponent implements OnInit {
             let routePath = service.routePath;
             // this is temporal validation meanwhile there is not an unified permanent dashboard
             if (service.value === tekVizionServices.SpotLight) {
-                routePath = Constants.STAKEHOLDERS_VIEW_PATH;
-                if(this.featureToggleService.isFeatureEnabled("powerbiFeature", this.subaccountId))
-                    routePath = Constants.POWERBI_DASHBOARD_PATH;
-                if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.subaccountId))
-                    routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
+                routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
             }
             this.router.navigate([routePath], {queryParams: {subaccountId: this.subaccountId}});
         }

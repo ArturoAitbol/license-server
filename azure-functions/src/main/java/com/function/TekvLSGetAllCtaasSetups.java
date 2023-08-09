@@ -8,9 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,6 +34,13 @@ public class TekvLSGetAllCtaasSetups {
 	* 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetups?subaccountId={subaccountId}
 	* 2. curl "{your host}/v1.0/ctaasSetups"
 	*/
+
+	private final String dbConnectionUrl = "jdbc:postgresql://" +
+			System.getenv("POSTGRESQL_SERVER") +"/licenses" +
+			System.getenv("POSTGRESQL_SECURITY_MODE")
+			+ "&user=" + System.getenv("POSTGRESQL_USER")
+			+ "&password=" + System.getenv("POSTGRESQL_PWD");
+
 	@FunctionName("TekvLSGetAllCtaasSetups")
 		public HttpResponseMessage run(
 		@HttpTrigger(
@@ -63,11 +68,14 @@ public class TekvLSGetAllCtaasSetups {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAllCtaasSetups Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetAllCtaasSetups Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
-  
+
+		Map<String, List<String>> supportEmailsMap = new HashMap<>();
+
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_setup");
 		SelectQueryBuilder verificationQueryBuilder = null;
@@ -93,9 +101,11 @@ public class TekvLSGetAllCtaasSetups {
 		if (id.equals("EMPTY")){
 			if (!subaccountId.isEmpty()) {
 				queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+				supportEmailsMap = loadSupportEmails("subaccountId",subaccountId,context);
 			}
 		}else{
 			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
+			supportEmailsMap = loadSupportEmails("ctaasSetupId",id,context);
 		}
 
 		if (verificationQueryBuilder != null) {
@@ -106,9 +116,6 @@ public class TekvLSGetAllCtaasSetups {
 		}
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement selectStmt = queryBuilder.build(connection)) {
@@ -124,6 +131,7 @@ public class TekvLSGetAllCtaasSetups {
 					if (!rs.next()) {
 						context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
 						json.put("error", MESSAGE_FOR_INVALID_ID);
+						context.getLogger().info("User " + userId + " is leaving TekvLSGetAllCtaasSetups Azure function with error");
 						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 					}
 				}
@@ -143,6 +151,8 @@ public class TekvLSGetAllCtaasSetups {
 				item.put("tapUrl", rs.getString("tap_url"));
 				item.put("onBoardingComplete", rs.getBoolean("on_boarding_complete"));
 				item.put("maintenance", rs.getBoolean("maintenance"));
+				if(!subaccountId.isEmpty())
+					item.put("supportEmails", supportEmailsMap.get(rs.getString("id")));
 				array.put(item);
 			}
 
@@ -150,23 +160,50 @@ public class TekvLSGetAllCtaasSetups {
 				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
 				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN, SUBACCOUNT_STAKEHOLDER);
 				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				context.getLogger().info("User " + userId + " is leaving TekvLSGetAllCtaasSetups Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
 			json.put("ctaasSetups", array);
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllCtaasSetups Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllCtaasSetups Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllCtaasSetups Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
+	}
+
+	private Map<String, List<String>> loadSupportEmails(String idType,String id, ExecutionContext context) {
+		Map<String, List<String>> emailsMap = new HashMap<>();
+		SelectQueryBuilder queryBuilder;
+		if(idType.equals("subaccountId")){
+			queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_support_email cse, ctaas_setup cs WHERE cse.ctaas_setup_id = cs.id",true);
+			queryBuilder.appendEqualsCondition("subaccount_id", id, QueryBuilder.DATA_TYPE.UUID);
+		}else{
+			queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_support_email");
+			queryBuilder.appendEqualsCondition("ctaas_setup_id", id, QueryBuilder.DATA_TYPE.UUID);
+		}
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			 PreparedStatement statement = queryBuilder.build(connection)) {
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				emailsMap.computeIfAbsent(rs.getString("ctaas_setup_id"), k -> new ArrayList<>()).add(rs.getString("email"));
+			}
+		} catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+		}
+		return emailsMap;
 	}
 }

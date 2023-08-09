@@ -1,5 +1,5 @@
 <!-- Load Leaflet from CDN-->
-<app-banner [stylesflag]="'notes'" *lcCheckAccessFor="'showBanner'"></app-banner>
+<app-banner [stylesflag]="'notes'"></app-banner>
 <mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
 <div [formGroup]="filterForm">
   <div class="row">
@@ -33,7 +33,7 @@
                 formControlName="region"
                 [matAutocomplete]="regionAuto">
                 <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="addRegion()">
-                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region">
+                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region" title="{{region.displayName}}">
                         {{region.displayName}}
                     </mat-option>
                 </mat-autocomplete>
@@ -42,7 +42,7 @@
       </div>
       <div class="align-items-start apply-button-container" [ngClass]="{'apply-button-container-enable':(!dateHasChanged() && !regionsHasChanged())}">
           <button class="mt-2 apply-button" mat-raised-button
-                  id="add-customer-button" (click)="dateFilter()" [disabled]="!filterForm.valid || (!dateHasChanged() && !regionsHasChanged())">Apply</button>
+                  id="filter-button" (click)="dateFilter()" [disabled]="!filterForm.valid || (!dateHasChanged() && !regionsHasChanged())">Apply</button>
       </div>
     </div>
     <div class="col-4 justify-content-end">
@@ -82,9 +82,9 @@
     </div>
   </div>
 </div>
-<div class="map-container">
-  <div class="loading-shade" *ngIf="isLoadingResults">
-    <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+<div class="map-container" id="map-container">
+  <div class="loading-shade" *ngIf="isLoadingResults" id="map-spinner">
+    <mat-spinner id="map-spinner" *ngIf="isLoadingResults"></mat-spinner>
   </div>
   <div id="map" ></div>
 </div>

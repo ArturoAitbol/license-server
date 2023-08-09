@@ -29,7 +29,6 @@ export const permissions = {
     'tekvizion.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -60,11 +59,14 @@ export const permissions = {
             'deleteSubAccAdminEmail',
             'auditInfo',
             'addTestSuite',
-            'showBanner',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'resetFilter',
             'maintenanceModeCheckbox',
+            'viewDetailedReport',
+            'emailNotifications',
+            'addSupportEmail',
+            'deleteSupportEmail',
         ],
         tables: {
             customerOptions: [
@@ -118,7 +120,7 @@ export const permissions = {
     'tekvizion.SalesAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
+            'spotlight-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -131,7 +133,6 @@ export const permissions = {
             'map'
         ],
         elements: [
-            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -161,7 +162,6 @@ export const permissions = {
     'tekvizion.ConfigTester': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -184,9 +184,79 @@ export const permissions = {
             'addProject',
             'addLicenseConsumption',
             'addTestSuite',
-            'showBanner',
             'resetFilter',
             'maintenanceModeCheckbox',
+            'viewDetailedReport',
+            'addSupportEmail',
+            'deleteSupportEmail',
+            'emailNotifications'
+        ],
+        tables: {
+            customerOptions: [
+                'VIEW_LICENSES',
+                'VIEW_CONSUMPTION',
+                'VIEW_PROJECTS',
+                'VIEW_ADMIN_EMAILS',
+                'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD'
+            ],
+            licenseOptions: [],
+            licConsumptionOptions: [
+                'EDIT',
+                'VIEW_DETAILS',
+                'DELETE'
+            ],
+            projectOptions: [
+                'VIEW_CONSUMPTION',
+                'MODIFY_PROJECT',
+                'CLOSE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE',
+                'DELETE_TEST_SUITE'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
+            ],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ],
+            subscriptionsOverviewOptions: [],
+            deviceOptions: [],
+            testReportsOptions: [
+                'VIEW_DETAILS'
+            ]
+        }
+    },
+    'tekvizion.IGESAdmin': {
+        paths: [
+            'customers-dashboard',
+            'customer',
+            'consumption',
+            'projects',
+            'licenses',
+            'devices',
+            'redirect',
+            'apps',
+            'spotlight',
+            'notes',
+            'test-suites',
+            'stakeholders',
+            'setup',
+            'details',
+            'reports',
+            'consumption-matrix',
+            'spotlight-dashboard',
+            'map'
+        ],
+        elements: [
+            'addProject',
+            'addLicenseConsumption',
+            'addTestSuite',
+            'resetFilter',
+            'maintenanceModeCheckbox',
+            'addSupportEmail'
         ],
         tables: {
             customerOptions: [
@@ -229,7 +299,6 @@ export const permissions = {
     'distributor.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -241,7 +310,7 @@ export const permissions = {
             'spotlight-dashboard'
         ],
         elements: [
-            'showBanner'
+            'viewDetailedReport'
         ],
         tables: {
             customerOptions: [
@@ -266,7 +335,6 @@ export const permissions = {
     'customer.FullAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -286,9 +354,10 @@ export const permissions = {
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
-            'showLatestNote',
             'resetFilter',
-            'request-call'
+            'request-call',
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -323,7 +392,6 @@ export const permissions = {
     'customer.SubaccountAdmin': {
         paths: [
             'customers-dashboard',
-            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -343,9 +411,10 @@ export const permissions = {
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
-            'showLatestNote',
             'resetFilter',
-            'request-call'
+            'request-call',
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -382,7 +451,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'visualization',
             'stakeholders',
             'notes',
             'details',
@@ -392,9 +460,10 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
-            'showLatestNote',
             'resetFilter',
-            'request-call'
+            'request-call',
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [],

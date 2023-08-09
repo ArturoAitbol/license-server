@@ -9,15 +9,13 @@ import {NoteService} from '../../../services/notes.service';
 import {SubAccountService} from '../../../services/sub-account.service';
 import {AddNotesComponent} from './add-notes/add-notes.component';
 import { Note } from 'src/app/model/note.model';
-import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { DatePipe } from '@angular/common';
-import { BannerService } from "../../../services/alert-banner.service";
+import { BannerService } from "../../../services/banner.service";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import { Subject } from "rxjs";
 import { Constants } from 'src/app/helpers/constants';
-import { FeatureToggleService } from "../../../services/feature-toggle.service";
-import { Router } from "@angular/router";
 import { environment } from 'src/environments/environment';
+import moment from 'moment';
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -35,7 +33,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     isRequestCompleted = false;
     toggleStatus = false;
     addNoteDisabled = false;
-    nativeHistoricalDashboardActive = false;
+    maintenanceModeEnabled = false;
     private subaccountDetails: any;
     private onDestroy: Subject<void> = new Subject<void>();
     readonly CLOSE_NOTE = 'Close Note';
@@ -54,10 +52,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         private noteService: NoteService,
         private subAccountService: SubAccountService,
         private bannerService: BannerService,
-        private ctaasSetupService: CtaasSetupService,
-        private ftService: FeatureToggleService,
-        private router: Router,
-        private datePipe: DatePipe) {}
+        private ctaasSetupService: CtaasSetupService) {}
     /**
      * calculate table height based on the window height
      */
@@ -87,8 +82,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * get action menu options
      */
     private getActionMenuOptions() {
-        const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions")
+        if(!this.maintenanceModeEnabled) {
+            const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+            this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions");
+        }
     }
     /**
      * fetch note data
@@ -100,9 +97,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.noteService.getNoteList(this.subaccountDetails.id).subscribe((res) => {
             this.isRequestCompleted = true;
             this.notesDataBk = res.notes.map(note => {
-                note.openDate = this.datePipe.transform(new Date(note.openDate), 'yyyy-MM-dd  h:mm:ss');
+                note.openDate = moment(note.openDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
                 if(note.closeDate) {
-                    note.closeDate = this.datePipe.transform(new Date(note.closeDate), 'yyyy-MM-dd  h:mm:ss');
+                    note.closeDate = moment(note.closeDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
                 }
                 return note;
             });
@@ -117,9 +114,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
-        this.nativeHistoricalDashboardActive = this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails.id);
         this.calculateTableHeight();
-        this.getActionMenuOptions();
         this.initColumns();
         this.fetchNoteList();
         this.checkMaintenanceMode();
@@ -161,11 +156,8 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * @param note: Note
      */
     viewDashboard(note: Note): void{
-        if (this.ftService.isFeatureEnabled('spotlight-historical-dashboard', this.subaccountDetails?.id)) {
-            const featureUrl = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
-            window.open(featureUrl);
-        } else
-            this.openDialog(this.VIEW_DASHBOARD,note);
+        const featureUrl = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
+        window.open(featureUrl);
     }
 
     /**
@@ -199,23 +191,14 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         });
     }
 
-    openDialog(type: string, selectedItemData?: any){
+    openDialog(type: string){
         let dialogRef;
         switch (type) {
             case this.ADD_NOTE:
                 dialogRef = this.dialog.open(AddNotesComponent, {
                     width: '85vw',
                     maxHeight: '90vh',
-                    maxWidth: this.nativeHistoricalDashboardActive ? '30vw' : '85vw',
-                    disableClose: false
-                });
-                break;
-            case this.VIEW_DASHBOARD:
-                dialogRef = this.dialog.open(CtaasHistoricalDashboardComponent, {
-                    data: selectedItemData,
-                    width: '100vw',
-                    height: '100vh',
-                    maxWidth: '100vw',
+                    maxWidth: '30vw',
                     disableClose: false
                 });
                 break;
@@ -255,8 +238,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             const ctaasSetupDetails = res['ctaasSetups'][0];
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
-                this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+                this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy, "alert");
+                this.maintenanceModeEnabled = true;
             }
+            this.getActionMenuOptions();
         })
     }
 }

@@ -47,7 +47,7 @@ Feature: Stakeholders
     And I go to the spotlight "Stakeholders" tab
     And I see the stakeholder in the table
     When I delete the stakeholder
-    Then I should see the message "Deleted Stakeholder successfully"
+    Then I should see the message "Stakeholder deleted successfully!"
 
   @deleteTestSuitesCustomer @delete
   Scenario: Delete the test suites customer

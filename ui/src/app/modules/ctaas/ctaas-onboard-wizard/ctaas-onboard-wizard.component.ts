@@ -1,14 +1,15 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
-import {Constants} from 'src/app/helpers/constants';
-import {AutoLogoutService} from 'src/app/services/auto-logout.service';
-import {CtaasSetupService} from 'src/app/services/ctaas-setup.service';
-import {SnackBarService} from 'src/app/services/snack-bar.service';
-import {StakeHolderService} from 'src/app/services/stake-holder.service';
+import { Constants } from 'src/app/helpers/constants';
+import { AutoLogoutService } from 'src/app/services/auto-logout.service';
+import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
+import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { StakeHolderService } from 'src/app/services/stake-holder.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import {UserProfileService} from 'src/app/services/user-profile.service';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
     selector: 'app-onboard-wizard',
@@ -24,6 +25,8 @@ export class OnboardWizardComponent implements OnInit {
     readonly type = 'TYPE:Detailed';
     readonly notifications = 'DAILY_REPORTS';
     reportsNotificationsList: any = [];
+    emailNotifications: boolean = true;
+    toggleStatus = true;
     errorCreatingStakeholder = false;
     isDataLoading = false;
     errorMsg = '';
@@ -38,8 +41,8 @@ export class OnboardWizardComponent implements OnInit {
     CountryISO = CountryISO;
     SearchCountryField = SearchCountryField;
     PhoneNumberFormat = PhoneNumberFormat;
-    preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
-
+    preferredCountries: CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
+    sendEmail: any = ["on", "off"];
     constructor(
         private userprofileService: UserProfileService,
         private stakeholderService: StakeHolderService,
@@ -49,6 +52,7 @@ export class OnboardWizardComponent implements OnInit {
         private ctaasSetupService: CtaasSetupService,
         private snackBarService: SnackBarService,
         private subaccountService: SubAccountService,
+        private featureToggleService: FeatureToggleService,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         this.ctaasSetupId = data.ctaasSetupId;
@@ -60,8 +64,8 @@ export class OnboardWizardComponent implements OnInit {
      */
     fetchUserProfileDetails(): void {
         const subaccountUserProfileDetails = this.userprofileService.getSubaccountUserProfileDetails();
-        const {companyName, email, jobTitle, phoneNumber, name, subaccountId} = subaccountUserProfileDetails;
-        const parsedObj = {companyName, email, jobTitle, phoneNumber, name, subaccountId};
+        const { companyName, email, jobTitle, phoneNumber, name, subaccountId } = subaccountUserProfileDetails;
+        const parsedObj = { companyName, email, jobTitle, phoneNumber, name, subaccountId };
         this.userProfileForm.patchValue(parsedObj);
         this.subaccountUserProfileDetails = parsedObj;
     }
@@ -80,21 +84,29 @@ export class OnboardWizardComponent implements OnInit {
         // report form
         this.userProfileForm = this.formbuilder.group({
             name: ['', Validators.required],
-            jobTitle: ['', Validators.required],
-            companyName: ['', Validators.required],
+            jobTitle: [''],
+            companyName: [''],
             email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', Validators.required],
+            phoneNumber: [''],
         });
         // add stake holder form
         this.stakeholderForm = this.formbuilder.group({
             name: ['', Validators.required],
-            jobTitle: ['', Validators.required],
-            companyName: ['', Validators.required],
+            jobTitle: [''],
+            companyName: [''],
             subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', Validators.required],
+            phoneNumber: [''],
         });
     }
 
+    onChangeToggle(flag: boolean): void {
+        this.toggleStatus = flag;
+        if (flag) {
+            this.emailNotifications = true;
+        } else {
+            this.emailNotifications = false;
+        }
+    }
     /**
      * on accept onboarding flow
      * @param value: string
@@ -122,9 +134,18 @@ export class OnboardWizardComponent implements OnInit {
         this.configuredReports = true;
         this.isDataLoading = true;
         this.interaction = '3';
-        const userProfileObj = this.userProfileForm.value;
-        userProfileObj.phoneNumber = this.userProfileForm.get('phoneNumber').value.e164Number;
-        let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications};
+        let userProfileObj = this.userProfileForm.value;
+        if (userProfileObj.phoneNumber)
+            userProfileObj.phoneNumber = userProfileObj.phoneNumber.e164Number;
+        else
+            userProfileObj.phoneNumber = "";
+
+        if (!userProfileObj.companyName)
+            userProfileObj.companyName = "";
+
+        if (!userProfileObj.jobTitle)
+            userProfileObj.jobTitle = "";
+        let detailedUserProfileObj = { ...userProfileObj, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications };
         if (detailedUserProfileObj.notifications.length > 0) {
             detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
         }
@@ -148,17 +169,19 @@ export class OnboardWizardComponent implements OnInit {
      */
     addStakeholdersConfirmation(value: string): void {
         let subaccountDetails = this.subaccountService.getSelectedSubAccount();
-        switch (value) { 
+        switch (value) {
             case 'yes':
                 this.isDataLoading = true;
                 this.stakeholderService.getStakeholderList(subaccountDetails.id).subscribe(res => {
                     this.isDataLoading = false;
-                    if(res.stakeHolders.length < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT){
+                    const limit = this.featureToggleService.isFeatureEnabled("multitenant-demo-subaccount", subaccountDetails.id) ?
+                        Constants.STAKEHOLDERS_LIMIT_MULTITENANT_SUBACCOUNT : Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
+                    if (res.stakeHolders.length < limit) {
                         this.addAnotherStakeHolder = true;
                         this.interaction = '4';
                         this.stakeholderForm.reset();
                     } else {
-                        this.snackBarService.openSnackBar('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+                        this.snackBarService.openSnackBar('The maximum amount of users (' + limit + ') has been reached', '');
                     }
                 });
                 break;
@@ -178,16 +201,25 @@ export class OnboardWizardComponent implements OnInit {
         this.addAnotherStakeHolder = false;
         this.configuredReports = true;
         this.isDataLoading = true;
-        const requestPayload = this.stakeholderForm.value;
-        requestPayload.phoneNumber = this.stakeholderForm.get('phoneNumber').value.e164Number;
-        let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications}
+        let requestPayload = this.stakeholderForm.value;
+        if (!requestPayload.companyName)
+            requestPayload.companyName = "";
+
+        if (!requestPayload.jobTitle)
+            requestPayload.jobTitle = "";
+
+        if (requestPayload.phoneNumber)
+            requestPayload.phoneNumber = requestPayload.phoneNumber.e164Number;
+        else
+            requestPayload.phoneNumber = "";
+        let detailedRequestPayload = { ...requestPayload, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications }
         detailedRequestPayload.subaccountId = this.subaccountId;
         if (detailedRequestPayload.notifications.length > 0) {
             detailedRequestPayload.notifications = detailedRequestPayload.type + ',' + detailedRequestPayload.notifications;
         }
         this.stakeholderService.createStakeholder(detailedRequestPayload).subscribe((response: any) => {
             if (response) {
-                const {error} = response;
+                const { error } = response;
                 if (error) {
                     this.snackBarService.openSnackBar('Error Error adding stakeholder !', '');
                     this.isDataLoading = false;
@@ -242,7 +274,7 @@ export class OnboardWizardComponent implements OnInit {
      * update spotlight onboarding details
      */
     updateOnboardingStatus(): void {
-        const requestPayload = {onBoardingComplete: true, ctaasSetupId: this.ctaasSetupId};
+        const requestPayload = { onBoardingComplete: true, ctaasSetupId: this.ctaasSetupId };
         this.ctaasSetupService.updateSubaccountCtaasDetails(requestPayload).subscribe((response: any) => {
             if (response?.error) {
                 this.snackBarService.openSnackBar('Error updating the onboarding status !', '');

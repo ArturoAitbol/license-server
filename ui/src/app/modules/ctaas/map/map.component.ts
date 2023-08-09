@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 import moment from 'moment';
-import { MapServicesService } from 'src/app/services/map.service';
+import { MapService } from 'src/app/services/map.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { LineDetailComponent } from './line-detail/line-detail.component';
@@ -14,7 +14,7 @@ import { SpotlightChartsService } from 'src/app/services/spotlight-charts.servic
 import { map, startWith } from 'rxjs/operators';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
-import { BannerService } from 'src/app/services/alert-banner.service';
+import { BannerService } from 'src/app/services/banner.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -53,7 +53,7 @@ export class MapComponent implements OnInit, OnDestroy {
   });
   private onDestroy: Subject<void> = new Subject<void>();
 
-  constructor(private mapService: MapServicesService,
+  constructor(private mapService: MapService,
     private spotlightChartsService: SpotlightChartsService, 
     private fb: FormBuilder,
     private subaccountService: SubAccountService,
@@ -105,6 +105,16 @@ export class MapComponent implements OnInit, OnDestroy {
     this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL).subscribe(() => {
       this.disableFiltersWhileLoading = false;
       this.autoRefresh = true;
+      if(this.nodesArray.length > 0) {
+        this.nodesArray.forEach((node:any) => {
+          this.map.removeLayer(node);
+        });
+      }
+      if(this.linesArray.length > 0) {
+        this.linesArray.forEach((line:any) => {
+          this.map.removeLayer(line);
+        });
+      }
       this.getMapSummary();
     });
     this.initAutocompletes();
@@ -121,11 +131,11 @@ export class MapComponent implements OnInit, OnDestroy {
         let fromRegion: string; 
         let toRegion: string;
         if(this.mapData[i].from.location) {
-          fromRegion = this.mapData[i].from.location?.y + ", " + this.mapData[i].from.location?.x;
+          fromRegion = this.mapData[i].from.location.y + ", " + this.mapData[i].from.location.x;
           this.mapStartView.push([this.mapData[i].from.location.y,this.mapData[i].from.location.x]);
         }
         if(this.mapData[i].to.location) {
-          toRegion = this.mapData[i].to.location?.y + ", " + this.mapData[i].to.location?.x;
+          toRegion = this.mapData[i].to.location.y + ", " + this.mapData[i].to.location.x;
           this.mapStartView.push([this.mapData[i].to.location.y,this.mapData[i].to.location.x]);
         }
         this.getNodeData(i, fromRegion, toRegion);
@@ -145,6 +155,7 @@ export class MapComponent implements OnInit, OnDestroy {
         let newRegionObj = {
           region: this.mapData[index].from,
           totalCalls: this.mapData[index].totalCalls,
+          totalCallTimes: this.mapData[index].totalCallTimes,
           callsOriginated: {
             passed: this.mapData[index].passed,
             failed: this.mapData[index].failed,
@@ -153,7 +164,9 @@ export class MapComponent implements OnInit, OnDestroy {
             receivedJitter: JSON.parse(JSON.stringify(this.mapData[index].receivedJitter)),
             roundTripTime: JSON.parse(JSON.stringify(this.mapData[index].roundTripTime)),
             receivedPacketLoss: JSON.parse(JSON.stringify(this.mapData[index].receivedPacketLoss)),
-            sentBitrate: JSON.parse(JSON.stringify(this.mapData[index].sentBitrate))
+            sentBitrate: JSON.parse(JSON.stringify(this.mapData[index].sentBitrate)),
+            callsPassedToSameRegion: 0,
+            callsFailedToSameRegion: 0
           },
           callsTerminated: {
             passed: 0,failed: 0, total: 0, 
@@ -161,15 +174,26 @@ export class MapComponent implements OnInit, OnDestroy {
             receivedJitter: { count: 0, max: "", avg: "" }, 
             roundTripTime: { count: 0, max: "", avg: "" }, 
             receivedPacketLoss: { count: 0, max: "", avg: "" }, 
-            sentBitrate: { count: 0, avg: "" }
+            sentBitrate: { count: 0, avg: "" },
+            callsPassedToSameRegion: 0,
+            callsFailedToSameRegion: 0
           }
         }
         if (this.validMapDataMetric(index, "polqa"))
           newRegionObj.callsOriginated.polqa = JSON.parse(JSON.stringify(this.mapData[index].polqa));
+        if(fromRegion === toRegion) {
+          newRegionObj.callsOriginated.callsPassedToSameRegion += this.mapData[index].passed;
+          newRegionObj.callsOriginated.callsFailedToSameRegion += this.mapData[index].failed;
+        }
         this.nodesMap[fromRegion] = newRegionObj;
       } else {
         this.updateRegionInformation(index, fromRegion, "callsOriginated");
         this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
+        this.nodesMap[fromRegion].totalCallTimes += this.mapData[index].totalCallTimes;
+        if(fromRegion === toRegion) {
+          this.nodesMap[fromRegion].callsOriginated.callsPassedToSameRegion += this.mapData[index].passed;
+          this.nodesMap[fromRegion].callsOriginated.callsFailedToSameRegion += this.mapData[index].failed;
+        }
       }
     }
     if(toRegion) {
@@ -177,13 +201,16 @@ export class MapComponent implements OnInit, OnDestroy {
         let newRegionObj = {
           region: this.mapData[index].to,
           totalCalls: this.mapData[index].totalCalls,
+          totalCallTimes: this.mapData[index].totalCallTimes,
           callsOriginated: {
             passed: 0,failed: 0, total: 0, 
             polqa: { count: 0, min: "", avg: "" }, 
             receivedJitter: { count: 0, max: "", avg: "" },
             roundTripTime: { count: 0, max: "", avg: "" }, 
             receivedPacketLoss: { count: 0, max: "", avg: "" }, 
-            sentBitrate: { count: 0, avg: "" }
+            sentBitrate: { count: 0, avg: "" },
+            callsPassedToSameRegion: 0,
+            callsFailedToSameRegion: 0
           },
           callsTerminated: {
             passed: this.mapData[index].passed,
@@ -193,16 +220,28 @@ export class MapComponent implements OnInit, OnDestroy {
             receivedJitter: JSON.parse(JSON.stringify(this.mapData[index].receivedJitter)),
             roundTripTime: JSON.parse(JSON.stringify(this.mapData[index].roundTripTime)),
             receivedPacketLoss: JSON.parse(JSON.stringify(this.mapData[index].receivedPacketLoss)),
-            sentBitrate: JSON.parse(JSON.stringify(this.mapData[index].sentBitrate))
+            sentBitrate: JSON.parse(JSON.stringify(this.mapData[index].sentBitrate)),
+            callsPassedToSameRegion: 0,
+            callsFailedToSameRegion: 0
           }
         }
         if (this.validMapDataMetric(index, "polqa"))
           newRegionObj.callsTerminated.polqa = JSON.parse(JSON.stringify(this.mapData[index].polqa));
+        if(fromRegion === toRegion) {
+          newRegionObj.callsTerminated.callsPassedToSameRegion += this.mapData[index].passed;
+          newRegionObj.callsTerminated.callsFailedToSameRegion += this.mapData[index].failed;
+        }
         this.nodesMap[toRegion] = newRegionObj;
       } else {
         this.updateRegionInformation(index, toRegion, "callsTerminated");
-        if (fromRegion !== toRegion)
+        if (fromRegion !== toRegion){
           this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
+          this.nodesMap[toRegion].totalCallTimes += this.mapData[index].totalCallTimes;
+        }
+        else {
+          this.nodesMap[toRegion].callsTerminated.callsPassedToSameRegion += this.mapData[index].passed;
+          this.nodesMap[toRegion].callsTerminated.callsFailedToSameRegion += this.mapData[index].failed;
+        }
       }
     }
   }
@@ -275,6 +314,7 @@ export class MapComponent implements OnInit, OnDestroy {
       this.linesMap[uniqueKey].passed += this.mapData[index].passed;
       this.linesMap[uniqueKey].failed += this.mapData[index].failed;
       this.linesMap[uniqueKey].totalCalls += this.mapData[index].totalCalls;
+      this.linesMap[uniqueKey].totalCallTimes += this.mapData[index].totalCallTimes;
       if (this.validMapDataMetric(index, "polqa")) {
         this.updateMetricDataInLinesMap(index, uniqueKey, "polqa");
       }
@@ -368,7 +408,7 @@ export class MapComponent implements OnInit, OnDestroy {
         iconAnchor: [25, 29]
       })
       let latlong = new L.LatLng(this.nodesMap[key].region.location.y, this.nodesMap[key].region.location.x)
-      let node = L.marker(latlong, {icon:customIcon}).on('click', (e) =>{
+      let node = L.marker(latlong, {icon:customIcon, title:this.nodesMap[key].region.city}).on('click', (e) =>{
         this.nodeDetails(key);
       }).addTo(this.map);
       this.nodesArray.push(node)
@@ -396,7 +436,8 @@ export class MapComponent implements OnInit, OnDestroy {
       let line = new L.Polyline(coordinatesArray, {
         color: lineState,
         weight: this.LINE_WEIGHT,
-        smoothFactor: this.LINE_SMOOTH_FACTOR
+        smoothFactor: this.LINE_SMOOTH_FACTOR,
+        className: `${this.linesMap[key].from.city} ${this.linesMap[key].to.city}`
       }).on('click', (e) =>{
         this.lineDetails(key);
       }).addTo(this.map);
@@ -521,8 +562,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   private _filterRegion(value: string): { country: string; state: string; city: string; displayName: string }[] {
-    const filterValue = value.toLowerCase();
-
+    const filterValue = value;
     return this.regions.filter(option => option.displayName.toLowerCase().includes(filterValue));
   }
 
@@ -556,7 +596,7 @@ export class MapComponent implements OnInit, OnDestroy {
     let nodeData = {...this.nodesMap[key], date: this.filteredDate};
     this.dialog.open(NodeDetailComponent, {
       width: '900px',
-      height: '82vh',
+      height: '89vh',
       maxHeight: '100vh',
       autoFocus: false,
       disableClose: true,
@@ -568,7 +608,7 @@ export class MapComponent implements OnInit, OnDestroy {
     let lineData = {...this.linesMap[key], date: this.filteredDate};
     let dialogRef = this.dialog.open(LineDetailComponent, {
       width: '505px',
-      height: '82vh',
+      height: '89vh',
       maxHeight: '100vh',
       disableClose: true,
       autoFocus: false,
@@ -580,7 +620,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId).subscribe(res => {
         const ctaasSetupDetails = res['ctaasSetups'][0];
         if (ctaasSetupDetails.maintenance) {
-            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
+            this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy, "alert");
         }
     });
   }

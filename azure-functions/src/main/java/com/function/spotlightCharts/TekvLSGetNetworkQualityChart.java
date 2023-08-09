@@ -67,7 +67,9 @@ public class TekvLSGetNetworkQualityChart {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAllCustomers Azure function");   
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetNetworkQualityChart Azure function");
+		
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
@@ -82,9 +84,9 @@ public class TekvLSGetNetworkQualityChart {
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
 
 		String averageFlag = request.getQueryParameters().getOrDefault("average", "");
-		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","POLQA");
+		String callsFilter = request.getQueryParameters().getOrDefault("callsFilter","");
 
-		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
+		String metrics = request.getQueryParameters().getOrDefault("metric", Utils.DEFAULT_METRICS);
 		String metricsClause = metrics.replace(",", "', '");
 		Iterator<String> metricsArray = Arrays.stream(metrics.split(",")).iterator();
 		StringBuilder statistics = new StringBuilder();
@@ -92,32 +94,42 @@ public class TekvLSGetNetworkQualityChart {
 		while (metricsArray.hasNext()) {
 			String metric = metricsArray.next();
 			String selector = "avg";
+			String avgSelector = "avg";
+			String value = "";
+			String conditionStatement = "(case when ms.parameter_name = '%s' " +
+					"then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"%s\"";
 			switch (metric) {
 				case "Received Jitter":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" ");
-					statisticsLabels.add("Received Jitter");
+					selector = "max";
+					value = Utils.MEDIA_STATS_METRICS.JITTER.value();
 					break;
 				case "Received packet loss":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\" ");
-					statisticsLabels.add("Received packet loss");
+					selector = "max";
+					value = Utils.MEDIA_STATS_METRICS.PACKET_LOSS.value();
 					break;
 				case "Round trip time":
-					if (averageFlag.isEmpty()) selector = "max";
-					statistics.append(selector + "(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Round trip time\" ");
-					statisticsLabels.add("Round trip time");
+					selector = "max";
+					value = Utils.MEDIA_STATS_METRICS.ROUND_TRIP_TIME.value();
 					break;
 				case "Sent bitrate":
 					// here the average is always the most representative value
-					statistics.append(selector + "(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
-					statisticsLabels.add("Sent bitrate");
+					value = Utils.MEDIA_STATS_METRICS.BITRATE.value();
 					break;
 				case "POLQA":
-					if (averageFlag.isEmpty()) selector = "min";
-					statistics.append(selector + "(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as \"POLQA\" ");
-					statisticsLabels.add("POLQA");
+					selector = "min";
+					value = Utils.MEDIA_STATS_METRICS.POLQA.value();
+					conditionStatement = "(case when ms.parameter_name = '%s' then CAST(ms.parameter_value AS numeric) end) as \"%s\"";
 					break;
+			}
+			if(!value.isEmpty()){
+				if (!averageFlag.isEmpty() && !avgSelector.equals(selector)){
+					String columnName = avgSelector+ " " + value;
+					statistics.append(avgSelector).append(String.format(conditionStatement,value,columnName));
+					statistics.append(",");
+					statisticsLabels.add(columnName);
+				}
+				statistics.append(selector).append(String.format(conditionStatement,value,value));
+				statisticsLabels.add(value);
 			}
 			if (metricsArray.hasNext()) {
 				 statistics.append(",");
@@ -125,7 +137,7 @@ public class TekvLSGetNetworkQualityChart {
 		}
 
 		String query = "SELECT TO_CHAR(sr.startdate,'" + groupByClause + "') as date_hour, " + statistics +
-				"FROM media_stats ms " +
+				" FROM media_stats ms " +
 				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
 				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
 				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
@@ -189,6 +201,7 @@ public class TekvLSGetNetworkQualityChart {
 					if (!rs.next()) {
 						context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
 						json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+						context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualityChart Azure function with error");
 						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 					}
 				}
@@ -204,6 +217,7 @@ public class TekvLSGetNetworkQualityChart {
 			if (tapURL == null || tapURL.isEmpty()) {
 				context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
 				json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
+				context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualityChart Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			context.getLogger().info("TAP URL for data query: " + tapURL);
@@ -283,18 +297,21 @@ public class TekvLSGetNetworkQualityChart {
 
 			json.put("series", series);
 			json.put("categories", datesArray);
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetNetworkQualityChart Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", "SQL Exception: " + e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualityChart Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetNetworkQualityChart Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

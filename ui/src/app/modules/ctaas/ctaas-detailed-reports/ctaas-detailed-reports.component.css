@@ -141,7 +141,7 @@ mat-card {
     right: 5%;
   }
   .chart-max-size{
-    width: 20% !important;
+    width: 40% !important;
   }
 }
 
@@ -153,13 +153,17 @@ mat-card {
     width: 100% !important;
   }
   .chart-max-size{
-    width: 20% !important;
+    width: 40% !important;
   }
   .mat-expansion-panel-header {
     padding: 0px;
   }
 }
-
+@media (max-width: 900px){
+  .chart-max-size{
+    width: 35% !important;
+  }
+}
 mat-panel-title {
   white-space: wrap;
   flex-shrink: 0;
@@ -235,4 +239,18 @@ mat-panel-title {
 
 .average-col{
   white-space: wrap;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #6E76B4;
+}
+
+.hint mat-icon {
+  margin-right: 5px;
+  /* display: flex;
+  align-items: center; 
+  justify-content: center; */
 }

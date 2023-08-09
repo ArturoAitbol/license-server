@@ -44,7 +44,7 @@
             <div class="col-12 col-sm-6">
                 <mat-form-field class="w-100" appearance="outline">
                     <mat-label id="name-label"> Name</mat-label>
-                    <input id="name" type="text" formControlName="name" matInput aria-label="Name">
+                    <input required id="name" type="text" formControlName="name" matInput aria-label="Name">
                 </mat-form-field>
             </div>
             <div class="col-12 col-sm-6">
@@ -67,8 +67,9 @@
                 [phoneValidation]="true"
                 [separateDialCode]="false"
                 [numberFormat]="PhoneNumberFormat.International"
+                [enablePlaceholder]="true"
+                [customPlaceholder]="'Phone Number'"
                 [inputId]="'phone-number'"
-                required
                 formControlName="phoneNumber"
             >
             </ngx-intl-tel-input>
@@ -76,14 +77,29 @@
             <div class="col-12 col-sm-6">
                 <mat-form-field class="w-100" appearance="outline">
                     <mat-label id="job-title-label">Job Title</mat-label>
-                    <input  id="jobTitle" type="text" formControlName="jobTitle" matInput aria-label="Job Title">
+                    <input id="jobTitle" type="text" formControlName="jobTitle" matInput aria-label="Job Title">
                 </mat-form-field>
             </div>
             <div class="col-12 col-sm-6">
                 <mat-form-field class="w-100" appearance="outline">
                     <mat-label id="email-label">Email</mat-label>
-                    <input id="email" type="email" formControlName="email" matInput aria-label="Email">
+                    <input required id="email" type="email" formControlName="email" matInput aria-label="Email">
                 </mat-form-field>
+            </div>
+            <div *lcCheckAccessFor="'emailNotifications'">
+                <h2 id="subaccount-services" class="mt-3 mb-0 checkbox-title">Email Notifications</h2>
+                <div class="row justify-content-center" style="margin-top: 3%;">
+                    <div class="col-auto">
+                        <span class="fw-500">Off</span>
+                        &nbsp;
+                        &nbsp;
+                        <mat-slide-toggle id="mat-toggle" [color]="'primary'" [checked]="emailNotifications" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
+                        &nbsp;
+                        <span class="fw-500 p-2">On</span>
+                        &nbsp;
+                    </div>
+                </div>
+                <br>
             </div>
         </div>
         <br>
@@ -128,7 +144,7 @@
                 <div class="col-12 col-sm-6">
                     <mat-form-field class="w-100" appearance="outline">
                         <mat-label id="name-label"> Name</mat-label>
-                        <input id="name" type="text" formControlName="name" matInput value="" aria-label="Name">
+                        <input required id="name" type="text" formControlName="name" matInput value="" aria-label="Name">
                     </mat-form-field>
                 </div>
                 <div class="col-12 col-sm-6">
@@ -152,7 +168,8 @@
                         [separateDialCode]="false"
                         [numberFormat]="PhoneNumberFormat.International"
                         [inputId]="'phoneNumber'"
-                        required
+                        [enablePlaceholder]="true"
+                        [customPlaceholder]="'Phone Number'"
                         formControlName="phoneNumber"
                     >
                     </ngx-intl-tel-input>
@@ -166,8 +183,23 @@
                 <div class="col-12 col-sm-6">
                     <mat-form-field class="w-100" appearance="outline">
                         <mat-label id="email-label">Email</mat-label>
-                        <input id="email" type="email" formControlName="subaccountAdminEmail" matInput aria-label="Email">
+                        <input required id="email" type="email" formControlName="subaccountAdminEmail" matInput aria-label="Email">
                     </mat-form-field>
+                </div>
+                <div *lcCheckAccessFor="'emailNotifications'">
+                    <h2 id="subaccount-services" class="mt-3 mb-0 checkbox-title">Email Notifications</h2>
+                    <div class="row justify-content-center" style="margin-top: 3%;">
+                        <div class="col-auto"> 
+                            <span class="fw-500" >Off</span>
+                            &nbsp;
+                            &nbsp;
+                            <mat-slide-toggle id="mat-toggle" [color]="'primary'" [checked]="emailNotifications" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
+                            &nbsp;
+                            <span class="fw-500 p-2" >On</span>
+                            &nbsp;
+                        </div>
+                    </div>
+                    <br>
                 </div>
             </div>
             <br>

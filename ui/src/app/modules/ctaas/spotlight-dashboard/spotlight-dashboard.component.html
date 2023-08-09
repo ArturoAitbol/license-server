@@ -1,10 +1,10 @@
-<app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
-<mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
-<div class="container-fluid">
-    <div *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
+<app-banner></app-banner>
+<mat-progress-bar *ngIf="autoRefresh && tapURLFlag" mode="indeterminate"></mat-progress-bar>
+<div class="container-fluid" *ngIf="!maintenanceModeEnabled && showChartsFlag && tapURLFlag">
+    <div id="note-info" *ngIf="isHistoricalView" class="row mt-3 justify-content-center">
         <div class="card col-8">
             <div class="card-body">
-                <span class="light-text">{{note.openDate.replace(" ", "T") | date:"medium"}}</span>
+                <span class="light-text" id="note-open-date">{{note.openDate.replace(" ", "T") | date:"medium"}}</span>
                 <br>
                 <h3 class="mb-0 note-content">
                     {{note.content}}
@@ -22,12 +22,6 @@
                 <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
-        <div *lcFeatureToggle="'powerbiRefreshFeature';subaccountId:getSubaccountId()" class="col-auto ms-auto timer">
-            <p style="display: inline-block;">Elapsed Time: {{ seconds }}s {{ milliseconds | number: '3.0' }}ms&emsp;</p>
-            <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="reloadCharts()">
-                <mat-icon>refresh</mat-icon>
-            </button>
-        </div>
     </div>
     <ng-container *ngIf="showNewNoteBtn && !isloading">
         <ng-container *lcCheckAccessFor="'addSpotlightNote'">
@@ -41,25 +35,13 @@
             </div>
         </ng-container>
     </ng-container>
-    <div class="lights-container" *ngIf="isloading">
-        <div>
-            <div class="spotlight"></div>
-        </div>
-        <div>
-            <div class="mirror-spotlight"></div>
-        </div>
-    </div>
-    <figure *ngIf="isloading" class="reportLoading">
-        <img class="spinner" height="80" width="80" src="assets/images/spinner.gif"
-        alt="loading spinner gif">
-        <figcaption class= "loadingMessage">Please wait while we prepare your UCaaS Continuous Testing Dashboard.</figcaption>
-    </figure>
+    <app-loading-spinner [visible]="isloading" [message]="messageSpinner"></app-loading-spinner>
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }}
+                <h1 class="text-center" title="report-title">Daily Report | {{ selectedDate.format('MM/DD/YYYY') }} (UTC)
                 </h1>
-            </div>
+            </div>            
             <div class="date-picker-form">
                 <form [formGroup]="filters">
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
@@ -73,7 +55,7 @@
                                     <mat-label>Date</mat-label>
                                     <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
                                     <mat-hint>MM/DD/YYYY</mat-hint>
-                                    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                                    <mat-datepicker-toggle matSuffix [for]="dp" title="date-label"></mat-datepicker-toggle>
                                     <mat-datepicker #dp></mat-datepicker>
                                 </mat-form-field>
                             </div>
@@ -117,7 +99,7 @@
                         <mat-chip-list aria-label="Region selection">
                             <mat-chip
                               *ngFor="let region of preselectedRegions"
-                              (removed)="removeRegion(region)">
+                              (removed)="removeRegion(region)" title="mat-chip">
                               {{region.displayName}}
                               <button matChipRemove>
                                 <mat-icon>cancel</mat-icon>
@@ -172,25 +154,24 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
+                            <button title="Voice Quality Detailed Report" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToPOLQACallsDetailedTable()">
                                 View Detailed Report
                             </button>
                         </div>
                         <div class="card-footer" id="daily-voice-quality-footer">
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1"> Number of call streams: {{ vq.streams }} | 
-                                    Number of calls: {{ vq.calls }} </label>
-                                    <!-- Number of calls: {{ vq.calls }} | 
+                                <label class="ps-1"> Number of call streams: {{ vq.streams }} |                                     
+                                    Number of calls: {{ vq.calls }} | 
                                     P2P: {{vq.p2p}} | 
                                     On-net: {{vq.onNet}} | 
-                                    Off-net: {{vq.offNet}}</label> -->
+                                    Off-net: {{vq.offNet}}</label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card text-center mt-2 full-col">
+                    <div class="card text-center mt-2 full-col" id="daily-failed-calls">
                         <div class="card-header">
                             <h1>Failed Calls <mat-icon matTooltip = "Represents the calls failed due to routing, media routing, media quality or client issues.">info_outline</mat-icon></h1>
                         </div>
@@ -201,6 +182,9 @@
                                     <label class="ps-2">Total Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.total }}</p>
+                                    <button title="Failed Calls Detailed Report" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">
+                                        View Detailed Report
+                                    </button>
                                 </div>
                                 <div class="vr p-0" style="color: black"></div>
                                 <div class="col-5 red-label">
@@ -208,10 +192,14 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.failed }}</p>
+                                    <button title="Failed Calls" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED', true)">
+                                        View Detailed Report
+                                    </button>
                                 </div>
                             </div>
+                            <hr>
                             <div class="row">
-                                <div class="col top-spacing-1" style="transform: scale(1.4);">
+                                <div class="col top-spacing-1">
                                     <apx-chart
                                             [series]="failedCallsChartOptions.series"
                                             [chart]="failedCallsChartOptions.chart"
@@ -225,10 +213,6 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <br>
-                            <button class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED')">
-                                View Detailed Report
-                            </button>
                         </div>
                         <div class="card-footer">
                             <div style="visibility: hidden">
@@ -263,7 +247,7 @@
     <ng-container *ngIf="selectedPeriod === 'weekly'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span></h1>
+                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MM/DD/YYYY')}} – {{selectedRange.end.format('MM/DD/YYYY')}}</span> (UTC)</h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="weeklyFilters">
@@ -433,12 +417,11 @@
                         <div class="card-footer">
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1">Number of call streams: {{ weeklyVQ.numberStreams }} | 
-                                    Number of calls: {{ weeklyVQ.numberCalls }} </label>
-                                    <!-- Number of calls: {{ weeklyVQ.numberCalls }} | 
+                                <label class="ps-1">Number of call streams: {{ weeklyVQ.numberStreams }} |                                     
+                                    Number of calls: {{ weeklyVQ.numberCalls }} | 
                                     P2P: {{weeklyVQ.p2p}} | 
                                     On-net: {{weeklyVQ.onNet}} | 
-                                    Off-net: {{weeklyVQ.offNet}}</label> -->
+                                    Off-net: {{weeklyVQ.offNet}}</label>
                             </div>
                         </div>
                     </div>
@@ -464,6 +447,9 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ heatMapCallsSummary.failed }}</p>
+                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED', true)">
+                                        View Detailed Report
+                                    </button>
                                 </div>
                             </div>
                             <hr>
@@ -508,4 +494,17 @@
         </ng-container>
         <br>
     </ng-container>
+</div>
+<div *ngIf="tapURLFlag === false">
+    <div class='text-container'>
+        <mat-card class="missing-tap-card">
+            <mat-card-header>
+                <mat-card-title>Missing TAP URL</mat-card-title>
+                <mat-card-subtitle ></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p class='text-content1'>The TAP instance associated with this customer wasn't configured, please contact your service provider</p>
+            </mat-card-content>
+            </mat-card>
+    </div>
 </div>

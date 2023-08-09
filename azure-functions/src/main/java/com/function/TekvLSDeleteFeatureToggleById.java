@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 
 public class TekvLSDeleteFeatureToggleById {
     /**
@@ -50,7 +49,8 @@ public class TekvLSDeleteFeatureToggleById {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteFeatureToggleById Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSDeleteFeatureToggleById Azure function");
 
         String sql = "DELETE FROM feature_toggle WHERE id = ?::uuid;";
 
@@ -67,21 +67,23 @@ public class TekvLSDeleteFeatureToggleById {
             statement.setString(1, id);
 
             // Delete feature toggle
-            String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Feature Toggle deleted successfully.");
 
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteFeatureToggleById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteFeatureToggleById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteFeatureToggleById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

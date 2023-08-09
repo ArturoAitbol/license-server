@@ -48,7 +48,8 @@ export class ConsumptionMatrixComponent implements OnInit {
       {name: 'BYOC', dataKey: 'BYOC', position: 'left'},
       {name: 'Application', dataKey: 'Application', position: 'left'},
       {name: 'Headset', dataKey: 'Headset', position: 'left'},
-      {name: 'Video Collab Device', dataKey: 'Video Collab Device', position: 'left'},
+      {name: 'Video Collab Device (ROW)', dataKey: 'Video Collab Device (ROW)', position: 'left'},
+      {name: 'Video Collab Device (US)', dataKey: 'Video Collab Device (US)', position: 'left'},
     ];
     this.displayedColumns = this.tableColumns.map(tableColumn => tableColumn.name);
     this.displayedColumns.unshift("callingPlatform");

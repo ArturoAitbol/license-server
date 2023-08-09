@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CtaasRoutingModule } from './ctaas-routing.module';
-import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
@@ -18,8 +17,7 @@ import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirm
 import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/modify-test-suite.component';
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
-import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
-import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
+import { DetailedReportsComponent } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-consolidated-report/search-consolidated-report.component';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
@@ -31,11 +29,13 @@ import { CallbackTimerComponent } from './callback/callback-timer/callback-timer
 import { NodeDetailComponent } from './map/node-detail/node-detail.component';
 import { LineDetailComponent } from './map/line-detail/line-detail.component';
 import { MapComponent } from './map/map.component';
+import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polqa-graphs/polqa-graphs.component';
+import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
+import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-spinner.component';
 
 
 @NgModule({
   declarations: [
-    CtaasDashboardComponent,
     OnboardWizardComponent,
     CtaasTestSuitesComponent,
     CtaasStakeholderComponent,
@@ -48,8 +48,7 @@ import { MapComponent } from './map/map.component';
     BannerComponent,
     CtaasNotesComponent,
     AddNotesComponent,
-    CtaasHistoricalDashboardComponent,
-    DetailedReportsCompoment,
+    DetailedReportsComponent,
     CtaasTestReportsComponent,
     SearchConsolidatedReportComponent,
     SpotlightDashboardComponent,
@@ -59,6 +58,9 @@ import { MapComponent } from './map/map.component';
     CallbackTimerComponent,
     NodeDetailComponent,
     LineDetailComponent,
+    PolqaGraphsComponent,
+    NetworkTrendsComponent,
+    LoadingSpinnerComponent,
   ],
   imports: [
     CommonModule,
