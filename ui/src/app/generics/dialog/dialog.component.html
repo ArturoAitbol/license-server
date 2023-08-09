@@ -1,0 +1,18 @@
+<div class="custom-dialog">
+  <button mat-icon-button (click)="onCloseDialog()" class="close-button">
+    <mat-icon>close</mat-icon>
+  </button>
+  <h2 mat-dialog-title class="title">{{ data.title }}</h2>
+  <p class="description">{{ data.description }}</p>
+  <pre class="subtitle"[innerHTML]="data.subtitle_1"></pre>
+  <h3 class="description">{{ data.description_1 }}</h3>
+  <p class="subtitle">{{ data.subtitle_2 }}</p>
+  <h3 class="description">{{ data.description_2 }}</h3>
+  <p class="subtitle">{{ data.subtitle_3 }}</p>
+  <h3 class="description">{{ data.description_3 }}</h3>
+  <p class="subtitle">{{ data.subtitle_4 }}</p>
+  <h3 class="description">{{ data.description_4 }}</h3>
+  <p class="subtitle">{{ data.subtitle_5 }}</p>
+  <h3 class="description">{{ data.description_5 }}</h3>
+
+</div>

@@ -113,10 +113,15 @@
                 </mat-list>
             </mat-menu>
             <!-- user name -->
-            <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
-                aria-label="Example icon-button with a menu">
-                {{getUserName()}} <mat-icon>arrow_drop_down</mat-icon>
-            </button>
+            <div class="info-containeer">
+                <button mat-icon-button (click)="openDialog()">
+                    <mat-icon style = "color: white;">help_outline</mat-icon>
+                </button>
+                <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
+                    aria-label="Example icon-button with a menu">
+                    {{getUserName()}} <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+            </div>
             <!-- user settings menu -->
             <mat-menu #menu="matMenu">
                 <button mat-menu-item (click)="about()" id="about-button" hidden>

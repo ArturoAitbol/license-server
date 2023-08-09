@@ -15,6 +15,7 @@ import { map, startWith } from 'rxjs/operators';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { BannerService } from 'src/app/services/banner.service';
+import { DialogService } from 'src/app/services/dialog.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -60,7 +61,8 @@ export class MapComponent implements OnInit, OnDestroy {
     private ctaasSetupService: CtaasSetupService,
     private bannerService: BannerService,
     public dialog: MatDialog, 
-    private snackBarService: SnackBarService ) { }
+    private snackBarService: SnackBarService,
+    private dialogService: DialogService ) { }
 
   readonly GOOD_COLOR: string = "#273176";
   readonly MID_COLOR: string = "#EC7C56";
@@ -119,6 +121,7 @@ export class MapComponent implements OnInit, OnDestroy {
     });
     this.initAutocompletes();
     this.maxDate = moment.utc().format("YYYY-MM-DD[T]HH:mm:ss");
+    this.sendHelpDialogValues();
   }
 
   regionsHasChanged():boolean{
@@ -634,5 +637,26 @@ export class MapComponent implements OnInit, OnDestroy {
       this.filtersSubscription.unsubscribe();
     this.onDestroy.next();
     this.onDestroy.complete();
+  }
+  sendHelpDialogValues(): void {
+    const title = 'Map Help';
+    const description = 'Map/Route path offers an overview of all regions and cross-calling between them. It also serves as a reference point to identify if any regions is experiencing issues with calls.';
+    const subtitle_1 = '<strong>Note</strong> <br> <br>•	To view the map of call routes for a specific date, choose the date from the radio button and click "Apply". <br> <br>•	To view the map of call routes for a particular region, select the relevant City, State, or Country from the dropdown and click "Apply"';
+    const description_1 = '';
+    const subtitle_2 = '';
+    const description_2 = '•	To view the map of call routes for a particular region, select the relevant City, State, or Country from the dropdown and click "Apply"';
+    const subtitle_3 = '';
+    const description_3 = 'Route region: To view information for a particular route region, click the region on the map. For detailed report, click "Go to Dashboard" at the bottom.';
+    const subtitle_4 = '';
+    const description_4 = 'Route line: To view call information between two connecting regions click the call route line. Click "Close" to close the dialog box.';
+    const subtitle_5 = '';
+    const description_5 = '';
+    this.dialogService.updateDialogData(title, description, 
+      subtitle_1, description_1,
+      subtitle_2, description_2,
+      subtitle_3, description_3,
+      subtitle_4, description_4,
+      subtitle_5, description_5
+    );
   }
 }

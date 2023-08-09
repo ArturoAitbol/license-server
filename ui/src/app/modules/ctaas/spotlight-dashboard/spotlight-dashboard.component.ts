@@ -30,6 +30,7 @@ import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { BannerService } from 'src/app/services/banner.service';
 import { MsalService } from '@azure/msal-angular';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
+import { DialogService } from 'src/app/services/dialog.service';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -156,7 +157,8 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     private ctaasSetupService: CtaasSetupService,
     private bannerService: BannerService,
     private fb: FormBuilder,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private dialogService: DialogService) {
     this.vqChartOptions = defaultVqChartOptions;
     this.vqChartOptions.tooltip.custom = ({ series, seriesIndex, dataPointIndex, w }) => {
       return `
@@ -260,6 +262,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     });
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
+    this.sendHelpDialogValues();
   }
 
   /**
@@ -854,5 +857,27 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.refreshIntervalSubscription.unsubscribe();
     this.onDestroy.next();
     this.onDestroy.complete();
+  }
+
+  sendHelpDialogValues(): void {
+    const title = 'Dashboard Help';
+    const description = 'A dashboard is a visual representation of data that provides an overview of key information and metrics in a concise and accessible manner.';
+    const subtitle_1 = 'Number of calls: ';
+    const description_1 = 'Number of calls refers to the total count of call volume made or received by someone or a group of people during a specific period of time.';
+    const subtitle_2 = 'P2P';
+    const description_2 = 'Refer to Peer-Peer call wherein the two users have a direct call within the same voice server.';
+    const subtitle_3 = 'On-net';
+    const description_3 = 'On-net calling refers to phone calls that are routed between the same service provider network.';
+    const subtitle_4 = 'Off-net';
+    const description_4 = 'Off-net calling refers to phone calls that are routed between different service provider network.';
+    const subtitle_5 = 'View detailed report';
+    const description_5 = 'Provides in-depth summary of data for a better understanding and analysis.';
+    this.dialogService.updateDialogData(title, description, 
+      subtitle_1, description_1,
+      subtitle_2, description_2,
+      subtitle_3, description_3,
+      subtitle_4, description_4,
+      subtitle_5, description_5
+    );
   }
 }

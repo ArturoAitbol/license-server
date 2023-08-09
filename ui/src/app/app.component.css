@@ -192,3 +192,9 @@ app-banner-outlet {
   position: fixed !important;
 
 }
+
+.info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

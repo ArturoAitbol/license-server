@@ -26,6 +26,7 @@ import { CallbackService } from './services/callback.service';
 import { SnackBarService } from './services/snack-bar.service';
 import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 import { CallbackTimerComponent } from './modules/ctaas/callback/callback-timer/callback-timer.component';
+import { DialogComponent } from './generics/dialog/dialog.component';  
 
 
 @Component({
@@ -193,7 +194,14 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly FEATURE_TOGGLES = '/feature-toggles';
 
     private _mobileQueryListener: () => void;
-
+    
+    dialogTitle: string;
+    description: string;
+    subtitle_1: string; description_1: string;
+    subtitle_2: string; description_2: string;
+    subtitle_3: string; description_3: string;
+    subtitle_4: string; description_4: string;
+    subtitle_5: string; description_5: string;
     constructor(
         private router: Router,
         private msalService: MsalService,
@@ -614,4 +622,26 @@ export class AppComponent implements OnInit, OnDestroy {
         this._destroying$.next(undefined);
         this._destroying$.complete();
     }
+    openDialog(): void {
+        const dialogReceived = this.dialogService.dialogData$.subscribe(data => {
+            this.dialogTitle = data.title;
+            this.description = data.description;
+            this.subtitle_1 = data.subtitle_1; this.description_1 = data.description_1;
+            this.subtitle_2 = data.subtitle_2; this.description_2 = data.description_2;
+            this.subtitle_3 = data.subtitle_3; this.description_3 = data.description_3;
+            this.subtitle_4 = data.subtitle_4; this.description_4 = data.description_4;
+            this.subtitle_5 = data.subtitle_5; this.description_5 = data.description_5;
+          });
+        const dialogRef = this.dialog.open(DialogComponent, {
+          data: {
+            title: this.dialogTitle,
+            description: this.description,
+            subtitle_1: this.subtitle_1, description_1: this.description_1,
+            subtitle_2: this.subtitle_2, description_2: this.description_2,
+            subtitle_3: this.subtitle_3, description_3: this.description_3,
+            subtitle_4: this.subtitle_4, description_4: this.description_4,
+            subtitle_5: this.subtitle_5, description_5: this.description_5,
+        },
+        });
+      }
 }

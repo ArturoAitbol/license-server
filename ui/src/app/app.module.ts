@@ -42,6 +42,7 @@ import { BannerComponent } from './generics/banner/banner.component';
 import { AcceptComponent } from './dialogs/accept/accept.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OptionalComponent } from './dialogs/optional/optional.component';
+import { DialogComponent } from './generics/dialog/dialog.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -68,6 +69,7 @@ import { OptionalComponent } from './dialogs/optional/optional.component';
         BannerComponent,
         AcceptComponent,
         OptionalComponent,
+        DialogComponent,
     ],
     imports: [
         AppRoutingModule,
