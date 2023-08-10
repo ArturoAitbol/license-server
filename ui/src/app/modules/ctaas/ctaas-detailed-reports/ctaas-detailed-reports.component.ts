@@ -422,14 +422,14 @@ export class DetailedReportsComponent implements OnInit {
     
   private insideTheScope(testResult: any) {
     testResult.filterByAvg = false;
-    if (Number(this.filterByAvg) == 1 && (testResult.fromPolqaAvg >= 4 || testResult.toPolqaAvg >= 4) && (testResult.fromPolqaAvg <= 5 || testResult.toPolqaAvg <= 5))
+    if (Number(this.filterByAvg) == 1 && (Number(testResult.fromPolqaAvg) >= 4 || Number(testResult.toPolqaAvg) >= 4) && (Number(testResult.fromPolqaAvg) <= 5 || Number(testResult.toPolqaAvg) <= 5))
       testResult.filterByAvg = true;
-    if (Number(this.filterByAvg) == 2 && (testResult.fromPolqaAvg >= 3 || testResult.toPolqaAvg >= 3) && (testResult.fromPolqaAvg < 4 || testResult.toPolqaAvg < 4))
+    if (Number(this.filterByAvg) == 2 && (Number(testResult.fromPolqaAvg) >= 3 || Number(testResult.toPolqaAvg) >= 3) && (Number(testResult.fromPolqaAvg) < 4 || Number(testResult.toPolqaAvg) < 4))
       testResult.filterByAvg = true;
-    if (Number(this.filterByAvg) == 3 && (testResult.fromPolqaAvg >= 2 || testResult.toPolqaAvg >= 2) && (testResult.fromPolqaAvg < 3 || testResult.toPolqaAvg < 3))
+    if (Number(this.filterByAvg) == 3 && (Number(testResult.fromPolqaAvg) >= 2 || Number(testResult.toPolqaAvg) >= 2) && (Number(testResult.fromPolqaAvg) < 3 || Number(testResult.toPolqaAvg) < 3))
       testResult.filterByAvg = true;
-    if (Number(this.filterByAvg) == 4 && (testResult.fromPolqaAvg >= 0 || testResult.toPolqaAvg >= 0) && (testResult.fromPolqaAvg) < 2 || testResult.toPolqaAvg < 2)
-    testResult.filterByAvg = true;  
+    if (Number(this.filterByAvg) == 4 && (Number(testResult.fromPolqaAvg) >= 0 || Number(testResult.toPolqaAvg) >= 0) && (Number(testResult.fromPolqaAvg) < 2 || Number(testResult.toPolqaAvg) < 2))
+      testResult.filterByAvg = true;
   }
 
   getSelectedFromTimeStamp(event) {
