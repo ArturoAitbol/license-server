@@ -25,7 +25,6 @@ import { NoteService } from "../../../services/notes.service";
 import { Constants } from 'src/app/helpers/constants';
 import { AddNotesComponent } from "../ctaas-notes/add-notes/add-notes.component";
 import { MatDialog } from "@angular/material/dialog";
-import { FeatureToggleService } from "../../../services/feature-toggle.service";
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { BannerService } from 'src/app/services/banner.service';
 import { MsalService } from '@azure/msal-angular';
@@ -152,7 +151,6 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     private spotlightChartsService: SpotlightChartsService,
     private noteService: NoteService,
     private route: ActivatedRoute,
-    private ftService: FeatureToggleService,
     private ctaasSetupService: CtaasSetupService,
     private bannerService: BannerService,
     private fb: FormBuilder,
@@ -699,7 +697,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     if (this.disableFiltersWhileLoading) {
       this.weeklyFilters.disable();
       this.filters.disable();
-      this.networkQuality.filters.disable();
+      this.networkQuality?.filters.disable();
     }
     const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
@@ -732,7 +730,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
       this.networkQuality.users = res.users;
       this.networkQuality.initAutocompletes();
-      this.networkQuality.filters.enable();
+      this.networkQuality?.filters.enable();
     })
   }
 
@@ -740,7 +738,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     if (this.disableFiltersWhileLoading) {
       this.filters.disable();
       this.weeklyFilters.disable();
-      this.networkQuality.filters.disable();
+      this.networkQuality?.filters.disable();
     }
     const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
@@ -759,7 +757,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.weeklyFilters.enable();
 
       this.networkQuality.initAutocompletes();
-      this.networkQuality.filters.enable();
+      this.networkQuality?.filters.enable();
     })
   }
 
