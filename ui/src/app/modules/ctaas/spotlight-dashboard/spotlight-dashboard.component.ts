@@ -190,6 +190,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.dialogService.showHelpButton = true;
     this.closedBanner = localStorage.getItem("closedBanner") ? JSON.parse(localStorage.getItem("closedBanner")) : false;
     let accountId = this.msalService.instance.getActiveAccount().localAccountId;
     this.hiddenBanner = localStorage.getItem(accountId + "-hiddenBanner") ? JSON.parse(localStorage.getItem(accountId + "-hiddenBanner")) : false;
@@ -857,27 +858,76 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.refreshIntervalSubscription.unsubscribe();
     this.onDestroy.next();
     this.onDestroy.complete();
+    this.dialogService.showHelpButton = false;
   }
 
   sendHelpDialogValues(): void {
-    const title = 'Dashboard Help';
-    const description = 'A dashboard is a visual representation of data that provides an overview of key information and metrics in a concise and accessible manner.';
-    const subtitle_1 = 'Number of calls: ';
-    const description_1 = 'Number of calls refers to the total count of call volume made or received by someone or a group of people during a specific period of time.';
-    const subtitle_2 = 'P2P';
-    const description_2 = 'Refer to Peer-Peer call wherein the two users have a direct call within the same voice server.';
-    const subtitle_3 = 'On-net';
-    const description_3 = 'On-net calling refers to phone calls that are routed between the same service provider network.';
-    const subtitle_4 = 'Off-net';
-    const description_4 = 'Off-net calling refers to phone calls that are routed between different service provider network.';
-    const subtitle_5 = 'View detailed report';
-    const description_5 = 'Provides in-depth summary of data for a better understanding and analysis.';
-    this.dialogService.updateDialogData(title, description, 
-      subtitle_1, description_1,
-      subtitle_2, description_2,
-      subtitle_3, description_3,
-      subtitle_4, description_4,
-      subtitle_5, description_5
-    );
+    const data = {
+      title: 'Dashboard Help',
+      summary: 'A dashboard is a visual representation of data that provides an overview of key information and metrics in a concise and accessible manner.',
+      separator_1 : "Daily",
+      subtitle_1: 'Number of calls:',
+      description_1: 'Number of calls refers to the total count of call volume made or received by someone or a group of people during a specific period of time.',
+      subtitle_2: 'P2P:',
+      description_2: 'Refer to Peer-Peer call wherein the two users have a direct call within the same voice server.',
+      subtitle_3: 'On-net:',
+      description_3: 'On-net calling refers to phone calls that are routed between the same service provider network.',
+      subtitle_4: 'Off-net:',
+      description_4: 'Off-net calling refers to phone calls that are routed between different service provider network.',
+      subtitle_5: 'View detailed report:',
+      description_5: 'Provides in-depth summary of data for a better understanding and analysis.',
+      subtitle_6: 'Network Quality',
+      subtitle_7: 'Selected value:',
+      description_6: "•	Worst: Displays the results for the user who has experienced the most significant drop in network performance for the specific date.",
+      description_7: "•	Average: Displays the average of the network parameters across all users.",
+      description_8: "•	Calls with Network Stats: Refers to calls that come with detailed statistics about network performance.",
+      subtitle_8: 'Jitter:',
+      description_9: 'Jitter is the variation in packet delay during the transmission of data over a network.',
+      subtitle_9: 'Packet loss:',
+      description_10: "Packet Loss is when data packets go missing or get lost while traveling through a network, causing problems in communication.",
+      subtitle_10: 'Round Trip Time (RTT):',
+      description_11: 'Time taken for a data packet to travel from the source to the destination and back again to the source in a network communication.',
+      subtitle_11: 'Max. Packet Loss:',
+      description_12: "Max. Packet Loss is the highest rate of missing data packets during network communication.",
+      subtitle_12: 'Max. Jitter (ms):',
+      description_13: "Max. Jitter (ms) is the highest variation in packet delay, measured in milliseconds, during network communication.",
+      subtitle_13: 'Max. Round Trip Time (ms):',
+      description_14: "Max. Round Trip Time (ms) is the highest time taken for a data packet to travel from the source to the destination and back in a network communication.",
+      subtitle_14: 'Min. POLQA:',
+      description_15: 'Min. POLQA is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
+      subtitle_15: 'Avg. Sent Bitrate(kbps):',
+      description_16: 'Avg. Sent Bitrate is the average rate at which data bits are transmitted from the source during a communication session.',
+      subtitle_16: 'Select metric:',
+      description_17: '•	Max. Jitter (ms) vs Min. POLQA',
+      description_18: '•	Max. Packet Loss (%) vs Min. POLQA',
+      description_19: '•	Max. Round Trip Time (ms) vs Min. POLQA',
+      description_20: "The graph for Max.<selected metric> versus Min. POLQA appears when select metric field is selected. Hovering over the data points on the graph provides detailed insights into the metric's values corresponding to each hour. Clicking on the data points, redirects to a new page that presents the results in a more comprehensive and detailed format.",
+      subtitle_17: 'Network Trends:',
+      description_21: "Provides visibility into the network's overall condition through detailed reports on Received Packet Loss, Round Trip Time, Jitter, and Sent Bitrate per hour. Hovering over the data points on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance.",
+      subtitle_18: 'Feature Functionality',
+      description_22: 'Graph displays total call by region, comparing number of calls vs. Success rate, Pass, or Fail for the latest week. Hovering over the data points on the graph, gives the overall Success percentage.',
+      subtitle_19: 'Calling Reliability',
+      description_23: "Shows call routing status in selected regions, with number of calls vs. Success rate or Pass/Fail for the latest week (last seven days from selected date) in the Date field. Hovering over the data points on the graph, it gives the overall Success percentage.",
+      subtitle_20: 'Voice Quality (POLQA)',
+      description_24: "Displays voice quality of different call streams measured using the ITU's POLQA algorithm. It displays the Percentage Quality of these call streams over the past week from the selected date. Hovering over the graph gives the Date, Category, Call Streams, and the Percentage of Excellent, Good, Fair, or Poor calls.",
+      subtitle_21: 'Failed calls:',
+      description_25: "Failed calls are phone calls that were not successful and couldn't be completed due to various reasons like network issues or incorrect dialling.",
+      separator_2: 'Weekly',
+      description_26: "The Dashboard report defaults to the Daily view. Clicking 'Weekly' shows the last seven days' data from the selected date (latest week) for all regions.",
+      subtitle_22: 'Feature Functionality',
+      description_27: "Graph displays total call by region, comparing number of calls vs. Success rate, Pass, or Fail for the latest week. Hovering over the data points on the graph, gives the overall Success percentage.",
+      subtitle_23: 'Calling Reliability',
+      description_28: "Shows call routing status in selected regions, with number of calls vs. Success rate or Pass/Fail for the latest week (last seven days from selected date) in the Date field. Hovering over the data points on the graph, it gives the overall Success percentage.",
+      subtitle_24: 'Voice Quality (POLQA)',
+      description_29: "Displays voice quality of different call streams measured using the ITU's POLQA algorithm. It displays the Percentage Quality of these call streams over the past week from the selected date. Hovering over the graph gives the Date, Category, Call Streams, and the Percentage of Excellent, Good, Fair, or Poor calls.",
+      subtitle_25: 'Call Status History/Heatmap',
+      description_30: "Call history status is a record of the calls made or received, including details like date, time. Click on the failed section to identify patterns of call failure, helping you identify and resolve issues effectively.",
+      subtitle_26: 'View detailed report',
+      description_31: "Provides in-depth summary of data for a better understanding and analysis.",
+      subtitle_27: 'Download report',
+      description_32: "To download the report in Microsoft Excel format, simply click the 'Download Report' button.",
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(data);
   }
 }

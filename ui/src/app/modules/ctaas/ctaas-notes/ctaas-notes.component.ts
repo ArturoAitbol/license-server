@@ -113,11 +113,13 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.dialogService.showHelpButton = true;
         this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
         this.calculateTableHeight();
         this.initColumns();
         this.fetchNoteList();
         this.checkMaintenanceMode();
+        this.sendHelpDialogValues();  
     }
 
     /**
@@ -231,7 +233,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.onDestroy.next();
         this.onDestroy.complete();
+        this.dialogService.showHelpButton = false;
     }
+    
 
     private checkMaintenanceMode() {
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
@@ -243,5 +247,18 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             }
             this.getActionMenuOptions();
         })
+    }
+
+    sendHelpDialogValues(): void {
+        const data = {
+          title: 'Notes Help',
+          summary: "During any service disruption or quality degradation, the Admin can add Notes with a message to communicate the status. This message, along with the timestamp will be visible to all mobile app users.",
+          subtitle_1: 'Bullet points:',
+          description_1: '•	To switch between viewing open or closed notes, use the open or closed toggle button.',
+          description_2: '•	Admin has the ability to create and close notes. To close a note, click on the ellipsis of the notes and click close note.',
+          description_3: '•	Stakeholder, on the other hand, is restricted to reading the notes.',
+        };
+        this.dialogService.clearDialogData();
+        this.dialogService.updateDialogData(data);
     }
 }

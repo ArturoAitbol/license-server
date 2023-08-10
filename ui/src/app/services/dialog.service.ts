@@ -14,34 +14,10 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class DialogService {
 
-  private dialogDataSubject = new BehaviorSubject<{ 
-    title: string; 
-    description: string;
-    subtitle_1: string;
-    description_1: string;
-    subtitle_2: string;
-    description_2: string;
-    subtitle_3: string;
-    description_3: string;
-    subtitle_4: string;
-    description_4: string;
-    subtitle_5: string;
-    description_5: string;
-  }>({ 
-    title: '', 
-    description: '' ,
-    subtitle_1: '',
-    description_1: ' ',
-    subtitle_2: '',
-    description_2: ' ',
-    subtitle_3: '',
-    description_3: ' ',
-    subtitle_4: '',
-    description_4: ' ',
-    subtitle_5: '',
-    description_5: ' ',
-    });
-  dialogData$ = this.dialogDataSubject.asObservable();
+  private _showHelpButton: boolean = false;
+
+  dialogData: { [key: string]: string } = {};
+
   constructor(private dialog: MatDialog) { }
 
   confirmDialog(data: ConfirmDialogData,width?:string): Observable<boolean> {
@@ -78,19 +54,19 @@ export class DialogService {
     }).afterClosed();
   }
 
-  updateDialogData(title: string, description: string, 
-    subtitle_1: string, description_1:string,
-    subtitle_2: string, description_2:string,
-    subtitle_3: string, description_3:string,
-    subtitle_4: string, description_4:string,
-    subtitle_5: string, description_5:string
-    ): void {
-    this.dialogDataSubject.next({ title, description, 
-      subtitle_1, description_1, 
-      subtitle_2, description_2, 
-      subtitle_3, description_3, 
-      subtitle_4, description_4, 
-      subtitle_5, description_5
-    });
+  clearDialogData(){
+    const dialogData: { [key: string]: string } = {};
+    this.dialogData = dialogData;
+  }
+  updateDialogData(data: { [key: string]: string }): void {
+    this.dialogData = { ...this.dialogData, ...data };
+  }
+
+  get showHelpButton(): boolean {
+    return this._showHelpButton;
+  }
+
+  set showHelpButton(value: boolean) {
+    this._showHelpButton = value;
   }
 }

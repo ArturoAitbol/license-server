@@ -144,10 +144,12 @@ export class CtaasStakeholderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.dialogService.showHelpButton = true;
     this.calculateTableHeight();
     this.getActionMenuOptions();
     this.initColumns();
     this.fetchStakeholderList();
+    this.sendHelpDialogValues();  
     // this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
   }
 
@@ -305,5 +307,18 @@ export class CtaasStakeholderComponent implements OnInit {
 
   private countStakeholders(stakholdersList: IStakeholder[]): number {
     return stakholdersList.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER).length;
+  }
+
+  sendHelpDialogValues(): void {
+    const data = {
+      title: 'Stakeholders Help',
+      summary: "Clicking on the stakeholders page will display Admins with complete access and stakeholders with limited access. Only an Admin can add multiple stakeholders using the add stakeholder button. Admin can delete/modify stakeholder details.",
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(data);
+  }
+
+  ngOnDestroy() {
+    this.dialogService.showHelpButton = false;
   }
 }

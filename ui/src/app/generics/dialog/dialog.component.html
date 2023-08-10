@@ -1,18 +1,20 @@
-<div class="custom-dialog">
+<div class="custom-dialog" style="max-height: 80vh; overflow-y: auto;">
   <button mat-icon-button (click)="onCloseDialog()" class="close-button">
     <mat-icon>close</mat-icon>
   </button>
-  <h2 mat-dialog-title class="title">{{ data.title }}</h2>
-  <p class="description">{{ data.description }}</p>
-  <pre class="subtitle"[innerHTML]="data.subtitle_1"></pre>
-  <h3 class="description">{{ data.description_1 }}</h3>
-  <p class="subtitle">{{ data.subtitle_2 }}</p>
-  <h3 class="description">{{ data.description_2 }}</h3>
-  <p class="subtitle">{{ data.subtitle_3 }}</p>
-  <h3 class="description">{{ data.description_3 }}</h3>
-  <p class="subtitle">{{ data.subtitle_4 }}</p>
-  <h3 class="description">{{ data.description_4 }}</h3>
-  <p class="subtitle">{{ data.subtitle_5 }}</p>
-  <h3 class="description">{{ data.description_5 }}</h3>
-
+  <h2 mat-dialog-title class="title">{{ dialogService.dialogData.title }}</h2>
+  <p class="summary">{{ dialogService.dialogData.summary }}</p>
+  <div *ngFor="let key of keysExceptTitle">
+    <ng-container *ngIf="key.includes('subtitle'); else description">
+      <p class="subtitle">{{ dialogService.dialogData[key] }}</p>
+    </ng-container>
+    <ng-template #description>
+      <ng-container *ngIf="key.includes('description'); else separator">
+        <p class="description">{{ dialogService.dialogData[key] }}</p>
+      </ng-container>
+      <ng-template #separator>
+          <p class="separator">{{ dialogService.dialogData[key] }}</p>
+      </ng-template>
+    </ng-template>
+  </div>
 </div>

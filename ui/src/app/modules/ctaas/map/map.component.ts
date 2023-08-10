@@ -95,6 +95,7 @@ export class MapComponent implements OnInit, OnDestroy {
   filtersSubscription: Subscription;
 
   ngOnInit(): void {
+    this.dialogService.showHelpButton = true;
     this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.checkMaintenanceMode();
     this.filteredDate = moment.utc();
@@ -637,26 +638,19 @@ export class MapComponent implements OnInit, OnDestroy {
       this.filtersSubscription.unsubscribe();
     this.onDestroy.next();
     this.onDestroy.complete();
+    this.dialogService.showHelpButton = false;
   }
   sendHelpDialogValues(): void {
-    const title = 'Map Help';
-    const description = 'Map/Route path offers an overview of all regions and cross-calling between them. It also serves as a reference point to identify if any regions is experiencing issues with calls.';
-    const subtitle_1 = '<strong>Note</strong> <br> <br>•	To view the map of call routes for a specific date, choose the date from the radio button and click "Apply". <br> <br>•	To view the map of call routes for a particular region, select the relevant City, State, or Country from the dropdown and click "Apply"';
-    const description_1 = '';
-    const subtitle_2 = '';
-    const description_2 = '•	To view the map of call routes for a particular region, select the relevant City, State, or Country from the dropdown and click "Apply"';
-    const subtitle_3 = '';
-    const description_3 = 'Route region: To view information for a particular route region, click the region on the map. For detailed report, click "Go to Dashboard" at the bottom.';
-    const subtitle_4 = '';
-    const description_4 = 'Route line: To view call information between two connecting regions click the call route line. Click "Close" to close the dialog box.';
-    const subtitle_5 = '';
-    const description_5 = '';
-    this.dialogService.updateDialogData(title, description, 
-      subtitle_1, description_1,
-      subtitle_2, description_2,
-      subtitle_3, description_3,
-      subtitle_4, description_4,
-      subtitle_5, description_5
-    );
+    const data = {
+      title: 'Map Help',
+      summary: "Map/Route path offers an overview of all regions and cross-calling between them. It also serves as a reference point to identify if any regions is experiencing issues with calls.",
+      subtitle_1: 'Note:',
+      description_1: '•	To view the map of call routes for a specific date, choose the date from the radio button and click "Apply".',
+      description_2: '•	To view the map of call routes for a particular region, select the relevant City, State, or Country from the dropdown and click "Apply".',
+      description_3: 'Route region: To view information for a particular route region, click the region on the map. For detailed report, click "Go to Dashboard" at the bottom',
+      description_4: 'Route line: To view call information between two connecting regions click the call route line. Click "Close" to close the dialog box.',
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(data);
   }
 }

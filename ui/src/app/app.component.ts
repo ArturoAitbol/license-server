@@ -202,6 +202,7 @@ export class AppComponent implements OnInit, OnDestroy {
     subtitle_3: string; description_3: string;
     subtitle_4: string; description_4: string;
     subtitle_5: string; description_5: string;
+    _showHelpButton: boolean;
     constructor(
         private router: Router,
         private msalService: MsalService,
@@ -375,6 +376,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this._showHelpButton = this.showHelpButton;
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
         }
@@ -623,25 +625,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this._destroying$.complete();
     }
     openDialog(): void {
-        const dialogReceived = this.dialogService.dialogData$.subscribe(data => {
-            this.dialogTitle = data.title;
-            this.description = data.description;
-            this.subtitle_1 = data.subtitle_1; this.description_1 = data.description_1;
-            this.subtitle_2 = data.subtitle_2; this.description_2 = data.description_2;
-            this.subtitle_3 = data.subtitle_3; this.description_3 = data.description_3;
-            this.subtitle_4 = data.subtitle_4; this.description_4 = data.description_4;
-            this.subtitle_5 = data.subtitle_5; this.description_5 = data.description_5;
-          });
-        const dialogRef = this.dialog.open(DialogComponent, {
-          data: {
-            title: this.dialogTitle,
-            description: this.description,
-            subtitle_1: this.subtitle_1, description_1: this.description_1,
-            subtitle_2: this.subtitle_2, description_2: this.description_2,
-            subtitle_3: this.subtitle_3, description_3: this.description_3,
-            subtitle_4: this.subtitle_4, description_4: this.description_4,
-            subtitle_5: this.subtitle_5, description_5: this.description_5,
-        },
-        });
-      }
+        this.dialog.open(DialogComponent);
+    }
+    get showHelpButton(): boolean {
+        return this.dialogService.showHelpButton;
+    }
 }

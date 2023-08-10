@@ -5,6 +5,7 @@ import moment, { Moment } from 'moment';
 import { Utility } from 'src/app/helpers/utils';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
+import { DialogService } from 'src/app/services/dialog.service';
 
 @Component({
   selector: 'app-search-consolidated-report',
@@ -43,12 +44,15 @@ export class SearchConsolidatedReportComponent implements OnInit {
   constructor(
     private subaccountService: SubAccountService,
     private formBuilder: FormBuilder,
-    public dialogRef: MatDialogRef<SearchConsolidatedReportComponent>) { }
+    public dialogRef: MatDialogRef<SearchConsolidatedReportComponent>,
+    private dialogService: DialogService) { }
 
   ngOnInit(): void {
+    this.dialogService.showHelpButton = true;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.maxStartDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
     this.maxEndDate = this.maxStartDate;
+    this.sendHelpDialogValues();  
   }
 
   onCancel(): void {
@@ -117,5 +121,18 @@ export class SearchConsolidatedReportComponent implements OnInit {
     if (this.startDate && this.endDate && this.endDate.diff(this.startDate, "days") === 0)
       this.maxTime = event;
     this.maxTimeBK = event;
+  }
+  
+  sendHelpDialogValues(): void {
+    const data = {
+      title: 'Search Consolidated Report Help',
+      summary: "You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.",
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(data);
+  }
+  
+  ngOnDestroy() {
+    this.dialogService.showHelpButton = false;
   }
 }
