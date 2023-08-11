@@ -414,13 +414,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
             let disabledItems: any[] = [];
-            const featureToggleProtectedItems = [
-                {
-                    toggleName: "mapFeature",
-                    subaccountId: this.subaccountId,
-                    item: "map"
-                }
-            ];
+            const featureToggleProtectedItems = [];
             featureToggleProtectedItems.forEach(featureToggle => {
                 if (!this.featureToggleService.isFeatureEnabled(featureToggle.toggleName, featureToggle.subaccountId))
                     disabledItems.push(featureToggle.item);
