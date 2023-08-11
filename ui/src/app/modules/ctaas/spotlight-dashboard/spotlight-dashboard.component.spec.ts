@@ -282,8 +282,8 @@ describe("DashboardPocComponent", () => {
     fixture.detectChanges();
     const callingReliabilityTestPlans = ReportName.TAP_CALLING_RELIABILITY + "," + ReportName.TAP_VQ;
     const reportFilter = "type=" + callingReliabilityTestPlans;
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format("YYYY-MM-DD HH:mm:ss");
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format("YYYY-MM-DD HH:mm:ss");
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
@@ -296,8 +296,8 @@ describe("DashboardPocComponent", () => {
     dashboardPocComponentTestInstance.selectedRegions = [{country: "United States", state: "Illinois", city: "Chicago", displayName: "Chicago"}];
     fixture.detectChanges();
     const reportFilter = "type=" + ReportType.DAILY_FEATURE_FUNCTIONALITY;
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format("YYYY-MM-DD HH:mm:ss");
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format("YYYY-MM-DD HH:mm:ss");
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
@@ -310,8 +310,8 @@ describe("DashboardPocComponent", () => {
     dashboardPocComponentTestInstance.selectedRegions = [{country: "United States", state: "Illinois", city: "Chicago", displayName: "Chicago"}];
     fixture.detectChanges();
     const reportFilter = "status=" + 'FAILED';
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format("YYYY-MM-DD HH:mm:ss");
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format("YYYY-MM-DD HH:mm:ss");
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
@@ -324,8 +324,8 @@ describe("DashboardPocComponent", () => {
     dashboardPocComponentTestInstance.selectedRegions = [{country: "United States", state: "Illinois", city: "Chicago", displayName: "Chicago"}];
     fixture.detectChanges();
     const reportFilter = "polqaCalls=true";
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format("YYYY-MM-DD HH:mm:ss");
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format("YYYY-MM-DD HH:mm:ss");
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
