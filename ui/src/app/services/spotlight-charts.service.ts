@@ -13,6 +13,47 @@ export class SpotlightChartsService {
     constructor(private httpClient: HttpClient) {
     }
 
+        /**
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
+     * @param regions regions array
+     * @param subaccountId Subaccount ID
+     * @param groupBy 'hour' or 'day'
+     * @param polqaRange 'Excellent','Good','Fair' or'Poor'
+     * @param callStatus 'PASSED' or 'FAILED'
+     */
+    
+    public getPolqaTrendsData(startDate: Moment, endDate: Moment,  regions: { country: string, state: string, city: string }[], subaccountId: string, groupBy: string, polqaRangeFlag:number, callStatus:string) {
+        let polqaRange:string = '';
+        switch (polqaRangeFlag) {
+            case 1:
+                polqaRange = "Excellent";
+                break;
+            case 2:
+                polqaRange = "Good";
+                break;
+            case 3:
+                polqaRange = "Fair";
+                break;
+            case 4:
+                polqaRange = "Poor";
+                break;
+        }
+        let params = new HttpParams();
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('metric', 'POLQA,Received Jitter,Received packet loss,Round trip time,Sent bitrate');
+        params = params.set('subaccountId', subaccountId);
+        params = params.set('groupBy',groupBy);
+        params = params.set('average', true);
+        params = params.set('callStatus',callStatus);
+        if (regions.length>0) params = params.set('regions', JSON.stringify(regions));
+        if (polqaRange!=="") params = params.set('polqaRange', polqaRange);
+        const headers = this.getHeaders();
+        return this.httpClient.get(this.API_URL + 'polqaTrends', { headers, params });
+    }
+
     /**
      *
      * @param startDate Start date in local time

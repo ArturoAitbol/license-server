@@ -655,12 +655,10 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         endDate = this.getEndWeekDate();
       }
     }
-    const startTime = Utility.parseReportDate(startDate);
-    const endTime = Utility.parseReportDate(endDate);
     let regions = ""
     if (this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${startDate.utc().format("YYYY-MM-DD HH:mm:ss")}&end=${endDate.utc().format("YYYY-MM-DD HH:mm:ss")}&regions=${regions}`;
     window.open(url);
   }
 

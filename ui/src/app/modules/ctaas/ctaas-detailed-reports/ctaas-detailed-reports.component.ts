@@ -10,6 +10,7 @@ import { Sort } from '@angular/material/sort';
 import moment, { Moment } from 'moment';
 import { DialogService } from 'src/app/services/dialog.service';
 import { ConfirmDialogConst, EndpointColumnsConst, SummaryColumnsConst, TestFeatureandCallReliability, StatsColumnsConst } from 'src/app/helpers/ctaas-detailed-reports';
+import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CtaasCallsDetailsComponent } from './ctaas-calls-details/ctaas-calls-details.component';
 @Component({
@@ -25,13 +26,22 @@ export class DetailedReportsComponent implements OnInit {
   types: string = '';
   testPlanNames: string = '';
   status: string = '';
+
+  groupBy:string = 'hour';
+  polqaTrendsData:any;
+  isPolqaTrendsLoading: boolean = false;
+  reloadPolqaTrendsCharts: boolean = false;
+  displayStats: boolean = false;
+  selectedTab:number = 0;
+  startDate: Moment;
+  endDate: Moment;
   startDateStr: string = '';
   endDateStr: string = '';
   regionsStr: string = '';
   usersStr:string = '';
   polqaCalls: boolean = false;
   loggedInUserRoles: string[] = [];
-  private subaccountDetails: any;
+  subaccountDetails: any;
   hasDashboardDetails: boolean = false;
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -83,6 +93,7 @@ export class DetailedReportsComponent implements OnInit {
     private route: ActivatedRoute,
     private snackBarService: SnackBarService,
     private subaccountService: SubAccountService,
+    private spotlightChartsService: SpotlightChartsService,
     private dialogService: DialogService,
     public dialog: MatDialog
   ) {}
@@ -109,8 +120,15 @@ export class DetailedReportsComponent implements OnInit {
       this.filterByAvg = params.avg ? params.avg : 0;
       this.sectionFailed = params.sectionFailed ? params.sectionFailed : false;
       this.failedIsChecked = params.status ? true : false;
-      this.startDateStr = params.start;
-      this.endDateStr = params.end;
+      this.startDate = moment.utc(params.start, 'yyyy-MM-DD  HH:mm:ss');
+      this.endDate = moment.utc(params.end, 'yyyy-MM-DD  HH:mm:ss');
+      this.startDateStr = Utility.parseReportDate(this.startDate);
+      this.endDateStr =  Utility.parseReportDate(this.endDate);
+      if(this.filterByAvg!=0){
+        this.displayStats = true;
+        this.selectedTab = 1;
+        this.fetchPolqaTrends();
+      }
       this.parseTitle();
       this.fetchDashboardReportDetails();
     });
@@ -157,13 +175,37 @@ export class DetailedReportsComponent implements OnInit {
   getAll(): void {
     this.status = '';
     this.failedIsChecked = false;
+    this.reloadPolqaTrendsCharts = true;
     this.fetchDashboardReportDetails();
   }
   getFailed(): void {
     this.status = 'FAILED';
     this.failedIsChecked = true;
+    this.reloadPolqaTrendsCharts = true;
     this.fetchDashboardReportDetails();
   }
+
+  changeSelectedTab(tab){
+    this.selectedTab = tab.index;
+    if(this.reloadPolqaTrendsCharts){
+      this.fetchPolqaTrends();
+      this.reloadPolqaTrendsCharts = false;
+    }
+  }
+
+  public fetchPolqaTrends(){
+    this.polqaTrendsData = null;
+    this.isPolqaTrendsLoading=true;
+    this.spotlightChartsService.getPolqaTrendsData(this.startDate, this.endDate, this.regionsStr !=='' ? JSON.parse(this.regionsStr) : [], this.subaccountDetails.id, this.groupBy,Number(this.filterByAvg),this.status).subscribe((res: any)=>{
+      this.isPolqaTrendsLoading = false;
+      this.polqaTrendsData = res;
+    }, (error) => {
+      this.isPolqaTrendsLoading = false;
+      console.error("Error while loading dashboard: " + error.error);
+      this.snackBarService.openSnackBar("Error while loading dashboard",'');
+    });
+  }
+
   /**
    * fetch detailed dashboard report
    */

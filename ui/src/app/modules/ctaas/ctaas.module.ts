@@ -32,6 +32,7 @@ import { MapComponent } from './map/map.component';
 import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polqa-graphs/polqa-graphs.component';
 import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
 import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-spinner.component';
+import { PolqaTrendsComponent } from './spotlight-dashboard/polqa-trends/polqa-trends.component';
 import { CtaasCallsDetailsComponent } from './ctaas-detailed-reports/ctaas-calls-details/ctaas-calls-details.component';
 
 
@@ -62,6 +63,7 @@ import { CtaasCallsDetailsComponent } from './ctaas-detailed-reports/ctaas-calls
     PolqaGraphsComponent,
     NetworkTrendsComponent,
     LoadingSpinnerComponent,
+    PolqaTrendsComponent,
     CtaasCallsDetailsComponent,
   ],
   imports: [
