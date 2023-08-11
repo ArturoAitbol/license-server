@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DialogComponent } from './dialog.component';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';  // Asegúrate de importar estos módulos
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 describe('DialogComponent', () => {
   let component: DialogComponent;
@@ -10,11 +10,9 @@ describe('DialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ DialogComponent ],
-      imports: [MatDialogModule],  // Asegúrate de importar MatDialogModule aquí
+      imports: [MatDialogModule],
       providers: [
-        // Aquí proporcionamos el servicio MatDialogRef necesario para las pruebas
         { provide: MatDialogRef, useValue: {} },
-        // Aquí proporcionamos el servicio MAT_DIALOG_DATA necesario para las pruebas
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
     })
