@@ -104,6 +104,10 @@ public class SelectQueryBuilder implements QueryBuilder{
         }
     }
 
+    public void appendHavingClause(String havingClause) {
+        query.append(" HAVING (").append(havingClause).append(")");
+    }
+
     public void appendLimit(String limit) {
         query.append(" LIMIT ?::integer");
         queue.add(limit);
