@@ -45,16 +45,16 @@ export class UpdateStakeHolderComponent implements OnInit {
     let formObject: any = {
       name: ['', Validators.required],
       jobTitle: [''],
-      companyName: [{ value: '' }],
+      companyName: [''],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       phoneNumber: [''],
       role: ['']
     };
-    if (this.data.jobTitle && this.data.jobTitle !== "")
+    if (this.data?.jobTitle && this.data?.jobTitle !== "")
       formObject.jobTitle.push(Validators.required);
-    if (this.data.companyName && this.data.companyName !== "")
+    if (this.data?.companyName && this.data?.companyName !== "")
       formObject.companyName.push(Validators.required);
-    if (this.data.phoneNumber && this.data.phoneNumber !== "") {
+    if (this.data?.phoneNumber && this.data?.phoneNumber !== "") {
       this.phoneNumberRequiredComplement = " *";
       formObject.phoneNumber.push(Validators.required);
     }
