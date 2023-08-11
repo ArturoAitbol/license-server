@@ -5,6 +5,7 @@ import moment, { Moment } from 'moment';
 import { Utility } from 'src/app/helpers/utils';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
+import { DialogService } from 'src/app/services/dialog.service';
 
 @Component({
   selector: 'app-search-consolidated-report',
@@ -43,9 +44,11 @@ export class SearchConsolidatedReportComponent implements OnInit {
   constructor(
     private subaccountService: SubAccountService,
     private formBuilder: FormBuilder,
-    public dialogRef: MatDialogRef<SearchConsolidatedReportComponent>) { }
+    public dialogRef: MatDialogRef<SearchConsolidatedReportComponent>,
+    private dialogService: DialogService) { }
 
   ngOnInit(): void {
+    this.dialogService.showHelpButton = true;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.maxStartDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
     this.maxEndDate = this.maxStartDate;
@@ -118,4 +121,5 @@ export class SearchConsolidatedReportComponent implements OnInit {
       this.maxTime = event;
     this.maxTimeBK = event;
   }
+
 }

@@ -192,3 +192,14 @@ app-banner-outlet {
   position: fixed !important;
 
 }
+
+.info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.role {
+  margin-top: -15px;
+  font-size: 12px;
+}

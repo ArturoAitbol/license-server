@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
 import { ReportType } from 'src/app/helpers/report-type';
 import { Constants } from 'src/app/helpers/constants';
+import { DialogService } from 'src/app/services/dialog.service';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -64,7 +65,8 @@ export class CtaasTestReportsComponent implements OnInit {
   private msalService: MsalService,
   private ctaasSetupService: CtaasSetupService,
   private bannerService: BannerService,
-  public dialog: MatDialog) { }
+  public dialog: MatDialog,
+  private dialogService: DialogService) { }
   
   @HostListener('window:resize')
   sizeChange() {
@@ -90,6 +92,7 @@ export class CtaasTestReportsComponent implements OnInit {
   }
   
   ngOnInit(): void { 
+    this.dialogService.showHelpButton = true;
     this.initColumns();
     this.sizeChange();
     this.dataTable();
@@ -108,6 +111,7 @@ export class CtaasTestReportsComponent implements OnInit {
         this.searchFlag = searchValidator;
         this.todaySearchFlag = todaySearchValidator;
       })
+      this.sendHelpDialogValues();  
   }
 
   dataTable() {
@@ -240,5 +244,27 @@ export class CtaasTestReportsComponent implements OnInit {
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
+    this.dialogService.showHelpButton = false;
+  }
+
+  sendHelpDialogValues(): void {
+    const data = {
+      title: 'Test Reports Help',
+      sections: [
+        {
+          elements: [
+            {
+              description: 'The Test Reports page offers users a comprehensive overview of test results. It serves as a centralized hub for accessing detailed information about various tests conducted within the platform.',
+            },
+            {
+              subtitle: 'Search consolidated report',
+              description: 'You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.'
+            }
+          ]
+        }
+      ]
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
 }

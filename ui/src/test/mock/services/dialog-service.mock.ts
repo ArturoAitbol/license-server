@@ -63,4 +63,10 @@ export class DialogServiceMock {
         });
     }
     close(): void { return; }
+
+    clearDialogData(): void{}
+
+    transformToDialogData(data:any): void{ }
+
+    updateDialogData(data): void {}
 }
