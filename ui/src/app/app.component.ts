@@ -195,13 +195,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private _mobileQueryListener: () => void;
     
-    dialogTitle: string;
-    description: string;
-    subtitle_1: string; description_1: string;
-    subtitle_2: string; description_2: string;
-    subtitle_3: string; description_3: string;
-    subtitle_4: string; description_4: string;
-    subtitle_5: string; description_5: string;
     _showHelpButton: boolean;
     constructor(
         private router: Router,
