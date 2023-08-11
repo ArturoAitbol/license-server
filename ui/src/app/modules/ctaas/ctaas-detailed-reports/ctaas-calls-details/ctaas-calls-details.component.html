@@ -1,0 +1,332 @@
+<div>
+    <div style="margin-bottom: 1%;">
+        <mat-button-toggle-group class="center-toggle" name="favoriteColor" aria-label="Favorite Color">
+            <mat-button-toggle value="green" (click)="onChange('1')">All</mat-button-toggle>
+            <mat-button-toggle value="blue" (click)="onChange('2')">Media Stats</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <ng-container [ngSwitch]="interaction">
+        <ng-container *ngSwitchCase="'1'" [ngTemplateOutlet]="template1"></ng-container>
+        <ng-container *ngSwitchCase="'2'" [ngTemplateOutlet]="template2"></ng-container>
+    </ng-container>
+    <div class="row justify-content-end" style="margin-top: 3%;">
+        <div class="col-auto">
+            <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Close</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #template1>
+    <div class="row">
+        <div class="col-12">
+            <div>
+                <mat-card class="card summary">
+                    <mat-card-content class="summary-card-content">
+                        <table class="table custom-table table-bordered">
+                            <thead style="border-top: 2px solid #dee2e6;">
+                                <tr>
+                                    <th colspan="3" class="text-center" style="border-top: 1px ;">
+                                        <h4 style="margin-bottom: 0;"><strong style="font-weight:500;">Call Details</strong></h4>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                          <strong style="font-weight: 500;">Start Date</strong>
+                                          <p title="originatedPOLQA" style="margin: 0; text-align: right;">{{data.startTime}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">End Date</strong>
+                                            <p title="originatedJitter" style="margin: 0; text-align: right;">{{data.endTime}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Status</strong>
+                                            <p title="originatedRoundTripTime" style="margin: 0; text-align: right;">{{data.status}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Call Type</strong>
+                                            <p title="originatedPacketLoss" style="margin: 0; text-align: right;">{{data.callType}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Error Category</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.errorCategory | na}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Reason</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.errorReason | na}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">From Jitter (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromJitter}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">To Jitter (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toJitter}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">From Round Trip Time (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromRoundTrip}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">To Round Trip Time (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toRoundTrip}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">From Packet Loss (%)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromPacketLoss}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">To Packet Loss (%)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toPacketLoss}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">From Bitrate (Kbps)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromAvgBitrate}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">To Bitrate (Kbps)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toAvgBitrate}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #template2> 
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <h2 class="font-s text-center" title="from-did"><strong style="font-weight:700;">From:</strong> <span class="did-titles"> {{data.from.DID}}</span></h2>
+        </div>
+        <div class="col-6">
+            <h2 class="font-s text-center" title="to-did"><strong style="font-weight:700;">To:</strong> <span class="did-titles"> {{data.to.DID}}</span></h2>
+        </div>
+        <div class="row">
+            <div id="polqa-chart" class="col-md-12 mt-3" style="height: 300px">
+                <apx-chart
+                    [series]="polqaChartOptions.series"
+                    [title]="polqaChartOptions.title"
+                    [chart]="polqaChartOptions.chart"
+                    [xaxis]="polqaChartOptions.xAxis"
+                    [yaxis]="polqaChartOptions.yAxis"
+                    [dataLabels]="polqaChartOptions.dataLabels"
+                    [grid]="polqaChartOptions.grid"
+                    [stroke]="polqaChartOptions.stroke"
+                    [markers]="polqaChartOptions.markers"
+                    [legend]="polqaChartOptions.legend"
+                    [annotations]="polqaChartOptions.annotations"
+                    [colors]="polqaChartOptions.colors">
+                </apx-chart>
+            </div>
+        </div>
+        <div class="row">
+            <div id="polqa-packet-loss-chart" class="col-md-6 mt-3" style="height: 300px">
+                <apx-chart
+                    [series]="polqaPacketLossChartOptions.series"
+                    [title]="polqaPacketLossChartOptions.title"
+                    [chart]="polqaPacketLossChartOptions.chart"
+                    [xaxis]="polqaPacketLossChartOptions.xAxis"
+                    [yaxis]="polqaPacketLossChartOptions.yAxis"
+                    [dataLabels]="polqaPacketLossChartOptions.dataLabels"
+                    [grid]="polqaPacketLossChartOptions.grid"
+                    [stroke]="polqaPacketLossChartOptions.stroke"
+                    [markers]="polqaPacketLossChartOptions.markers"
+                    [legend]="polqaPacketLossChartOptions.legend"
+                    [colors]="polqaPacketLossChartOptions.colors">
+                </apx-chart>
+            </div>
+            <div id="polqa-jitter-chart" class="col-md-6 mt-3" style="height: 300px">
+                <apx-chart
+                        [series]="polqaJitterChartOptions.series"
+                        [title]="polqaJitterChartOptions.title"
+                        [chart]="polqaJitterChartOptions.chart"
+                        [xaxis]="polqaJitterChartOptions.xAxis"
+                        [yaxis]="polqaJitterChartOptions.yAxis"
+                        [dataLabels]="polqaJitterChartOptions.dataLabels"
+                        [grid]="polqaJitterChartOptions.grid"
+                        [stroke]="polqaJitterChartOptions.stroke"
+                        [markers]="polqaJitterChartOptions.markers"
+                        [legend]="polqaJitterChartOptions.legend"
+                        [colors]="polqaJitterChartOptions.colors">
+                </apx-chart>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mt-3" style="height: 300px" id="sentBitrateTrends">
+                <apx-chart
+                        [series]="sentBitrateChartOptions.series"
+                        [title]="sentBitrateChartOptions.title"
+                        [chart]="sentBitrateChartOptions.chart"
+                        [xaxis]="sentBitrateChartOptions.xAxis"
+                        [yaxis]="sentBitrateChartOptions.yAxis"
+                        [dataLabels]="sentBitrateChartOptions.dataLabels"
+                        [grid]="sentBitrateChartOptions.grid"
+                        [stroke]="sentBitrateChartOptions.stroke"
+                        [markers]="sentBitrateChartOptions.markers"
+                        [legend]="sentBitrateChartOptions.legend"
+                        [annotations]="sentBitrateChartOptions.annotations"
+                        [colors]="sentBitrateChartOptions.colors">
+                </apx-chart>
+            </div>
+            <div id="polqa-rtt-chart" class="col-md-6 mt-3" style="height: 300px">
+                <apx-chart
+                        [series]="polqaRoundTripChartOptions.series"
+                        [title]="polqaRoundTripChartOptions.title"
+                        [chart]="polqaRoundTripChartOptions.chart"
+                        [xaxis]="polqaRoundTripChartOptions.xAxis"
+                        [yaxis]="polqaRoundTripChartOptions.yAxis"
+                        [dataLabels]="polqaRoundTripChartOptions.dataLabels"
+                        [grid]="polqaRoundTripChartOptions.grid"
+                        [stroke]="polqaRoundTripChartOptions.stroke"
+                        [markers]="polqaRoundTripChartOptions.markers"
+                        [legend]="polqaRoundTripChartOptions.legend"
+                        [colors]="polqaRoundTripChartOptions.colors">
+                </apx-chart>
+            </div>
+        </div>
+        <div class="col-12" style="margin-top: 1%;">
+            <div>
+                <mat-card class="card summary">
+                    <mat-card-content class="summary-card-content">
+                        <table class="table custom-table table-bordered">
+                            <div class="loading-shade" *ngIf="isLoadingResults" id="map-spinner">
+                                <mat-spinner id="calls-details-spinner" *ngIf="isLoadingResults"></mat-spinner>
+                            </div>
+                            <tbody>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                          <strong style="font-weight: 500;">Time Stamp</strong>
+                                          <p title="time-stamp" style="margin: 0; text-align: right;">{{selectedTimeStamp}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div  style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">DID</strong>
+                                            <p title="did" style="margin: 0; text-align: right;">{{selecetedDID}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                          <strong style="font-weight: 500;">Packets Sent</strong>
+                                          <p title="snet-packets" style="margin: 0; text-align: right;">{{mediaStats.sentPackets | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div  style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Received Jitter</strong>
+                                            <p title="received-jitter" style="margin: 0; text-align: right;">{{mediaStats.receivedJitter | na}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Received Codec</strong>
+                                            <p title="received-codec" style="margin: 0; text-align: right;">{{mediaStats.receivedCodec | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Round Trip Time</strong>
+                                            <p title="round-trip-time" style="margin: 0; text-align: right;">{{mediaStats.roundTripTime | na}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Sent Bitrate</strong>
+                                            <p title="sent-bitrate" style="margin: 0; text-align: right;">{{mediaStats.sentBitrate | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Received Packets</strong>
+                                            <p title="received-packets" style="margin: 0; text-align: right;">{{mediaStats.receivedPackets | na}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Received Packet Loss</strong>
+                                            <p title="received-packet-loss" style="margin: 0; text-align: right;">{{mediaStats.receivedPacketLoss | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">POLQA</strong>
+                                            <p title="POLQA" style="margin: 0; text-align: right;">{{mediaStats.POLQA | na}}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</ng-template>
