@@ -408,6 +408,8 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
+            'view-roles-permission',
+            'view-role',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
@@ -460,6 +462,8 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
+            'view-roles-permission',
+            'view-role',
             'resetFilter',
             'request-call',
             'viewDetailedReport',
