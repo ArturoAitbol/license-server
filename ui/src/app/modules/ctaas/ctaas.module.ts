@@ -33,6 +33,7 @@ import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polq
 import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
 import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-spinner.component';
 import { PolqaTrendsComponent } from './spotlight-dashboard/polqa-trends/polqa-trends.component';
+import { CtaasCallsDetailsComponent } from './ctaas-detailed-reports/ctaas-calls-details/ctaas-calls-details.component';
 
 
 @NgModule({
@@ -63,6 +64,7 @@ import { PolqaTrendsComponent } from './spotlight-dashboard/polqa-trends/polqa-t
     NetworkTrendsComponent,
     LoadingSpinnerComponent,
     PolqaTrendsComponent,
+    CtaasCallsDetailsComponent,
   ],
   imports: [
     CommonModule,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportName } from 'src/app/helpers/report-type';
@@ -11,13 +11,14 @@ import moment, { Moment } from 'moment';
 import { DialogService } from 'src/app/services/dialog.service';
 import { ConfirmDialogConst, EndpointColumnsConst, SummaryColumnsConst, TestFeatureandCallReliability, StatsColumnsConst } from 'src/app/helpers/ctaas-detailed-reports';
 import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CtaasCallsDetailsComponent } from './ctaas-calls-details/ctaas-calls-details.component';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
   styleUrls: ['./ctaas-detailed-reports.component.css']
 })
 export class DetailedReportsComponent implements OnInit {
-
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
@@ -94,6 +95,7 @@ export class DetailedReportsComponent implements OnInit {
     private subaccountService: SubAccountService,
     private spotlightChartsService: SpotlightChartsService,
     private dialogService: DialogService,
+    public dialog: MatDialog
   ) {}
   /**
    * get logged in account details
@@ -773,5 +775,17 @@ export class DetailedReportsComponent implements OnInit {
   private updateMetricSum(parsedValue: number, objLocation: any, metric: string) {
     objLocation[metric].sum += parsedValue;
     objLocation[metric].count++;
+  }
+
+  openDetails(selectedItem: any) {
+    console.log("entra", selectedItem)
+    let dialogRef = this.dialog.open(CtaasCallsDetailsComponent, {
+      width: '75vw',
+      height: '93vh',
+      maxHeight: '100vh',
+      maxWidth: '85vw',
+      data: selectedItem,
+      disableClose: false
+    });
   }
 }
