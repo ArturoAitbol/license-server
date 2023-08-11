@@ -177,6 +177,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ];
 
     currentRoutePath = '';
+    currentRole = '';
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
@@ -405,6 +406,7 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe((result: EventMessage) => {
             this.autoLogoutService.initAcquireTokenTimeout();
         });
+        this.currentRole = this.getRole();
     }
 
     /**

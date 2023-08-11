@@ -3,9 +3,7 @@
         <table>
             <thead>
             <tr class="header">
-                <th>Role</th>
-                <th>Administrator</th>
-                <th>Stakeholder</th>
+                <th *ngFor="let item of tableHeader">{{item}}</th>
             </tr>
             </thead>
             <tbody>

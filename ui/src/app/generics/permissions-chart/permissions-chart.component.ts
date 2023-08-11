@@ -12,67 +12,68 @@ export class PermissionsChartComponent implements OnInit {
   constructor(public dialogService: DialogService, public dialogRef: MatDialogRef<PermissionsChartComponent> ) { }
 
   tableData: any;
-  
+  tableHeader: any;
   ngOnInit(): void {
+    this.tableHeader = ['Role ', 'Administrator', 'Stakeholder'];
+
      this.tableData = {
-      row: [
-        {
-          header: 'Onboarding Wizard',
-          administrator: true,
-          stakeholder: false,
-        },
-        {
-          header: 'View SpotLight Users and their roles (Admin or Stakeholder)',
-          administrator: true,
-          stakeholder: true,
-        },
-        {
-          header: 'View/Add/Delete/Modify SpotLight Users (Managing users)',
-          administrator: true,
-          stakeholder: false,
-        },
-        {
-          header: 'Change Roles of SpotLight Users',
-          administrator: true,
-          stakeholder: false,
-        },
-        {
-          header: 'Contact Support',
-          administrator: true,
-          stakeholder: true,
-        },
-        {
-          header: 'View Map (Visualization with regions and stats)',
-          administrator: true,
-          stakeholder: true,
-        },
-        {
-          header: 'View Dashboard (Visualizations and notes)',
-          administrator: true,
-          stakeholder: true,
-        },
-        {
-          header: 'Add notes in the dashboard',
-          administrator: true,
-          stakeholder: false,
-        },
-        {
-          header: 'View and download detailed test reports',
-          administrator: true,
-          stakeholder: true,
-        },
-        {
-          header: 'View/Filter DIDs',
-          administrator: true,
-          stakeholder: true,
-        },
-        {
-          header: 'View/Filter Regions',
-          administrator: true,
-          stakeholder: true,
-        },
-      ]
-     
+        row: [
+          {
+            header: 'Onboarding Wizard',
+            administrator: true,
+            stakeholder: false,
+          },
+          {
+            header: 'View SpotLight Users and their roles (Admin or Stakeholder)',
+            administrator: true,
+            stakeholder: true,
+          },
+          {
+            header: 'View/Add/Delete/Modify SpotLight Users (Managing users)',
+            administrator: true,
+            stakeholder: false,
+          },
+          {
+            header: 'Change Roles of SpotLight Users',
+            administrator: true,
+            stakeholder: false,
+          },
+          {
+            header: 'Contact Support',
+            administrator: true,
+            stakeholder: true,
+          },
+          {
+            header: 'View Map (Visualization with regions and stats)',
+            administrator: true,
+            stakeholder: true,
+          },
+          {
+            header: 'View Dashboard (Visualizations and notes)',
+            administrator: true,
+            stakeholder: true,
+          },
+          {
+            header: 'Add notes in the dashboard',
+            administrator: true,
+            stakeholder: false,
+          },
+          {
+            header: 'View and download detailed test reports',
+            administrator: true,
+            stakeholder: true,
+          },
+          {
+            header: 'View/Filter DIDs',
+            administrator: true,
+            stakeholder: true,
+          },
+          {
+            header: 'View/Filter Regions',
+            administrator: true,
+            stakeholder: true,
+          },
+        ]
     };
   }
 
