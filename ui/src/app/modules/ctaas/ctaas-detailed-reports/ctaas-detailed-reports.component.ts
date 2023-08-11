@@ -363,8 +363,11 @@ export class DetailedReportsComponent implements OnInit {
             this.insideTheScope(testResult);
 
             if (testResult.filterByAvg && !filterDID.includes(testResult.from.DID)) {
-            filterDID.push(testResult.from.DID);
-          }
+              filterDID.push(testResult.from.DID);
+            }
+            if (testResult.filterByAvg && !filterDID.includes(testResult.to.DID)) {
+              filterDID.push(testResult.to.DID);
+            }
         }
       });
 
@@ -375,6 +378,7 @@ export class DetailedReportsComponent implements OnInit {
         detailedResponseObj.endpoints = this.reportResponse.endpoints;
         this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
       }
+      this.reportResponse.results = this.detailedTestReport;
       this.reportResponse.summary.summaryStartTime = minorTime.format("MM/DD/YYYY HH:mm:ss");
       this.reportResponse.summary.summaryEndTime = majorTime.format("MM/DD/YYYY HH:mm:ss");
     } else {
@@ -392,6 +396,28 @@ export class DetailedReportsComponent implements OnInit {
     this.reportResponse.summary.passed = count;
     this.reportResponse.summary.failed = this.detailedTestReport.length - count;
     this.reportResponse.endpoints = this.reportResponse.endpoints.filter(item => filterDID.includes(item.did));
+  }
+
+  private updateDataByFailed(dataResponse: any) {
+    let filterDID = [];
+    let filterStartTime = [];
+    let filterEndTime = [];
+    dataResponse.results.forEach(item=> {  
+      filterStartTime.push(moment(item.startTime, "MM-DD-YYYY HH:mm:ss"));
+      filterEndTime.push(moment(item.endTime, "MM-DD-YYYY HH:mm:ss"));
+      filterDID.push(item.from.DID);
+      filterDID.push(item.to.DID);
+    });
+
+    filterDID = [...new Set(filterDID)];
+    dataResponse.summary.endTime = filterEndTime.length ? (filterEndTime.reduce(function (a, b) { return a > b ? a : b; })).format("MM/DD/YYYY HH:mm:ss") : '';
+    dataResponse.summary.startTime = filterEndTime.length ? (filterStartTime.reduce(function (a, b) { return a < b ? a : b; })).format("MM/DD/YYYY HH:mm:ss") : '';
+    dataResponse.summary.total = dataResponse.results.length;
+    dataResponse.summary.passed = 0;
+    dataResponse.summary.failed = dataResponse.results.length;
+    dataResponse.endpoints = dataResponse.endpoints.filter(item => filterDID.includes(item.did));
+
+    return dataResponse;
   }
     
   private insideTheScope(testResult: any) {
@@ -572,16 +598,15 @@ export class DetailedReportsComponent implements OnInit {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
       let detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-      let backup = this.ctaasDashboardService.getDetailedReportyObject();
-      if (!confirm) {
-        this.renderData(this.responseFailed);
-        detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-        this.ctaasDashboardService.setDetailedReportObject(backup);
-        this.renderData(this.responseAll);
-      }
-      
       detailedResponseObj.summary.startTime = this.reportResponse.summary.summaryStartTime;
       detailedResponseObj.summary.endTime = this.reportResponse.summary.summaryEndTime;
+      if (!confirm) {
+        let dataFailed = JSON.parse(JSON.stringify(this.reportResponse));
+        dataFailed.results = dataFailed.results.filter(item => item.status === "FAILED");
+        dataFailed = this.updateDataByFailed(dataFailed);
+        detailedResponseObj = dataFailed;
+      }
+
       detailedResponseObj.type = this.testPlanNames;
       if (detailedResponseObj) {
         this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(detailedResponseObj)
