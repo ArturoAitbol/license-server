@@ -20,6 +20,7 @@ export class UpdateStakeHolderComponent implements OnInit {
   previousFormValue: any;
   notificationsList: any;
   toggleStatus = true;
+  phoneNumberRequiredComplement = "";
   emailNotifications: boolean;
   mappedNotificationsList: string[] = [];
   CountryISO = CountryISO;
@@ -41,14 +42,23 @@ export class UpdateStakeHolderComponent implements OnInit {
    * initialize update stake holder form
    */
   initializeForm(): void {
-    this.updateStakeholderForm = this.formBuilder.group({
+    let formObject: any = {
       name: ['', Validators.required],
       jobTitle: [''],
       companyName: [{ value: '' }],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       phoneNumber: [''],
-      role: [''],
-    });
+      role: ['']
+    };
+    if (this.data.jobTitle && this.data.jobTitle !== "")
+      formObject.jobTitle.push(Validators.required);
+    if (this.data.companyName && this.data.companyName !== "")
+      formObject.companyName.push(Validators.required);
+    if (this.data.phoneNumber && this.data.phoneNumber !== "") {
+      this.phoneNumberRequiredComplement = " *";
+      formObject.phoneNumber.push(Validators.required);
+    }
+    this.updateStakeholderForm = this.formBuilder.group(formObject);
     try {
       const { email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
