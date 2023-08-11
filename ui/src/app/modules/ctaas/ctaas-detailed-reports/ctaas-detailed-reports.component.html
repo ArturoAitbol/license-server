@@ -14,63 +14,73 @@
 </ng-template>
 <!-- report view -->
 <ng-template #reportView>
-    <div class="row mt-3">
-        <div class="col-8">
-            <h1 class="text-start text-s" id="title">{{title}}</h1>
-            <h2 class="text-start text-s2" *ngIf="sectionFailed && status!==''" id="subtitle">Status: {{status}}</h2>
-            <h2 class="text-start text-s2" *ngIf="!sectionFailed" id="subtitle">Status:
-                <mat-button-toggle-group class="center-toggle" name="favoriteColor" aria-label="Favorite Color">
-                    <mat-button-toggle [checked]="!failedIsChecked" (click)="getAll()" value="green">All</mat-button-toggle>
-                    <mat-button-toggle [checked]="failedIsChecked" (click)="getFailed()"value="blue">Failed</mat-button-toggle>
-                </mat-button-toggle-group>
-            </h2>
-        </div>
-        <div class="col-4 text-right">
-            <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="isConfirmationRequired()">
-                Download Report
-                <mat-icon>download</mat-icon>
-            </button>
-        </div>
-    </div>
-    <div class="hint">
-        <mat-icon>info_outline</mat-icon>
-        <div>All results are displayed in UTC</div>
-    </div>
-    <div class="row">
-        <div class="col-4 table-max-size">
-            <h1 class="text-start font-s">Summary</h1>
-            <div id="summary-table" >
-                <mat-card class="card summary">
-                    <mat-card-content class="summary-card-content">
-                        <table class="table table-hover">
-                            <tbody>
-                                <tr *ngFor="let item of summaryDisplayedColumns">
-                                    <th>{{item.header}}</th>
-                                    <td id="{{item.header}}">{{reportResponse?.summary[item.value] | na}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </mat-card-content>
-                </mat-card>
+    <mat-tab-group (selectedTabChange)="changeSelectedTab($event)"  [selectedIndex]="selectedTab" dynamicHeight mat-stretch-tabs="false" mat-align-tabs="start" preserveContent>
+        <mat-tab label="REPORT" [disabled]="!displayStats">
+            <div class="row mt-3">
+                <div class="col-8">
+                    <h1 class="text-start text-s" id="title">{{title}}</h1>
+                    <h2 class="text-start text-s2" *ngIf="sectionFailed && status!==''" id="subtitle">Status: {{status}}</h2>
+                    <h2 class="text-start text-s2" *ngIf="!sectionFailed" id="subtitle">Status:
+                        <mat-button-toggle-group class="center-toggle" name="favoriteColor" aria-label="Favorite Color">
+                            <mat-button-toggle [checked]="!failedIsChecked" (click)="getAll()" value="green">All</mat-button-toggle>
+                            <mat-button-toggle [checked]="failedIsChecked" (click)="getFailed()"value="blue">Failed</mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </h2>
+                </div>
+                <div class="col-4 text-right">
+                    <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="isConfirmationRequired()">
+                        Download Report
+                        <mat-icon>download</mat-icon>
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="col-8 table-max-size">
-            <h1 class="text-start font-s">Endpoint Resources</h1>
-            <section class="table-section">
-                <mat-card class="card">
-                    <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <div id="endpoint-resources-table">
-                            <app-data-table id="{{title}} Endpoint Resources" class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
-                            [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
-                            [tableColumns]="endpointDisplayedColumns" (sort)="sortData($event)"></app-data-table>
-                        </div>
-                        </mat-card-content>
-                </mat-card>
-            </section>
-        </div>
-    </div>
-    <br>
-    <ng-container *ngIf="reportResponse then viewTestDetailedReport;"></ng-container>
+            <div class="hint">
+                <mat-icon>info_outline</mat-icon>
+                <div>All results are displayed in UTC</div>
+            </div>
+            <div class="row">
+                <div class="col-4 table-max-size">
+                    <h1 class="text-start font-s">Summary</h1>
+                    <div id="summary-table" >
+                        <mat-card class="card summary">
+                            <mat-card-content class="summary-card-content">
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr *ngFor="let item of summaryDisplayedColumns">
+                                            <th>{{item.header}}</th>
+                                            <td id="{{item.header}}">{{reportResponse?.summary[item.value] | na}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </div>
+                <div class="col-8 table-max-size">
+                    <h1 class="text-start font-s">Endpoint Resources</h1>
+                    <section class="table-section">
+                        <mat-card class="card">
+                            <mat-card-content [style.max-height.px]="tableMaxHeight">
+                                <div id="endpoint-resources-table">
+                                    <app-data-table id="{{title}} Endpoint Resources" class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
+                                    [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                                    [tableColumns]="endpointDisplayedColumns" (sort)="sortData($event)"></app-data-table>
+                                </div>
+                                </mat-card-content>
+                        </mat-card>
+                    </section>
+                </div>
+            </div>
+            <br>
+            <ng-container *ngIf="reportResponse then viewTestDetailedReport;"></ng-container>
+        </mat-tab>
+        <mat-tab label="STATS" *ngIf="displayStats">
+            <app-polqa-trends *ngIf="polqaTrendsData && !isLoadingResults" [data]="polqaTrendsData" [groupBy]="groupBy"></app-polqa-trends>
+            <div *ngIf="isPolqaTrendsLoading" class="d-flex justify-content-center mt-3">
+                <img class="spinner" height="80" width="80" src="assets/images/spinner.gif" alt="loading spinner gif">
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 </ng-template>
 <ng-template #viewTestDetailedReport>
     <section class="table-section">
