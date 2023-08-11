@@ -250,9 +250,17 @@ export class CtaasTestReportsComponent implements OnInit {
   sendHelpDialogValues(): void {
     const data = {
       title: 'Test Reports Help',
-      summary: "The Test Reports page offers users a comprehensive overview of test results. It serves as a centralized hub for accessing detailed information about various tests conducted within the platform.",
+      sections: [
+        {
+          elements: [
+            {
+              description: 'The Test Reports page offers users a comprehensive overview of test results. It serves as a centralized hub for accessing detailed information about various tests conducted within the platform.',
+            }
+          ]
+        }
+      ]
     };
     this.dialogService.clearDialogData();
-    this.dialogService.updateDialogData(data);
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
 }

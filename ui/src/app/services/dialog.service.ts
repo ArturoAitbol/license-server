@@ -9,6 +9,18 @@ import { AcceptComponent } from '../dialogs/accept/accept.component';
 import { OptionalComponent } from '../dialogs/optional/optional.component';
 import { BehaviorSubject } from 'rxjs';
 
+interface DialogData {
+  title: string;
+  summary: string;
+  sections: {
+    name?: string;
+    elements: {
+      subtitle: string;
+      descriptions: string[];
+      description?: string;
+    }[];
+  }[];
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -16,7 +28,11 @@ export class DialogService {
 
   private _showHelpButton: boolean = false;
 
-  dialogData: { [key: string]: string } = {};
+  dialogData: DialogData = {
+    title: "", // Valor predeterminado
+    summary: "", // Valor predeterminado
+    sections: [], // Valor predeterminado
+  };
 
   constructor(private dialog: MatDialog) { }
 
@@ -55,11 +71,42 @@ export class DialogService {
   }
 
   clearDialogData(){
-    const dialogData: { [key: string]: string } = {};
-    this.dialogData = dialogData;
+    const dialogData: DialogData = {
+      title: "",
+      summary: "",
+      sections: [],
+    };
+    this.dialogData = this.transformToDialogData(dialogData);
   }
-  updateDialogData(data: { [key: string]: string }): void {
-    this.dialogData = { ...this.dialogData, ...data };
+  updateDialogData(data: DialogData): void {
+    this.dialogData = data;
+  }
+
+  public transformToDialogData(data: any): DialogData {
+    // Mapear las secciones y elementos para ajustar la estructura
+    const transformedSections = data.sections.map((section: any) => {
+      const transformedElements = section.elements.map((element: any) => {
+        // Asegurarse de que todas las propiedades requeridas estén presentes
+        return {
+          subtitle: element.subtitle || '',
+          descriptions: element.descriptions || [],
+          description: element.description || '',
+        };
+      });
+  
+      // Devolver la estructura de sección requerida por DialogData
+      return {
+        name: section.name,
+        elements: transformedElements,
+      };
+    });
+  
+    // Devolver el objeto que sigue la estructura de DialogData
+    return {
+      title: data.title || '',
+      summary: data.summary || '',
+      sections: transformedSections,
+    };
   }
 
   get showHelpButton(): boolean {

@@ -126,12 +126,20 @@ export class SearchConsolidatedReportComponent implements OnInit {
   sendHelpDialogValues(): void {
     const data = {
       title: 'Search Consolidated Report Help',
-      summary: "You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.",
+      sections: [
+        {
+          elements: [
+            {
+              description: 'You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.',
+            }
+          ]
+        }
+      ]
     };
     this.dialogService.clearDialogData();
-    this.dialogService.updateDialogData(data);
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
-  
+
   ngOnDestroy() {
     this.dialogService.showHelpButton = false;
   }

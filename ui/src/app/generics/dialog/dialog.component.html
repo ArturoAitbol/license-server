@@ -3,18 +3,22 @@
     <mat-icon>close</mat-icon>
   </button>
   <h2 mat-dialog-title class="title">{{ dialogService.dialogData.title }}</h2>
-  <p class="summary">{{ dialogService.dialogData.summary }}</p>
-  <div *ngFor="let key of keysExceptTitle">
-    <ng-container *ngIf="key.includes('subtitle'); else description">
-      <p class="subtitle">{{ dialogService.dialogData[key] }}</p>
-    </ng-container>
-    <ng-template #description>
-      <ng-container *ngIf="key.includes('description'); else separator">
-        <p class="description">{{ dialogService.dialogData[key] }}</p>
-      </ng-container>
-      <ng-template #separator>
-          <p class="separator">{{ dialogService.dialogData[key] }}</p>
-      </ng-template>
-    </ng-template>
+  <p  *ngIf="dialogService.dialogData.summary" class="summary">{{ dialogService.dialogData.summary }}</p>
+  <div *ngFor="let section of dialogService.dialogData.sections">
+    <h2 class="section-name" *ngIf="section.name">{{ section.name }}</h2>
+    <div *ngFor="let element of section.elements">
+      <div class="description-container">
+        <ng-container *ngIf="element.description && element.subtitle !== ''; else noDots">
+          <h3 class="subtitle">{{ element.subtitle}}: </h3>
+        </ng-container>
+        <ng-template #noDots>
+          <h3 class="subtitle">{{ element.subtitle}} </h3>
+        </ng-template>
+        <p class="description" *ngIf="element.description">{{ element.description }}</p>
+      </div>
+      <ul>
+        <li class="description" *ngFor="let description of element.descriptions">{{ description }}</li>
+      </ul>
+    </div>
   </div>
 </div>

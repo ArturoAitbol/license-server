@@ -644,13 +644,29 @@ export class MapComponent implements OnInit, OnDestroy {
     const data = {
       title: 'Map Help',
       summary: "Map/Route path offers an overview of all regions and cross-calling between them. It also serves as a reference point to identify if any regions is experiencing issues with calls.",
-      subtitle_1: 'Note:',
-      description_1: '•	To view the map of call routes for a specific date, choose the date from the radio button and click "Apply".',
-      description_2: '•	To view the map of call routes for a particular region, select the relevant City, State, or Country from the dropdown and click "Apply".',
-      description_3: 'Route region: To view information for a particular route region, click the region on the map. For detailed report, click "Go to Dashboard" at the bottom',
-      description_4: 'Route line: To view call information between two connecting regions click the call route line. Click "Close" to close the dialog box.',
+      sections: [
+        {
+          //name: empty as section doesn't have title
+          elements: [
+            {
+              subtitle: 'Note',
+              descriptions: 
+                [
+                  'To view the map of call routes for a specific date, choose the date from the radio button and click "Apply".',
+                  'To view the map of call routes for a particular region, select the relevant City, State, or Country from the dropdown and click "Apply".'
+                ]
+            },
+            {
+              description: 'Route region: To view information for a particular route region, click the region on the map. For detailed report, click "Go to Dashboard" at the bottom',
+            },
+            {
+              description: 'Route line: To view call information between two connecting regions click the call route line. Click "Close" to close the dialog box.',
+            }
+          ]
+        }
+      ]
     };
     this.dialogService.clearDialogData();
-    this.dialogService.updateDialogData(data);
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
 }

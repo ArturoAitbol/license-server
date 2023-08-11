@@ -312,10 +312,18 @@ export class CtaasStakeholderComponent implements OnInit {
   sendHelpDialogValues(): void {
     const data = {
       title: 'Stakeholders Help',
-      summary: "Clicking on the stakeholders page will display Admins with complete access and stakeholders with limited access. Only an Admin can add multiple stakeholders using the add stakeholder button. Admin can delete/modify stakeholder details.",
+      sections: [
+        {
+          elements: [
+            {
+              description: 'Clicking on the stakeholders page will display Admins with complete access and stakeholders with limited access. Only an Admin can add multiple stakeholders using the add stakeholder button. Admin can delete/modify stakeholder details.',
+            }
+          ]
+        }
+      ]
     };
     this.dialogService.clearDialogData();
-    this.dialogService.updateDialogData(data);
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
 
   ngOnDestroy() {
