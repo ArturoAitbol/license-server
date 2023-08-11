@@ -191,14 +191,6 @@ f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app de
 be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
 \.
 
---
--- Data for Name: historical_report; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.historical_report (id, subaccount_id, note_id, report_type, start_date, end_date, image) FROM stdin;
-4c027686-5951-43fb-a96b-9d9ccdcbfa52	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	be612704-c26e-48ea-ab9b-19312f03d644	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
-4c017683-5951-43ae-c45b-9f4ccfcbfa64	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
-\.
 
 --
 -- Data for Name: subaccount_admin_device; Type: TABLE DATA; Schema: public; Owner: -
@@ -235,8 +227,6 @@ COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
-e83e94d8-563f-4a06-8aa8-b7bfbaeb7f15	t	vtorrico@tekvizionlabs.com	map 	mapFeature
-866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Historical Native Dashboard for Notes	spotlight-historical-dashboard
 be612704-c26e-48ea-ab9b-19312f03d644	t	pfernandez@tekvizionlabs.com	Send Welcome Email to SpotLight customers	welcomeEmail
 eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	t	pfernandez@tekvizionlabs.com	Multitenant demo subaccount for UCaaS CT	multitenant-demo-subaccount
 \.

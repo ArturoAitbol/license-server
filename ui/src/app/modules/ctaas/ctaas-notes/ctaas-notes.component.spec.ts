@@ -10,13 +10,13 @@ import { NoteServiceMock } from '../../../../test/mock/services/ctaas-note-servi
 import { SubaccountServiceMock } from '../../../../test/mock/services/subaccount-service.mock';
 import { Note } from '../../../model/note.model';
 import { AddNotesComponent } from "./add-notes/add-notes.component";
-import { CtaasHistoricalDashboardComponent } from "../ctaas-historical-dashboard/ctaas-historical-dashboard.component";
 import { CtaasSetupServiceMock } from "../../../../test/mock/services/ctaas-setup.service.mock";
 import { BannerServiceMock } from "../../../../test/mock/services/alert-banner-service.mock";
 import { BannerComponent } from "../banner/banner.component";
 import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 import { Constants } from "src/app/helpers/constants";
 import { FeatureToggleServiceMock } from "../../../../test/mock/services/feature-toggle-service.mock";
+import { environment } from 'src/environments/environment';
 
 let ctaasNotesComponent: CtaasNotesComponent;
 let fixture: ComponentFixture<CtaasNotesComponent>;
@@ -173,16 +173,19 @@ describe('Notes dialog calls and interactions', () => {
 
     it('should show the historical dashboard when calling viewDashboard()', () => {
         spyOn(MatDialogMock, 'open').and.callThrough();
-        spyOn(ctaasNotesComponent, 'fetchNoteList');
+        spyOn(ctaasNotesComponent, 'fetchNoteList').and.callThrough();
         spyOn(ctaasNotesComponent, 'viewDashboard').and.callThrough();
         spyOn(ctaasNotesComponent, 'openDialog').and.callThrough();
+        spyOn(window,'open');
         spyOn(FeatureToggleServiceMock, 'isFeatureEnabled').and.returnValue(false);
         const note: Note = NoteServiceMock.mockNoteA;
         ctaasNotesComponent.fetchNoteList();
+
         ctaasNotesComponent.viewDashboard(note);
 
-        expect(ctaasNotesComponent.openDialog).toHaveBeenCalledWith(ctaasNotesComponent.VIEW_DASHBOARD, note);
-        expect(MatDialogMock.open).toHaveBeenCalledWith(CtaasHistoricalDashboardComponent, jasmine.any(Object));
+        const subaccountDetails = SubaccountServiceMock.getSelectedSubAccount();
+        const featureUrl = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${subaccountDetails.id}&noteId=${note.id}`;
+        expect(window.open).toHaveBeenCalledWith(featureUrl);
     });
 
     it('should call onChangeTogle with true', () => {

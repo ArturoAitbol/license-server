@@ -35,6 +35,8 @@ public class ActionMenu extends AbstractPageObject {
     WebElement subaccountAdminButton;
     @FindBy(xpath = "//button[@id='View UCaaS Continuous Testing']")
     WebElement spotlightDashboardButton;
+    @FindBy(xpath = "//button[@id='View Dashboard']")
+    WebElement spotlightHistoricalDashboardButton;
     @FindBy(xpath = "//button[@id='Delete Account']")
     WebElement spotlightStakeholderButton;
     @FindBy(xpath = "//button[@id='Update Details']")
@@ -90,6 +92,15 @@ public class ActionMenu extends AbstractPageObject {
         executor.executeScript("arguments[0].click();", this.spotlightDashboardButton);
         By messageSelector = By.xpath("//simple-snack-bar");
         this.action.waitSpinner(messageSelector);
+        //Switch to new UCaaS Continuous Testing Dashboard tab
+        ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(tabs.size()-1));
+        return new Dashboard();
+    }
+
+    public Dashboard goToSpotlightHistoricalDashboard() {
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
+        executor.executeScript("arguments[0].click();", this.spotlightHistoricalDashboardButton);
         //Switch to new UCaaS Continuous Testing Dashboard tab
         ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
         driver.switchTo().window(tabs.get(tabs.size()-1));

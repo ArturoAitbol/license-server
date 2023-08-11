@@ -26,6 +26,7 @@ export class ViewProfileComponent implements OnInit {
   missingDataFlag:boolean;
   selectedNotifications = new SelectionModel<INotification[]>(true, []);
   toggleStatus = true;
+  phoneNumberRequiredComplement = "";
   emailNotifications: boolean;
 
   CountryISO = CountryISO;
@@ -53,13 +54,23 @@ export class ViewProfileComponent implements OnInit {
    * initialize the Profile Form details and required list
    */
   initializeFormDetails(): void {
-    this.viewProfileForm = this.formBuilder.group({
+    let formObject: any = {
       name: ['', Validators.required],
       jobTitle: [''],
       companyName: [''],
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['']
-    });
+      phoneNumber: [''],
+      role: ['']
+    };
+    if (this.data?.jobTitle && this.data?.jobTitle !== "")
+      formObject.jobTitle.push(Validators.required);
+    if (this.data?.companyName && this.data?.companyName !== "")
+      formObject.companyName.push(Validators.required);
+    if (this.data?.phoneNumber && this.data?.phoneNumber !== "") {
+      this.phoneNumberRequiredComplement = " *";
+      formObject.phoneNumber.push(Validators.required);
+    }
+    this.viewProfileForm = this.formBuilder.group(formObject);
   }
  
   /**
@@ -86,8 +97,10 @@ export class ViewProfileComponent implements OnInit {
       this.isUpdatedClicked = true;
       let requestPayload = { ...this.viewProfileForm.value };
       delete requestPayload.type;
-      if (requestPayload.phoneNumber && requestPayload.phoneNumber !== '')
+      if (requestPayload.phoneNumber)
         requestPayload.phoneNumber = requestPayload.phoneNumber.e164Number;
+      else 
+        requestPayload.phoneNumber = "";
       requestPayload.emailNotifications = this.emailNotifications;
       this.userProfileService.updateUserProfile(requestPayload)
       .toPromise()

@@ -1,0 +1,31 @@
+<div class="custom-dialog">
+    <div class="table-container" style="max-height: 80vh; overflow-y: auto;">
+        <table>
+            <thead>
+            <tr class="header">
+                <th>Role</th>
+                <th>Administrator</th>
+                <th>Stakeholder</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of tableData.row">
+                    <td>{{ item.header }}</td>
+                    <td class="icon">
+                        <mat-icon *ngIf="item.administrator" style="color: green;">check</mat-icon>
+                        <mat-icon *ngIf="!item.administrator" style="color: red;">clear</mat-icon>
+                    </td>
+                    <td class="icon">
+                        <mat-icon *ngIf="item.stakeholder" style="color: green;" >check</mat-icon>
+                        <mat-icon *ngIf="!item.stakeholder" style="color: red;">clear</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="close-button">
+        <button mat-icon-button (click)="onCloseDialog()" >
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
