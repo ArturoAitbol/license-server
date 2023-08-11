@@ -29,9 +29,9 @@ export class DialogService {
   private _showHelpButton: boolean = false;
 
   dialogData: DialogData = {
-    title: "", // Valor predeterminado
-    summary: "", // Valor predeterminado
-    sections: [], // Valor predeterminado
+    title: "",
+    summary: "",
+    sections: [],
   };
 
   constructor(private dialog: MatDialog) { }
@@ -83,26 +83,20 @@ export class DialogService {
   }
 
   public transformToDialogData(data: any): DialogData {
-    // Mapear las secciones y elementos para ajustar la estructura
     const transformedSections = data.sections.map((section: any) => {
       const transformedElements = section.elements.map((element: any) => {
-        // Asegurarse de que todas las propiedades requeridas estén presentes
         return {
           subtitle: element.subtitle || '',
           descriptions: element.descriptions || [],
           description: element.description || '',
         };
       });
-  
-      // Devolver la estructura de sección requerida por DialogData
-      return {
+        return {
         name: section.name,
         elements: transformedElements,
       };
     });
-  
-    // Devolver el objeto que sigue la estructura de DialogData
-    return {
+      return {
       title: data.title || '',
       summary: data.summary || '',
       sections: transformedSections,
