@@ -64,13 +64,9 @@ export class DialogServiceMock {
     }
     close(): void { return; }
 
-    clearDialogData(): void{
+    clearDialogData(): void{}
 
-    }
+    transformToDialogData(data:any): void{ }
 
-    transformToDialogData(data:any): void{
-
-    }
-    updateDialogData(data): void {
-    }
+    updateDialogData(data): void {}
 }
