@@ -52,7 +52,6 @@ export class SearchConsolidatedReportComponent implements OnInit {
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.maxStartDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
     this.maxEndDate = this.maxStartDate;
-    this.sendHelpDialogValues();  
   }
 
   onCancel(): void {
@@ -122,25 +121,5 @@ export class SearchConsolidatedReportComponent implements OnInit {
       this.maxTime = event;
     this.maxTimeBK = event;
   }
-  
-  sendHelpDialogValues(): void {
-    const data = {
-      title: 'Search Consolidated Report Help',
-      sections: [
-        {
-          elements: [
-            {
-              description: 'You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.',
-            }
-          ]
-        }
-      ]
-    };
-    this.dialogService.clearDialogData();
-    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
-  }
 
-  ngOnDestroy() {
-    this.dialogService.showHelpButton = false;
-  }
 }

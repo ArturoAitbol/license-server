@@ -198,3 +198,8 @@ app-banner-outlet {
   justify-content: center;
   align-items: center;
 }
+
+.role {
+  margin-top: -15px;
+  font-size: 12px;
+}

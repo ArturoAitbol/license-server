@@ -255,6 +255,10 @@ export class CtaasTestReportsComponent implements OnInit {
           elements: [
             {
               description: 'The Test Reports page offers users a comprehensive overview of test results. It serves as a centralized hub for accessing detailed information about various tests conducted within the platform.',
+            },
+            {
+              subtitle: 'Search consolidated report',
+              description: 'You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.'
             }
           ]
         }

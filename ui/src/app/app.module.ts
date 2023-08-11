@@ -43,6 +43,7 @@ import { AcceptComponent } from './dialogs/accept/accept.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OptionalComponent } from './dialogs/optional/optional.component';
 import { DialogComponent } from './generics/dialog/dialog.component';
+import { PermissionsChartComponent } from './generics/permissions-chart/permissions-chart.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -70,6 +71,7 @@ import { DialogComponent } from './generics/dialog/dialog.component';
         AcceptComponent,
         OptionalComponent,
         DialogComponent,
+        PermissionsChartComponent,
     ],
     imports: [
         AppRoutingModule,

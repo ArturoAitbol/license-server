@@ -27,6 +27,7 @@ import { SnackBarService } from './services/snack-bar.service';
 import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 import { CallbackTimerComponent } from './modules/ctaas/callback/callback-timer/callback-timer.component';
 import { DialogComponent } from './generics/dialog/dialog.component';  
+import { PermissionsChartComponent } from './generics/permissions-chart/permissions-chart.component';
 
 
 @Component({
@@ -480,6 +481,12 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.msalService.instance.getActiveAccount().name;
     }
 
+    getRole(): string{
+        const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+        const camellCaseSplit = roles[0].split('.')[1].replace(/([A-Z])/g, ' $1').trim();
+        return camellCaseSplit;
+    }
+
     /**
      * Show About Modal
      */
@@ -611,10 +618,16 @@ export class AppComponent implements OnInit, OnDestroy {
         this._destroying$.next(undefined);
         this._destroying$.complete();
     }
+
     openDialog(): void {
         this.dialog.open(DialogComponent);
     }
+
     get showHelpButton(): boolean {
         return this.dialogService.showHelpButton;
+    }
+
+    openRoles(): void {
+        this.dialog.open(PermissionsChartComponent);
     }
 }

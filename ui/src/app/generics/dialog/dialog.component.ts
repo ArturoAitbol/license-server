@@ -9,7 +9,7 @@ import { DialogService } from 'src/app/services/dialog.service';
 export class DialogComponent implements OnInit {
 
   keysExceptTitle: string[];
-  constructor(public dialogService: DialogService, public dialogRef: MatDialogRef<DialogComponent> ) { 
+  constructor(public dialogService: DialogService, public dialogRef: MatDialogRef<DialogComponent>  ) { 
     this.keysExceptTitle = Object.keys(this.dialogService.dialogData).filter( key => key !== 'title' && key !== 'summary');
   }
 

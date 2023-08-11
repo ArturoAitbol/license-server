@@ -118,8 +118,16 @@
                     <mat-icon style = "color: white;">help_outline</mat-icon>
                 </button>
                 <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
-                    aria-label="Example icon-button with a menu">
-                    {{getUserName()}} <mat-icon>arrow_drop_down</mat-icon>
+                aria-label="Example icon-button with a menu">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span>
+                                {{getUserName()}}
+                            </span>
+                            <div *lcCheckAccessFor="'view-role'" class="role">{{getRole()}}</div>
+                        </div>
+                        <mat-icon>arrow_drop_down</mat-icon>
+                    </div>
                 </button>
             </div>
             <!-- user settings menu -->
@@ -131,6 +139,10 @@
                 <button *lcCheckAccessFor="'view-profile'" mat-menu-item (click)="viewProfile()" id="profile-button">
                     <mat-icon aria-hidden="false" aria-label="person icon">person</mat-icon>
                     <span>Profile</span>
+                </button>
+                <button *lcCheckAccessFor="'view-roles-permission'" mat-menu-item (click)="openRoles()" id="profile-button">
+                    <mat-icon aria-hidden="false" aria-label="person icon">verified_user</mat-icon>
+                    <span>Role permission</span>
                 </button>
                 <button mat-menu-item (click)="logout()" id="logout-button">
                     <mat-icon>logout</mat-icon>
