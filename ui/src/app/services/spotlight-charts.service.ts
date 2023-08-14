@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Moment } from "moment";
 import { ReportName } from "../helpers/report-type";
+import { Constants } from "../helpers/constants";
 
 @Injectable({
     providedIn: 'root'
@@ -42,7 +43,7 @@ export class SpotlightChartsService {
         }
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         params = params.set('metric', 'POLQA,Received Jitter,Received packet loss,Round trip time,Sent bitrate');
         params = params.set('subaccountId', subaccountId);
         params = params.set('groupBy',groupBy);
@@ -80,7 +81,7 @@ export class SpotlightChartsService {
     private getNetworkQualityData(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], metric: string, users: string[], subaccountId: string, groupBy: string, selectedFilter:boolean, callsFilter:string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
         params = params.set('groupBy',groupBy);
@@ -96,7 +97,7 @@ export class SpotlightChartsService {
     public getNetworkQualitySummary(startDate: Moment, endDate: Moment,  regions: { country: string, state: string, city: string }[], users: string[], subaccountId: string, selectedFilter:boolean) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         params = params.set('metric', 'Received Jitter,Received packet loss,Round trip time,Sent bitrate,POLQA');
         params = params.set('subaccountId', subaccountId);
         if(selectedFilter === true) params = params.set('average', selectedFilter);
@@ -117,7 +118,7 @@ export class SpotlightChartsService {
     public getWeeklyComboBarChart(startDate: Moment, endDate: Moment, subaccountId: string, reportType: string, regions: { country: string, state: string, city: string }[]): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         params = params.set('reportType', reportType);
         params = params.set('subaccountId', subaccountId);
         if(regions.length>0) params = params.set('regions', JSON.stringify(regions));
@@ -135,7 +136,7 @@ export class SpotlightChartsService {
     public getWeeklyCallsStatusHeatMap(startDate: Moment, endDate: Moment, subaccountId: string, regions: { country: string, state: string, city: string }[]){
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         params = params.set('subaccountId', subaccountId);
         if(regions.length>0) params = params.set('regions', JSON.stringify(regions));
         const headers = this.getHeaders();
@@ -166,7 +167,7 @@ export class SpotlightChartsService {
     private getCallsStatusSummary(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string, callsFilter:string) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         params = params.set('subaccountId', subaccountId);
         if(regions.length>0) params = params.set('regions', JSON.stringify(regions));
         if(callsFilter) params = params.set('callsFilter', callsFilter);
@@ -185,7 +186,7 @@ export class SpotlightChartsService {
     public getVoiceQualityChart(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], subaccountId: string, weekly = false) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         params = params.set('subaccountId', subaccountId);
         if(regions.length>0) params = params.set('regions', JSON.stringify(regions));
         if (weekly) params = params.set('reportPeriod', 'weekly');
@@ -198,7 +199,7 @@ export class SpotlightChartsService {
         let params = new HttpParams();
         params = params.set('subaccountId', subaccountId);
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
+        params = params.set('endDate', endDate.utc().format(Constants.DATE_TIME_FORMAT));
         if(filter) params = params.set('filter', filter);
         if(regions && regions.length>0) params = params.set('regions', JSON.stringify(regions));
         return this.httpClient.get(this.API_URL + 'getFilterOptions', { headers, params });

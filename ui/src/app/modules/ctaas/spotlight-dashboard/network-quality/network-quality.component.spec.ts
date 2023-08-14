@@ -16,6 +16,7 @@ import { SimpleChange } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 import { Utility } from "src/app/helpers/utils";
+import { Constants } from "src/app/helpers/constants";
 
 let networkQualityComponentTestInstance: NetworkQualityComponent;
 let fixture: ComponentFixture<NetworkQualityComponent>;
@@ -365,7 +366,7 @@ describe("NetworkQualityComponent", () => {
     const [startTime, endTime] = "00:00-1:00".split('-');
     startDate = networkQualityComponentTestInstance.startDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]);
     endDate = Utility.setMinutesOfDate(networkQualityComponentTestInstance.endDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]));
-    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}&polqaCalls=true`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format(Constants.DATE_TIME_FORMAT) }&end=${ endDate.format(Constants.DATE_TIME_FORMAT) }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}&polqaCalls=true`;
     const details = {
       chartContext:chartContext,
       dataPointIndex:0,
@@ -384,7 +385,7 @@ describe("NetworkQualityComponent", () => {
     const [startTime, endTime] = "00:00-1:00".split('-');
     startDate = networkQualityComponentTestInstance.startDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]);
     endDate = Utility.setMinutesOfDate(networkQualityComponentTestInstance.endDate.clone().utc().startOf('day').hour(+startTime.split(':')[0]));
-    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format(Constants.DATE_TIME_FORMAT) }&end=${ endDate.format(Constants.DATE_TIME_FORMAT) }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
     const details = {
       chartContext:chartContext,
       dataPointIndex:0,
@@ -403,7 +404,7 @@ describe("NetworkQualityComponent", () => {
     const chartContext = {opts: {xaxis: {categories: ["06-23-2023"]}}};
     startDate = moment.utc("06-23-2023").hour(0);
     endDate = Utility.setHoursOfDate(moment.utc("06-23-2023"));
-    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}&polqaCalls=true`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format(Constants.DATE_TIME_FORMAT) }&end=${ endDate.format(Constants.DATE_TIME_FORMAT) }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}&polqaCalls=true`;
     const details = {
       chartContext:chartContext,
       dataPointIndex:0,
@@ -422,7 +423,7 @@ describe("NetworkQualityComponent", () => {
     const chartContext = {opts: {xaxis: {categories: ["06-23-2023"]}}};
     startDate = moment.utc("06-23-2023").hour(0);
     endDate = Utility.setHoursOfDate(moment.utc("06-23-2023"));
-    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format('YYMMDDHHmmss') }&end=${ endDate.format('YYMMDDHHmmss') }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
+    let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${SubaccountServiceMock.getSelectedSubAccount().id}&start=${ startDate.format(Constants.DATE_TIME_FORMAT) }&end=${ endDate.format(Constants.DATE_TIME_FORMAT) }&regions=${JSON.stringify(networkQualityComponentTestInstance.regions)}&users=${networkQualityComponentTestInstance.selectedUsers.join(',')}`;
     const details = {
       chartContext:chartContext,
       dataPointIndex:0,

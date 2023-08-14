@@ -658,7 +658,9 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     let regions = ""
     if (this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${startDate.utc().format("YYYY-MM-DD HH:mm:ss")}&end=${endDate.utc().format("YYYY-MM-DD HH:mm:ss")}&regions=${regions}`;
+    const parsedStartTime = Utility.parseReportDate(startDate);
+    const parsedEndTime = Utility.parseReportDate(endDate);
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${parsedStartTime}&end=${parsedEndTime}&regions=${regions}`;
     window.open(url);
   }
 
