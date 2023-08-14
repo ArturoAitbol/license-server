@@ -97,9 +97,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.noteService.getNoteList(this.subaccountDetails.id).subscribe((res) => {
             this.isRequestCompleted = true;
             this.notesDataBk = res.notes.map(note => {
-                note.openDate = moment(note.openDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
+                note.openDate = moment(note.openDate, Constants.DATE_TIME_FORMAT).format(Constants.DATE_TIME_FORMAT);
                 if(note.closeDate) {
-                    note.closeDate = moment(note.closeDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
+                    note.closeDate = moment(note.closeDate, Constants.DATE_TIME_FORMAT).format(Constants.DATE_TIME_FORMAT);
                 }
                 return note;
             });
