@@ -13,6 +13,7 @@ import { ConfirmDialogConst, EndpointColumnsConst, SummaryColumnsConst, TestFeat
 import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CtaasCallsDetailsComponent } from './ctaas-calls-details/ctaas-calls-details.component';
+import { Constants } from 'src/app/helpers/constants';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
@@ -120,10 +121,10 @@ export class DetailedReportsComponent implements OnInit {
       this.filterByAvg = params.avg ? params.avg : 0;
       this.sectionFailed = params.sectionFailed ? params.sectionFailed : false;
       this.failedIsChecked = params.status ? true : false;
-      this.startDate = moment.utc(params.start, 'yyyy-MM-DD  HH:mm:ss');
-      this.endDate = moment.utc(params.end, 'yyyy-MM-DD  HH:mm:ss');
-      this.startDateStr = Utility.parseReportDate(this.startDate);
-      this.endDateStr =  Utility.parseReportDate(this.endDate);
+      this.startDate = moment.utc(params.start, Constants.DATE_TIME_FORMAT);
+      this.endDate = moment.utc(params.end, Constants.DATE_TIME_FORMAT);
+      this.startDateStr = this.startDate.format('YYMMDDHHmmss');
+      this.endDateStr =  this.endDate.format('YYMMDDHHmmss');
       if(this.filterByAvg!=0){
         this.displayStats = true;
         this.selectedTab = 1;

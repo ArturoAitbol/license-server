@@ -394,7 +394,7 @@ describe('Data collection and parsing tests', () => {
 
 
     it('should throw an error if getting licenseConsumptionDetails failed when calling onPageChange()', async() => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const err = "some error";
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(throwError(err));

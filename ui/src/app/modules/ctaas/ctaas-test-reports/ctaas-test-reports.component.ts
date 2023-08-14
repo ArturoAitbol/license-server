@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
 import { Utility } from 'src/app/helpers/utils';
-import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -62,7 +61,6 @@ export class CtaasTestReportsComponent implements OnInit {
   constructor(
   private subaccountService: SubAccountService,
   private formBuilder: FormBuilder,
-  private msalService: MsalService,
   private ctaasSetupService: CtaasSetupService,
   private bannerService: BannerService,
   public dialog: MatDialog,
@@ -190,11 +188,9 @@ export class CtaasTestReportsComponent implements OnInit {
         reportType = 'Daily-VQ'
         break;
     }
-    const startDate = moment.utc().format('YYYY-MM-DD 00:00:00');
-    const endDate = moment.utc().format('YYYY-MM-DD HH:mm:ss');
-    const featureParsedStartTime = Utility.parseReportDate(moment.utc(startDate));
-    const featureParsedEndTime = Utility.parseReportDate(moment.utc(endDate));
-    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
+    const startDate = Utility.parseReportDate(moment.utc().startOf('day'));
+    const endDate = Utility.parseReportDate(moment.utc());
+    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${startDate}&end=${endDate}`;
     window.open(featureUrl);
   }
 
@@ -213,8 +209,8 @@ export class CtaasTestReportsComponent implements OnInit {
   onClickMoreDetails(selectedReport: any): void {
     const startDate = selectedReport.startDate.split('UTC')[0];
     const endDate = selectedReport.endDate.split('UTC')[0];
-    const startTime = Utility.parseReportDate(moment(startDate,'MM-DD-YYYY HH:mm:ss'));
-    const endTime = Utility.parseReportDate(moment(endDate,'MM-DD-YYYY HH:mm:ss'));
+    const startTime = Utility.parseReportDate(moment.utc(startDate,'MM-DD-YYYY HH:mm:ss'));
+    const endTime = Utility.parseReportDate(moment.utc(endDate,'MM-DD-YYYY HH:mm:ss'));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
 }

@@ -214,8 +214,8 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
       startDate = moment.utc(category).hour(0);
       endDate = Utility.setHoursOfDate(moment.utc(category));
     }
-    const parsedStartTime = startDate.format('YYMMDDHHmmss');
-    const parsedEndTime = endDate.format('YYMMDDHHmmss');
+    const parsedStartTime = Utility.parseReportDate(startDate);
+    const parsedEndTime = Utility.parseReportDate(endDate);
     let url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
     if (this.regions.length > 0)
       url += "&regions=" + JSON.stringify(this.regions);
