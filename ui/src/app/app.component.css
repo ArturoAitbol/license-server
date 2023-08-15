@@ -194,12 +194,19 @@ app-banner-outlet {
 }
 
 .info-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex; 
 }
 
 .role {
   margin-top: -15px;
   font-size: 12px;
+}
+
+.help-button
+.info-button {
+  margin-right: 10px;
+}
+
+.help-button {
+  align-self: flex-end;
 }

@@ -28,6 +28,7 @@ import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 import { CallbackTimerComponent } from './modules/ctaas/callback/callback-timer/callback-timer.component';
 import { DialogComponent } from './generics/dialog/dialog.component';  
 import { PermissionsChartComponent } from './generics/permissions-chart/permissions-chart.component';
+import { LoginPageComponent } from './views/login-page/login-page.component';
 
 
 @Component({
@@ -406,7 +407,6 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe((result: EventMessage) => {
             this.autoLogoutService.initAcquireTokenTimeout();
         });
-        this.currentRole = this.getRole();
     }
 
     /**
@@ -484,6 +484,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     getRole(): string{
+        console.log("Get roles");
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
         const camellCaseSplit = roles[0].split('.')[1].replace(/([A-Z])/g, ' $1').trim();
         return camellCaseSplit;
