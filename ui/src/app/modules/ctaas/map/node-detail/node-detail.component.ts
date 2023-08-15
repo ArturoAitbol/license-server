@@ -47,7 +47,7 @@ export class NodeDetailComponent implements OnInit {
   }
 
   openNativeDashboardWithSelectedData(){
-    const startDate = moment.utc(this.data.date).format("YYYY-MM-DD HH:mm:ss");
+    const startDate = moment.utc(this.data.date).format(Constants.DATE_TIME_FORMAT);
     const location = this.data.region.city + ", " + this.data.region.state + ", " + this.data.region.country;
     const url = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.selectedSubaccount.id}&location=${location}&date=${startDate}`;
     window.open(url);

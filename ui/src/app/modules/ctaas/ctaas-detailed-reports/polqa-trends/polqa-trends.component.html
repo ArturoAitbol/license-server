@@ -1,0 +1,94 @@
+<div class="d-flex justify-content-center mt-4">
+    <div class="subtitle">
+        <h2> Media Stats
+            <mat-icon matTooltip="A view that provides histograms of the Media Stats (grouped by hour) for the selected time period and group of calls">info_outline</mat-icon>
+        </h2>
+    </div>
+</div>
+<div class="mb-4 text-center">
+    <div id="polqa-trends-chart" class="mt-1" style="height: 300px">
+        <apx-chart
+            [series]="polqaTrendsChartOptions.series"
+            [title]="polqaTrendsChartOptions.title"
+            [chart]="polqaTrendsChartOptions.chart"
+            [xaxis]="polqaTrendsChartOptions.xAxis"
+            [yaxis]="polqaTrendsChartOptions.yAxis"
+            [dataLabels]="polqaTrendsChartOptions.dataLabels"
+            [grid]="polqaTrendsChartOptions.grid"
+            [stroke]="polqaTrendsChartOptions.stroke"
+            [markers]="polqaTrendsChartOptions.markers"
+            [legend]="polqaTrendsChartOptions.legend"
+            [annotations]="polqaTrendsChartOptions.annotations"
+            [colors]="polqaTrendsChartOptions.colors"
+            [tooltip]="polqaTrendsChartOptions.tooltip">
+        </apx-chart>
+    </div>
+    <div class="row">
+        <div id="polqa-chart" class="col-md-6 mt-3" style="height: 300px">
+            <apx-chart
+                [series]="polqaPacketLossChartOptions.series"
+                [title]="polqaPacketLossChartOptions.title"
+                [chart]="polqaPacketLossChartOptions.chart"
+                [xaxis]="polqaPacketLossChartOptions.xAxis"
+                [yaxis]="polqaPacketLossChartOptions.yAxis"
+                [dataLabels]="polqaPacketLossChartOptions.dataLabels"
+                [grid]="polqaPacketLossChartOptions.grid"
+                [stroke]="polqaPacketLossChartOptions.stroke"
+                [markers]="polqaPacketLossChartOptions.markers"
+                [legend]="polqaPacketLossChartOptions.legend"
+                [colors]="polqaPacketLossChartOptions.colors"
+                [tooltip]="polqaPacketLossChartOptions.tooltip">
+            </apx-chart>
+        </div>
+        <div id="polqa-jitter-chart" class="col-md-6 mt-3" style="height: 300px">
+            <apx-chart
+                    [series]="polqaJitterChartOptions.series"
+                    [title]="polqaJitterChartOptions.title"
+                    [chart]="polqaJitterChartOptions.chart"
+                    [xaxis]="polqaJitterChartOptions.xAxis"
+                    [yaxis]="polqaJitterChartOptions.yAxis"
+                    [dataLabels]="polqaJitterChartOptions.dataLabels"
+                    [grid]="polqaJitterChartOptions.grid"
+                    [stroke]="polqaJitterChartOptions.stroke"
+                    [markers]="polqaJitterChartOptions.markers"
+                    [legend]="polqaJitterChartOptions.legend"
+                    [colors]="polqaJitterChartOptions.colors"
+                    [tooltip]="polqaJitterChartOptions.tooltip">
+            </apx-chart>
+        </div>
+    </div>
+    <div class="row">
+        <div id="polqa-packet-loss-chart" class="col-md-6 mt-3" style="height: 300px">
+            <apx-chart
+                [series]="polqaSentBitrateChartOptions.series"
+                [title]="polqaSentBitrateChartOptions.title"
+                [chart]="polqaSentBitrateChartOptions.chart"
+                [xaxis]="polqaSentBitrateChartOptions.xAxis"
+                [yaxis]="polqaSentBitrateChartOptions.yAxis"
+                [dataLabels]="polqaSentBitrateChartOptions.dataLabels"
+                [grid]="polqaSentBitrateChartOptions.grid"
+                [stroke]="polqaSentBitrateChartOptions.stroke"
+                [markers]="polqaSentBitrateChartOptions.markers"
+                [legend]="polqaSentBitrateChartOptions.legend"
+                [colors]="polqaSentBitrateChartOptions.colors"
+                [tooltip]="polqaSentBitrateChartOptions.tooltip">
+            </apx-chart>
+        </div>
+        <div id="polqa-rtt-chart" class="col-md-6 mt-3" style="height: 300px">
+            <apx-chart
+                    [series]="polqaRoundTripChartOptions.series"
+                    [title]="polqaRoundTripChartOptions.title"
+                    [chart]="polqaRoundTripChartOptions.chart"
+                    [xaxis]="polqaRoundTripChartOptions.xAxis"
+                    [yaxis]="polqaRoundTripChartOptions.yAxis"
+                    [dataLabels]="polqaRoundTripChartOptions.dataLabels"
+                    [grid]="polqaRoundTripChartOptions.grid"
+                    [stroke]="polqaRoundTripChartOptions.stroke"
+                    [markers]="polqaRoundTripChartOptions.markers"
+                    [legend]="polqaRoundTripChartOptions.legend"
+                    [colors]="polqaRoundTripChartOptions.colors"
+                    [tooltip]="polqaRoundTripChartOptions.tooltip">
+            </apx-chart>
+        </div>
+    </div>
+</div>
