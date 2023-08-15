@@ -52,5 +52,7 @@ export class Constants {
     public static readonly REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS = 30 * 60 * 1000; // 30 minutes * 60 seconds * 1000 milliseconds
     public static readonly LOGIN_TIMEOUT = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
 
+    public static readonly DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
 }
 

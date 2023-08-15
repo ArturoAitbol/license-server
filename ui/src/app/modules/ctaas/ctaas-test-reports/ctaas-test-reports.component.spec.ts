@@ -142,12 +142,11 @@ describe('interaction with selected filters', () => {
     fixture.detectChanges();
     spyOn(window, 'open').and.returnValue(null);
     spyOn(window, 'close').and.returnValue(null);
-    spyOn(Utility, 'parseReportDate').and.callThrough();
     spyOn(ctaasTestReportComponentTestInstance, 'todayReport').and.callThrough();
     ctaasTestReportComponentTestInstance.filterForm.get('todayReportType').setValue('Daily-FeatureFunctionality');
     fixture.detectChanges();
     ctaasTestReportComponentTestInstance.todayReport();
-    expect(Utility.parseReportDate).toHaveBeenCalled();
+    expect(window.open).toHaveBeenCalled();
   });
 
   it(' test reports - should filter the list of reports', fakeAsync(() => {

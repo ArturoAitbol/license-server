@@ -72,11 +72,11 @@ export class SearchConsolidatedReportComponent implements OnInit {
         reportType = 'Daily-VQ'
         break;
     }
-    const parsedStartTime = moment.utc(details.startDate).format("MM-DD-YYYY") + ' ' + details.startTime + ':00';
-    const parsedEndTime = moment.utc(details.endDate).format("MM-DD-YYYY") + ' ' + details.endTime + ':59';
-    const parsedStartDate = Utility.parseReportDate(moment.utc(parsedStartTime, 'MM-DD-YYYY HH:mm:ss'));
-    const parsedEndDate = Utility.parseReportDate(moment.utc(parsedEndTime, 'MM-DD-YYYY HH:mm:ss'));
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${parsedStartDate}&end=${parsedEndDate}`;
+    const startTime = details.startTime.split(':');
+    const parsedStartTime = moment.utc(details.startDate).hour(Number(startTime[0])).minute(Number(startTime[1])).second(0);
+    const endTime = details.endTime.split(':');
+    const parsedEndTime = moment.utc(details.endDate).hour(Number(endTime[0])).minute(Number(endTime[1])).second(59);
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${Utility.parseReportDate(parsedStartTime)}&end=${Utility.parseReportDate(parsedEndTime)}`;
     window.open(url);
   }
 
