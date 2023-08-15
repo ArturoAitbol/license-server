@@ -779,10 +779,9 @@ export class DetailedReportsComponent implements OnInit {
   }
 
   openDetails(selectedItem: any) {
-    console.log("entra", selectedItem)
     let dialogRef = this.dialog.open(CtaasCallsDetailsComponent, {
-      width: '75vw',
-      height: '93vh',
+      width: '70vw',
+      height: '87vh',
       maxHeight: '100vh',
       maxWidth: '85vw',
       data: selectedItem,
