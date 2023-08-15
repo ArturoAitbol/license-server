@@ -10,3 +10,14 @@
 .did.titles{
     color:rgb(55, 61, 63);
 }
+
+.no-data-found {
+    font-size: 2rem;
+    margin-top: 10%;
+    text-align: center;
+}
+
+.error-reason{
+    margin: 0; 
+    text-align: end; 
+}
