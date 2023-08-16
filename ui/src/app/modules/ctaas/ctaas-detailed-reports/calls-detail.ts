@@ -24,6 +24,11 @@ const polqaChartCommonOptions: Partial<ChartOptions> = {
                 color: "#000000"
             },
         },
+        labels: {
+            style: {
+                fontSize: '11px'
+            }
+        },
         categories: [
             "00:00-01:00",
             "00:01-02:00",
@@ -51,7 +56,7 @@ const defaultPolqaPacketLossChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
         id: 'polqa-packet-loss',
-
+        group: 'polqa-metrics',
         height: 300,
         zoom: {
             enabled: false
@@ -66,8 +71,12 @@ const defaultPolqaPacketLossChartOptions: Partial<ChartOptions> = {
         style: {
             color: '#000000'
         }
+    },events:{
+        markerClick:function(){
+            console.log("network trends - jitter")
+        }
     },
-    colors: ["#45b4e9","#9E9EFF"],
+    colors: ["#EC7C56","#9E9EFF"],
     series: [
         {
             name: 'Packet Loss',
@@ -107,7 +116,7 @@ const defaultPolqaPacketLossChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: ["#45b4e9","#9E9EFF"],
+        colors: ["#EC7C56","#9E9EFF"],
     },
     annotations: {
         yaxis: [{
@@ -123,6 +132,7 @@ const defaultPolqaJitterChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
         id: 'polqa-jitter',
+        group: 'polqa-metrics',
         height: 300,
         zoom: {
             enabled: false
@@ -143,7 +153,7 @@ const defaultPolqaJitterChartOptions: Partial<ChartOptions> = {
             color: '#000000'
         }
     },
-    colors: ["#45b4e9","#9E9EFF"],
+    colors: ["#EC7C56","#9E9EFF"],
     series: [
         {
             name: "Jitter",
@@ -184,7 +194,7 @@ const defaultPolqaJitterChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: ["#45b4e9","#9E9EFF"],
+        colors: ["#EC7C56","#9E9EFF"],
     },
     annotations: {
         yaxis: [{
@@ -195,12 +205,125 @@ const defaultPolqaJitterChartOptions: Partial<ChartOptions> = {
         }]
     }
 };
+const defaultPolqaReceivedPacketsChartOptions: Partial<ChartOptions> = {
+    title:{
+        text: "",
+        align: "center",
+        style: {
+            color: '#000000'
+        }
+    },
+    series: [
+        {
+            name: "received-packets",
+            data: []
+        }
+    ],
+    chart: {
+        type: "line",
+        id: "received-packets",
+        group: 'polqa-metrics',
+        height: 300,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    colors: ["#EC7C56","#9E9EFF"],
+    yAxis:{
+        axisTicks: {
+            show: true
+        },
+        axisBorder: {
+            show: true,
+            color: "#000000"
+        },
+        labels: {
+            style: {
+                colors: "#000000"
+            },
+            minWidth: 40
+        },
+        title: {
+            text: "Received Packets",
+            style: {
+                color: "#000000"
+            }
+        },
+        forceNiceScale: true,
+    }
+    ,
+    markers: {
+        size: 4,
+        colors: ["#EC7C56","#9E9EFF"],
+    }
+};
+
+const defaultPolqaSentPacketsChartOptions: Partial<ChartOptions> = {
+    title:{
+        text: "",
+        align: "center",
+        style: {
+            color: '#000000'
+        }
+    },
+    series: [
+        {
+            name: "sent-packets",
+            data: []
+        }
+    ],
+    chart: {
+        type: "line",
+        id: "sent-packets",
+        group: 'polqa-metrics',
+        height: 300,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    colors: ["#EC7C56","#9E9EFF"],
+    yAxis:{
+        axisTicks: {
+            show: true
+        },
+        axisBorder: {
+            show: true,
+            color: "#000000"
+        },
+        labels: {
+            style: {
+                colors: "#000000"
+            },
+            minWidth: 40
+        },
+        title: {
+            text: "Sent Packets",
+            style: {
+                color: "#000000"
+            }
+        },
+        forceNiceScale: true,
+    }
+    ,
+    markers: {
+        size: 4,
+        colors: ["#EC7C56","#9E9EFF"],
+    }
+};
+
 
 const defaultPolqaRoundtripTimeChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
         id: 'polqa-round-trip-time',
         height: 300,
+        group: 'polqa-metrics',
         zoom: {
             enabled: false
         },
@@ -215,7 +338,7 @@ const defaultPolqaRoundtripTimeChartOptions: Partial<ChartOptions> = {
             color: '#000000'
         }
     },
-    colors: ['#45b4e9',"#9E9EFF"],
+    colors: ['#EC7C56',"#9E9EFF"],
     series: [
         {
             name: "Round Trip Time",
@@ -256,7 +379,7 @@ const defaultPolqaRoundtripTimeChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: [ "#45b4e9", "#9E9EFF" ],
+        colors: [ "#EC7C56", "#9E9EFF" ],
     },
     annotations: {
         yaxis: [{
@@ -282,7 +405,7 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
         }
     ],
     chart: {
-        type: "line",
+        type: "scatter",
         id: "POLQA",
             height: 300,
         zoom: {
@@ -294,11 +417,11 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
         events:
         {
             markerClick: function(event, chartContext, config){
-                console.log("POLQA");
+                console.log("POLQA",config);
             }
         }
     },
-    colors: ["#45b4e9","#9E9EFF"],
+    colors: ["#EC7C56","#9E9EFF"],
     yAxis:{
         axisTicks: {
             show: true
@@ -324,13 +447,14 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
     ,
     markers: {
         size: 4,
-        colors: ["#45b4e9","#9E9EFF"],
+        colors: ["#EC7C56","#9E9EFF"],
     }
 };
 
 const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
+        group: 'polqa-metrics',
         id: 'Sent-Bitrate',
               height: 300,
         zoom: {
@@ -347,7 +471,7 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
             color: '#000000'
         }
     },
-    colors: ["#45b4e9","#9E9EFF"],
+    colors: ["#EC7C56","#9E9EFF"],
     series: [
         {
             name: "Sent Bitrate",
@@ -388,7 +512,7 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
         },
     markers: {
         size: 4,
-        colors: ["#45b4e9","#9E9EFF"],
+        colors: ["#EC7C56","#9E9EFF"],
     },
     annotations: {
         yaxis: [{
@@ -407,5 +531,7 @@ export {
     defaultPolqaRoundtripTimeChartOptions,
     defaultPolqaJitterChartOptions,
     defaultPolqaPacketLossChartOptions, 
-    defaultSentBitrateChartOptions
+    defaultSentBitrateChartOptions,
+    defaultPolqaReceivedPacketsChartOptions,
+    defaultPolqaSentPacketsChartOptions
 }
