@@ -71,12 +71,6 @@ const defaultPolqaTrendsChartOptions: Partial<ChartOptions> = {
         },
         toolbar: {
             show: false
-        },
-        events:
-        {
-            markerClick: function(event, chartContext, config){
-                console.log("POLQA");
-            }
         }
     },
     colors: ["#6E76B4","#EC7C56"],

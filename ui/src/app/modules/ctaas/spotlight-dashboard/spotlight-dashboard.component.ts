@@ -619,23 +619,26 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
-  navigateToDetailedTable(reportType?: string, status?: string, section?: boolean) {
+  navigateToDetailedTable(params:{reportType?: string, status?: string, section?: boolean, statsTab?:boolean}) {
     let reportFilter = "";
-    if (reportType && reportType != "")
-      reportFilter += "type=" + reportType;
-    else if (status && status != "")
-      reportFilter += "status=" + status;
-    if (section) reportFilter += "&sectionFailed=" + section;
+    if (params.reportType && params.reportType != "")
+      reportFilter += "type=" + params.reportType;
+    else if (params.status && params.status != "")
+      reportFilter += "status=" + params.status;
+    if (params.section) 
+      reportFilter += "&sectionFailed=" + params.section;
+    if(params.statsTab)
+      reportFilter += "&statsTab=true";
     this.goToDetailedReportView(reportFilter);
   }
 
   navigateToPOLQACallsDetailedTable() {
-    const reportFilter = "polqaCalls=true";
+    const reportFilter = "polqaCalls=true&statsTab=true";
     this.goToDetailedReportView(reportFilter);
   }
 
   private navigateToPOLQACallsDetailedTableFilter(position: number): void {
-    const reportFilter = `polqaCalls=true&avg=${position + 1}`;
+    const reportFilter = `polqaCalls=true&statsTab=true&avg=${position + 1}`;
     this.goToDetailedReportView(reportFilter);
   }
 
@@ -847,7 +850,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.isSelectedDayInWeekly = true;
       this.selectedDayInWeekly = this.weeklyFilters.get('date').value.clone().subtract((6 - config.dataPointIndex), 'days');
       var seriesIndex = config.seriesIndex;
-      const reportFilter = `polqaCalls=true&avg=${seriesIndex + 1}`;
+      const reportFilter = `polqaCalls=true&statsTab=true&avg=${seriesIndex + 1}`;
       this.goToDetailedReportView(reportFilter);
     }
   }

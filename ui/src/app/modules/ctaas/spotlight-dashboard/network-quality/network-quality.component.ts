@@ -223,6 +223,8 @@ export class NetworkQualityComponent implements OnInit, OnChanges, OnDestroy {
       url+= "&users=" + this.selectedUsers.join(',');
     if (details.polqaCalls)
       url+= "&polqaCalls=true";
+    if (this.groupBy==='day')
+      url+= "&statsTab=true";
     window.open(url);
   }
 
