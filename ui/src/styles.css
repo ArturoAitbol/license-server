@@ -614,18 +614,16 @@ ngx-intl-tel-input input[disabled] {
 *****************************************************/
 
 .mat-tab-label{
-  background-color: rgb(117, 117, 117,0.1);
-  color: black;
+  background-color: white;
+  color: rgb(48, 48, 48);
   opacity: 1 !important;
 }
 .mat-tab-label-active{
-  background-color: #6E76B4;
-  color: white !important;
+  background-color: #e9e9e9;
+  color: black;
   opacity: 1 !important;
 }
 
 .mat-tab-label:hover:not(.mat-tab-disabled){
-  background-color: #6E76B4;
-  color: white !important;
-  opacity: 0.5 !important;
+  background-color: rgb(233, 233, 233,0.5);
 }
