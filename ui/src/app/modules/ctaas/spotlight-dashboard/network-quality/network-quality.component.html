@@ -76,13 +76,11 @@
                 <ng-template #charts>
                     <div class="row mt-2">
                         <div class="summary">
-                            <div class="row mt-4 justify-content-center">
-                                <div class="border">
-                                    <div class="metric-header">
-                                        <mat-icon>call</mat-icon>
-                                        <label class="ps-2 blue-label">Calls With Network Stats:</label>
-                                        <span class="ms-1" id="callsWithNetStats">{{ summary.totalCalls }}</span>
-                                    </div>
+                            <div class="row justify-content-center">
+                                <div class="metric-header">
+                                    <mat-icon>call</mat-icon>
+                                    <label class="ps-2 blue-label">Calls With Network Stats:</label>
+                                    <span class="ms-1" id="callsWithNetStats">{{ summary.totalCalls }}</span>
                                 </div>
                             </div>
                             <div class="row mt-3" id="thresholds">
@@ -93,56 +91,80 @@
                                         </mat-icon>
                                     </h2>
                                 </div>
-                                <div class="col-md-4 p-2 border metrics">
-                                    <label class="blue-label">Jitter (> {{ MetricsThresholds.receivedJitter }} ms)</label>
+                                <div class="col-md-3 p-2"></div>
+                                <div class="col md-offset-3 col-md-2 p-2 border metrics">
+                                    <div class="metrics-values">
+                                        <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
+                                        <label class="blue-label d-block">Jitter (> {{ MetricsThresholds.receivedJitter }} ms)</label>
+                                    </div>
                                     <div class="d-flex justify-content-around">
                                         <div>
                                             <p class="mb-0" id="jitterAboveThreshold">{{ summary.aboveThreshold.jitter }}</p>
-                                            <p class="value-description">Worst Case</p>
+                                            <p class="value-description" matTooltip="Calls with any sample exceeding the threshold.">
+                                                Calls (Peak)
+                                            </p>
                                         </div>
                                         <div>
                                             <p class="mb-0" id="jitterAboveThreshold">{{ summary.avgAboveThreshold.jitter }}</p>
-                                            <p class="value-description">Average</p>
+                                            <p class="value-description" matTooltip="Calls with average of all samples exceeding the threshold.">
+                                                Calls (Avg)
+                                            </p>
                                         </div>
                                     </div>
                                     
                                 </div>
-                                <div class="col-md-4 p-2 border metrics">
-                                    <label class="blue-label">Packet Loss (> {{ MetricsThresholds.receivedPacketLoss }}%)</label>
+                                <div class="col-md-2 p-2 border metrics">
+                                    <div class="metrics-values">
+                                        <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
+                                        <label class="blue-label d-block">Packet Loss (> {{ MetricsThresholds.receivedPacketLoss }}%)</label>
+                                    </div>
                                     <div class="d-flex justify-content-around">
                                         <div>
                                             <p class="mb-0" id="packetLossAboveThreshold">{{ summary.aboveThreshold.packetLoss }}</p>
-                                            <p class="value-description">Worst Case</p>
+                                            <p class="value-description" matTooltip="Calls with any sample exceeding the threshold.">
+                                                Calls (Peak)
+                                            </p>
                                         </div>
                                         <div>
                                             <p class="mb-0" id="packetLossAboveThreshold">{{ summary.avgAboveThreshold.packetLoss }}</p>
-                                            <p class="value-description">Average</p>
+                                            <p class="value-description" matTooltip="Calls with average of all samples exceeding the threshold.">
+                                                Calls (Avg)
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 p-2 border metrics">
-                                    <label class="blue-label">Round Trip Time (> {{ MetricsThresholds.roundTripTime }} ms)</label>
+                                <div class="col-md-2 p-2 border metrics">
+                                    <div class="metrics-values">
+                                        <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
+                                        <label class="blue-label d-block">Round Trip Time (> {{ MetricsThresholds.roundTripTime }} ms)</label>
+                                    </div>
                                     <div class="d-flex justify-content-around">
                                         <div>
                                             <p class="mb-0" id="roundTripTimeAboveThreshold">{{ summary.aboveThreshold.roundTripTime }}</p>
-                                            <p class="value-description">Worst Case</p>
+                                            <p class="value-description" matTooltip="Calls with any sample exceeding the threshold.">
+                                                Calls (Peak)
+                                            </p>
                                         </div>
                                         <div>
                                             <p class="mb-0" id="roundTripTimeAboveThreshold">{{ summary.avgAboveThreshold.roundTripTime }}</p>
-                                            <p class="value-description">Average</p>
+                                            <p class="value-description" matTooltip="Calls with average of all samples exceeding the threshold.">
+                                                Calls (Avg)
+                                            </p>
                                         </div>
                                     </div>                                  
                                 </div>
+                                <div class="col-md-3 p-2"></div>
                             </div>
                             <div class="row justify-content-center mt-3" id="network-summary">
                                 <div class="subtitle">
                                     <h2 class="mb-3">Network Metrics Summary
-                                        <mat-icon matTooltip="Worst case and Average value for each network metric.">
+                                        <mat-icon matTooltip="Maximum and Average value for each network metric.">
                                             info_outline
                                         </mat-icon>
                                     </h2>
                                 </div>
-                                <div class="col-md-3 p-2 border metrics">
+                                <div class="col-md-1 p-2"></div>
+                                <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
                                         <label class="blue-label d-block">Packet Loss (%)</label>
@@ -206,7 +228,7 @@
                                         </div>
                                     </div> 
                                 </div>
-                                <div class="col-md-3 p-2 border metrics">
+                                <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>multiple_stop</mat-icon>
                                         <label class="blue-label d-block">Sent Bitrate (kbps)</label>
@@ -218,6 +240,7 @@
                                         </div>
                                     </div> 
                                 </div>
+                                <div class="col-md-1 p-2"></div>
                             </div>
                         </div>
                         <div *ngIf="customerNetworkQualityData!==null" class="polqa-charts">
