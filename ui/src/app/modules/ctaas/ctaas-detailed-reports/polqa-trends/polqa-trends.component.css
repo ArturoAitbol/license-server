@@ -32,3 +32,24 @@
     background-color: #6E76B4;  /* previus color rgb(22,53,89) */
     font-size: 14px;
 }
+
+.charts-styles {
+    flex: 0 0 calc(50% - 10px); 
+    border: 1px solid #ccc; 
+    width: 95%;
+    border-radius: 1%;
+}
+
+.polqa-chart {
+    border: 1px solid #B9BABB;
+    width: 100%;
+    max-width: 99.4%;
+    border-radius: 1%;
+}
+
+.charts-rows {
+    display: flex; 
+    justify-content: space-between; 
+    width: 100%; 
+    padding-left: 1%;
+}

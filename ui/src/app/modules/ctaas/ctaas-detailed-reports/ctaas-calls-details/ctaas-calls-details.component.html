@@ -2,18 +2,16 @@
     <div style="margin-bottom: 1%;">
         <mat-button-toggle-group class="center-toggle" name="favoriteColor" aria-label="Favorite Color">
             <mat-button-toggle [checked]="active" value="green" (click)="onChange('1')">Call Details</mat-button-toggle>
-            <mat-button-toggle value="blue" (click)="onChange('2')">Media Stats</mat-button-toggle>
+            <mat-button-toggle value="blue" (click)="onChange('2')">Quality Stats</mat-button-toggle>
         </mat-button-toggle-group>
+        <button mat-icon-button (click)="onCancel()" class="close-button">
+            <mat-icon>close</mat-icon>
+        </button>
     </div>
     <ng-container [ngSwitch]="interaction">
         <ng-container *ngSwitchCase="'1'" [ngTemplateOutlet]="template1"></ng-container>
         <ng-container *ngSwitchCase="'2'" [ngTemplateOutlet]="template2"></ng-container>
     </ng-container>
-    <div class="row justify-content-end" style="margin-top: 3%;">
-        <div class="col-auto">
-            <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Close</button>
-        </div>
-    </div>
 </div>
 
 <ng-template #template1>
@@ -22,7 +20,7 @@
             <div>
                 <mat-card class="card summary">
                     <mat-card-content class="summary-card-content">
-                        <table class="table custom-table table-bordered" style="margin-bottom: 0;">
+                        <table class="table custom-table table-bordered">
                             <thead style="border-top: 2px solid #dee2e6;">
                                 <tr>
                                     <th colspan="3" class="text-center" style="border-top: 1px ;">
@@ -35,13 +33,19 @@
                                     <td class="custom-td" style="vertical-align: middle; padding: 10px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                           <strong style="font-weight: 500;">Start Date</strong>
-                                          <p title="originatedPOLQA" style="margin: 0; text-align: right;">{{data.startTime | na}}</p>
+                                          <p title="originatedPOLQA" style="margin: 0; text-align: right;">{{data.startTime | na}} UTC</p>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div class="hint">(mm/dd/yyyy)</div>
                                         </div>
                                     </td>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                             <strong style="font-weight:500;">End Date</strong>
-                                            <p title="originatedJitter" style="margin: 0; text-align: right;">{{data.endTime | na}}</p>
+                                            <p title="originatedJitter" style="margin: 0; text-align: right;">{{data.endTime | na}} UTC</p>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div class="hint">(mm/dd/yyyy)</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -188,25 +192,41 @@
             <h3 class="no-data-found" *ngIf="!chartsWithData">No Data to display</h3>
         </div>
         <div class="row">
-            <div id="polqa-chart" class="col-md-12 mt-3" style="height: 300px">
+            <div id="polqa-chart" class="col-md-6 mt-3 charts-styles">
                 <apx-chart
-                    [series]="polqaChartOptions.series"
-                    [title]="polqaChartOptions.title"
-                    [chart]="polqaChartOptions.chart"
-                    [xaxis]="polqaChartOptions.xAxis"
-                    [yaxis]="polqaChartOptions.yAxis"
-                    [dataLabels]="polqaChartOptions.dataLabels"
-                    [grid]="polqaChartOptions.grid"
-                    [stroke]="polqaChartOptions.stroke"
-                    [markers]="polqaChartOptions.markers"
-                    [legend]="polqaChartOptions.legend"
-                    [annotations]="polqaChartOptions.annotations"
-                    [colors]="polqaChartOptions.colors">
+                    [series]="fromPolqaChartOptions.series"
+                    [title]="fromPolqaChartOptions.title"
+                    [chart]="fromPolqaChartOptions.chart"
+                    [xaxis]="fromPolqaChartOptions.xAxis"
+                    [yaxis]="fromPolqaChartOptions.yAxis"
+                    [dataLabels]="fromPolqaChartOptions.dataLabels"
+                    [grid]="fromPolqaChartOptions.grid"
+                    [stroke]="fromPolqaChartOptions.stroke"
+                    [markers]="fromPolqaChartOptions.markers"
+                    [legend]="fromPolqaChartOptions.legend"
+                    [annotations]="fromPolqaChartOptions.annotations"
+                    [colors]="fromPolqaChartOptions.colors">
+                </apx-chart>
+            </div>
+            <div id="polqa-chart" class="col-md-6 mt-3 charts-styles">
+                <apx-chart
+                    [series]="toPolqaChartOptions.series"
+                    [title]="toPolqaChartOptions.title"
+                    [chart]="toPolqaChartOptions.chart"
+                    [xaxis]="toPolqaChartOptions.xAxis"
+                    [yaxis]="toPolqaChartOptions.yAxis"
+                    [dataLabels]="toPolqaChartOptions.dataLabels"
+                    [grid]="toPolqaChartOptions.grid"
+                    [stroke]="toPolqaChartOptions.stroke"
+                    [markers]="toPolqaChartOptions.markers"
+                    [legend]="toPolqaChartOptions.legend"
+                    [annotations]="toPolqaChartOptions.annotations"
+                    [colors]="toPolqaChartOptions.colors">
                 </apx-chart>
             </div>
         </div>
-        <div class="row" style="margin-top: 3%;">
-            <div id="polqa-packet-loss-chart" class="col-md-6 mt-3" style="height: 300px;">
+        <div class="row">
+            <div id="polqa-packet-loss-chart" class="col-md-6 mt-3 charts-styles">
                 <apx-chart
                     [series]="polqaPacketLossChartOptions.series"
                     [title]="polqaPacketLossChartOptions.title"
@@ -221,7 +241,7 @@
                     [colors]="polqaPacketLossChartOptions.colors">
                 </apx-chart>
             </div>
-            <div id="polqa-jitter-chart" class="col-md-6 mt-3" style="height: 300px">
+            <div id="polqa-jitter-chart" class="col-md-6 mt-3 charts-styles">
                 <apx-chart
                         [series]="polqaJitterChartOptions.series"
                         [title]="polqaJitterChartOptions.title"
@@ -237,8 +257,8 @@
                 </apx-chart>
             </div>
         </div>
-        <div class="row" style="margin-top: 3%;">
-            <div class="col-md-6 mt-3" style="height: 300px" id="sentBitrateTrends">
+        <div class="row">
+            <div class="col-md-6 mt-3 charts-styles" id="sentBitrateTrends">
                 <apx-chart
                         [series]="sentBitrateChartOptions.series"
                         [title]="sentBitrateChartOptions.title"
@@ -254,7 +274,7 @@
                         [colors]="sentBitrateChartOptions.colors">
                 </apx-chart>
             </div>
-            <div id="polqa-rtt-chart" class="col-md-6 mt-3" style="height: 300px">
+            <div id="polqa-rtt-chart" class="col-md-6 mt-3 charts-styles">
                 <apx-chart
                         [series]="polqaRoundTripChartOptions.series"
                         [title]="polqaRoundTripChartOptions.title"
@@ -270,37 +290,37 @@
                 </apx-chart>
             </div>
         </div>
-        <div class="row" style="margin-top: 3%;">
-            <div id="polqa-chart" class="col-md-6 mt-3" style="height: 300px">
+        <div class="row">
+            <div id="polqa-chart" class="col-md-6 mt-3 charts-styles">
                 <apx-chart
-                    [series]="polqaSentPackets.series"
-                    [title]="polqaSentPackets.title"
-                    [chart]="polqaSentPackets.chart"
-                    [xaxis]="polqaSentPackets.xAxis"
-                    [yaxis]="polqaSentPackets.yAxis"
-                    [dataLabels]="polqaSentPackets.dataLabels"
-                    [grid]="polqaSentPackets.grid"
-                    [stroke]="polqaSentPackets.stroke"
-                    [markers]="polqaSentPackets.markers"
-                    [legend]="polqaSentPackets.legend"
-                    [annotations]="polqaSentPackets.annotations"
-                    [colors]="polqaSentPackets.colors">
+                    [series]="polqaFromSentReceivedPackets.series"
+                    [title]="polqaFromSentReceivedPackets.title"
+                    [chart]="polqaFromSentReceivedPackets.chart"
+                    [xaxis]="polqaFromSentReceivedPackets.xAxis"
+                    [yaxis]="polqaFromSentReceivedPackets.yAxis"
+                    [dataLabels]="polqaFromSentReceivedPackets.dataLabels"
+                    [grid]="polqaFromSentReceivedPackets.grid"
+                    [stroke]="polqaFromSentReceivedPackets.stroke"
+                    [markers]="polqaFromSentReceivedPackets.markers"
+                    [legend]="polqaFromSentReceivedPackets.legend"
+                    [annotations]="polqaFromSentReceivedPackets.annotations"
+                    [colors]="polqaFromSentReceivedPackets.colors">
                 </apx-chart>
             </div>
-            <div id="polqa-chart" class="col-md-6 mt-3" style="height: 300px">
+            <div id="polqa-chart" class="col-md-6 mt-3 charts-styles">
                 <apx-chart
-                    [series]="polqaReceivedPackets.series"
-                    [title]="polqaReceivedPackets.title"
-                    [chart]="polqaReceivedPackets.chart"
-                    [xaxis]="polqaReceivedPackets.xAxis"
-                    [yaxis]="polqaReceivedPackets.yAxis"
-                    [dataLabels]="polqaReceivedPackets.dataLabels"
-                    [grid]="polqaReceivedPackets.grid"
-                    [stroke]="polqaReceivedPackets.stroke"
-                    [markers]="polqaReceivedPackets.markers"
-                    [legend]="polqaReceivedPackets.legend"
-                    [annotations]="polqaReceivedPackets.annotations"
-                    [colors]="polqaReceivedPackets.colors">
+                    [series]="polqaToSentReceivedPackets.series"
+                    [title]="polqaToSentReceivedPackets.title"
+                    [chart]="polqaToSentReceivedPackets.chart"
+                    [xaxis]="polqaToSentReceivedPackets.xAxis"
+                    [yaxis]="polqaToSentReceivedPackets.yAxis"
+                    [dataLabels]="polqaToSentReceivedPackets.dataLabels"
+                    [grid]="polqaToSentReceivedPackets.grid"
+                    [stroke]="polqaToSentReceivedPackets.stroke"
+                    [markers]="polqaToSentReceivedPackets.markers"
+                    [legend]="polqaToSentReceivedPackets.legend"
+                    [annotations]="polqaToSentReceivedPackets.annotations"
+                    [colors]="polqaToSentReceivedPackets.colors">
                 </apx-chart>
             </div>
         </div>
