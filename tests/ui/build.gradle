@@ -83,7 +83,6 @@ task uiTests(type: Test) {
     include '**/RunCucumberTests*'
     systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
     systemProperty 'env', System.getProperty('env', 'env')
-    systemProperty 'env', 'local'
 }
 uiTests.finalizedBy generateCluecumberReports
 tasks.withType(Test) {
