@@ -21,13 +21,16 @@ const polqaChartCommonOptions: Partial<ChartOptions> = {
         title: {
             text: "Hours",
             style: {
-                color: "#000000"
+                color: "#000000",
+                fontSize: '13px',
+                cssClass: 'apexcharts-xaxis-title'
             },
         },
         labels: {
             style: {
-                fontSize: '11px'
-            }
+                fontSize: '12px'
+            },
+            maxHeight: 75,
         },
         categories: [
             "00:00-01:00",
@@ -48,7 +51,8 @@ const polqaChartCommonOptions: Partial<ChartOptions> = {
         horizontalAlign: 'right',
         markers:{
             radius:10
-        }
+        },
+        height:0,
     }
 };
 
@@ -205,7 +209,7 @@ const defaultPolqaJitterChartOptions: Partial<ChartOptions> = {
         }]
     }
 };
-const defaultPolqaReceivedPacketsChartOptions: Partial<ChartOptions> = {
+const defaultPolqaFromSentReceivedPacketsChartOptions: Partial<ChartOptions> = {
     title:{
         text: "",
         align: "center",
@@ -247,7 +251,7 @@ const defaultPolqaReceivedPacketsChartOptions: Partial<ChartOptions> = {
             minWidth: 40
         },
         title: {
-            text: "Received Packets",
+            text: "Sent & Received Packets",
             style: {
                 color: "#000000"
             }
@@ -261,7 +265,7 @@ const defaultPolqaReceivedPacketsChartOptions: Partial<ChartOptions> = {
     }
 };
 
-const defaultPolqaSentPacketsChartOptions: Partial<ChartOptions> = {
+const defaultPolqaToSentReceivedPacketsChartOptions: Partial<ChartOptions> = {
     title:{
         text: "",
         align: "center",
@@ -303,7 +307,7 @@ const defaultPolqaSentPacketsChartOptions: Partial<ChartOptions> = {
             minWidth: 40
         },
         title: {
-            text: "Sent Packets",
+            text: "Sent & Received Packets",
             style: {
                 color: "#000000"
             }
@@ -390,7 +394,7 @@ const defaultPolqaRoundtripTimeChartOptions: Partial<ChartOptions> = {
         }]
     }
 };
-const defaultPolqaChartOptions: Partial<ChartOptions> = {
+const defaultFromPolqaChartOptions: Partial<ChartOptions> = {
     title:{
         text: "",
         align: "center",
@@ -405,7 +409,7 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
         }
     ],
     chart: {
-        type: "scatter",
+        type: "line",
         id: "POLQA",
             height: 300,
         zoom: {
@@ -451,6 +455,66 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
     }
 };
 
+const defaultToPolqaChartOptions: Partial<ChartOptions> = {
+    title:{
+        text: "",
+        align: "center",
+        style: {
+            color: '#000000'
+        }
+    },
+    series: [
+        {
+            name: "POLQA",
+            data: []
+        }
+    ],
+    chart: {
+        type: "line",
+        id: "POLQA",
+            height: 300,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        },
+        events:
+        {
+            markerClick: function(event, chartContext, config){
+                console.log("POLQA",config);
+            }
+        }
+    },
+    colors: ["#EC7C56","#9E9EFF"],
+    yAxis:{
+        axisTicks: {
+            show: true
+        },
+        axisBorder: {
+            show: true,
+            color: "#000000"
+        },
+        labels: {
+            style: {
+                colors: "#000000"
+            },
+            minWidth: 40
+        },
+        title: {
+            text: "POLQA",
+            style: {
+                color: "#000000"
+            }
+        },
+        forceNiceScale: true,
+    }
+    ,
+    markers: {
+        size: 4,
+        colors: ["#EC7C56","#9E9EFF"],
+    }
+};
 const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'line',
@@ -527,11 +591,12 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
 
 export { 
     polqaChartCommonOptions,
-    defaultPolqaChartOptions,
+    defaultFromPolqaChartOptions,
+    defaultToPolqaChartOptions,
     defaultPolqaRoundtripTimeChartOptions,
     defaultPolqaJitterChartOptions,
     defaultPolqaPacketLossChartOptions, 
     defaultSentBitrateChartOptions,
-    defaultPolqaReceivedPacketsChartOptions,
-    defaultPolqaSentPacketsChartOptions
+    defaultPolqaFromSentReceivedPacketsChartOptions,
+    defaultPolqaToSentReceivedPacketsChartOptions
 }

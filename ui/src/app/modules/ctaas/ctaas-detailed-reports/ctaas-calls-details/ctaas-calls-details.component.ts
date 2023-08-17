@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ChartOptions } from 'src/app/helpers/chart-options-type';
-import { defaultPolqaChartOptions, defaultPolqaJitterChartOptions, defaultPolqaPacketLossChartOptions, defaultPolqaReceivedPacketsChartOptions, defaultPolqaRoundtripTimeChartOptions, defaultPolqaSentPacketsChartOptions, defaultSentBitrateChartOptions, polqaChartCommonOptions } from '../calls-detail';
+import { defaultFromPolqaChartOptions, defaultPolqaJitterChartOptions, defaultPolqaPacketLossChartOptions, defaultPolqaFromSentReceivedPacketsChartOptions, defaultPolqaRoundtripTimeChartOptions, defaultPolqaToSentReceivedPacketsChartOptions, defaultSentBitrateChartOptions, defaultToPolqaChartOptions, polqaChartCommonOptions } from '../calls-detail';
 
 
 
@@ -18,7 +18,8 @@ export class CtaasCallsDetailsComponent implements OnInit {
   @Output() navigateToDetailedTable: EventEmitter<any> = new EventEmitter();
 
   interaction: string = '1';
-  polqaChartOptions: Partial<ChartOptions>;
+  fromPolqaChartOptions: Partial<ChartOptions>;
+  toPolqaChartOptions: Partial<ChartOptions>;
   polqaCommonChartOptions: Partial<ChartOptions>;
   polqaPacketLossChartOptions: Partial<ChartOptions>;
   polqaRoundTripChartOptions: Partial<ChartOptions>;
@@ -27,8 +28,8 @@ export class CtaasCallsDetailsComponent implements OnInit {
   defaultPolqaJitter: Partial<ChartOptions>;
   defaultPolqaRoundTripTime: Partial<ChartOptions>;
   polqaJitterChartOptions: Partial<ChartOptions>;
-  polqaReceivedPackets: Partial<ChartOptions>;
-  polqaSentPackets: Partial<ChartOptions>;
+  polqaFromSentReceivedPackets: Partial<ChartOptions>;
+  polqaToSentReceivedPackets: Partial<ChartOptions>;
   fromMediaStatsData: any;
   toMediaStatsData: any;
   generalMediaStats: any;
@@ -40,6 +41,8 @@ export class CtaasCallsDetailsComponent implements OnInit {
   chartsWithData: boolean = true;
   selectedTimeStamp: string;
   selecetedDID: string;
+  fromTitle: string = 'From';
+  toTitle: string = 'To';
   mediaStats = {
     sentPackets: "",
     sentCodec:"",
@@ -60,6 +63,7 @@ export class CtaasCallsDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.data)
     if(this.data.from.mediaStats.length === 0 && this.data.to.mediaStats.length === 0){
       this.chartsWithData = false
     }
@@ -88,9 +92,7 @@ export class CtaasCallsDetailsComponent implements OnInit {
       this.mediaStats.receivedCodec = event.data['Received codec'];
       this.mediaStats.sentBitrate = event.data['Sent bitrate'];
       this.mediaStats.receivedPacketLoss = event.data['Received packet loss'];
-      if(event.data['POLQA']) {
-        this.mediaStats.POLQA = event.data['POLQA'];
-      }
+      this.mediaStats.POLQA = event.data['POLQA'];
       this.selectedTimeStamp = event.timestamp.split(" ")[0];
       this.isLoadingResults = false;
     } catch(error) {
@@ -116,7 +118,6 @@ export class CtaasCallsDetailsComponent implements OnInit {
   setCustomerNQualityData(){
     this.fromMediaStatsData = [...this.data.from.mediaStats].sort(this.timestampSort);
     this.toMediaStatsData = [...this.data.to.mediaStats].sort(this.timestampSort);
-  
     let fromCategories = [];
     let toCategories = []
 
@@ -212,79 +213,83 @@ export class CtaasCallsDetailsComponent implements OnInit {
     this.initChartOptions(categories,timeLapse, false);
     this.initChartOptions(polqaCategories, timeLapse, true);
     
-    this.polqaChartOptions.series = [
+    this.fromPolqaChartOptions.series = [
       {
         name: 'From. POLQA',
         data: chartData.fromPOLQA
-      },
+      }
+    ];
+    this.toPolqaChartOptions.series = [
       {
         name: 'To. POLQA',
         data: chartData.toPOLQA
       }
     ];
-    
     this.polqaPacketLossChartOptions.series = [
       {
-        name: 'From. Packet Loss',
+        name: this.fromTitle,
         data: chartData.fromReceivedPacketLoss
       },
       {
-        name: 'To. Packet Loss',
+        name: this.toTitle,
         data: chartData.toReceivedPacketLoss
       }
     ];
 
     this.polqaJitterChartOptions.series = [
       {
-        name: "From. Jitter",
+        name: this.fromTitle,
         data: chartData.fromReceivedJitter
       },
       {
-        name: "To. Jitter",
+        name: this.toTitle,
         data: chartData.toReceivedJitter
       }
     ];
 
     this.polqaRoundTripChartOptions.series = [
       {
-        name: "From. Round Trip Time",
+        name: this.fromTitle,
         data: chartData.fromRoundTripTime
       },
       {
-        name: "To. Round Trip Time",
+        name: this.toTitle,
         data: chartData.toRoundTripTime
       }
     ];
     
     this.sentBitrateChartOptions.series = [
-    {
-      name: "From. Bitrate",
-      data: chartData.fromSentBitrate
-    },
-    {
-      name: "To. Bitrate",
-      data: chartData.toSentBitrate
-    }];
-    this.polqaReceivedPackets.series = [
       {
-        name: "From. Received Packets",
-        data: chartData.fromReceivedPackets
+        name: this.fromTitle,
+        data: chartData.fromSentBitrate
       },
       {
-        name: "To. Received Packets",
-        data: chartData.toReceivedPackets
+        name: this.toTitle,
+        data: chartData.toSentBitrate
       }
     ];
-    this.polqaSentPackets.series = [
+
+    this.polqaFromSentReceivedPackets.series = [
       {
-        name: "From. Received Packets",
+        name: 'Sent Packets',
         data: chartData.fromSentPackets
       },
       {
-        name: "To. Received Packets",
-        data: chartData.toSentPackets
+        name: 'Received Packets',
+        data: chartData.fromReceivedPackets
       }
-    ]
+    ];
+
+    this.polqaToSentReceivedPackets.series = [
+      {
+        name: 'Sent Packets',
+        data: chartData.toSentPackets
+      },
+      {
+        name: 'Received Packets',
+        data: chartData.toReceivedPackets
+      }
+    ];
   }
   
   
@@ -293,9 +298,14 @@ export class CtaasCallsDetailsComponent implements OnInit {
       this.polqaCommonChartOptions.xAxis = {...this.polqaCommonChartOptions.xAxis, categories: categories , max: categories.length};
       this.polqaCommonChartOptions.xAxis.title.text = timeLapse;
       if(polqaFlag) {
-        defaultPolqaChartOptions.title.text = 'POLQA';
-        this.polqaChartOptions = { ...this.polqaCommonChartOptions, ...defaultPolqaChartOptions };
-        this.polqaChartOptions.chart.events = {
+        defaultFromPolqaChartOptions.title.text = 'From POLQA';
+        defaultToPolqaChartOptions.title.text = 'To POLQA'
+        this.fromPolqaChartOptions = { ...this.polqaCommonChartOptions, ...defaultFromPolqaChartOptions };
+        this.toPolqaChartOptions = { ...this.polqaCommonChartOptions, ...defaultToPolqaChartOptions };
+        this.fromPolqaChartOptions.chart.events = {
+          markerClick: this.navigateToDetailedTableFromPolqaChart.bind(this)
+        };
+        this.toPolqaChartOptions.chart.events = {
           markerClick: this.navigateToDetailedTableFromPolqaChart.bind(this)
         };
       } else {
@@ -303,15 +313,15 @@ export class CtaasCallsDetailsComponent implements OnInit {
         defaultPolqaJitterChartOptions.title.text = 'Jitter' + ' (ms)';
         defaultPolqaRoundtripTimeChartOptions.title.text = 'Round Trip Time' + ' (ms)';
         defaultSentBitrateChartOptions.title.text = 'Bitrate' + ' (kbps)';
-        defaultPolqaReceivedPacketsChartOptions.title.text ='Received Packtes';
-        defaultPolqaSentPacketsChartOptions.title.text = 'Sent Packets'
+        defaultPolqaFromSentReceivedPacketsChartOptions.title.text ='From Sent/Received Packets';
+        defaultPolqaToSentReceivedPacketsChartOptions.title.text = 'To Sent/Received Packets'
        
         this.polqaPacketLossChartOptions = { ...this.polqaCommonChartOptions, ...defaultPolqaPacketLossChartOptions }
         this.polqaJitterChartOptions = { ...this.polqaCommonChartOptions, ...defaultPolqaJitterChartOptions };
         this.polqaRoundTripChartOptions = {...this.polqaCommonChartOptions, ...defaultPolqaRoundtripTimeChartOptions };
         this.sentBitrateChartOptions = {...this.polqaCommonChartOptions, ...defaultSentBitrateChartOptions };
-        this.polqaReceivedPackets = {...this.polqaCommonChartOptions, ...defaultPolqaReceivedPacketsChartOptions};
-        this.polqaSentPackets = {...this.polqaCommonChartOptions, ...defaultPolqaSentPacketsChartOptions};
+        this.polqaFromSentReceivedPackets = {...this.polqaCommonChartOptions, ...defaultPolqaFromSentReceivedPacketsChartOptions};
+        this.polqaToSentReceivedPackets = {...this.polqaCommonChartOptions, ...defaultPolqaToSentReceivedPacketsChartOptions};
         this.polqaPacketLossChartOptions.chart.events = {
           markerClick:this.navigateToDetailedTableFromPolqaChart.bind(this)
         };
@@ -324,10 +334,10 @@ export class CtaasCallsDetailsComponent implements OnInit {
         this.sentBitrateChartOptions.chart.events = {
           markerClick: this.navigateToDetailedTableFromPolqaChart.bind(this)
         };
-        this.polqaReceivedPackets.chart.events = {
+        this.polqaFromSentReceivedPackets.chart.events = {
           markerClick: this.navigateToDetailedTableFromPolqaChart.bind(this)
         };
-        this.polqaSentPackets.chart.events = {
+        this.polqaToSentReceivedPackets.chart.events = {
           markerClick: this.navigateToDetailedTableFromPolqaChart.bind(this)
         };
       }
@@ -344,15 +354,22 @@ export class CtaasCallsDetailsComponent implements OnInit {
     const chartTitle: string = chartContext.w.config.title.text
     let selectedTimeStamp = chartContext.w.globals.categoryLabels[dataPointIndex];
     if(eventChartTitle === chartTitle) {
-      if(seriesIndex === 0) {
-        this.selecetedDID = this.data.from.DID
-        let fromElement = this.fromMediaStatsData.find(from => from.timestamp.includes(selectedTimeStamp));
-        this.getDataOfTimeStamp(fromElement);
+      if(eventChartTitle !== 'To POLQA' && eventChartTitle !== 'To Sent/Received Packets') {
+        if(seriesIndex === 0 || eventChartTitle === 'From Sent/Received Packets') {
+          this.selecetedDID = this.data.from.DID
+          let fromElement = this.fromMediaStatsData.find(from => from.timestamp.includes(selectedTimeStamp));
+          this.getDataOfTimeStamp(fromElement);
+        } else {
+          this.selecetedDID = this.data.from.DID
+          let toElement = this.toMediaStatsData.find(to => to.timestamp.includes(selectedTimeStamp));
+          this.getDataOfTimeStamp(toElement);
+        }
       } else {
         this.selecetedDID = this.data.from.DID
         let toElement = this.toMediaStatsData.find(to => to.timestamp.includes(selectedTimeStamp));
         this.getDataOfTimeStamp(toElement);
       }
+
     }
   }
 }
