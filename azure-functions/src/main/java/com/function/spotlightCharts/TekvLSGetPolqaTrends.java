@@ -80,7 +80,7 @@ public class TekvLSGetPolqaTrends {
 		String averageFlag = request.getQueryParameters().getOrDefault("average", "");
 		String callStatus = request.getQueryParameters().getOrDefault("callStatus","");
 		String polqaRange = request.getQueryParameters().getOrDefault("polqaRange","");
-
+		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 
 		String metrics = request.getQueryParameters().getOrDefault("metric", Utils.DEFAULT_METRICS);
 		String metricsClause = metrics.replace(",", "', '");
@@ -151,8 +151,18 @@ public class TekvLSGetPolqaTrends {
 				" LEFT JOIN run_instance r ON tr.runinstanceid = r.id" +
 				" LEFT JOIN project p ON r.projectid = p.id" +
 				" LEFT JOIN test_plan tp ON p.testplanid = tp.id" +
-				" WHERE sr.finalResult = true AND " + Utils.CONSIDERED_FAILURES_SUBQUERY +
-				" AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')";
+				" WHERE sr.finalResult = true AND " + Utils.CONSIDERED_FAILURES_SUBQUERY;
+		switch (reportType) {
+			case "LTS":
+				subQuery += " AND tp.name='" + Utils.TEST_PLAN_NAMES.FEATURE_FUNCTIONALITY.value() + "'";
+				break;
+			case "STS,POLQA":
+				subQuery += " AND (tp.name='" + Utils.TEST_PLAN_NAMES.CALLING_RELIABILITY.value() + "' OR tp.name='" + Utils.TEST_PLAN_NAMES.POLQA.value() + "')";
+				break;
+			default:
+				subQuery += " AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')";
+				break;
+		}
 
 		if(callStatus.isEmpty()){
 			subQuery += " AND " + Utils.CONSIDERED_STATUS_SUBQUERY;

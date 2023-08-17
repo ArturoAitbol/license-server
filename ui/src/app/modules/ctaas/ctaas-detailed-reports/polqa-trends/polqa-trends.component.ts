@@ -72,7 +72,6 @@ export class PolqaTrendsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-        console.log(this.data);
         let categories,timelapse;
         if(this.groupBy === "hour"){
           categories = this.data.categories.map(category => category.split(" ")[1]);

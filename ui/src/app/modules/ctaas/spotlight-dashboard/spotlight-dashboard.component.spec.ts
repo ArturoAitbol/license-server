@@ -288,7 +288,7 @@ describe("DashboardPocComponent", () => {
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
-    dashboardPocComponentTestInstance.navigateToDetailedTable(callingReliabilityTestPlans);
+    dashboardPocComponentTestInstance.navigateToDetailedTable({reportType:callingReliabilityTestPlans});
     expect(window.open).toHaveBeenCalledWith(url);
   });
 
@@ -302,7 +302,7 @@ describe("DashboardPocComponent", () => {
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
-    dashboardPocComponentTestInstance.navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY);
+    dashboardPocComponentTestInstance.navigateToDetailedTable({reportType:ReportType.DAILY_FEATURE_FUNCTIONALITY});
     expect(window.open).toHaveBeenCalledWith(url);
   });
 
@@ -316,7 +316,7 @@ describe("DashboardPocComponent", () => {
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
-    dashboardPocComponentTestInstance.navigateToDetailedTable(null, 'FAILED');
+    dashboardPocComponentTestInstance.navigateToDetailedTable({reportType:null,status:'FAILED'});
     expect(window.open).toHaveBeenCalledWith(url);
   });
 
@@ -329,7 +329,8 @@ describe("DashboardPocComponent", () => {
     const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format(Constants.DATE_TIME_FORMAT);
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
+    const stastTab = 'statsTab=true';
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&${stastTab}&start=${startTime}&end=${endTime}&regions=${regions}`;
     dashboardPocComponentTestInstance.navigateToPOLQACallsDetailedTable();
     expect(window.open).toHaveBeenCalledWith(url);
   });
