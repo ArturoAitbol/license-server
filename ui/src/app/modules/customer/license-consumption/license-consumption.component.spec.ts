@@ -258,7 +258,7 @@ describe('Data collection and parsing tests', () => {
 
     it('should throw an error when something goes wrong getting licenseConsumptionDetails for summary view when calling fetchSummaryData()', () => {
         fixture.detectChanges();
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(throwError(error));
@@ -273,7 +273,7 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should make a call to get licenseConsumptionDetails for equipment view when calling fetchEquipment()', async () => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
 
@@ -288,7 +288,7 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should make a call to get licenseConsumptionDetails for equipment view when calling fetchEquipment()', async () => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(throwError(error));
@@ -412,7 +412,7 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should make a call to get licenseConsumptionDetails with default queries when calling fetchDetailedConsumptionData() without arguments', async () => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
         fixture.detectChanges();
@@ -429,7 +429,7 @@ describe('Data collection and parsing tests', () => {
     it('should call to fetchAggregatedData when calling setWeek()', () => {
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, 'resetCalendar');
         const date = moment.utc();
@@ -474,7 +474,7 @@ describe('Dialog calls and interactions', () => {
 
     it('should execute licConsumptionRowAction() with expected data given set arguments', () => {
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         const selectedTestData = { selectedRow: ConsumptionServiceMock.mockConsumptionA, selectedOption: 'selectedTestOption', selectedIndex: '0' };
         const renewalDate = licenseConsumptionComponentTestInstance.selectedLicense.renewalDate;
         spyOn(licenseConsumptionComponentTestInstance, 'openDialog').and.callThrough();
@@ -535,7 +535,7 @@ describe('Methods Calls', () => {
     it('should set the variable aggregation (used to filter data based on a given period of time) when calling getMultipleChoiceAnswer()', () => {
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, 'resetCalendar');
 
@@ -569,7 +569,7 @@ describe('Methods Calls', () => {
 
     it('should call to fetchAggregatedData when calling setMonthAndYear()', async () => {
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, 'setMonthAndYear').and.callThrough();
         fixture.detectChanges();
@@ -611,7 +611,7 @@ describe('Methods Calls', () => {
 
     it('should change the selected type and make a call to fetchAggregatedData when calling getType()', () => {
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         fixture.detectChanges();
         const type = 'AutomationPlatform';

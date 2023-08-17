@@ -608,3 +608,22 @@ ngx-intl-tel-input input::placeholder {
 ngx-intl-tel-input input[disabled] {
 	background-color: #e5eaf1;
 }
+
+/*****************************************************
+	Custom style for tabs
+*****************************************************/
+
+.mat-tab-label{
+  background-color: white;
+  color: rgb(48, 48, 48);
+  opacity: 1 !important;
+}
+.mat-tab-label-active{
+  background-color: #e9e9e9;
+  color: black;
+  opacity: 1 !important;
+}
+
+.mat-tab-label:hover:not(.mat-tab-disabled){
+  background-color: rgb(233, 233, 233,0.5);
+}

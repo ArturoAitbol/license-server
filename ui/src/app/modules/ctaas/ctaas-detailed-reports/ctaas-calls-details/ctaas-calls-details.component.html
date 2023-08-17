@@ -1,7 +1,7 @@
 <div>
     <div style="margin-bottom: 1%;">
         <mat-button-toggle-group class="center-toggle" name="favoriteColor" aria-label="Favorite Color">
-            <mat-button-toggle value="green" (click)="onChange('1')">All</mat-button-toggle>
+            <mat-button-toggle [checked]="active" value="green" (click)="onChange('1')">Call Details</mat-button-toggle>
             <mat-button-toggle value="blue" (click)="onChange('2')">Media Stats</mat-button-toggle>
         </mat-button-toggle-group>
     </div>
@@ -22,7 +22,7 @@
             <div>
                 <mat-card class="card summary">
                     <mat-card-content class="summary-card-content">
-                        <table class="table custom-table table-bordered">
+                        <table class="table custom-table table-bordered" style="margin-bottom: 0;">
                             <thead style="border-top: 2px solid #dee2e6;">
                                 <tr>
                                     <th colspan="3" class="text-center" style="border-top: 1px ;">
@@ -35,15 +35,13 @@
                                     <td class="custom-td" style="vertical-align: middle; padding: 10px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                           <strong style="font-weight: 500;">Start Date</strong>
-                                          <p title="originatedPOLQA" style="margin: 0; text-align: right;">{{data.startTime}}</p>
+                                          <p title="originatedPOLQA" style="margin: 0; text-align: right;">{{data.startTime | na}}</p>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                             <strong style="font-weight:500;">End Date</strong>
-                                            <p title="originatedJitter" style="margin: 0; text-align: right;">{{data.endTime}}</p>
+                                            <p title="originatedJitter" style="margin: 0; text-align: right;">{{data.endTime | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -51,95 +49,121 @@
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                             <strong style="font-weight:500;">Status</strong>
-                                            <p title="originatedRoundTripTime" style="margin: 0; text-align: right;">{{data.status}}</p>
+                                            <p title="originatedRoundTripTime" style="margin: 0; text-align: right;">{{data.status | na}}</p>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                             <strong style="font-weight:500;">Call Type</strong>
-                                            <p title="originatedPacketLoss" style="margin: 0; text-align: right;">{{data.callType}}</p>
+                                            <p title="originatedPacketLoss" style="margin: 0; text-align: right;">{{data.callType | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <td class="custom-td" style="padding: 13px; width: 50%;">
+                                        <div style="display: flex; justify-content: space-between;">
                                             <strong style="font-weight:500;">Error Category</strong>
                                             <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.errorCategory | na}}</p>
                                         </div>
                                     </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <strong style="font-weight:500; width: 90%;">Reason</strong>
+                                            <span class="error-reason" title="originatedBitrate">{{data.errorReason | na}}</span>
+                                        </div>
+                                    </td>
                                 </tr>
+                            </tbody>
+                        </table>
+                        <table class="table custom-table table-bordered">
+                            <thead style="border-top: 2px solid #dee2e6;">
+                                <tr>
+                                    <th style="width: 50%; text-align: center; padding: 12px  !important;">From</th>
+                                    <th style="text-align: center;  padding: 12px  !important;">To</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">Reason</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.errorReason | na}}</p>
+                                            <strong style="font-weight:500;">DID</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.from.DID | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">DID</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.to.DID | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">From Jitter (ms)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromJitter}}</p>
+                                            <strong style="font-weight:500;">Jitter (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromJitter | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Jitter (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toJitter | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">To Jitter (ms)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toJitter}}</p>
+                                            <strong style="font-weight:500;">Round Trip Time (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromRoundTrip | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Round Trip Time (ms)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toRoundTrip | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">From Round Trip Time (ms)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromRoundTrip}}</p>
+                                            <strong style="font-weight:500;">Packet Loss (%)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromPacketLoss | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Packet Loss (%)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toPacketLoss | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">To Round Trip Time (ms)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toRoundTrip}}</p>
+                                            <strong style="font-weight:500;">Bitrate (Kbps)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromAvgBitrate | na}}</p>
+                                        </div>
+                                    </td>
+                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <strong style="font-weight:500;">Bitrate (Kbps)</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toAvgBitrate | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">From Packet Loss (%)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromPacketLoss}}</p>
+                                            <strong style="font-weight:500;">POLQA</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">Min: {{data.fromPolqaMin | na}}, Avg: {{data.fromPolqaAvg | na}}</p>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td class="custom-td" style="vertical-align: middle;padding: 13px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">To Packet Loss (%)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toPacketLoss}}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">From Bitrate (Kbps)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.fromAvgBitrate}}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">To Bitrate (Kbps)</strong>
-                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">{{data.toAvgBitrate}}</p>
+                                            <strong style="font-weight:500;">POLQA</strong>
+                                            <p title="originatedBitrate" style="margin: 0; text-align: right;">Min: {{data.toPolqaMin | na}}, Avg: {{data.toPolqaAvg | na}}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -160,6 +184,9 @@
         <div class="col-6">
             <h2 class="font-s text-center" title="to-did"><strong style="font-weight:700;">To:</strong> <span class="did-titles"> {{data.to.DID}}</span></h2>
         </div>
+        <div>
+            <h3 class="no-data-found" *ngIf="!chartsWithData">No Data to display</h3>
+        </div>
         <div class="row">
             <div id="polqa-chart" class="col-md-12 mt-3" style="height: 300px">
                 <apx-chart
@@ -178,8 +205,8 @@
                 </apx-chart>
             </div>
         </div>
-        <div class="row">
-            <div id="polqa-packet-loss-chart" class="col-md-6 mt-3" style="height: 300px">
+        <div class="row" style="margin-top: 3%;">
+            <div id="polqa-packet-loss-chart" class="col-md-6 mt-3" style="height: 300px;">
                 <apx-chart
                     [series]="polqaPacketLossChartOptions.series"
                     [title]="polqaPacketLossChartOptions.title"
@@ -210,7 +237,7 @@
                 </apx-chart>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top: 3%;">
             <div class="col-md-6 mt-3" style="height: 300px" id="sentBitrateTrends">
                 <apx-chart
                         [series]="sentBitrateChartOptions.series"
@@ -243,89 +270,117 @@
                 </apx-chart>
             </div>
         </div>
-        <div class="col-12" style="margin-top: 1%;">
+        <div class="row" style="margin-top: 3%;">
+            <div id="polqa-chart" class="col-md-6 mt-3" style="height: 300px">
+                <apx-chart
+                    [series]="polqaSentPackets.series"
+                    [title]="polqaSentPackets.title"
+                    [chart]="polqaSentPackets.chart"
+                    [xaxis]="polqaSentPackets.xAxis"
+                    [yaxis]="polqaSentPackets.yAxis"
+                    [dataLabels]="polqaSentPackets.dataLabels"
+                    [grid]="polqaSentPackets.grid"
+                    [stroke]="polqaSentPackets.stroke"
+                    [markers]="polqaSentPackets.markers"
+                    [legend]="polqaSentPackets.legend"
+                    [annotations]="polqaSentPackets.annotations"
+                    [colors]="polqaSentPackets.colors">
+                </apx-chart>
+            </div>
+            <div id="polqa-chart" class="col-md-6 mt-3" style="height: 300px">
+                <apx-chart
+                    [series]="polqaReceivedPackets.series"
+                    [title]="polqaReceivedPackets.title"
+                    [chart]="polqaReceivedPackets.chart"
+                    [xaxis]="polqaReceivedPackets.xAxis"
+                    [yaxis]="polqaReceivedPackets.yAxis"
+                    [dataLabels]="polqaReceivedPackets.dataLabels"
+                    [grid]="polqaReceivedPackets.grid"
+                    [stroke]="polqaReceivedPackets.stroke"
+                    [markers]="polqaReceivedPackets.markers"
+                    [legend]="polqaReceivedPackets.legend"
+                    [annotations]="polqaReceivedPackets.annotations"
+                    [colors]="polqaReceivedPackets.colors">
+                </apx-chart>
+            </div>
+        </div>
+        <div class="col-12" *ngIf="selectedPoint" style="margin-top: 1%;">
+            <h3><strong style="font-weight:700;">Selected media stats capture</strong></h3>
             <div>
-                <mat-card class="card summary">
-                    <mat-card-content class="summary-card-content">
-                        <table class="table custom-table table-bordered">
-                            <div class="loading-shade" *ngIf="isLoadingResults" id="map-spinner">
-                                <mat-spinner id="calls-details-spinner" *ngIf="isLoadingResults"></mat-spinner>
-                            </div>
-                            <tbody>
-                                <tr>
-                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                          <strong style="font-weight: 500;">Time Stamp</strong>
-                                          <p title="time-stamp" style="margin: 0; text-align: right;">{{selectedTimeStamp}}</p>
-                                        </div>
-                                    </td>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div  style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">DID</strong>
-                                            <p title="did" style="margin: 0; text-align: right;">{{selecetedDID}}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="custom-td" style="vertical-align: middle; padding: 10px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                          <strong style="font-weight: 500;">Packets Sent</strong>
-                                          <p title="snet-packets" style="margin: 0; text-align: right;">{{mediaStats.sentPackets | na}}</p>
-                                        </div>
-                                    </td>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div  style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">Received Jitter</strong>
-                                            <p title="received-jitter" style="margin: 0; text-align: right;">{{mediaStats.receivedJitter | na}}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">Received Codec</strong>
-                                            <p title="received-codec" style="margin: 0; text-align: right;">{{mediaStats.receivedCodec | na}}</p>
-                                        </div>
-                                    </td>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">Round Trip Time</strong>
-                                            <p title="round-trip-time" style="margin: 0; text-align: right;">{{mediaStats.roundTripTime | na}}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">Sent Bitrate</strong>
-                                            <p title="sent-bitrate" style="margin: 0; text-align: right;">{{mediaStats.sentBitrate | na}}</p>
-                                        </div>
-                                    </td>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">Received Packets</strong>
-                                            <p title="received-packets" style="margin: 0; text-align: right;">{{mediaStats.receivedPackets | na}}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">Received Packet Loss</strong>
-                                            <p title="received-packet-loss" style="margin: 0; text-align: right;">{{mediaStats.receivedPacketLoss | na}}</p>
-                                        </div>
-                                    </td>
-                                    <td class="custom-td" style="vertical-align: middle;padding: 13px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <strong style="font-weight:500;">POLQA</strong>
-                                            <p title="POLQA" style="margin: 0; text-align: right;">{{mediaStats.POLQA | na}}</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </mat-card-content>
-                </mat-card>
+                <table class="table custom-table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight: 500;">Time Stamp</strong>
+                                    <p title="time-stamp" style="margin: 0; text-align: right;">{{selectedTimeStamp}}</p>
+                                </div>
+                            </td>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div  style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">DID</strong>
+                                    <p title="did" style="margin: 0; text-align: right;">{{selecetedDID}}</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="custom-td" style="vertical-align: middle; padding: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight: 500;">Sent Packets</strong>
+                                    <p title="snet-packets" style="margin: 0; text-align: right;">{{mediaStats.sentPackets | na}}</p>
+                                </div>
+                            </td>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div  style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">Received Jitter</strong>
+                                    <p title="received-jitter" style="margin: 0; text-align: right;">{{mediaStats.receivedJitter | na}}</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">Received Codec</strong>
+                                    <p title="received-codec" style="margin: 0; text-align: right;">{{mediaStats.receivedCodec | na}}</p>
+                                </div>
+                            </td>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">Round Trip Time</strong>
+                                    <p title="round-trip-time" style="margin: 0; text-align: right;">{{mediaStats.roundTripTime | na}}</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">Sent Bitrate</strong>
+                                    <p title="sent-bitrate" style="margin: 0; text-align: right;">{{mediaStats.sentBitrate | na}}</p>
+                                </div>
+                            </td>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">Received Packets</strong>
+                                    <p title="received-packets" style="margin: 0; text-align: right;">{{mediaStats.receivedPackets | na}}</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">Received Packet Loss</strong>
+                                    <p title="received-packet-loss" style="margin: 0; text-align: right;">{{mediaStats.receivedPacketLoss | na}}</p>
+                                </div>
+                            </td>
+                            <td class="custom-td" style="vertical-align: middle;padding: 13px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="font-weight:500;">POLQA</strong>
+                                    <p title="POLQA" style="margin: 0; text-align: right;">{{mediaStats.POLQA | na}}</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>   
             </div>
         </div>
     </div>

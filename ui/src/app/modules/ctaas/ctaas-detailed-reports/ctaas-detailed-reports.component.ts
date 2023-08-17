@@ -31,7 +31,7 @@ export class DetailedReportsComponent implements OnInit {
   groupBy:string = 'hour';
   polqaTrendsData:any;
   isPolqaTrendsLoading: boolean = false;
-  reloadPolqaTrendsCharts: boolean = false;
+  loadPolqaTrendsCharts: boolean = false;
   displayStats: boolean = false;
   selectedTab:number = 0;
   startDate: Moment;
@@ -125,10 +125,14 @@ export class DetailedReportsComponent implements OnInit {
       this.endDate = moment.utc(params.end, Constants.DATE_TIME_FORMAT);
       this.startDateStr = this.startDate.format('YYMMDDHHmmss');
       this.endDateStr =  this.endDate.format('YYMMDDHHmmss');
-      if(this.filterByAvg!=0){
-        this.displayStats = true;
-        this.selectedTab = 1;
-        this.fetchPolqaTrends();
+      this.displayStats = params.statsTab === 'true' ? params.statsTab : false;
+      if(this.displayStats){
+        if(this.filterByAvg!=0){
+          this.selectedTab = 1;
+          this.fetchPolqaTrends();
+        }else{
+          this.loadPolqaTrendsCharts=true;
+        }
       }
       this.parseTitle();
       this.fetchDashboardReportDetails();
@@ -176,35 +180,38 @@ export class DetailedReportsComponent implements OnInit {
   getAll(): void {
     this.status = '';
     this.failedIsChecked = false;
-    this.reloadPolqaTrendsCharts = true;
+    this.loadPolqaTrendsCharts = true;
     this.fetchDashboardReportDetails();
   }
   getFailed(): void {
     this.status = 'FAILED';
     this.failedIsChecked = true;
-    this.reloadPolqaTrendsCharts = true;
+    this.loadPolqaTrendsCharts = true;
     this.fetchDashboardReportDetails();
   }
 
   changeSelectedTab(tab){
     this.selectedTab = tab.index;
-    if(this.reloadPolqaTrendsCharts){
+    if(this.loadPolqaTrendsCharts){
       this.fetchPolqaTrends();
-      this.reloadPolqaTrendsCharts = false;
+      this.loadPolqaTrendsCharts = false;
     }
   }
 
   public fetchPolqaTrends(){
+    const testPlans = this.parseTestPlanNames();
+    const regions = this.regionsStr !=='' ? JSON.parse(this.regionsStr) : [];
     this.polqaTrendsData = null;
     this.isPolqaTrendsLoading=true;
-    this.spotlightChartsService.getPolqaTrendsData(this.startDate, this.endDate, this.regionsStr !=='' ? JSON.parse(this.regionsStr) : [], this.subaccountDetails.id, this.groupBy,Number(this.filterByAvg),this.status).subscribe((res: any)=>{
-      this.isPolqaTrendsLoading = false;
-      this.polqaTrendsData = res;
-    }, (error) => {
-      this.isPolqaTrendsLoading = false;
-      console.error("Error while loading dashboard: " + error.error);
-      this.snackBarService.openSnackBar("Error while loading dashboard",'');
-    });
+    this.spotlightChartsService.getPolqaTrendsData(this.startDate, this.endDate, testPlans, regions,
+      this.subaccountDetails.id, this.groupBy, Number(this.filterByAvg), this.status).subscribe((res: any)=>{
+        this.isPolqaTrendsLoading = false;
+        this.polqaTrendsData = res;
+      }, (error) => {
+        this.isPolqaTrendsLoading = false;
+        console.error("Error while loading dashboard: " + error.error);
+        this.snackBarService.openSnackBar("Error while loading dashboard",'');
+      });
   }
 
   /**
@@ -779,10 +786,9 @@ export class DetailedReportsComponent implements OnInit {
   }
 
   openDetails(selectedItem: any) {
-    console.log("entra", selectedItem)
     let dialogRef = this.dialog.open(CtaasCallsDetailsComponent, {
-      width: '75vw',
-      height: '93vh',
+      width: '70vw',
+      height: '87vh',
       maxHeight: '100vh',
       maxWidth: '85vw',
       data: selectedItem,
