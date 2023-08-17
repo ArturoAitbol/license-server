@@ -29,7 +29,7 @@ export class PermissionsChartComponent implements OnInit {
           stakeholder: true,
         },
         {
-          action: 'View/Add/Delete/Modify SpotLight Users (Managing users)',
+          action: 'Add/Delete/Modify SpotLight Users (Managing users)',
           admin: true,
           stakeholder: false,
         },

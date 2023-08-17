@@ -484,10 +484,18 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     getRole(): string{
-        console.log("Get roles");
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        const camellCaseSplit = roles[0].split('.')[1].replace(/([A-Z])/g, ' $1').trim();
+        const camellCaseSplit = this.getOnlySpecifiedRole(roles);
         return camellCaseSplit;
+    }
+
+    getOnlySpecifiedRole(roles: string[]){
+        const subaccountAdminList = roles.filter(item => item.includes("SubaccountAdmin"));
+        if(subaccountAdminList.length>0)
+            return "Admin";
+        const stakeholdersList = roles.filter(item => item.includes("SubaccountStakeholder"));
+        if(stakeholdersList.length>0)
+            return "Stakeholder";
     }
 
     /**

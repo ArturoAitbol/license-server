@@ -245,7 +245,7 @@ export class CtaasTestReportsComponent implements OnInit {
 
   sendHelpDialogValues(): void {
     const data = {
-      title: 'Test Reports Help',
+      title: 'Test Reports',
       sections: [
         {
           elements: [

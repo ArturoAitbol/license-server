@@ -113,23 +113,23 @@
                 </mat-list>
             </mat-menu>
             <!-- user name -->
-            <div class="info-containeer">
-                    <button class="help-button" *ngIf="showHelpButton" (click)="openDialog()" matTooltip="Help notes for current tab selection">
+                <div class="help-button">
+                    <button *ngIf="showHelpButton" (click)="openDialog()" matTooltip="Help notes for current tab selection">
                         <mat-icon style = "color: white;">help_outline</mat-icon>
                     </button>
+                </div>
                 <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
-                aria-label="Example icon-button with a menu" class="info-button">
+                aria-label="Example icon-button with a menu">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <span>
                                 {{getUserName()}}
                             </span>
-                            <div *lcCheckAccessFor="'view-role'" class="role">Role: {{currentRole}}</div>
+                            <div *lcCheckAccessFor="'view-role'" class="role">{{getRole()}}</div>
                         </div>
                         <mat-icon>arrow_drop_down</mat-icon>
                     </div>
                 </button>
-            </div>
             <!-- user settings menu -->
             <mat-menu #menu="matMenu">
                 <button mat-menu-item (click)="about()" id="about-button" hidden>
@@ -142,7 +142,7 @@
                 </button>
                 <button *lcCheckAccessFor="'view-roles-permission'" mat-menu-item (click)="openRoles()" id="profile-button">
                     <mat-icon aria-hidden="false" aria-label="person icon">verified_user</mat-icon>
-                    <span>Role permissions</span>
+                    <span>Roles & Privileges</span>
                 </button>
                 <button mat-menu-item (click)="logout()" id="logout-button">
                     <mat-icon>logout</mat-icon>

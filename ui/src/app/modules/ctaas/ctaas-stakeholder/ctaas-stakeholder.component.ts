@@ -311,7 +311,7 @@ export class CtaasStakeholderComponent implements OnInit {
 
   sendHelpDialogValues(): void {
     const data = {
-      title: 'Stakeholders Help',
+      title: 'Stakeholders',
       sections: [
         {
           elements: [

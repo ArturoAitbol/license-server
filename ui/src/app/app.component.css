@@ -193,20 +193,26 @@ app-banner-outlet {
 
 }
 
-.info-container {
-  display: flex; 
-}
 
 .role {
   margin-top: -15px;
   font-size: 12px;
 }
 
-.help-button
-.info-button {
+.info-container {
+    display: flex !important;
+    justify-content: center; 
+    align-items: center !important;
+}
+  
+.info-container button {
   margin-right: 10px;
 }
-
 .help-button {
-  align-self: flex-end;
+  align-items: center;
+}
+
+.help-button mat-icon {
+    margin-right: 5px;
+    margin-bottom: -2px;
 }
