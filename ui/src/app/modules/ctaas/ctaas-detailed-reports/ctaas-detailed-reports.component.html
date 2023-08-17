@@ -152,8 +152,11 @@
                                     <mat-panel-title [title]="item.callType" class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col">
                                         {{item.callType | na}}
                                     </mat-panel-title>
-                                        <mat-icon (click)="openDetails(item)" title="{{item.testCaseName}} drop-button" class="arrow-button col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">
-                                            info</mat-icon>
+                                        <mat-icon [matMenuTriggerFor]="menu" title="{{item.testCaseName}} drop-button" class="arrow-button col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">
+                                            more_vert</mat-icon>
+                                        <mat-menu #menu="matMenu">
+                                            <button mat-menu-item (click)="openDetails(item)">More Info</button>
+                                        </mat-menu>
                                 </mat-expansion-panel-header>
                             </mat-expansion-panel>
                         </mat-accordion>

@@ -428,6 +428,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true));//.pipe(catchError(e => of(e))));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, ReportName.TAP_VQ));
     }
+    
+    if (this.selectedRegions.length > 0)
+      this.reloadUserOptions(this.selectedRegions);
+    else
+      this.reloadFilterOptions();
 
     this.chartsSubscription = forkJoin(obs).subscribe((res: any) => {
       try {
@@ -508,10 +513,6 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         event.target.style.cursor ='pointer';   
       }
     };
-    if (this.selectedRegions.length > 0)
-      this.reloadUserOptions(this.selectedRegions);
-    else
-      this.reloadFilterOptions();
   }
 
   private processWeeklyData(res: any) {
@@ -606,11 +607,6 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       vqData.numericValues.fair,
       vqData.numericValues.poor
     ];
-
-    if (this.weeklySelectedRegions.length > 0)
-      this.reloadUserOptions(this.weeklySelectedRegions);
-    else
-      this.reloadFilterOptions();
   }
 
   changeHeatMapData() {
