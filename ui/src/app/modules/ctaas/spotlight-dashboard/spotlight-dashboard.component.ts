@@ -863,111 +863,111 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   sendHelpDialogValuesDaily(): void {
     const data = {
-      title: 'Dashboard Help',
+      title: 'Dashboard [Daily]',
       summary: 'A dashboard is a visual representation of data that provides an overview of key information and metrics in a concise and accessible manner.',
       sections: [
           {
               //name: empty as section doesn't have title
               elements: [
-                  {
-                    subtitle: 'Number of calls', // can be empty
-                    description: 'Refers to the total count of call volume made or received by someone or a group of people during a specific period of time.'
-                  },  
-                  {
-                    subtitle: 'P2P',
-                    description: 'Refer to Peer-Peer call wherein the two users have a direct call within the same voice server.'
-                  },  
-                  {
-                    subtitle: 'On-net',
-                    description: 'Refers to phone calls that are routed between the same service provider network.'
-                  },
-                  {
-                    subtitle: 'Off-net',
-                    description: 'Refers to phone calls that are routed between different service provider network.'
-                  },  
-                  {
-                    subtitle: 'View detailed report',
-                    description: 'Provides in-depth summary of data for a better understanding and analysis.'
-                  }
+                {
+                  subtitle: 'Region', 
+                  description: "The region field indicates the geographic area, which can represent either the entire [Country], a specific [State] within a country, or a more detailed location like [City, State, Country]. It provides insights into your network's performance within that specific location.",
+                },
+                {
+                  subtitle: 'Calling Reliability', 
+                  description: "Represents the status of call routing across the selected regions. Hovering over the graph, it gives the overall Pass percentage.",
+                },
+                {
+                  subtitle: 'Feature Functionality', 
+                  description: 'Represents the status of various call features. Hovering over the graph, it gives the overall Pass percentage.',
+                },
+                {
+                  subtitle: 'Voice Quality (POLQA)', 
+                  description: "Displays voice quality of different call streams measured using the ITU's POLQA algorithm. It displays the Percentage Quality of these call streams for the particular date. Hovering over the graph gives the Call Streams and the Percentage of Excellent, Good, Fair, or Poor calls.",
+                },
+                {
+                  subtitle: 'Failed calls', 
+                  description: "Failed calls are calls that were not successful and couldn't be completed due to various reasons like network issues or incorrect dialling. Hovering over the graph, it gives the overall fail percentage.",
+                },
+                {
+                  subtitle: 'Number of calls', // done
+                  description: 'Refers to the total count of call volume made or received during a specific period of time.'
+                },  
+                {
+                  subtitle: 'P2P', 
+                  description: 'Refer to Peer-Peer call wherein the two users have a direct call within the same call server.'
+                },  
+                {
+                  subtitle: 'On-net', 
+                  description: 'Refers to phone calls that are routed between the same service provider network.'
+                },
+                {
+                  subtitle: 'Off-net', 
+                  description: 'Refers to phone calls that are routed between different service provider network.'
+                },  
+                {
+                  subtitle: 'View detailed report', 
+                  description: 'Provides in-depth summary of data for a better understanding and analysis.'
+                }
               ]
           },
           {
               name: "Network Quality",
               elements: [
                 {
-                  subtitle: 'Worst Case',
-                  description: 'Displays the results for the user who has experienced the most significant drop in network performance for the specific date.'
-                },  
+                  description: "Represents the customer's network quality summary along with the detailed reports of Received Packet Loss, Round Trip Time, Jitter, Sent Bit Rate and POLQA.",
+                },
                 {
-                  subtitle: 'Average',
-                  description: 'Displays the average of the network parameters across all users.'
-                },  
+                  subtitle: 'User', 
+                  description: 'Selecting the user and clicking on Apply gives the network stats for the selected user.',
+                },
                 {
-                  subtitle: 'Calls with Network Stats',
+                  subtitle: 'Calls with Network Stats', 
                   description: 'Refers to calls that come with detailed statistics about network performance.',
                 },
                 {
-                  subtitle: 'Jitter',
-                  description: 'Is the variation in packet delay during the transmission of data over a network.',
+                  subtitle: 'Calls Above Threshold Metrics', 
+                  description: 'Number of calls that exceed the recommended threshold for a particular metric.'
+                },  
+                {
+                  subtitle: 'Worst Case', 
+                  description: 'Displays the results for the user who has experienced the most significant drop in network performance for the specific date.'
+                },  
+                {
+                  subtitle: 'Average', 
+                  description: 'Displays the average of the network parameters across all users.'
+                },  
+                {
+                  subtitle: 'Network Metrics Summary', 
+                  description: 'Worst case and Average value for each network metric.',
                 },
                 {
-                  subtitle: 'Packet loss',
-                  description: 'Is when data packets go missing or get lost while traveling through a network, causing problems in communication.',
+                  subtitle: 'Jitter (ms) (> 30 ms)', 
+                  description: 'Jitter is the variation in packet delay during the transmission of data over a network. As per MS recommendation allowed threshold for Jitter is 30 ms.',
                 },
                 {
-                  subtitle: 'Round Trip Time (RTT)',
-                  description: 'Time taken for a data packet to travel from the source to the destination and back again to the source in a network communication.',
+                  subtitle: 'Packet Loss (%) (> 10%)', 
+                  description: 'Packet Loss is when data packets go missing or get lost while traveling through a network, causing problems in communication. As per MS recommendation allowed threshold for packet loss is 10%.',
                 },
                 {
-                  subtitle: 'Max. Packet Loss',
-                  description: 'Is the highest rate of missing data packets during network communication.',
+                  subtitle: 'Round Trip Time (ms) (> 500 ms)', 
+                  description: 'Time taken for a data packet to travel from the source to the destination and back again to the source in a network communication. As per MS recommendation allowed threshold for Round Trip Time is 500 ms.',
                 },
                 {
-                  subtitle: 'Max. Jitter (ms)',
-                  description: 'Is the highest variation in packet delay, measured in milliseconds, during network communication.',
+                  subtitle: 'POLQA', 
+                  description: 'This is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
                 },
                 {
-                  subtitle: 'Max. Round Trip Time (ms)',
-                  description: 'Is the highest time taken for a data packet to travel from the source to the destination and back in a network communication.',
+                  subtitle: 'Sent Bitrate (kbps)', 
+                  description: 'Sent Bitrate is the rate at which data bits are transmitted from the source during a communication session.',
                 },
                 {
-                  subtitle: 'Min. POLQA',
-                  description: 'Is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
+                  subtitle: 'POLQA Calls Media Stats', 
+                  description: 'Average versus Worst Case values histogram for POLQA and Network Metrics in Voice Quality (POLQA) tests. Hovering over the data on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance.',
                 },
                 {
-                  subtitle: 'Avg. Sent Bitrate(kbps)',
-                  description: 'Is the average rate at which data bits are transmitted from the source during a communication session.',
-                },
-                {
-                  subtitle: 'Select metric',
-                  descriptions:[
-                    'Max. Jitter (ms) vs Min. POLQA',
-                    'Max. Packet Loss (%) vs Min. POLQA',
-                    'Max. Round Trip Time (ms) vs Min. POLQA'
-                  ],
-                },
-                {
-                  description: "The graph for Max.<selected metric> versus Min. POLQA appears when select metric field is selected. Hovering over the data points on the graph provides detailed insights into the metric's values corresponding to each hour. Clicking on the data points, redirects to a new page that presents the results in a more comprehensive and detailed format."
-                },
-                {
-                  subtitle: 'Network Trends',
-                  description: "Provides visibility into the network's overall condition through detailed reports on Received Packet Loss, Round Trip Time, Jitter, and Sent Bitrate per hour. Hovering over the data points on the graph reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance.",
-                },
-                {
-                  subtitle: 'Feature Functionality',
-                  description: 'Graph displays total call by region, comparing the number of calls vs. Success rate, Pass, or Fail for the latest week. Hovering over the data points on the graph gives the overall Success percentage.',
-                },
-                {
-                  subtitle: 'Calling Reliability',
-                  description: "Shows call routing status in selected regions, with the number of calls vs. Success rate or Pass/Fail for the latest week (last seven days from the selected date) in the Date field. Hovering over the data points on the graph gives the overall Success percentage.",
-                },
-                {
-                  subtitle: 'Voice Quality (POLQA)',
-                  description: "Displays voice quality of different call streams measured using the ITU's POLQA algorithm. It displays the Percentage Quality of these call streams over the past week from the selected date. Hovering over the graph gives the Date, Category, Call Streams, and the Percentage of Excellent, Good, Fair, or Poor calls.",
-                },
-                {
-                  subtitle: 'Failed calls',
-                  description: 'Failed calls are phone calls that were not successful and couldn\'t be completed due to various reasons like network issues or incorrect dialling.',
+                  subtitle: 'Network Trends', 
+                  description: "Provides insight into the behaviour of the client's network across various metrics throughout a given day. Hovering over the data points on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance. When you click on the graph pointer, a new page opens, displaying the details in a detailed report.",
                 }
               ]
           }
@@ -979,38 +979,118 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
   sendHelpDialogValuesWeekly(): void {
     const data = {
-      title: 'Dashboard/Weekly Help',
+      title: 'Dashboard [Weekly]',
       summary: 'A dashboard is a visual representation of data that provides an overview of key information and metrics in a concise and accessible manner.',
       sections: [
         {
           //name: empty as section doesn't have title
           elements: [
             {
-              subtitle: 'Feature Functionality',
-              description: 'Graph displays total call by region, comparing the number of calls vs. Success rate, Pass, or Fail for the latest week. Hovering over the data points on the graph gives the overall Success percentage.',
+              subtitle: 'Region', 
+              description: "The region field indicates the geographic area, which can represent either City, State or a  Country. It provides insights into your network's performance within that specific location. Data is displayed for the latest week (last seven days from selected date).",
             },
             {
-              subtitle: 'Calling Reliability',
-              description: 'Shows call routing status in selected regions, with the number of calls vs. Success rate or Pass/Fail for the latest week (last seven days from selected date) in the Date field. Hovering over the data points on the graph gives the overall Success percentage.',
+              subtitle: 'Feature Functionality', 
+              description: 'Graph displays total call by region, comparing number of calls vs. Success rate, Pass, or Fail for the latest week. Hovering over the data points on the graph, gives the overall Success percentage.',
             },
             {
-              subtitle: 'Voice Quality (POLQA)',
+              subtitle: 'Calling Reliability', 
+              description: "Shows call routing status across regions, with number of calls vs. Success rate or Pass/Fail for the latest week (last seven days from selected date) in the Date field. Hovering over the data points on the graph, it gives the overall Success percentage.",
+            },
+            {
+              subtitle: 'Voice Quality (POLQA)', 
               description: "Displays voice quality of different call streams measured using the ITU's POLQA algorithm. It displays the Percentage Quality of these call streams over the past week from the selected date. Hovering over the graph gives the Date, Category, Call Streams, and the Percentage of Excellent, Good, Fair, or Poor calls.",
             },
             {
-              subtitle: 'Call Status History/Heatmap',
-              description: 'Call history status is a record of the calls made or received, including details like date, time. Click on the failed section to identify patterns of call failure, helping you identify and resolve issues effectively.',
+              subtitle: 'Call Status History', 
+              description: 'This is a record of the calls made or received, including details like date, time. Click on the failed section to identify patterns of call failure, helping you identify and resolve issues effectively. Data is displayed for the latest week (last seven days from selected date).',
             },
+            {
+              subtitle: 'Number of call streams', 
+              description: 'Refers to the toal number of calls + P2P + On-net + Off-net.'
+            },  
+            {
+              subtitle: 'Number of calls', // done
+              description: 'Refers to the total count of call volume made or received for the latest week (last seven days from selected date).'
+            },  
+            {
+              subtitle: 'P2P', 
+              description: 'Refer to Peer-Peer call wherein the two users have a direct call within the same call server. Data is displayed for the latest week (last seven days from selected date).'
+            },  
+            {
+              subtitle: 'On-net', 
+              description: 'Refers to phone calls that are routed between the same service provider network. Data is displayed for the latest week (last seven days from selected date).'
+            },
+            {
+              subtitle: 'Off-net', 
+              description: 'Refers to phone calls that are routed between different service provider network. Data is displayed for the latest week (last seven days from selected date).'
+            },  
             {
               subtitle: 'View detailed report',
-              description: 'Provides in-depth summary of data for a better understanding and analysis.',
+              description: 'Provides in-depth summary of data for a better understanding and analysis.'
+            }
+          ]
+        },
+        {
+          name: "Network Quality",
+          elements: [
+            {
+              description: "This section represents the customer's network quality summary along with the detailed reports of Received Packet Loss, Round Trip Time, Jitter, Sent Bit Rate and POLQA. Data is displayed for the latest week (last seven days from selected date).",
             },
             {
-              subtitle: 'Download report',
-              description: 'To download the report in Microsoft Excel format, simply click the "Download Report" button.',
+              subtitle: 'User', 
+              description: 'Selecting the user and clicking on Apply gives the network stats for the selected user. Data is displayed for the latest week (last seven days from selected date).',
             },
+            {
+              subtitle: 'Calls with Network Stats', 
+              description: 'Refers to calls that come with detailed statistics about network performance. Data is displayed for the latest week (last seven days from selected date).',
+            },
+            {
+              subtitle: 'Calls Above Threshold Metrics', 
+              description: 'Number of calls that exceed the recommended threshold for a particular metric. Data is displayed for the latest week (last seven days from selected date).'
+            },  
+            {
+              subtitle: 'Worst Case', 
+              description: 'Displays the results for the user who has experienced the most significant drop in network performance.'
+            },  
+            {
+              subtitle: 'Average', 
+              description: 'Displays the average of the network parameters across all users.'
+            },  
+            {
+              subtitle: 'Network Metrics Summary', 
+              description: 'Worst case and Average value for each network metric. ',
+            },
+            {
+              subtitle: 'Jitter (ms) (> 30 ms)', 
+              description: 'Jitter is the variation in packet delay during the transmission of data over a network. As per MS recommendation allowed threshold for Jitter is 30 ms.',
+            },
+            {
+              subtitle: 'Packet Loss (%) (> 10%)', 
+              description: 'Packet Loss is when data packets go missing or get lost while traveling through a network, causing problems in communication. As per MS recommendation allowed threshold for packet loss is 10%.',
+            },
+            {
+              subtitle: 'Round Trip Time (ms) (> 500 ms)', 
+              description: 'Time taken for a data packet to travel from the source to the destination and back again to the source in a network communication. As per MS recommendation allowed threshold for Round Trip Time is 500 ms.',
+            },
+            {
+              subtitle: 'POLQA', 
+              description: 'This is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
+            },
+            {
+              subtitle: 'Sent Bitrate (kbps)', 
+              description: 'This is the rate at which data bits are transmitted from the source during a communication session.',
+            },
+            {
+              subtitle: 'POLQA Calls Media Stats', 
+              description: 'Average versus Worst Case values histogram for POLQA and Network Metrics in Voice Quality (POLQA) tests. Hovering over the data on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance.',
+            },
+            {
+              subtitle: 'Network Trends', 
+              description: "Provides insight into the behaviour of the client's network across various metrics throughout the given week. Hovering over the data points on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance. When you click on the graph pointer, a new page opens, displaying the details in a detailed report.",
+            }
           ]
-        }
+      }
       ]
   };
     this.dialogService.clearDialogData();

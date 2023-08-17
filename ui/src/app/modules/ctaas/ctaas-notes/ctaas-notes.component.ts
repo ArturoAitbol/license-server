@@ -251,7 +251,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
 
     sendHelpDialogValues(): void {
         const data = {
-            title: 'Notes Help',
+            title: 'Notes',
             summary: "During any service disruption or quality degradation, the Admin can add Notes with a message to communicate the status. This message, along with the timestamp will be visible to all mobile app users.",
             sections: [
                 {

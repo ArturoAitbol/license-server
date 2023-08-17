@@ -28,6 +28,7 @@ import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 import { CallbackTimerComponent } from './modules/ctaas/callback/callback-timer/callback-timer.component';
 import { DialogComponent } from './generics/dialog/dialog.component';  
 import { PermissionsChartComponent } from './generics/permissions-chart/permissions-chart.component';
+import { LoginPageComponent } from './views/login-page/login-page.component';
 
 
 @Component({
@@ -177,6 +178,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ];
 
     currentRoutePath = '';
+    currentRole = '';
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
@@ -483,8 +485,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     getRole(): string{
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        const camellCaseSplit = roles[0].split('.')[1].replace(/([A-Z])/g, ' $1').trim();
+        const camellCaseSplit = this.getOnlySpecifiedRole(roles);
         return camellCaseSplit;
+    }
+
+    getOnlySpecifiedRole(roles: string[]){
+        const subaccountAdminList = roles.filter(item => item.includes("SubaccountAdmin"));
+        if(subaccountAdminList.length>0)
+            return "Admin";
+        const stakeholdersList = roles.filter(item => item.includes("SubaccountStakeholder"));
+        if(stakeholdersList.length>0)
+            return "Stakeholder";
     }
 
     /**
