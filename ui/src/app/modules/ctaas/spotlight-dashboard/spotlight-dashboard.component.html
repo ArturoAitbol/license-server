@@ -118,7 +118,7 @@
                                      [onNetCalls]="callingReliability.onNet"
                                      [offNetCalls]="callingReliability.offNet"
                                      [seriesName]="'Passed'"
-                                     (viewDetailedTableEvent)="navigateToDetailedTable(callingReliabilityTestPlans)"></app-gauge-chart>
+                                     (viewDetailedTableEvent)="navigateToDetailedTable({reportType:callingReliabilityTestPlans, statsTab:true})"></app-gauge-chart>
                 </div>
                 <div class="col-md-6" id="daily-feature-functionality">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
@@ -128,7 +128,7 @@
                                      [onNetCalls]="featureFunctionality.onNet"
                                      [offNetCalls]="featureFunctionality.offNet"
                                      [seriesName]="'Passed'"
-                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
+                                     (viewDetailedTableEvent)="navigateToDetailedTable({reportType:ReportType.DAILY_FEATURE_FUNCTIONALITY, statsTab:true})"></app-gauge-chart>
                 </div>
             </div>
             <div class="row">
@@ -182,7 +182,7 @@
                                     <label class="ps-2">Total Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.total }}</p>
-                                    <button title="Failed Calls Detailed Report" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">
+                                    <button title="Failed Calls Detailed Report" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable({statsTab:true})">
                                         View Detailed Report
                                     </button>
                                 </div>
@@ -192,7 +192,7 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.failed }}</p>
-                                    <button title="Failed Calls" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED', true)">
+                                    <button title="Failed Calls" *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable({reportType:null,status:'FAILED',section:true,statsTab:true})">
                                         View Detailed Report
                                     </button>
                                 </div>
@@ -447,7 +447,7 @@
                                     <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ heatMapCallsSummary.failed }}</p>
-                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(null, 'FAILED', true)">
+                                    <button *lcCheckAccessFor="'viewDetailedReport'" class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable({reportType:null,status:'FAILED',section:true})">
                                         View Detailed Report
                                     </button>
                                 </div>
