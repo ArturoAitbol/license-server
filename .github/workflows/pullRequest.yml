@@ -54,7 +54,7 @@ jobs:
         if: steps.changes.outputs.frontend == 'true'
         run: |
           cd ./ui
-          npm install
+          npm install --legacy-peer-deps
           npm run test -- --no-watch --no-progress
   
       - name: Publish Test Results

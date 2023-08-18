@@ -131,7 +131,7 @@ def verify_requirements():
 
 def display_requirements():
     val = input("""=================================================
-        Welcome to tekVizion Dev Auto Test Script!
+        Welcome to TekVizion 360 Dev Auto Test Script!
         Before proceed, please check you met following requirements:
         \t - You have set your configuration correctly in tests/ui/src/main/resources/local.properties (use headless_chrome as browser)
         \t - You have set your configuration correctly in azure-functions/src/test/resources/config.properties

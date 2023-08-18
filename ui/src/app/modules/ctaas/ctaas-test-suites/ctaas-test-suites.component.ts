@@ -79,7 +79,7 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
 
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Suite Name', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Suite Name', dataKey: 'suiteName', position: 'left', isSortable: true },
       { name: 'Service Under Test', dataKey: 'deviceType', position: 'left', isSortable: true },
       { name: 'Total Executions', dataKey: 'totalExecutions', position: 'left', isSortable: true },
       { name: 'Next Execution', dataKey: 'nextExecution', position: 'left', isSortable: true },
@@ -163,7 +163,7 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
-        message: 'Do you want to confirm this action?',
+        message: 'Are you sure you want to delete '+ testSuite.suiteName +'?',
         confirmCaption: 'Confirm',
         cancelCaption: 'Cancel',
       })

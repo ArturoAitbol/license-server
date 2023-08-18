@@ -1,0 +1,29 @@
+td {
+    width: 100%;
+    text-align: end;
+}
+
+th{
+   width: 100%;
+   padding-left: 0;
+}
+.text-container{
+    display: flex;
+    align-items: center;
+}
+.text-left {
+    margin-right: 0px; /* Adjust the spacing as needed */
+}
+
+.icon {
+    margin: 0 10px; /* Adjust the spacing as needed */
+}
+
+.text-right {
+    margin-left: 10px; /* Adjust the spacing as needed */
+}
+
+.viewDetail-button {
+    color: #273176;
+    width: 40%;
+}

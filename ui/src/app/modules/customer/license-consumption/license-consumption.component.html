@@ -8,7 +8,7 @@
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-7">
                 <form [formGroup]="licenseForm">
                     <mat-form-field id="license-period-form" appearance="outline" class="full-width example-form-field">
-                        <mat-label><b>tekVizion 360 Subscription</b></mat-label>
+                        <mat-label><b>TekVizion 360 Subscription</b></mat-label>
                         <mat-select class="bold-field" formControlName="selectedLicense"
                             (valueChange)="onChangeLicense($event)">
                             <mat-option *ngFor="let license of licensesList" [value]="license.id" title="{{license.description}}">
@@ -22,7 +22,7 @@
                 <mat-button-toggle-group class="float-xl-right" name="fontStyle" aria-label="Font Style" id="btn-group">
                     <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button"
                         (change)="onChangeToggle($event)" class="add-btn">
-                        Add tekVizion 360 Subscription
+                        Add TekVizion 360 Subscription
                     </mat-button-toggle>
                     <mat-button-toggle *ngIf="hasAddConsumptionPermission && !newLicenseConsumptionLogicFlag" value="add-license-consumption"
                         id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
@@ -171,7 +171,7 @@
         </div>
         <br>
         <ng-container *lcCheckAccessFor="'addLicenseConsumption'">
-            <div class="row">
+            <div *ngIf="!newLicenseConsumptionLogicFlag" class="row">
                 <div class="col-2 ms-auto">
                     <button *ngIf="!detailedConsumptionTableSelectable" id="clone-consumption"
                         (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded" mat-raised-button

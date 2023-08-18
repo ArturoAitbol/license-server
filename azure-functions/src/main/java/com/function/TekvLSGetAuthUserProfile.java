@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Optional;
 
+import com.function.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -42,6 +43,7 @@ public class TekvLSGetAuthUserProfile {
 			final ExecutionContext context) 
 	{
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+		String authEmail = getEmailFromToken(tokenClaims,context);
 		JSONArray roles = getRolesFromToken(tokenClaims,context);
 		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -56,13 +58,13 @@ public class TekvLSGetAuthUserProfile {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAuthUserProfile Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetAuthUserProfile Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount_admin");
-		String authEmail = getEmailFromToken(tokenClaims,context);
 		queryBuilder.appendEqualsCondition("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
 
 		// Connect to the database
@@ -85,6 +87,11 @@ public class TekvLSGetAuthUserProfile {
 				item.put("email", rs.getString("subaccount_admin_email"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("notifications", rs.getString("notifications"));
+				item.put("emailNotifications",  rs.getBoolean("email_notifications"));
+				if (rs.getString("latest_callback_request_date") != null)
+					item.put("latestCallbackRequest", Utils.millisecondsSinceDate(Utils.getDateFromString(rs.getString("latest_callback_request_date"))));
+				else
+					item.put("latestCallbackRequest", rs.getString("latest_callback_request_date"));
 			}
 
 			if(!authEmail.isEmpty() && item==null){
@@ -95,12 +102,14 @@ public class TekvLSGetAuthUserProfile {
 			fetchUserDetails(item, context);
 			context.getLogger().info("Auth user profile details fetched : "+item);
 			json.put("userProfile", item);
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAuthUserProfile Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAuthUserProfile Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

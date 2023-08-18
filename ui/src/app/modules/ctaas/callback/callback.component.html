@@ -1,0 +1,35 @@
+<div class="container">
+    <h1 mat-dialig-title>Confirm call request</h1>
+    <div class="flex-container">
+            <h3>You are about to request a call from one of our UCaaS Continuous Testing experts to:</h3>
+            <mat-radio-group class="example-radio-group" vertical>
+            <mat-radio-button color="primary" (change)="radioChange('myself')" value="1">Myself</mat-radio-button>
+            <mat-radio-button color="primary" (change)="radioChange('stakeholders')" value="2">Another user</mat-radio-button>
+        </mat-radio-group>
+        <div [formGroup]="stakeholderForm" *ngIf="stakeholdersListFlag">
+            <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label id="project-license-label">Stakeholders</mat-label>
+                <mat-select formControlName="stakeholderControl">
+                    <mat-option [disabled]="checked" *ngFor="let stakeholder of stakeholdersData" 
+                        [value]="stakeholder.subaccountId" (onSelectionChange)="onSelectedStakeholder(stakeholder)" title="{{stakeholder.name}}">
+                        {{stakeholder.name}}
+                    </mat-option>
+                </mat-select>
+                <button *ngIf="stakeholderForm.get('stakeholderControl').value" matSuffix mat-icon-button
+                    aria-label="Clear" (click)="stakeholderForm.get('stakeholderControl').setValue(''); checkBoxFlag = false">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <br *ngIf="checked">
+    </div>
+    <h3>Do you want to continue?</h3>
+    <mat-dialog-actions>
+        <button mat-raised-button [mat-dialog-close]="false" id="cancel">
+            Cancel
+        </button>
+        <button [disabled]="!checked && !checkBoxFlag"  class="btn-custom" mat-raised-button [mat-dialog-close]="true" (click)="makeCallback()" id="confirm">
+            Confirm
+        </button>
+    </mat-dialog-actions>
+</div>

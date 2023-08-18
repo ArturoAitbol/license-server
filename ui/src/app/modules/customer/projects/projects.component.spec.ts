@@ -1,119 +1,50 @@
-import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { MsalService } from '@azure/msal-angular';
-import { of, Subject, throwError } from 'rxjs';
-import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
+import { of, throwError } from 'rxjs';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
-import { ProjectService } from 'src/app/services/project.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
-import { CurrentCustomerServiceMock } from 'src/test/mock/services/current-customer-service.mock';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
-import { SharedModule } from '../../shared/shared.module';
 import { AddProjectComponent } from './add-project/add-project.component';
 import { ModifyProjectComponent } from './modify-project/modify-project.component';
 import { ProjectsComponent } from './projects.component';
 import { Sort } from '@angular/material/sort';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
-import { SnackBarService } from "../../../services/snack-bar.service";
-import { LicenseService } from 'src/app/services/license.service';
 import { LicenseServiceMock } from 'src/test/mock/services/license-service.mock';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { RouterMock } from '../../../../test/mock/Router.mock';
+import { CustomerServiceMock } from '../../../../test/mock/services/customer-service.mock';
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
 const dialogService = new DialogServiceMock();
 let loader: HarnessLoader;
 
-const RouterMock = {
-    navigate: (commands: string[], queryParams: any) => { }
-};
+const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ProjectsComponent);
+configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
 
-const defaultTestBedConfig = {
-        declarations: [ProjectsComponent, DataTableComponent, ModifyProjectComponent, AddProjectComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: MatSnackBarRef,
-                useValue: {}
-            },
-            {
-                provide: ProjectService,
-                useValue: ProjectServiceMock
-            },
-            {
-                provide: LicenseService,
-                useValue: LicenseServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: CustomerService,
-                useValue: CurrentCustomerServiceMock
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: FormBuilder
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            }
-        ]
-};
-
-const beforeEachFunction =  async  () => {
-    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
-        fixture = TestBed.createComponent(ProjectsComponent);
-        projectsComponentTestInstance = fixture.componentInstance;
-        projectsComponentTestInstance.ngOnInit();
-        loader = TestbedHarnessEnvironment.loader(fixture);
-        spyOn(console, 'log').and.callThrough();
-        spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
-        spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
-        spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.returnValue({
-            id: "eea5f3b8-37eb-41fe-adad-5f94da124a5a",
-            name: "testv2Demo",
-            customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
-            services: "tokenConsumption,spotlight",
-            testCustomer: false,
-            companyName:"testComp",
-            customerName:"testName"
-        });
-        spyOn(SubaccountServiceMock, 'setSelectedSubAccount').and.callThrough();
+const beforeEachFunction = () => {
+    TestBed.configureTestingModule(configBuilder.getConfig());
+    fixture = TestBed.createComponent(ProjectsComponent);
+    projectsComponentTestInstance = fixture.componentInstance;
+    projectsComponentTestInstance.ngOnInit();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+    spyOn(CustomerServiceMock, 'getSelectedCustomer').and.callThrough();
+    spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
+    spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.returnValue({
+        id: "eea5f3b8-37eb-41fe-adad-5f94da124a5a",
+        name: "testv2Demo",
+        customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
+        services: "tokenConsumption,spotlight",
+        testCustomer: false,
+        companyName:"testComp",
+        customerName:"testName"
     });
+    spyOn(SubaccountServiceMock, 'setSelectedSubAccount').and.callThrough();
 }
 
 describe('projects - UI verification test', () => {
@@ -133,7 +64,7 @@ describe('projects - UI verification test', () => {
 
         // Filters
         const licenseFilterForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#license-filter-form" }));
-        expect(await licenseFilterForm.getLabel()).toContain('tekVizion 360 Subscription');
+        expect(await licenseFilterForm.getLabel()).toContain('TekVizion 360 Subscription');
     });
 
     it('should load correct data columns for the table', () => {
@@ -165,7 +96,7 @@ describe('projects - UI verification test', () => {
     });
 });
 
-describe('Data collection and parsing tests', () => {
+describe('projects.component - Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to get licenses and projects after initializing', () => {
         const subaccountId = 'eea5f3b8-37eb-41fe-adad-5f94da124a5a'
@@ -175,7 +106,7 @@ describe('Data collection and parsing tests', () => {
         fixture.detectChanges();
         projectsComponentTestInstance.currentCustomer = null;
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
-        expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
+        expect(CustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalledWith(subaccountId);
         expect(projectsComponentTestInstance.projects.length).toEqual(6);
@@ -327,7 +258,7 @@ describe('projects - navigate', () => {
 
 describe('test customer false and routing with query params', () => {
     beforeEach(() => {
-        TestBed.configureTestingModule(defaultTestBedConfig);
+        TestBed.configureTestingModule(configBuilder.getConfig());
         TestBed.overrideProvider(CustomerService, {
             useValue:{
                 getSelectedCustomer:() => {

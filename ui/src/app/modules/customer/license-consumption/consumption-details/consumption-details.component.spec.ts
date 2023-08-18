@@ -1,19 +1,10 @@
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MsalService } from '@azure/msal-angular';
-import { SharedModule } from 'src/app/modules/shared/shared.module';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ConsumptionDetailsComponent } from './consumption-details.component';
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
 
 let consumptionDetailsComponent: ConsumptionDetailsComponent;
 let fixture: ComponentFixture<ConsumptionDetailsComponent>;
-
-
-const MatDialogRefMock = {
-  close: () => { return {}; }
-}
 
 const data: any = {
   consumptionDate: "2023-02-05",
@@ -41,24 +32,9 @@ const data: any = {
 
 
 const beforeEachFunction = () => {
-  TestBed.configureTestingModule({
-    declarations: [ConsumptionDetailsComponent],
-    imports: [CommonModule, SharedModule, BrowserAnimationsModule],
-    providers: [
-      {
-        provide: MatDialogRef,
-        useValue: MatDialogRefMock
-      },
-      {
-        provide: MAT_DIALOG_DATA,
-        useValue: data
-      },
-      {
-        provide: MsalService,
-        useValue: MsalServiceMock
-      }
-    ]
-  });
+  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ConsumptionDetailsComponent);
+  configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: data });
+  TestBed.configureTestingModule(configBuilder.getConfig());
   fixture = TestBed.createComponent(ConsumptionDetailsComponent);
   consumptionDetailsComponent = fixture.componentInstance;
 }

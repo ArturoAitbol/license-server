@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "7b34f368-d5b0-41a1-9b43-cae5fcbde0b4",
+		"_postman_id": "25001a07-e7b5-4c78-9aac-282e534d8c5a",
 		"name": "LicenseServerAPIs",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26252928"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "8463466"
 	},
 	"item": [
 		{
@@ -46,13 +46,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token}}",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "{{access_token}}"
+					}
 				},
 				"method": "DELETE",
 				"header": [
@@ -63,28 +59,2233 @@
 						"disabled": true
 					}
 				],
+				"url": "{{HOST}}/testData"
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"CLIENTID_DEVICESADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_DEVICESADMIN\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token_DA', response.json().access_token);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bundleName\":\"CICDTest\",\r\n    \"defaultTokens\":\"10\",\r\n    \"defaultDeviceAccessTokens\":\"100\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/bundles"
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"defaultTokens\":\"20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/bundles/{{bundleId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/bundles/{{bundleId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\",\r\n    \"supportType\": \"true\",\r\n    \"startDate\": \"{{$isoTimestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/devices"
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"consumptionMatrixId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\": \"2\",\r\n    \"dutType\": \"Device/Phone/ATA\",\r\n    \"callingPlatform\": \"CCaaS\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/consumptionMatrix"
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"customerId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token', response.json().access_token);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"var currentDateTime = new Date().getTime();\r",
+							"pm.collectionVariables.set('name', 'CICDTest'+currentDateTime);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}admin1@tekvizion.com\",\r\n    \"test\": \"true\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/customers"
+			},
+			"response": []
+		},
+		{
+			"name": "adminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerAdminEmail\": \"{{name}}admin2@tekvizion.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/customerAdminEmails"
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"subaccountId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": \"{{name}}subadmin1@tekvizion.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/subaccounts"
+			},
+			"response": []
+		},
+		{
+			"name": "subaccountAdminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountAdminEmail\": \"{{name}}subadmin2@tekvizion.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/subaccountAdminEmails"
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"licenseId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"subscriptionType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"description\": \"LicenseTest\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/licenses"
+			},
+			"response": []
+		},
+		{
+			"name": "notes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"noteId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"content\": \"note content Test\",\r\n    \"reports\": [\r\n        {\r\n            \"reportType\":\"Daily-FeatureFunctionality\",\r\n            \"imageBase64\":\"data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAQNBrADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApD0paD0oAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoopKAFopKKAFooooAKKKKACiiigAopKKAFopKWgAooooAKKKSgBaKKKACikpaACikpaACiikoAWikooAWiiigAooooAKKKSgBaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKD0ooPSgAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAEPArzfW/jJpOh61c6XLpeoSzW7FWaMIQfpzmvSG6V4VoltBdfHrUoriGOVMSnbIoYfeHrVwSe5Mm0dPZ/HDw7cTBLm2vbMH+KZBj9Ca77Sdc07XLUXOm3cdxEe6Hp9Qeaqah4R0HUrZobjSbMgjG5YVVh9CBXjMVvP8MPifb2dtNI2m3ZwEZsjafX3FNJS2E20z6BznkVxfjD4l6V4NvobS7trm4llXdiHb8o98ketdi0ipE0hICgZzXgsWl/8LD8Z+Ib9wXt7aNo4Cemc8EflShG+45Ox7fpGqQazpdvqFsf3M6B1z1GfWpNRvk03Tri8kVmSFC5VepArzb4K6w02h3GjXBxPYyYCn0P/AOqu78Vf8itqX/XBqTVpWBPQpeDvGtl4zsZrqytriFYm2lZsZP5E+lV77x/YWHjCDw3JaXLXM2Nsq7dgz685rkPgN/yL1+Mf8th/Ws7xH/yXbTfotXyatCvoe2MxVScZwOgrjdH+I+nar4om8PmzurW8iJH78KA2DjjBNdkAcfhXi/xU0ifw/wCJrDxdYLgBws+PXsf51EUm7DbPZ3dY0Z2OFUZJrk/D/j+y8Sa9daXY2V0RbEh7htvl8Htzmsbxx42hh8AR3NjIDcaigSEKeRkc1o/DDwx/wjnhaIzLi8ugJZieo9qfLZagnc7euX8Z+N7LwVaQ3F5a3E6yttAh25H5kV1FeQ/Hb/kF6YD0M9TFXY27InX476IWAbR9URT1YqmB/wCPV3PhzxdpHim2M2mXIcr9+MjDL9RUGkaHo83hu08/TbMhoF3FoV9PXFeTeCIEtPjPewaQT9gUuGCH5cZFXyppk3dz1jxj40s/BmnxXl5bTzpI+wLDjOfxIrjR8eNGPTRdV5/2U/8AiqT46c+H7DP/AD8j+tdn4a0bS5PDenu+m2bMYFJYwKSePpS5Uo3C7vYk8JeLrXxfpcl9a2txbojlCs4AOfwNctq/xo0fR9YudNk0vUJZYHKs0YTBx6c16FDaW1pEyW1vFCp5IjQKP0rxbwta2938aNYjuYIpkzIdsiBgPmHrRFJjd0dVpPxo8N6jdLBcR3VgWOAbhRj/AMdzXocM8dxEssLh42GVZTkGvPfih4U0ebwbd3cdlbW9xbrvSSOMIfpxWd8OvEc1n8KJ766Yn7HuVC3cDpT5U1oCbvqdv4i8a6H4YT/iY3iJKfuxLyx/KuNg+O3hyW68l7S9iTP+tcLt/Q5rmfh34W/4TvVLrxLr7GeMS4SIkkE/4CvW7nwb4durRrd9FsVVhjKW6qw/EDNDUYuzEm3qXNH1zTtes1utNukniPdeo+oqp4q8T23hLRm1O7gmmjVgpSLG7n6keleO26T/AAy+KEdjbyu2mXhACMeMH/D+tdx8Z/8AkQpD/wBNV/kaXIuYfNoZy/HjRCAf7H1Tae+1Mf8AoVdj4Y8d6H4rBWwuMTqMtC4ww/pWX8PNH0yfwBpMk+n2kjNbqWZ4VJPHqRXnBs4tP+O0MGhoqw7wXWI/KP7w/lVcqbJTZ6D4k+LOmeGtal0y40vUJ5I8ZeFV2n8zWN/wvzQ923+x9U3emEz/AOhV6ZNpWnXMhkmsLWVz1aSFWJ/EivFYbG0Px8ktjaweQAf3XljZ19OlKKixttHc+GfitpvijWo9Mt9Mv4JHUsHmVQo/I132apwaVp9tIJILC1ikHRkhVSPxAq53rN2KXmc1458TzeE9AOowW8c7iRU2OSBzn0rZ0i9bUdJtbx0CNNGHKjoM1xPxl/5Edv8Arun9a6zwv/yLGm/9cF/lVNLluJPU16KKKkoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACg9KKD0oAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBD0NeH+HP+S/6j/uy/wDoQr29ulfPEniOz8LfGfU9SvVdoQZE+TrksP8ACtKd7MiR9EV4T8WyLv4iaJawndMvUL1GSP8ACty8+N9lLEYtH0i+urgj5TsG3P4HNR+B/Burat4ibxd4mXZcMd0MB7eh9qIrl1YN30Ou+IOtf8I/4HupQ/75k8qP1JNcH8LfFfhLw34XaLUNYiivbhy8qMjkj05C+9N+Ld6+u+LNK8MW7FlLgyAep/ya7aD4UeEkgRX03cwABJkbn9ad0ois2zzLQfEOm6Z8YZZ9LvFl0y/cgsoIGWOehGa9t8UHPhXUf+uDV5F8UfAmneG9Os9Y0S2aAwygSYcnr3/Su/g1lde+F0l+DlntPn9mxzRKzs0CujmfgL/yL9//ANdh/Ws7xH/yXbTf+A1ofAb/AJF6/wAdPOH9awPHurQaJ8YLTULlWMUKqzBOSRVL4mHQ98rJ8TaNDr+gXenTgESocE9j61wo+OXhs4At7zJ/2V/xr0HTtSh1fRor+AMsU8e9Q3UAisrNFXuj598AaDd6140i0vUZt9rpDMfKJyMggYr6QUAAADA7V4p8MP8AkpfiHH99/wD0KvbKqo7sUUFeQfHgE6RpwBwfO4r1+vIvjr/yC9L/AOu9TD4hy2OW1Lwp460/wsmo/wBuSXFkYwzQ28zhlT9K9B+EsHh4+HftekoftL8XLSnMm76+ldfo0ST+GbOKRQyPbqCD34rxuGSX4YfE1oCWGkXzcDsBnj8v61d+ZNE2sdD8dwT4cscHH+kAA+nWsXSvhh4rvNKtriDxdPFFJGGVBcyjaPTFbHxxlSTwzp8qMGQ3AYMPTBpmjfGfw9YaNZ2ssF0XiiCNhR1A+tNX5NAfxanoXhfSb3RPD8VlqF615cJndMzli34nmvC217UvD3xU1e70zTft8xkdfL54GfavbfCvjCw8X2U9zYRypHE20+YAMnn/AArzbwcP+L2azn1k/wDQhSi7XuElcrapqHj34iwJpf8AYo0+ydv3r54/HPOK6nxL4YXw98H7zSrU+Y0cWXYfxHua9M/Cq1/ZxahZTWkyho5UKsDU85XKeffBKaJ/BHlowLpMQwHavSq+f7f+3vhF4inRLSa70eZuqjII/oa6KX48afJCyWWi6g91j5VYLjPvg5pyi27oUXZGT8WCtx8RNDgi+aRfvAdeSK6z4yAj4fMp6+anP4Gue8D+GNY8T+K28X+IYjCobdDC45J7YHYCuk+NH/IhSf8AXZf5GqvqkLoedab4U8bt4Jt9U07WibNoQ6WsUrhwuOnp+tdh8HYNBntpruJJG1pTtuGuGJf8Mmut+G43fDzRwe9sufyrzXxPBP8ADj4kQ63Zow069Y+Yo+7yeRRzc10FrHu9eIQf8nCyfQ/zr2eyvYNQsoru2kDwyqGVh3BrxiD/AJOFl+h/nUQ6jke3ilpBS1BZ558ZP+RHb/run9a6zwv/AMixpv8A1wX+Vcn8ZP8AkR2/67p/Wus8L/8AIsab/wBcF/lVv4UT9o16KKKgoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACg9KKD0oAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigArNn8PaNdTNNcaTYSyscs8lsjMfqSK0qKAKNto2l2bbrXTbOBh0MUCr/IVdxS0UAUjpOnNefbGsLU3Q/wCWxhXf/wB9YzVzFLRQBBc2dveQmG6giniPVJUDA/gabDp1lb2xtobSCO3IwYkjCofwHFWaKAKtpp1lp6MllaQWysclYYggP5VFdaHpV9L5t3plncSYxvlgVz+ZFX6KAMn/AIRfQP8AoCab/wCAif4VoxW8UEKwwxpHEowqIoCgfQVLRQFipb6XYWs7z29lbQzP96SOJVZvqQOatYpaKACq13p1lfqq3lnb3KqcqJog4B/EVZooAakaRoqIoVFGAqjAFVbvStPv2Vryxtrkr90zQq+PpkVcooAqXGl6fdwLBc2VtNCn3Y5IlZR9ARVT/hF9A/6Amm/+Akf+Fa1FFxWKtpptlp6MllZ29srHLLDEqA/kKSLS7CC6a6isrZLh/vSrEoc/U4zVuigYUmKWigCOSCKaMxyxrIh6q65B/OqUegaPDL5sWlWMcmc7lt0B/PFaNFAWECgDAAGOmBUN1ZWt9F5V3bxXEec7JUDD8jU9FAEUFtDbQrDbxRwxKMKkahVA9gKiu9Osr9Al7aQXKA5CzRhwPzq1RQBFBbQ20KxQRJFGowqRqFA/AVCNL08Xv2wWNt9q/wCe/lLv/wC+sZq3RQAUhOBS0lAHnnxkOfBDf9d0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AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmSf6tvpT6Y/8Aq2+hoAyNIJ/s+3/3BWwPu1j6R/x4W/8AuCthfu0PcFsOqjqP37P/AK+V/kavVR1H79n/ANfC/wAjQhMu5FGa858YXl1Br7JFczRp5anakhA/SsD+0r//AJ/rn/v63+NbxoOSuZSqpOx7LmjNeNf2nf8A/P8AXP8A39b/ABo/tO//AOf65/7+t/jVfVn3F7dHsuaM141/ad//AM/1z/39b/Gj+07/AP5/rn/v63+NH1Z9w9uj2XNGa8a/tO//AOf65/7+t/jR/ad//wA/1z/39b/Gj6s+4e3R7LmjNeNf2nf/APP9c/8Af1v8aP7Tv/8An+uf+/rf40fVn3D26PZc0Zrxr+07/wD5/rn/AL+t/jR/ad//AM/1z/39b/Gj6s+4e3R7LmjNeNf2nf8A/P8AXP8A39b/ABo/tO//AOf65/7+t/jR9WfcPbo9lzRn3rxr+07/AP5/rn/v63+NH9p3/wDz/XP/AH9b/Gj6s+4e3R7Ln3oz7141/ad//wA/1z/39b/Gj+07/wD5/rn/AL+t/jR9WfcPbo9lz70Z968a/tO//wCf65/7+t/jR/ad/wD8/wBc/wDf1v8AGj6s+4e3R7Ln3oz7141/ad//AM/1z/39b/Gj+07/AP5/rn/v63+NH1Z9w9uj2XPvRn3rxr+07/8A5/rn/v63+NH9p3//AD/XP/f1v8aPqz7h7dHsufejPvXjX9p3/wDz/XP/AH9b/Gj+07//AJ/rn/v63+NH1Z9w9uj2XPvRn3rxr+07/wD5/rn/AL+t/jR/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XMrmRpH/AB4W/wDuCthfu1j6R/x4W/8AuCthfu1D3KWw6qGo/fs/+vlf5Gr9UdQ+/Z/9fC/yNAmef+Nf+Rjf/rmlc7XReNv+Rjf/AK5pXO16FH4EcdT4gooorUgKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooopAFFFFFxBRRRTGFFFFABRRRQAUUUUgCiiimAUUUUAFFFFABRRRSAKKKKYBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUgOk8D/8AIw/9sW/pXpT/AOrb6V5r4H/5GL/ti39K9Kf/AFbfSuGt8Z10vhMfSP8Ajwt/9wVsL92sfSP+PC3/ANwVsL92sXuarYdVHUPv2f8A18L/ACNXqo6h9+z/AOvhf5GhbiZ5/wCNv+Rjf/rmlc7XReNv+Rjf/rmlc7XoUvgRx1PiCiiitCAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKckbyNtjRmbrhRk02uj8Ff8AIf8A+2TfzFTN2jccVdmH9juun2abP/XM1E6PG22RGRvRhg12+teK7vTtUmtYoo2RDwTXJ315PrF/5xj/AHrjAVRWcJyerLlFIpUVrf8ACNaxs3/Y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UUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/8AVt9DT6Y/+rb6GgDI0j/jwt/9wVsL92sfSP8Ajwt/9wVsL92h7gth1UdQ+/Z/9fC/yNXqo6h9+z/6+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmP/q2+hp9Mf8A1bfQ0AZGkf8AHhb/AO4K2F+7WPpH/Hhb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UAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFMf/Vt9DT6Y/8Aq2+hoAyNI/48Lf8A3BWwv3ax9I/48Lf/AHBWwv3aHuC2HVR1D79n/wBfC/yNXqo6h9+z/wCvhf5GgGXqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAEpD0paMUAcXosEq+PdXkaN1QquHK8HrWn4r0T+19NLQnZdwHzIX7giug289KMZHNTy6WNfavmUjz/wCHrXdzPq897bPBLI67lZSOeelCz3vgzVrzfYzXGm3MhkR4RuKE9iK78KB2pSueooUbIuWI5pNtbnn99fXfjSaGxtbC4gsVkDzTzDbkDsB1rvokCRqg6KMUuwDtSgc00jKc+ZJID0Ncl4ZhkTxFr5eNlVpgQSMA/e6V11NC4JwKGtQjPlTXc8/1OCbw34jutQfTWvrC7wzmNAzRsPr25rQ0zXbXU9QiistCkVc5eZ4QgQfjzXYlc9RSbADkCpUTR1uZanMa54jh068+x3ml3M0LLkSJGHQ+2P8A61ZPhO0ll8RXepWlnLY6bImBE4Chm9Qo6V3xQHtmk24HAp2Eqto2R5615L4Z8Z301xZ3EsF7tKSRJuAxng/nW3rPieGwnW3utLuZYJEyHSPcv0IrpygJzijYD1FFugOqpNNo4DwvayXHiifU7KylsdNaPb5bgKHb1CjpXoFIFx0FLimlYmpPndzzXWNTbQviG989nczxG3CfuYyea0G8Z6hqyGDSNFvBM3HmTqFVffrXclFPUUbABwKnlZftYu2mxzuheHTp+lTx3Mnm3V0S08gHUmue0zU7vwWraVfWFzNbIx8i4hXcCvoe9eiYpCgPany9hKs3e5wkTXvi7XLK7NlNa6daN5gM2A0jfSrN5DL/AMLGsZFjfyxbOC4XgHK967IKB0GKXb7Ucoe27HMePIpJfCtwkaM7EjhRk1U13RrjUPDVlLaxh7m12yrGw+9gdOa7Irmk28UON2EazilY4CLxVY+V5Unhy4F0Dt8oW45P16Y/Guz0os2nwu9qLV2UFoePlPpxVwIBztpcc9KErCnU5thaWkpaoyCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/6tvoafTH/ANW30NAGRpH/AB4W/wDuCthfu1j6R/x4W/8AuCthfu0PcFsOqjqH37P/AK+F/kavVR1D79n/ANfC/wAjQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/wDVt9DT6Y/+rb6GgDI0j/jwt/8AcFbC/drH0j/jwt/9wVsL92h7gth1UdQ+/Z/9fC/yNXqo6h9+z/6+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmP/q2+hp9Mf/Vt9DQBkaR/x4W/+4K2F+7WPpH/AB4W/wDuCthfu0PcFsOqjqH37P8A6+F/kavVR1D79n/18L/I0Ay9RRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFMf/Vt9DT6Y/8Aq2+hoAyNI/48Lf8A3BWwv3ax9I/48Lf/AHBWwv3aHuC2HVR1D79n/wBfC/yNXqo6h9+z/wCvhf5GgGXqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/wCrb6Gn0x/9W30NAGRpH/Hhb/7grYX7tY+kf8eFv/uCthfu0PcFsOqjqH37P/r4X+Rq9VHUPv2f/Xwv8jQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/9W30NPpj/AOrb6GgDI0j/AI8Lf/cFbC/drH0j/jwt/wDcFbC/doe4LYdVHUPv2f8A18L/ACNXqo6h9+z/AOvhf5GgGXqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopCwHU0wyoOnNAElFQGf0FMMrnvQBZpC6jvVUsx7mkpDLRlX1ppnX0qvRQBP5/oKT7Qf7tQ0UAS+e3oKPPb0qKigCXz29BR57egqKigCXz29BS+ef7tQ0UAT+eO4pfOWq9FAFoSqe9ODA9xVOjpQBdoqoHYdCacJmHvQIs0VCJx3FPEiHvTAfRSZHrS0AFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/9W30NPpj/wCrb6GgDI0j/jwt/wDcFbC/drH0j/jwt/8AcFbC/doe4LYdVHUPv2f/AF8L/I1eqjqH37P/AK+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACikJA61G0yjpzQBLTS6jqartKzUzv60ATtP2AqMyMe9MooGGfcmiiikAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAChiOhNPEzDqM1HRQBZWZT7U8EHoap0oJHQ0xFyiq6zkdRUqyK3Q0APooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/6tvoafTH/ANW30NAGRpH/AB4W/wDuCthfu1j6R/x4W/8AuCthfu0PcFsOqjqH37P/AK+F/kavVR1D79n/ANfC/wAjQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFISB1NRNN2WgCUsB1NRNOOi81CWLHk0n0pDHFix5NNoooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigB6yMvvUqzK3Xg1XooAuZpaqrIy+4qZJQ3saYiSiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/6tvoafTH/1bfQ0AZGkf8eFv/uCthfu1j6R/wAeFv8A7grYX7tD3BbDqo6h9+z/AOvhf5Gr1UdQ+/Z/9fC/yNAMvUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFMZwo5oAfUTyheBzUTSlvpTKAHMxY8mm0UUhhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAEiSsvXpUyurdKq0oyOlAFyioEm7NUwOelMQtFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/wDVt9DT6Y/+rb6GgDI0j/jwt/8AcFbC/drH0j/jwt/9wVsL92h7gth1UdQ+/Z/9fC/yNXqo6h9+z/6+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopCQBk1XklLcDpQBI8oHC9agJJPJpKKQwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApySFPpTaKALaOHFOqkDg5HFWI5c8GmIlooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKY/+rb6Gn0x/wDVt9DQBkaR/wAeFv8A7grYX7tY+kf8eFv/ALgrYX7tD3BbDqo6h9+z/wCvhf5Gr1UdQ+/Z/wDXwv8AI0Ay9RRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFMdwg96SSQKMdTVckk5NACsxY802iikMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooopgSRyleD0qwCCMiqdPjkKHHagC1RSBgwyKWgQUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTH/ANW30NPpj/6tvoaAMjSP+PC3/wBwVsL92sfSP+PC3/3BWwv3aHuC2HVR1D79n/18L/I1eqjqH37P/r4X+RoBl6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAqOSTaMDrSSSbeB1queeTQAZyc0UUUhhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRg+lLtPoaAEop3lt/dpfKf+7QAyin+U/92k8t/wC7QA2inbG9DSbT6GgBKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAHI5U8dKsqwYZFVKcj7D7UAW6KRWDDIpaYgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKY/+rb6Gn0x/9W30NAGRpH/Hhb/7grYX7tY+kf8AHhb/AO4K2F+7Q9wWw6qOoffs/wDr4X+Rq9VHUPv2f/Xwv8jQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFRySBRx1pZH2j3qsSScmgBOe9FFFIYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUDPbmpFiY9eKAI6MZ7ZqwsKjrzUgAHQUwKwic9qeIPU1PRQIjEK9+acEUdFFOooATA9BS0UUAFFFFABRRRQAUUUUAJgHtTTEp7U+igCIwL60wwHsasUUAVCjDqKaau01kU9RSAqUVO0I7GomjZeozQMbRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQA5HKGrSsGGRVOno5Q+1AFqikByMilpiCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmP/AKtvoafTH/1bfQ0AZGkf8eFv/uCthfu1j6R/x4W/+4K2F+7Q9wWw6qOoffs/+vhf5Gr1UdQ+/Z/9fC/yNAMvUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTXbauaUkAZNVZHLtntQAM25s02iikMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooAJOBUyQ/3qAIgC3QVKsP8AeNTBQowBS0xDQir0FOoooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAExRilooAY0SmoWhK9Oas0UAUunWirTRq3UVC0RXpyKAI6KKKQwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAJIpNpx2qxmqdTRP8AwmmBPRRRQIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/AOrb6Gn0x/8AVt9DQBkaR/x4W/8AuCthfu1j6R/x4W/+4K2F+7Q9wWw6qOoffs/+vhf5Gr1UdQ+/Z/8AXwv8jQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRUUr4GKAGSvk4FRUUUhhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUoUk4FACVIkRbk8CpEiC8nrUtMQ1VC9BTqKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKSlooAjaMN7GoGQqeat0hAI5oAp0VK8RHK9KioGFFFFIAooooAKKKKACiiigAooooAKKKKACiiigAozjmiimBZjfcKkqorFWyKtKQwyKBC0UUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTH/1bfQ0+mP8A6tvoaAMjSP8Ajwt/9wVsL92sfSP+PC3/ANwVsL92h7gth1UdQ+/Z/wDXwv8AI1eqjqH37P8A6+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooARmCjNVGO5smnzPk7R0qOgAooopDCiiigAooooAKKKKACiiigAooooAKKKKACiipI4i3J6UANRCx9qsqoUYFKBgYApaYgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBOKjkiB5XrUlGKAKhGDg0lWnjDD3quylTg0hjaKKKACiiigAooooAKKKKACiiigAooooAKKKKACpYn2nHaoqKALtFRxPuXB61JTEFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTH/1bfQ0+mP8A6tvoaAMjSP8Ajwt/9wVsL92sfSP+PC3/ANwVsL92h7gth1UdQ+/Z/wDXwv8AI1eqjqH37P8A6+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApkjbV9zT6qSNubNADaKKKQwooooAKKKKACiiigAooooAKKKKACiiigAooqWKPPJoAI4s8npU4GBgUtFMQUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTXQMKdRQBTdSppKtsoYYqsylDg0ANooopDCiiigAooooAKKKKACiiigAooooAKKKKAHI21gatg5GapVPC+flNAiaiiimAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/wDVt9DT6Y/+rb6GgDI0j/jwt/8AcFbC/drH0j/jwt/9wVsL92h7gth1UdQ+/Z/9fC/yNXqo6h9+z/6+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiikJoAjmbC47mq9OdtzZptIYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUU5F3mgB0abjk9KsAY4oAwMClpiCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApjqGFPpKAKhBU4NJVmSPcPeq2KBhRRRSAKKKKACiiigAooooAKKKKACiiigApVODkUlFAFwHIzS1BC38NT0xBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTH/ANW30NPpj/6tvoaAMjSP+PC3/wBwVsL92sfSP+PC3/3BWwv3aHuC2HVR1D79n/18L/I1eqjqH37P/r4X+RoBl6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKjlbC47mn1Wkbc/0oAZRRRSGFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAAGTirSJtWmRJxuNTUxBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFJS0UAJUMqfxD8anpOMUAU6KfImw/WmUhhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFACq21gatg5Gap1YhbK49KYiWiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmP/AKtvoafTH/1bfQ0AZGkf8eFv/uCthfu1j6R/x4W/+4K2F+7Q9wWw6qOoffs/+vhf5Gr1UdQ+/Z/9fC/yNAMvUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFADHbCE1VqWdudtRUAFFFFIYUUUUAFFFFABRRRQAUUUUAFFFFABT403N7Uwc1ajXYuKAH9qKKKYgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAY67lxVU5B5q7UEyfxYoAhooopDCiiigAooooAKKKKACiiigAooooAKdG21xTaKALtFMRtyA0+mIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/6tvoafTH/1bfQ0AZGkf8eFv/uCthfu1j6R/wAeFv8A7grYX7tD3BbDqo6h9+z/AOvhf5Gr1UdQ+/Z/9fC/yNAMvUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFIelLTJThD70AV2O5yabRRSGFFFFABRRRQAUUUUAFFFFABRRRQAUUUUASwplsnoKsU1F2oBTqYgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACkYZGKWigCmRtOKSpp143CoaQwooooAKKKKACiiigAooooAKKKKACiiigCaBuSKnqoh2sDVugQUUUUwCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/6tvoafTH/ANW30NAGRpH/AB4W/wDuCthfu1j6R/x4W/8AuCthfu0PcFsOqjqH37P/AK+F/kavVR1D79n/ANfC/wAjQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABUE55AqeqkhzIaQDaKKKBhRRRQAUUUUAFFFFABRRRQAUUUUAFSQrls+lR1aiXCfWgB9FFFMQUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAjDKkVTPBxV2q0y4bPrQBHRRRSGFFFFABRRRQAUUUUAFFFFABRRRQAVajOUFVangPBFAiaiiimAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFMf8A1bfQ0+mP/q2+hoAyNI/48Lf/AHBWwv3ax9I/48Lf/cFbC/doe4LYdVHUPv2f/Xwv8jV6qOoffs/+vhf5GgGXqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAEY4UmqfXmrMxwmPWq1IYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQA5BlgKt1BCOc1PTEFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTJV3Ifan0HpQBSopWGGIpKQwooooAKKKKACiiigAooooAKKKKACnxHD/WmUq8MDQBcooHIzRTEFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTH/wBW30NPpj/6tvoaAMjSP+PC3/3BWwv3ax9I/wCPC3/3BWwv3aHuC2HVR1D79n/18L/I1eqjqH37P/r4X+RoBl6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiikoAhnPIFQ1JMcyVHSGFFFFABRRRQAUUUUAFFFFABRRRQAUUUqjLAUAWYhhKfSDoKWmIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigCvOMNmoqsTDKVXpDCiiigAooooAKKKKACiiigAooooAKKKKALaHKCnVHCfkqSmIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmP/q2+hp9Mf8A1bfQ0AZGkf8AHhb/AO4K2F+7WPpH/Hhb/wC4K2F+7Q9wWw6qOoffs/8Ar4X+Rq9VHUPv2f8A18L/ACNAMvUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUlLSHoaAKrnLmm0HrRSGFFFFABRRRQAUUUUAFFFFABRRRQAU+EZk+lMqaAck0AT0UUUxBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUANcZU1Uq4elVGGGI96AEooopDCiiigAooooAKKKKACiiigAooooAmgPWp6rQn58VZpiCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/AOrb6Gn0x/8AVt9DQBkaR/x4W/8AuCthfu1j6R/x4W/+4K2F+7Q9wWw6qOoffs/+vhf5Gr1UdQ+/Z/8AXwv8jQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFNc4QmnUyT/VtQBVooopDCiiigAooooAKKKKACiiigAooooAKsQD5Kr1ah/1YoAfRRRTEFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAVVlH7w1aqtOPnzQBHRRRSGFFFFABRRRQAUUUUAFFFFABRRRQA+L/AFgq1VSP/WL9at0xBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/wDVt9DT6Y/+rb6GgDI0j/jwt/8AcFbC/drH0j/jwt/9wVsL92h7gth1UdQ+/Z/9fC/yNXqo6h9+z/6+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApkv3DT6jn/wBXQBWooopDCiiigAooooAKKKKACiiigAooooAKtx/6tfpVSrafdH0pgOooooEFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAVBP1Wp6hn6CgCCiiikMKKKKACiiigAooooAKKKKACiiigBV+8KuVSHUVcHSmIWiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApj/AOrb6Gn0x/8AVt9DQBkaR/x4W/8AuCthfu1j6R/x4W/+4K2F+7Q9wWw6qOoffs/+vhf5Gr1UdQ+/Z/8AXwv8jQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFRTfcqWjrQBSwfSjB9KuYHpRgelAFPB9KMH0q5j2ox7UDKeD6UYPpVzHtRj2oAp4PpRg+lXMe1GPagCng+lGD6Vcx7UY9qAKeD6UYPpVzHtRj2oAqDPpVtfuijHtRQIWiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACop/uipaTGe1AFPn0owfSrmPajA9KAKeD6UYPpVzHtRj2oGU8H0owfSrmPajHtQBTwfSjB9KuY9qMe1AFPB9KMH0q5j2ox7UAU8H0owfSrmPajHtQBUAORwatjpRgelLQIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmP/q2+hp9Mf8A1bfQ0AZGkf8AHhb/AO4K2F+7WPpH/Hhb/wC4K2F+7Q9wWw6qOoffs/8Ar4X+Rq9VHUPv2f8A18L/ACNAMvUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABTH/ANW30NPpj/6tvoaAMjSP+PC3/wBwVsL92sfSP+PC3/3BWwv3aHuC2HVR1D79n/18L/I1eqjqH37P/r4X+RoBl6iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKY/+rb6Gn0x/9W30NAGRpH/Hhb/7grYX7tY+kf8AHhb/AO4K2F+7Q9wWw6qOoffs/wDr4X+Rq9VHUPv2f/Xwv8jQDL1FFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUx/9W30NPpj/wCrb6GgDI0j/jwt/wDcFbC/drH0j/jwt/8AcFbC/doe4LYdVHUPv2f/AF8L/I1eqjqH37P/AK+F/kaAZeooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACmP/AKtvoafTH/1bfQ0AZGkf8eFv/uCthfu1j6R/x4W/+4K2F+7Q9wWw6qOoffs/+vhf5Gr1UdR+/Z/9fC/yNAMvUUlLQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFMf8A1bfQ06mv/q2+lAGRpH/Hhb/7grYX7tY+kf8AHhb/AO4K2F+7Q9wWw6qOo/fs/wDr5X+Rq9VHUPv2f/Xyv8jTQmTSkh+CaZub1P506b/WH6UygBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAXc3qfzo3N6n86SigBdzep/Ojc3qfzpKKAF3N6n86Nzep/OkooAcGORyas7h61UooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKMj1FVKKALeR6ijI9RVSigC3keooyPUVUooAt5HqKCwx1qpRQAu488n86Nzf3jSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub1P50lFAC7m9T+dG5vU/nSUUALub1P50bm9T+dJRQAu5vU/nRub+8fzpKKAJIiS/JPSpX/wBW30qGH7/4VM/+rb6GkBkaR/x4W/8AuCthfu1j6R/x4W/+4K2F+7Q9xrYdVHUPv2f/AF8r/I1eqjqH37P/AK+V/kaaEyWb/WH6Uynzf6w/SmUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRTWkRPvMBn1NKrK3KsCPUGiwC0UUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFH169xR07/lQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFH+eaKACiiigAoo9Of0ooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigB8P3/wAKmf8A1bfQ1DD9/wDCpn/1bfQ0gMjSP+PC3/3BWwv3ax9I/wCPC3/3BWwv3aHuNbDqo6h9+z/6+V/kavVR1D79n/18r/I00Jks3+sP0plPm/1h+lMoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKbJIkSF5GCqOpNOrF8RMxt4IASFmlCt9KaVxNmZqd2+rSKba1laOPID7toP61JZax/ZNuYLm0lQ5+XJzn9a0tVgMGhtFaqQVAAC06/tUuNFxKBvWPcGPUVrdEWaNKKTzYVk2lcjODT6z9Ema40e3lf7zIK0KzejNFsFFFFSAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAZ+t6hJpej3F7HGsjxJkKxwCapadceIrkQTXEOlrbyAM3lySFwD9Ril8Yc+Fb/nB8vr+NR6Hp+px21rLNrck0PljMJt41GPqBmrSVib6m6k0cm7ZIj7ThirA4NIJ4TGZRKhjHVtwwPxrifEMp0TWWSynSMaiMTLg/uz/f4GB1pfEMX9mxaRpNnZzXNozZeKBgGlx2JJGc57mjlHc7SG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3bxvbWmtzwWZOBAIlbA9Ax5roqKaYrFawsYNNs47W3G2NBgZJJ/EnqahtNMS21O7vRIzNdbcoR025/xq/RRdjsY2o6At1erfWd3JY3oG0yxjcGHoyng/U1Np+nXltctPearLesV2qpjWML+C9a06KLisFUdW0xdVsTbtK0TZDLIoBKkdDV6ilcZj3Ohve2kC3F9I17A26O6VArA/QcEe1JaaHIl4l5qF/LfzxAiIuixqmevyrwTx1NbNFPmCwUjosiNGwyrDBFLRSA51fDV3bxNbWmt3EFkTgQCJG2j0DHmtmwsINNs47S3UrHGMDJJP4nuas0U7hYoWulpa6nd3wkZnuduUI4GM/wCNVdQ0Bbq9W+tLuSyvANpljAIYf7Sng/jWzRRdhYzNP069trlp7zVZb0kYUNEsYUfRetaf6+9FFABRRRSAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAHw/f/Cpn/1bfQ1DD9/8Kmf/AFbfQ0gMjSP+PC3/ANwVsL92sfSP+PC3/wBwVsL92h7jWw6qOoffs/8Ar5X+Rq9VHUPv2f8A18r/ACNNCZLN/rD9KZT5v9YfpTKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopMj1FL060AFFHUZFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFcz4l8Uz6BqNjCloJ4ZtzStnlFGMkDv1ppXC9jpqKoXeopFo0moW5WVVj3oc8NUllerc6fa3EpSNp0DBd3c9hRZhct0U1pEVgrOoZugJ5NRyXdtDu824iTb97c4GKNQuTUVXa/s0RHa7gVX+4xkADfSqHiO/msdDmu7WRQ4I2tgEUWYrmvRVeO9tmdYjcwmYjmPeN35VLLNFAm+aVI0/vOwA/M0WY7j6KZHPFLF5scqPH/AHlYEfnTEu7aSQRpcRM5GQocEketGoE1FFV0vrOWXyo7uB5P7iyAn8qEBZpO2a53XtYeC/tNNt76K0lnJLTNtJQDHZuOc1vQbvITdN5zY5kAA3e/HFDVkCZJRUE15a27BZ7mGJj0DyBSfzpZbu2hjWSW4iRG+6zOAD+NKzC5NRVS5u1/s2a4tpUfahIZSGFc+mt3zaLoVyZB5l3IiynaOQQc/Sq5RXOroqGe7trYgXFzFESePMcLn86cLiFigE0ZMnKAMPm+nrS1GSUUUUgCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAfD9/8ACpn/ANW30NQw/f8AwqZ/9W30NIDI0j/jwt/9wVsL92sfSP8Ajwt/9wVsL92h7jWw6qOoffs/+vlf5Gr1UdQ+/Z/9fK/yNNCZLN/rD9KZT5v9YfpTKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigDltbkli1TZ5soLr+6VTwTWnqS6g1h+4Yfc+cfxZqfUrD7bErIds8ZzG3oazJdduoilu0Hlz/xM/3a03RGxoaEl4mlxrenMmO/WtKqGlXrX1qZHUAqxXjoav1EtylsFFFFIYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFcprcaS+M9IjcAq0UoIPTqtdXWbdaPHdaxaak0rK9srKqgcHOP8KqLsJnL3M40O2v9Bmytu8RezYnjGRlc+2RVif/AI8fDHPAlj5/4Ca2/EPh+28RaebWdmiYHckqfeU+1LdaDFc6PBYee6Nb48ucD5lI6HHSquibFPWz/wAVLog4zvbj8qo2mk2t94x1mW6QTKqRqIpBlP4udvQmtCPw1I2p2uo3upzXVzbEhSUVFIPbA47da0bXS0tdSvL1ZGLXO3cuOFxn/Gi6Q7M5fQdC097bVo5oEnjhnkjiWUbhGozwoPT8KguC8vwv2tIchQgYnJA+tddY6Ulkt4FlZvtMrStkD5SewqjL4Ygm8NtorzyeSw5kA+ajmCzKGtaNYWfhtrqKNI7uBVdboD94T7t1P51m6leXVz4itIp9KuNRgjtt5t4im0sccsGIBx/Wt3/hGJJFit7rVJ7jT48bLVkUdOmW6n8auanogvbiG6trl7O7hBVJo1DfL3BU8HoOtHMgszC0pL2OTVCdJn02xeLKQysmA3OcBSQKt+CNMtovDtldNEjXLxg+aRlgPTPYe1atrpk8dvOl3qEt3JMu0yMgTA9gOKn0rT00rTYLJJC6QqEDMOTSbCxm+LZ5YtGCRSGMzSrGzrkFQc5Pt0qnr+iadYaDJdWltDb3NuA6TouHyPVhyc+9dDf2UOo2UlrcLmOQYODjH5Vkr4cuJPLivtXnu7OM5Fu0arnHTLDk/jQmhmZf2trqHiHQ57myt5HmiYv5kQOT8vXIrr8LDDtjUBUX5VUYAqlcaVHcanaXpkZTbAhUAGDnH+FaHXr+IpNpiSOV0DTbTV4bnUNRt47qeWZgBOgbywOgGen4U7Vhbtf22lWulxXlykRKC55hjXjlh/gDVuTQLiO6ll03VJrFJ23yxCJZFJ7kbun4Ut14flluoLu11KW2uo4/KaQIH3rx1Dcdqd0BiaMlxbf2/ZzJbxCMAiK2JMaE5zjPSo4/+Rb8Mcf8tYv/AEE1vaf4Zi0837i6mle+wZWfBOeckfn0p6+HYV0/TbTz5NtiysrYGWwMc0+ZCszJ1u3ez1qXUL3SRqthJGB91WMGOpw3Y57c8VrWWnaRex6fqFqpZLdP9HYEgAHHb8KW90bULi5laHWpbeCQfNAIUYfgTyKIfDsdrLp/2W6nhhslKiEMSr5x9716UrqwzZ70UUVBQUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAD4fv/AIVM/wDq2+hqGH7/AOFTP/q2+hpAZGkf8eFv/uCthfu1j6R/x4W/+4K2F+7Q9xrYdVHUPv2f/Xyv8jV6qOoffs/+vlf5GmJks3+sP0plPm/1lMoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKADvmo5beGdcSxq4/2hmpKKLsGRwwRW8eyJAq+gFSUUUXAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKNAD60daKKNBhRRRRoAUUUUaCCiiiloAUUUU9ACiiijQAoooougCiiijQAoooo0AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAfD9/8Kmf/Vt9DUMP3/wqaT/Vt9KQGRpH/Hhb/wC4K2F+7WPpH/Hhb/7grYX7tD3Gth1Z+psqGzZ2CgXK8k+xrQpksMcybZY0dQc4ZQRQBVluYC/+vj/77FR/aYP+e0f/AH2Kjn0uBnytvCPogqH+yYf+eMX/AHwKrQnUtfaYP+e0f/fYo+0wf89o/wDvsVV/smH/AJ4xf98Cj+yYf+eMX/fAoug1LX2mD/ntH/32KPtMH/PaP/vsVV/smH/njF/3wKP7Jh/54xf98Ci6DUtfaYP+e0f/AH2KPtMH/PaP/vsVV/smH/njF/3wKP7Jh/54xf8AfAoug1LX2mD/AJ7R/wDfYo+0wf8APaP/AL7FVf7Jh/54xf8AfAo/smH/AJ4xf98Ci6DUtfaY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NopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBNoo2ilooATaKNopaKAE2ijaKWigBMCl7UUdqACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAo7UUdqACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAo7UUdqACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAo7UUh6UALRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUHpRR2oA//9k=\",\r\n            \"startDateStr\":\"230410223122\",\r\n            \"endDateStr\":\"230410223122\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/notes"
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"projectId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"licenseId\": \"{{licenseId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/projects"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"ctaasTestSuitId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"name\": \"{{name}}\",\r\n    \"deviceType\": \"MS Teams\",\r\n  \"frequency\": \"Daily\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/ctaasTestSuites"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"ctaasSetupId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"status test\",\r\n     \"onBoardingComplete\": \"true\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/ctaasSetups"
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"licenseUsageId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var startWeek = new Date();\r",
+							"var day = startWeek.getDay() || 7;\r",
+							"if( day !== 1 )\r",
+							"    startWeek.setUTCHours(-24 * (day - 1));\r",
+							"startWeek.setUTCHours(0,0,0,0);\r",
+							"\r",
+							"pm.variables.set(\"startWeek\", startWeek.toISOString().slice(0,10));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectId\": \"{{projectId}}\",\r\n    \"deviceId\": \"{{deviceId}}\",\r\n    \"consumptionDate\": \"{{startWeek}}\",\r\n    \"type\": \"Configuration\",\r\n    \"usageDays\": [0,4]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/licenseUsageDetails"
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\": \"4\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerName\": \"{{name}}Modified\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/customers/{{customerId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subscriptionType\": \"Small\",\r\n    \"tokensPurchased\": \"150\",\r\n    \"deviceLimit\": \"5000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/licenses/{{licenseId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"deviceId\": {{deviceId}},\r\n    \"Type\": \"AutomationPlatform\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"projectName\": \"{{name}}Modified\",\r\n    \"projectNumber\": \"{{name}}Modified\",\r\n    \"status\": \"Closed\",\r\n    \"closeDate\": \"{{$isoTimestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/projects/{{projectId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"name\": \"{{name}}Modified\",\r\n    \"deviceType\": \"MS Teams\",\r\n    \"totalExecutions\": \"0\",\r\n    \"frequency\": \"Daily\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"SETUP_READY\",\r\n    \"onBoardingComplete\": \"false\",\r\n    \"licenseId\": \"{{licenseId}}\",\r\n    \"maintenance\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"subaccountAdminEmail\");\r",
+							"    pm.expect(pm.response.json().subaccountAdminEmail).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"subaccountAdminEmail\", pm.response.json().subaccountAdminEmail);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n    \"phoneNumber\": \"4434532455\",\r\n    \"type\": \"TYPE:High level\",\r\n    \"emailNotifications\": true,\r\n    \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/subaccountStakeHolders"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n    \"type\": \"TYPE:High level\",\r\n    \"emailNotifications\": false,\r\n    \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com"
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountName\": \"{{name}}Modified\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/subaccounts/{{subaccountId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"bundles\");\r",
+							"    pm.expect(pm.response.json().bundles).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/bundles"
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"customers\");\r",
+							"    pm.expect(pm.response.json().customers).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/customers"
+			},
+			"response": []
+		},
+		{
+			"name": "vendors",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"vendors\");\r",
+							"    pm.expect(pm.response.json().vendors).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/vendors"
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"devices\");\r",
+							"    pm.expect(pm.response.json().devices).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/devices"
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"consumptionMatrix\");\r",
+							"    pm.expect(pm.response.json().consumptionMatrix).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/consumptionMatrix"
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"licenses\");\r",
+							"    pm.expect(pm.response.json().licenses).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/licenses"
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"tokenConsumption\");\r",
+							"    pm.response.to.have.jsonBody(\"usage\");\r",
+							"    pm.response.to.have.jsonBody(\"weeklyConsumption\");\r",
+							"    pm.response.to.have.jsonBody(\"projectConsumption\");\r",
+							"    pm.expect(pm.response.json().usage).to.be.an(\"array\")\r",
+							"    pm.expect(pm.response.json().weeklyConsumption).to.be.an(\"array\")\r",
+							"    pm.expect(pm.response.json().projectConsumption).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
 				"url": {
-					"raw": "{{HOST}}/testData",
+					"raw": "{{HOST}}/licenseUsageDetails?subaccountId={{subaccountId}}",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
-						"testData"
+						"licenseUsageDetails"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "notes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"notes\");\r",
+							"    pm.expect(pm.response.json().notes).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/notes?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"notes"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"projects\");\r",
+							"    pm.expect(pm.response.json().projects).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/projects?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"projects"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"subaccounts\");\r",
+							"    pm.expect(pm.response.json().subaccounts).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/subaccounts"
+			},
+			"response": []
+		},
+		{
+			"name": "reportable_subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {",
+							"    pm.response.to.have.jsonBody(\"subaccounts\");",
+							"    pm.expect(pm.response.json().subaccounts).to.be.an(\"array\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");",
+							"",
+							"const clientId = pm.variables.get(\"CLIENTID_IGESADMIN\");",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_IGESADMIN\");",
+							"const grantType = pm.variables.get(\"grant_type\");",
+							"const scope = pm.variables.get(\"SCOPE\");",
+							"",
+							"const getTokenRequest = {",
+							"  method: 'POST',",
+							"  url: tokenUrl,",
+							"  body: {",
+							"      mode: 'formdata',",
+							"      formdata: [",
+							"          { key: 'client_id', value: clientId },",
+							"          { key: 'client_secret', value: clientSecret },",
+							"          { key: 'grant_type', value: grantType },",
+							"          { key: 'scope', value: scope}",
+							"      ]",
+							"  }",
+							"};",
+							"",
+							"pm.sendRequest(getTokenRequest, (err, response) => {",
+							"  pm.collectionVariables.set('access_token_IGES', response.json().access_token);",
+							"  console.log(\"Success\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_IGES}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/reportable_subaccounts"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"ctaasTestSuites\");\r",
+							"    pm.expect(pm.response.json().ctaasTestSuites).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/ctaasTestSuites?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasTestSuites"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"stakeHolders\");\r",
+							"    pm.expect(pm.response.json().stakeHolders).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/subaccountStakeHolders?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountStakeHolders"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"ctaasSetups\");\r",
+							"    pm.expect(pm.response.json().ctaasSetups).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/ctaasSetups?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasSetups"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "usageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"usageDays\");\r",
+							"    pm.expect(pm.response.json().usageDays).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/usageDetails/{{licenseUsageId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "subscriptions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"subscriptions\");\r",
+							"    pm.expect(pm.response.json().subscriptions).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/subscriptions"
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardCallsStatusSummary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"callingReliability\");\r",
+							"    pm.response.to.have.jsonBody(\"POLQA\");\r",
+							"    pm.response.to.have.jsonBody(\"featureFunctionality\");\r",
+							"    \r",
+							"\r",
+							"    pm.response.to.have.jsonBody(\"callingReliability.callsByType\");\r",
+							"    pm.response.to.have.jsonBody(\"callingReliability.callsByStatus\");\r",
+							"    pm.response.to.have.jsonBody(\"POLQA.callsByType\");\r",
+							"    pm.response.to.have.jsonBody(\"POLQA.callsByStatus\");\r",
+							"    pm.response.to.have.jsonBody(\"featureFunctionality.callsByType\");\r",
+							"    pm.response.to.have.jsonBody(\"featureFunctionality.callsByStatus\");\r",
+							"    \r",
+							"    pm.expect(pm.response.json().callingReliability.callsByType.onNet).to.eql(20);\r",
+							"    pm.expect(pm.response.json().callingReliability.callsByType.offNet).to.eql(2);\r",
+							"    pm.expect(pm.response.json().callingReliability.callsByType.p2p).to.eql(2);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().callingReliability.callsByStatus.FAILED).to.eql(0);\r",
+							"    pm.expect(pm.response.json().callingReliability.callsByStatus.PASSED).to.eql(24);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().POLQA.callsByType.onNet).to.eql(0);\r",
+							"    pm.expect(pm.response.json().POLQA.callsByType.offNet).to.eql(0);\r",
+							"    pm.expect(pm.response.json().POLQA.callsByType.p2p).to.eql(0);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().POLQA.callsByStatus.FAILED).to.eql(0);\r",
+							"    pm.expect(pm.response.json().POLQA.callsByStatus.PASSED).to.eql(0);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByType.onNet).to.eql(37);\r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByType.offNet).to.eql(0);\r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByType.p2p).to.eql(3);\r",
+							"    \r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByStatus.FAILED).to.eql(0);\r",
+							"    pm.expect(pm.response.json().featureFunctionality.callsByStatus.PASSED).to.eql(40);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/callsStatusSummary?startDate=2023-07-23%2000:00:00&endDate=2023-07-23%2023:59:59&subaccountId={{subaccountIdNativeDashboard}}&regions=%5B%7B%22country%22:%22United%20States%22,%22state%22:%22FL%22,%22city%22:%22Tampa%22,%22displayName%22:%22Tampa,%20FL,%20United%20States%22%7D%5D",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"callsStatusSummary"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-23%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-23%2023:59:59"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						},
+						{
+							"key": "regions",
+							"value": "%5B%7B%22country%22:%22United%20States%22,%22state%22:%22FL%22,%22city%22:%22Tampa%22,%22displayName%22:%22Tampa,%20FL,%20United%20States%22%7D%5D"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardNetworkQualitySummary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"    \r",
+							"    pm.expect(pm.response.json().totalCalls).to.eql(81);\r",
+							"    pm.expect(pm.response.json().maxPacketLoss).to.eql(24.11);\r",
+							"    pm.expect(pm.response.json().avgSentBitrate).to.eql(36.6);\r",
+							"    pm.expect(pm.response.json().maxJitter).to.eql(14.52);\r",
+							"    pm.expect(pm.response.json().jitterAboveThld).to.eql(0);\r",
+							"    pm.expect(pm.response.json().packetLossAboveThld).to.eql(1);\r",
+							"    pm.expect(pm.response.json().minPolqa).to.eql(0);\r",
+							"    pm.expect(pm.response.json().roundTripTimeAboveThld).to.eql(0);\r",
+							"    pm.expect(pm.response.json().maxRoundTripTime).to.eql(286);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/networkQualitySummary?startDate=2023-07-20 00:00:00&endDate=2023-07-20 23:59:59&metric=Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate,POLQA&subaccountId={{subaccountIdNativeDashboard}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"networkQualitySummary"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-20 00:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-20 23:59:59"
+						},
+						{
+							"key": "metric",
+							"value": "Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate,POLQA"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardNetworkQualityChart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"\r",
+							"    pm.expect(pm.response.json()).to.have.all.keys(\"series\", \"categories\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series).to.be.an(\"object\");\r",
+							"    pm.expect(pm.response.json().series).to.have.all.keys(\"Received packet loss\", \"Sent bitrate\", \"Received Jitter\", \"Round trip time\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().categories).to.be.an(\"array\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Received packet loss\"][2]).to.eql(0);\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Sent bitrate\"][14]).to.eql(36.52);\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Received Jitter\"][15]).to.eql(14.37);\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"Round trip time\"][21]).to.eql(227);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/networkQualityChart?startDate=2023-07-20%2000:00:00&endDate=2023-07-20%2023:59:59&metric=Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate&subaccountId={{subaccountIdNativeDashboard}}&groupBy=hour",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"networkQualityChart"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-20%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-20%2023:59:59"
+						},
+						{
+							"key": "metric",
+							"value": "Received%20Jitter,Received%20packet%20loss,Round%20trip%20time,Sent%20bitrate"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						},
+						{
+							"key": "groupBy",
+							"value": "hour"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardVoiceQualityChart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"\r",
+							"    pm.expect(pm.response.json()).to.have.all.keys(\"summary\", \"numericValues\", \"percentages\", \"categories\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().categories).to.be.an(\"array\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().summary[\"calls\"]).to.eql(66);\r",
+							"    pm.expect(pm.response.json().summary[\"streams\"]).to.eql(132);\r",
+							"\r",
+							"    pm.expect(pm.response.json().numericValues[0]).to.eql(16);\r",
+							"\r",
+							"    pm.expect(pm.response.json().percentages[0]).to.eql(12.121212);\r",
+							"\r",
+							"    pm.expect(pm.response.json().categories).to.eql([\r",
+							"        \"Excellent [4-5]\",\r",
+							"        \"Good [3-4)\",\r",
+							"        \"Fair [2-3)\",\r",
+							"        \"Poor [0-2)\"\r",
+							"    ]);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/voiceQualityChart?startDate=2023-07-21%2000:00:00&endDate=2023-07-21%2018:28:46&subaccountId={{subaccountIdNativeDashboard}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"voiceQualityChart"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-21%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-21%2018:28:46"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NativeDashboardCallsStatusHeatMap",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody();\r",
+							"\r",
+							"    pm.expect(pm.response.json()).to.have.all.keys(\"summary\", \"series\", \"maxValues\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"total\"]).to.be.an(\"array\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"total\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
+							"    pm.expect(pm.response.json().series[\"total\"][0].data[0][\"y\"]).to.eql(2);\r",
+							"    pm.expect(pm.response.json().series[\"total\"][0].name).to.eql(\"07-15-2023\");\r",
+							"    \r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"failed\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
+							"    pm.expect(pm.response.json().series[\"failed\"][0].data[0][\"y\"]).to.eql(0);\r",
+							"    pm.expect(pm.response.json().series[\"failed\"][0].name).to.eql(\"07-15-2023\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().series[\"passed\"][0].data[0][\"x\"]).to.eql(\"00-01\");\r",
+							"    pm.expect(pm.response.json().series[\"passed\"][0].data[0][\"y\"]).to.eql(2);\r",
+							"    pm.expect(pm.response.json().series[\"passed\"][0].name).to.eql(\"07-15-2023\");\r",
+							"\r",
+							"    pm.expect(pm.response.json().summary[\"totalCalls\"]).to.eql(769);\r",
+							"    pm.expect(pm.response.json().summary[\"failedCalls\"]).to.eql(6);\r",
+							"\r",
+							"    pm.expect(pm.response.json().maxValues[\"total\"]).to.eql(14);\r",
+							"    pm.expect(pm.response.json().maxValues[\"failed\"]).to.eql(1);\r",
+							"    pm.expect(pm.response.json().maxValues[\"passed\"]).to.eql(14);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/spotlightCharts/callsStatusHeatMap?startDate=2023-07-15%2000:00:00&endDate=2023-07-21%2019:23:44&subaccountId={{subaccountIdNativeDashboard}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"spotlightCharts",
+						"callsStatusHeatMap"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-07-15%2000:00:00"
+						},
+						{
+							"key": "endDate",
+							"value": "2023-07-21%2023:59:59"
+						},
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountIdNativeDashboard}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/devices/{{deviceId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "adminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/customerAdminEmails/{{name}}admin2@tekvizion.com"
+			},
+			"response": []
+		},
+		{
+			"name": "subaccountAdminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/subaccountAdminEmails/{{name}}subadmin2@tekvizion.com"
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/devices/{{deviceId}}?force=true",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices",
+						"{{deviceId}}"
+					],
+					"query": [
+						{
+							"key": "force",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "notes",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/notes/{{noteId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/projects/{{projectId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/licenses/{{licenseId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/subaccounts/{{subaccountId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "subaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com"
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/ctaasSetups/{{subaccountId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/customers/{{customerId}}?force=true",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"customers",
+						"{{customerId}}"
+					],
+					"query": [
+						{
+							"key": "force",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"featureToggleId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token', response.json().access_token);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"var currentDateTime = new Date().getTime();\r",
+							"pm.collectionVariables.set('name', 'CICDTest'+currentDateTime);\r",
+							"pm.collectionVariables.set('todayDate', currentDateTime);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\" : true,\r\n    \"name\" : \"Test FT{{todayDate}}\",\r\n    \"customerName\" : \"(optional)\",\r\n    \"author\" : \"(optional)Test User\",\r\n    \"description\" : \"(optional)This is test data for the FT api\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/featureToggles"
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}Modified\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{HOST}}/featureToggles/{{featureToggleId}}"
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"featureToggles\");\r",
+							"    pm.expect(pm.response.json().featureToggles).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{HOST}}/featureToggles"
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{access_token_DA}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{HOST}}/featureToggles/{{featureToggleId}}"
 			},
 			"response": []
 		}
 	],
 	"auth": {
 		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{access_token}}",
-				"type": "string"
-			}
-		]
+		"bearer": {
+			"token": "{{access_token}}"
+		}
 	},
 	"event": [
 		{
@@ -198,6 +2399,15 @@
 		{
 			"key": "todayDate",
 			"value": ""
+		},
+		{
+			"key": "access_token_IGES",
+			"value": ""
+		},
+		{
+			"key": "subaccountIdNativeDashboard",
+			"value": "b5f9e7bc-b65b-4e3c-9c68-e9fb4dab8853",
+			"type": "string"
 		}
 	]
 }

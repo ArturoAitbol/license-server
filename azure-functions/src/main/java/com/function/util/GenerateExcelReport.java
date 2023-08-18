@@ -23,7 +23,6 @@ public class GenerateExcelReport {
         return instance;
     }
 
-
     private static final List<String> iterationTestResultHeaders = new ArrayList<String>();
 
     static {
@@ -34,6 +33,7 @@ public class GenerateExcelReport {
         iterationTestResultHeaders.add("To");
         iterationTestResultHeaders.add("Other parties");
         iterationTestResultHeaders.add("Status");
+        iterationTestResultHeaders.add("Call Type");
         iterationTestResultHeaders.add("Error Category");
         iterationTestResultHeaders.add("Reason");
     }
@@ -111,7 +111,8 @@ public class GenerateExcelReport {
         Font blackFontHeader = workbook.createFont();
         blackFontHeader.setBold(true);
         blackLabel.setFont(blackFontHeader);
-        JSONObject summaryResponse = jsonObject.has("summary") ? (JSONObject) jsonObject.get("summary") : new JSONObject();
+        JSONObject summaryResponse = jsonObject.has("summary") ? (JSONObject) jsonObject.get("summary")
+                : new JSONObject();
         StringJoiner stringJoiner = new StringJoiner(" | ");
         for (SUMMARY_REPORT_PARAMS summaryParams : SUMMARY_REPORT_PARAMS.values()) {
             String val = "";
@@ -123,11 +124,13 @@ public class GenerateExcelReport {
             stringJoiner.add(String.format("%s:%s", summaryParams.key, val));
         }
         context.getLogger().info("Summary Results: " + stringJoiner);
-        getEndpointResources(context, summarySheet, row, cell, blackLabel, whiteLabel, redLabel, whiteUnboldLabel, index, jsonObject);
+        getEndpointResources(context, summarySheet, row, cell, blackLabel, whiteLabel, redLabel, whiteUnboldLabel,
+                index, jsonObject);
 
     }
 
-    private void createSpotlightSummaryRow(int index, XSSFSheet workSheet, XSSFCellStyle whiteLabel, XSSFCellStyle blackLabel, String key, String value) {
+    private void createSpotlightSummaryRow(int index, XSSFSheet workSheet, XSSFCellStyle whiteLabel,
+                                           XSSFCellStyle blackLabel, String key, String value) {
         Row row = workSheet.createRow(index);
         addCell(row, null, whiteLabel, 0, key);
         addCell(row, null, blackLabel, 1, value);
@@ -150,22 +153,32 @@ public class GenerateExcelReport {
      * @param index
      * @param jsonObject
      */
-    private void getEndpointResources(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell, XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, XSSFCellStyle whiteUnboldStyle, int index, JSONObject jsonObject) {
+    private void getEndpointResources(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell,
+                                      XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, XSSFCellStyle whiteUnboldStyle,
+                                      int index, JSONObject jsonObject) {
         context.getLogger().info("Generating Endpoint Resources for Run Report");
         int count = 0;
         index++;
 
         row = summarySheet.createRow(index++);
         int num = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "I" + num));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "J" + num));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
         addCell(row, cell, whiteLabel, count++, "EndPoint Resources");
 
         row = summarySheet.createRow(index++);
         int num1 = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "E" + num1));
+        // Merging two cells for Firmware column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "D" + num1));
         blackLabel.setAlignment(HorizontalAlignment.CENTER);
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("F" + num1 + ":" + "I" + num1));
+        // Merging two cells for Service Provider column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("E" + num1 + ":" + "F" + num1));
+        blackLabel.setAlignment(HorizontalAlignment.CENTER);
+        // Merging two cells for Domain column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("G" + num1 + ":" + "H" + num1));
+        blackLabel.setAlignment(HorizontalAlignment.CENTER);
+        // Merging two cells for Region column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("I" + num1 + ":" + "J" + num1));
         blackLabel.setAlignment(HorizontalAlignment.CENTER);
 
         count = 0;
@@ -173,12 +186,12 @@ public class GenerateExcelReport {
         addCell(row, cell, blackLabel, count++, "DID");
         addCell(row, cell, blackLabel, count++, "Firmware Version");
         addCell(row, cell, blackLabel, count++, null);
+        addCell(row, cell, blackLabel, count++, "Service Provider");
+        addCell(row, cell, blackLabel, count++, null);
+        addCell(row, cell, blackLabel, count++, "Domain");
         addCell(row, cell, blackLabel, count++, null);
         addCell(row, cell, blackLabel, count++, "Region");
         addCell(row, cell, blackLabel, count++, null);
-        addCell(row, cell, blackLabel, count++, null);
-        addCell(row, cell, blackLabel, count++, null);
-
 
         JSONArray endpointsResponse = (JSONArray) jsonObject.get("endpoints");
         for (int i = 0; i < endpointsResponse.length(); i++) {
@@ -186,7 +199,7 @@ public class GenerateExcelReport {
             generateEndpointsReport(context, index++, summarySheet, blackLabel, whiteUnboldStyle, endPointResource);
         }
 
-        //To Create Test Result Table in Report
+        // To Create Test Result Table in Report
         generateTestReportByType(context, summarySheet, row, cell, blackLabel, whiteLabel, redLabel, index, jsonObject);
     }
 
@@ -201,24 +214,38 @@ public class GenerateExcelReport {
      * @param index
      * @param jsonObject:  {summary:{},endpoints:{},results:[],type:""}
      */
-    private void generateTestReportByType(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell, XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, int index, JSONObject jsonObject) {
+    private void generateTestReportByType(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell,
+                                          XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, int index,
+                                          JSONObject jsonObject) {
         context.getLogger().info("Generating Test Cases Details Report");
         index++;
         int count = 0;
         row = summarySheet.createRow(index++);
         int columnnum = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "I" + columnnum));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "J" + columnnum));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
-        final String REPORT_TYPE = jsonObject.get("type").toString().equalsIgnoreCase("LTS") ? "Feature Functionality"
-                : "Calling Reliability";
+        String reportTypeParam = jsonObject.get("type").toString();
+        String reportTypesHeader;
+        if (reportTypeParam.isEmpty()){
+            reportTypesHeader = Constants.DEFAULT_REPORT_NAME;
+        } else {
+            String[] reportTypes = reportTypeParam.split(",");
+            reportTypesHeader = "";
+            for (int i = 0; i < reportTypes.length; i++) {
+                reportTypesHeader += Utils.getReportNameByTestPlan(reportTypes[i]);
+                if (i + 1 < reportTypes.length)
+                    reportTypesHeader += " + ";
+            }
+        }
         if (jsonObject.get("results") != null)
-            addCell(row, null, whiteLabel, count++, REPORT_TYPE);
+            addCell(row, null, whiteLabel, count++, reportTypesHeader);
         count = 0;
         row = summarySheet.createRow(index++);
         for (String header : iterationTestResultHeaders) {
             cell = addCell(row, cell, whiteLabel, count++, header);
         }
-        JSONArray testResult = jsonObject.get("results") == null ? new JSONArray() : (JSONArray) jsonObject.get("results");
+        JSONArray testResult = jsonObject.get("results") == null ? new JSONArray()
+                : (JSONArray) jsonObject.get("results");
         for (int i = 0; i < testResult.length(); i++) {
             count = 0;
             row = summarySheet.createRow(index++);
@@ -232,14 +259,23 @@ public class GenerateExcelReport {
         }
     }
 
-    private void generateEndpointsReport(ExecutionContext context, int index, XSSFSheet workSheet, XSSFCellStyle blackLabel, XSSFCellStyle whiteUnboldStyle, JSONObject endPointResource) {
+    private void generateEndpointsReport(ExecutionContext context, int index, XSSFSheet workSheet,
+                                         XSSFCellStyle blackLabel, XSSFCellStyle whiteUnboldStyle, JSONObject endPointResource) {
         context.getLogger().info("Generating end points report");
         int count = 0;
         Row row = workSheet.createRow(index);
         int num = row.getRowNum() + 1;
-        workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "E" + num));
+// Firmware Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "D" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
-        workSheet.addMergedRegion(CellRangeAddress.valueOf("F" + num + ":" + "I" + num));
+// Service Provider Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("E" + num + ":" + "F" + num));
+        whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
+// Domain Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("G" + num + ":" + "H" + num));
+        whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
+// Region Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("I" + num + ":" + "J" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
         List<String> valuesList = new ArrayList<>();
         StringJoiner stringJoiner = new StringJoiner(" | ");
@@ -252,25 +288,31 @@ public class GenerateExcelReport {
             stringJoiner.add(String.format("%s:%s", endpointReportParams.key, val));
             valuesList.add(val);
         }
-        String city = valuesList.get(4);
-        String state = valuesList.get(5);
-        String country = valuesList.get(6);
-        String zipcode = valuesList.get(7);
+        String city = valuesList.get(6);
+        String state = valuesList.get(7);
+        String country = valuesList.get(8);
+        String zipcode = valuesList.get(9);
 
         context.getLogger().info("End point results: " + stringJoiner);
-        final String region = (city.isEmpty() || state.isEmpty() || country.isEmpty() || zipcode.isEmpty()) ? "" : String.format("%s, %s, %s, %s", city, state, country, zipcode);
+        final String region = (city.isEmpty() || state.isEmpty() || country.isEmpty() || zipcode.isEmpty()) ? ""
+                : String.format("%s, %s, %s, %s", city, state, country, zipcode);
+        // Vendor and Model cell
         addCell(row, null, blackLabel, count++, valuesList.get(0) + " / " + valuesList.get(1));
+        // DID
         addCell(row, null, whiteUnboldStyle, count++, valuesList.get(2));
+        // Firmware
         addCell(row, null, whiteUnboldStyle, count++, valuesList.get(3));
         addCell(row, null, whiteUnboldStyle, count++, null);
+        // Service Provider
+        addCell(row, null, whiteUnboldStyle, count++, valuesList.get(4));
         addCell(row, null, whiteUnboldStyle, count++, null);
+        // Domain
+        addCell(row, null, whiteUnboldStyle, count++, valuesList.get(5));
+        addCell(row, null, whiteUnboldStyle, count++, null);
+        // Region
         addCell(row, null, whiteUnboldStyle, count++, region);
         addCell(row, null, whiteUnboldStyle, count++, null);
-        addCell(row, null, whiteUnboldStyle, count++, null);
-        addCell(row, null, whiteUnboldStyle, count++, null);
-
     }
-
 
     private void getIterationWiseTestResultsDetails(ExecutionContext context, int i, Cell cell, Row row, int index,
                                                     int count, XSSFCellStyle cellStyle, JSONObject testResultResponse) {
@@ -282,6 +324,7 @@ public class GenerateExcelReport {
                 switch (resultsParams.value) {
                     case "testCaseName":
                     case "status":
+                    case "callType":
                     case "errorReason":
                     case "errorCategory":
                     case "startTime":
@@ -293,7 +336,8 @@ public class GenerateExcelReport {
                     case "from":
                     case "to": {
                         JSONObject jsonObject = (JSONObject) testResultResponse.get(resultsParams.value);
-                        val = jsonObject.isEmpty() || jsonObject.toString().equalsIgnoreCase("null") || !jsonObject.has("DID") ? "" : jsonObject.getString("DID");
+                        val = jsonObject.isEmpty() || jsonObject.toString().equalsIgnoreCase("null")
+                                || !jsonObject.has("DID") ? "" : jsonObject.getString("DID");
                         break;
                     }
                     case "otherParties":
@@ -337,7 +381,7 @@ public class GenerateExcelReport {
             newstyle.setWrapText(true);
             newstyle.setVerticalAlignment(VerticalAlignment.TOP);
             newstyle.setAlignment(HorizontalAlignment.LEFT);
-            newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 102), new DefaultIndexedColorMap()));
+            newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(39, 49, 118), new DefaultIndexedColorMap()));
             newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Font newFont = workbook.createFont();
             newFont.setBold(true);
@@ -355,7 +399,8 @@ public class GenerateExcelReport {
             newstyle.setWrapText(true);
             newstyle.setVerticalAlignment(VerticalAlignment.TOP);
             newstyle.setAlignment(HorizontalAlignment.LEFT);
-            newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 245, 243), new DefaultIndexedColorMap()));
+            newstyle.setFillForegroundColor(
+                    new XSSFColor(new java.awt.Color(242, 245, 243), new DefaultIndexedColorMap()));
             newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         }
         return newstyle;
@@ -392,7 +437,7 @@ public class GenerateExcelReport {
 
     public String drawImage(ExecutionContext context, XSSFWorkbook workbook, XSSFSheet summarySheet) {
         InputStream inputStream = null;
-        //Get file from resources folder
+        // Get file from resources folder
         ClassLoader classLoader = (new GenerateExcelReport()).getClass().getClassLoader();
         inputStream = classLoader.getResourceAsStream("headerLogo.png");
         if (inputStream == null) {
@@ -402,34 +447,34 @@ public class GenerateExcelReport {
                 context.getLogger().severe("Caught Exception: " + e.getMessage());
             }
         }
-        //Get the contents of an InputStream as a byte[].
+        // Get the contents of an InputStream as a byte[].
         byte[] bytes = null;
         try {
             bytes = IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             context.getLogger().severe("Failed parse image path: " + e.getMessage());
         }
-        //Adds a picture to the workbook
+        // Adds a picture to the workbook
         int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
-        //close the input stream
+        // close the input stream
         try {
             inputStream.close();
         } catch (IOException e) {
             context.getLogger().severe("Failed parse image path: " + e.getMessage());
         }
-        //Returns an object that handles instantiating concrete classes
+        // Returns an object that handles instantiating concrete classes
         CreationHelper helper = workbook.getCreationHelper();
-        //Creates the top-level drawing patriarch.
+        // Creates the top-level drawing patriarch.
         Drawing drawing = summarySheet.createDrawingPatriarch();
-        //Create an anchor that is attached to the worksheet
+        // Create an anchor that is attached to the worksheet
         ClientAnchor anchor = helper.createClientAnchor();
-        anchor.setCol1(1); //Column A
-        anchor.setRow1(0); //Row 1
+        anchor.setCol1(1); // Column A
+        anchor.setRow1(0); // Row 1
         anchor.setCol2(3);
         anchor.setRow2(1);
-        //Creates a picture
+        // Creates a picture
         Picture pict = drawing.createPicture(anchor, pictureIdx);
-        //Reset the image to the original size
+        // Reset the image to the original size
         pict.resize(1.0, 0.8);
         return pict.toString();
 
@@ -458,6 +503,8 @@ public class GenerateExcelReport {
         MODEL("MODEL", "model"),
         DID("DID", "did"),
         FIRMWARE_VERSION("FIRMWARE_VERSION", "firmwareVersion"),
+        SERVICE_PROVIDER("SERVICE_PROVIDER", "serviceProvider"),
+        DOMAIN("DOMAIN", "domain"),
         CITY("CITY", "city"),
         STATE("STATE", "state"),
         COUNTRY("COUNTRY", "country"),
@@ -480,6 +527,7 @@ public class GenerateExcelReport {
         TO_RESOURCE("to"),
         OTHER_PARTIES("otherParties"),
         STATUS("status"),
+        CALL_TYPE("callType"),
         ERROR_CATEGORY("errorCategory"),
         ERROR_REASON("errorReason");
 

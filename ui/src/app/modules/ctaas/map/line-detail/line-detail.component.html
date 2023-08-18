@@ -1,0 +1,97 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-container" title="link-title">
+            <span class="text-start font-s text-left">{{data.from.city}}</span>
+            <span style="margin-left: 2%;"> &#8646;</span>  
+            <span class="text-start font-s text-right">{{data.to.city}}</span>
+        </h1>
+        <div>
+            <mat-card class="card summary" >
+                <mat-card-content class="summary-card-content">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Region 1</th>
+                                        <td style="width: 81.75%;">{{data.from.city}}, {{data.from.state}}, {{data.from.country}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Region 2</th>
+                                        <td style="width: 81.75%;">{{data.to.city}}, {{data.to.state}}, {{data.to.country}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Total Calls</th>
+                                        <td title="linkTotalCalls">{{data.totalCalls}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Calls passed</th>
+                                        <td title="linkPassedCalls">{{data.passed}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th>Calls failed</th>
+                                        <td title="linkFailedCalls">{{data.failed}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Total time</th>
+                                        <td style="width: 78.75%;">{{data.totalCallTimes | secondsToTime }}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">POLQA</th>
+                                        <td title="linkPOLQA" style="width: 85%;">Min: {{data.polqa.min | na}}, Avg: {{data.polqa.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Jitter (ms)</th>
+                                        <td title="linkJitter" style="width: 78.75%;">Max: {{data.receivedJitter.max | na}}, Avg: {{data.receivedJitter.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Round trip time (ms)</th>
+                                        <td title="linkRoundTripTime" style="width: 61.5%;">Max: {{data.roundTripTime.max | na}}, Avg: {{data.roundTripTime.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                                <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Packet Loss (%)</th>
+                                        <td title="linkPacketLoss" style="width: 69.5%;">Max: {{data.receivedPacketLoss.max | na}}, Avg: {{data.receivedPacketLoss.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                               </div>
+                               <div class="row-auto">
+                                    <div class="col-12">
+                                        <th style="width: max-content;">Bitrate (kbps)</th>
+                                        <td title="linkBitrate" style="width: 73.5%;">Avg: {{data.sentBitrate.avg | number:'.0-2' | na}}</td>
+                                    </div>
+                                </div>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row justify-content-center" style="display: none;">
+                        <button  class="viewDetail-button" mat-raised-button (click)="openNaviteDashboardWithSelectedData()">Go to
+                            Dashboard
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+    <div class="row justify-content-end" style="margin-top: 3%;">
+        <div class="col-auto">
+            <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Close</button>
+        </div>
+    </div>
+</div>

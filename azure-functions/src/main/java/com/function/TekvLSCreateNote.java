@@ -45,8 +45,8 @@ public class TekvLSCreateNote {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
-
-        context.getLogger().info("Entering TekvLSCreateNote Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateNote Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -55,6 +55,7 @@ public class TekvLSCreateNote {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error","error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateNote Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -66,6 +67,7 @@ public class TekvLSCreateNote {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateNote Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -76,17 +78,17 @@ public class TekvLSCreateNote {
                 context.getLogger().info("Missing mandatory parameter: "+ mandatoryParam.value);
                 JSONObject json = new JSONObject();
                 json.put("error","Missing mandatory parameter: " + mandatoryParam.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSCreateNote Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
 
         //Build the sql query
-        String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by, reports)" +
-                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?, ?) RETURNING id;";
+        String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by)" +
+                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?) RETURNING id;";
 
         // Sql query to get all user that need to be notified
         String getAllUsersSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid and sad.subaccount_admin_email != ?;";
-
         //Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
@@ -103,12 +105,7 @@ public class TekvLSCreateNote {
             statement.setString(1,jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
             statement.setString(2,jobj.getString(MANDATORY_PARAMS.CONTENT.value));
             statement.setString(3,userEmail);
-            if(jobj.has(OPTIONAL_PARAMS.REPORTS.value))
-                statement.setString(4,jobj.getJSONArray(OPTIONAL_PARAMS.REPORTS.value).toString());
-            else
-                statement.setString(4,null);
             //Insert
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             ResultSet rs = statement.executeQuery();
             context.getLogger().info("Note inserted successfully.");
@@ -140,16 +137,19 @@ public class TekvLSCreateNote {
                 }
             }
 
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateNote Azure function");
             return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
         } catch(SQLException e){
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateNote Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateNote Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }
@@ -161,16 +161,6 @@ public class TekvLSCreateNote {
         private final String value;
 
         MANDATORY_PARAMS(String value){
-            this.value = value;
-        }
-    }
-
-    private enum OPTIONAL_PARAMS {
-        REPORTS("reports");
-
-        private final String value;
-
-        OPTIONAL_PARAMS(String value){
             this.value = value;
         }
     }

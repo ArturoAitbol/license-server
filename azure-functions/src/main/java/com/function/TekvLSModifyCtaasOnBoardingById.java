@@ -64,7 +64,8 @@ public class TekvLSModifyCtaasOnBoardingById {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSModifyCtaasOnBoardingById Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifyCtaasOnBoardingById Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -73,6 +74,7 @@ public class TekvLSModifyCtaasOnBoardingById {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasOnBoardingById Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
@@ -82,6 +84,7 @@ public class TekvLSModifyCtaasOnBoardingById {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasOnBoardingById Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -97,6 +100,7 @@ public class TekvLSModifyCtaasOnBoardingById {
                 context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.jsonAttrib);
                 JSONObject json = new JSONObject();
                 json.put("error", "Missing mandatory parameter: " + mandatoryParam.jsonAttrib);
+                context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasOnBoardingById Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -112,21 +116,23 @@ public class TekvLSModifyCtaasOnBoardingById {
                 PreparedStatement statement = queryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Ctaas_setup onBoarding status updated successfully.");
-
+            
+            context.getLogger().info("User " + userId + " is succesfully leaving TekvLSModifyCtaasOnBoardingById Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasOnBoardingById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyCtaasOnBoardingById Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

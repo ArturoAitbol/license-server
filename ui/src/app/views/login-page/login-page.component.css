@@ -93,7 +93,7 @@
 
 .rsdLoginButton {
   border-radius: 7px;
-  background-color: rgb(32, 60, 102);
+  background-color: rgb(39, 49, 118);
 }
 
 #content {
@@ -110,6 +110,17 @@
   box-shadow: 0px 0px 10px 1px rgba(0, 198, 255, 0.7);
   -moz-animation: fullexpand 5s;
   -webkit-animation: fullexpand 5s;
+  animation: fullexpand 5s;
+}
+
+@keyframes fullexpand {
+  0% {
+    width: 0px;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 @-moz-keyframes fullexpand {
@@ -194,7 +205,7 @@
 
 .ng-valid[required],
 .ng-valid.required {
-  border-left: 5px solid #42a948;
+  border-left: 5px solid #76BD83;
 }
 
 .form-control.is-invalid,

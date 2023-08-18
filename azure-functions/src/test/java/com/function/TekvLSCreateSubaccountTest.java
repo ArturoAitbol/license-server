@@ -50,10 +50,11 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     public void createSubaccountTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
+        String parsedName = name.replace("-", "_").replace(":", "_");
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "@tekvizion.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -78,11 +79,12 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     public void createSubaccountWithCtaasTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
+        String parsedName = name.replace("-", "_").replace(":", "_");
         String services = Constants.SubaccountServices.SPOTLIGHT.value()+","+ Constants.SubaccountServices.TOKEN_CONSUMPTION.value();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\",\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "@tekvizion.com\",\n" +
                 "    \"services\": \""+services+"\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -108,10 +110,11 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     public void duplicatedEmailTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
+        String parsedName = name.replace("-", "_").replace(":", "_");
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "@tekvizion.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -153,10 +156,11 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     public void duplicatedSubaccountTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
+        String parsedName = name.replace("-", "_").replace(":", "_");
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "@tekvizion.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -180,7 +184,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "2@test.com\"\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "2@tekvizion.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -236,9 +240,10 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     public void incompleteBodyTest2() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
+        String parsedName = name.replace("-", "_").replace(":", "_");
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "@tekvizion.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -345,10 +350,11 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     public void GenericExceptionTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
+        String parsedName = name.replace("-", "_").replace(":", "_");
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "@tekvizion.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);

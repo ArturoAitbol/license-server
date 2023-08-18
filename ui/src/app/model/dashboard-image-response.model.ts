@@ -1,10 +1,11 @@
 export interface IDashboardImageResponse {
-    lastUpdatedTS: string;
     reportType: string;
-    imagesList: IImages[]
+    imagesList: IImage[]
 }
 
-export interface IImages{
+export interface IImage{
     imageBase64: string;
-    reportType: string
+    reportType: string;
+    startDateStr: string;
+    endDateStr: string;
 }

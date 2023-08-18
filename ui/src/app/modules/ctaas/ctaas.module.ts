@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CtaasRoutingModule } from './ctaas-routing.module';
-import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
@@ -18,17 +17,27 @@ import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirm
 import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/modify-test-suite.component';
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
-import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
-import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
+import { DetailedReportsComponent } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-consolidated-report/search-consolidated-report.component';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-
+import { SpotlightDashboardComponent } from './spotlight-dashboard/spotlight-dashboard.component';
+import { NgApexchartsModule } from "ng-apexcharts";
+import { NetworkQualityComponent } from './spotlight-dashboard/network-quality/network-quality.component';
+import { CallbackComponent } from './callback/callback.component';
+import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
+import { NodeDetailComponent } from './map/node-detail/node-detail.component';
+import { LineDetailComponent } from './map/line-detail/line-detail.component';
+import { MapComponent } from './map/map.component';
+import { PolqaGraphsComponent } from './spotlight-dashboard/network-quality/polqa-graphs/polqa-graphs.component';
+import { NetworkTrendsComponent } from './spotlight-dashboard/network-quality/network-trends/network-trends.component';
+import { LoadingSpinnerComponent } from '../../generics/loading-spinner/loading-spinner.component';
+import { PolqaTrendsComponent } from './ctaas-detailed-reports/polqa-trends/polqa-trends.component';
+import { CtaasCallsDetailsComponent } from './ctaas-detailed-reports/ctaas-calls-details/ctaas-calls-details.component';
 
 
 @NgModule({
   declarations: [
-    CtaasDashboardComponent,
     OnboardWizardComponent,
     CtaasTestSuitesComponent,
     CtaasStakeholderComponent,
@@ -41,10 +50,21 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     BannerComponent,
     CtaasNotesComponent,
     AddNotesComponent,
-    CtaasHistoricalDashboardComponent,
-    DetailedReportsCompoment,
+    DetailedReportsComponent,
     CtaasTestReportsComponent,
-    SearchConsolidatedReportComponent
+    SearchConsolidatedReportComponent,
+    SpotlightDashboardComponent,
+    NetworkQualityComponent,
+    CallbackComponent,
+    MapComponent,
+    CallbackTimerComponent,
+    NodeDetailComponent,
+    LineDetailComponent,
+    PolqaGraphsComponent,
+    NetworkTrendsComponent,
+    LoadingSpinnerComponent,
+    PolqaTrendsComponent,
+    CtaasCallsDetailsComponent,
   ],
   imports: [
     CommonModule,
@@ -53,7 +73,8 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     MaterialModule,
     SharedModule,
     FormsModule,
-    NgxMatTimepickerModule
+    NgxMatTimepickerModule,
+    NgApexchartsModule,
   ],
   entryComponents: [
     OnboardWizardComponent,

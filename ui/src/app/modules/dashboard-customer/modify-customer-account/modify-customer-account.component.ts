@@ -5,7 +5,6 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -26,7 +25,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
 
   types: string[] = ['MSP', 'Reseller'];
   servicesList = {
-    spotlight: "Spotlight",
+    spotlight: "UCaaS Continuous Testing",
     tokenConsumption: "tekToken Consumption"
   };
   private previousFormValue: any;
@@ -40,7 +39,6 @@ export class ModifyCustomerAccountComponent implements OnInit {
     private subaccountService: SubAccountService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
-    private msalService: MsalService,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {

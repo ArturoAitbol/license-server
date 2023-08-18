@@ -56,8 +56,70 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("subaccountAdminEmail"));
+
+        this.stakeHolderEmail = jsonBody.getString("subaccountAdminEmail");
+        assertNotNull(this.stakeHolderEmail);
+        assertEquals(stakeHolderEmail,this.stakeHolderEmail,"Actual email is not: ".concat(stakeHolderEmail));
+    }
+
+    @Tag("acceptance")
+    @Test
+    void createStakeHolderWithOnlyOneOptionalParam() {
+        //Given
+    	String stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
+        String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+                "'subaccountAdminEmail': '"+stakeHolderEmail+"'," +
+                "'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'emailNotifications': true," +
+                "'phoneNumber': '+12142425968'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("subaccountAdminEmail"));
+
+        this.stakeHolderEmail = jsonBody.getString("subaccountAdminEmail");
+        assertNotNull(this.stakeHolderEmail);
+        assertEquals(stakeHolderEmail,this.stakeHolderEmail,"Actual email is not: ".concat(stakeHolderEmail));
+    }
+
+    @Tag("acceptance")
+    @Test
+    void createStakeHolderWithoutOptionalParam() {
+        //Given
+    	String stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
+        String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+                "'subaccountAdminEmail': '"+stakeHolderEmail+"'," +
+                "'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'emailNotifications': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -86,7 +148,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
         		"'name': 'test-customer-subaccount-stakeholder'," +
         		  "'notifications': 'email,text'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -262,7 +324,8 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
               "'notifications': 'email,text'," +
               "'name': 'test-customer-subaccount-stakeholder'," +
               "'jobTitle': 'Software Engineer'," +
-              "'companyName': 'tekVizion'," +
+              "'companyName': 'TekVizion'," +
+                 "'emailNotifications': false," +
               "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -285,7 +348,8 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
@@ -320,7 +384,8 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -338,7 +403,7 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String actualResponse = jsonBody.getString("error");
-        String expectedResponse = "Spotlight Setup does not exist or is not ready";
+        String expectedResponse = "UCaaS Continuous Testing Setup does not exist or is not ready";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 }

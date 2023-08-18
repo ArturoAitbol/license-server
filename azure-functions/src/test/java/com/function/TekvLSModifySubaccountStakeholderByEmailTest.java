@@ -36,7 +36,8 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         // When
@@ -66,7 +67,8 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
         String bodyRequest = "{'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -103,7 +105,8 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
         // Given
         String bodyRequest = "{'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         // When
@@ -243,7 +246,8 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
         String bodyRequest = "{'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
@@ -275,7 +279,8 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
         String bodyRequest = "{'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
+                "'emailNotifications': true," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

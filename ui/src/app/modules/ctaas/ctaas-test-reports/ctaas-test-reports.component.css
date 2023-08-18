@@ -76,6 +76,12 @@
     margin-right: 2%;
 }
 
+.custom-btn {
+    background-color: #23578f;
+    color: white;
+    margin-bottom: 1%;
+}
+
 .example-card {
     max-width: 35vw;
     max-height: 40vh;
@@ -85,7 +91,10 @@
 .mat-card-header {
     justify-content: center;
 }
-
+.mat-button-toggle-checked {
+    background-color:#23578f ;
+    color: white;
+}
 .mat-card {
     background-color: rgb(252, 252, 182);
 }

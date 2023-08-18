@@ -6,8 +6,7 @@ import {SubaccountServiceMock} from '../../test/mock/services/subaccount-service
 
 let httpClientSpy: jasmine.SpyObj<HttpClient>;
 let subAccountService: SubAccountService;
-const headers = new HttpHeaders();
-headers.append('Content-Type', 'application/json');
+const headers = new HttpHeaders().append('Content-Type', 'application/json');
 
 describe('Customer service http requests test', () => {
     beforeEach(async () => {

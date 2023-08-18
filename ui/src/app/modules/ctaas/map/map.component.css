@@ -1,0 +1,171 @@
+#map { 
+    height: 730px; 
+}
+
+.banner-container {
+    background: #6E76B4;
+    /* background: lightgrey; */
+    padding: 6px 6px 6px 12px;
+}
+
+ul {
+    list-style-type: none;
+    /* display: inline-flex; */
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    text-align: center;
+}
+
+.region-field{
+    display: inline-block !important; 
+    width: 80%;
+    padding-right: 5%;
+}
+
+.apply-button-enable {
+    top:30%
+}
+
+.apply-button {
+    position: absolute;
+    top: 2%;
+    transform: translateY(-2%);
+}
+.apply-button-container {
+    position: relative;
+    top:25%;
+    bottom: 0px;
+    padding-left: 2%;
+}
+
+.apply-button-container-enable{
+    position: relative;
+    bottom: 0px;
+    top: 0;
+    padding-left: 2%;
+}
+.date-field{
+    display: inline-block !important; 
+    width: 40%;
+    padding-right: 5%;
+}
+
+ul li {
+    display: inline-block;
+    color: #273176;
+    font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+    letter-spacing: normal;
+    /* margin: 0 0 16px; */
+}
+/* ul.breadcrumb li+li:before {
+    color: #273176;
+    content: "/\00a0";
+} */
+.alignment {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+@media (max-width: 600px) {
+    .banner-container {
+        padding: 0px 2px 0px 6px;
+    }
+    ul li {
+        font-size:calc(5px + 1.7vw);
+    }
+    .date-picker-form {
+        display: inline-block !important;
+        width: 100%;
+        align-items: center !important; 
+        /* white-space: nowrap !important; */
+        position: relative;
+    }
+
+    .legend {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+.date-picker-form{
+    display: flex !important;
+    white-space: nowrap !important;
+    padding-top: 1%;
+    right: 4%;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.legend {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8%;
+}
+  
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+::ng-deep .mat-tooltip {
+    background-color: #6E76B4;  /* previus color rgb(22,53,89) */
+    font-size: 14px;
+}
+
+.good {
+    background-color: #273176;
+}
+  
+.fair {
+    background-color: #EC7C56;
+}
+  
+.bad {
+    background-color: #bb2426;
+}
+
+.clear-button{
+    height: auto;
+    padding: 0px;
+}
+
+.legend-item:hover {
+    cursor: pointer;
+}
+  
+.legend-item:hover .color-box {
+    border: 1px solid #000;
+}
+
+.apply-flag {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #6E76B4;
+    padding-right: 20%;
+}
+.apply-flag mat-icon {
+    padding-top: 6px;
+    padding-left: 3px;
+    font-size: 12px;
+}
+
+.map-container {
+    position: relative;
+}
+.loading-shade {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}

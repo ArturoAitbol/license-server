@@ -5,6 +5,7 @@ import { Report } from 'src/app/helpers/report';
 import { Constants } from 'src/app/helpers/constants';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 
 @Component({
   selector: 'app-update-stake-holder',
@@ -18,7 +19,14 @@ export class UpdateStakeHolderComponent implements OnInit {
   updateStakeholderForm: FormGroup;
   previousFormValue: any;
   notificationsList: any;
+  toggleStatus = true;
+  phoneNumberRequiredComplement = "";
+  emailNotifications: boolean;
   mappedNotificationsList: string[] = [];
+  CountryISO = CountryISO;
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
   readonly type = 'TYPE:Detailed';
   readonly notifications = 'TYPE:Detailed,DAILY_REPORTS';
   readonly SUBACCOUNT_STAKEHOLDER_ROLE = Constants.SUBACCOUNT_STAKEHOLDER;
@@ -34,14 +42,23 @@ export class UpdateStakeHolderComponent implements OnInit {
    * initialize update stake holder form
    */
   initializeForm(): void {
-    this.updateStakeholderForm = this.formBuilder.group({
+    let formObject: any = {
       name: ['', Validators.required],
-      jobTitle: ['', Validators.required],
-      companyName: [{ value: '' }, Validators.required],
+      jobTitle: [''],
+      companyName: [''],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
-      role: [''],
-    });
+      phoneNumber: [''],
+      role: ['']
+    };
+    if (this.data?.jobTitle && this.data?.jobTitle !== "")
+      formObject.jobTitle.push(Validators.required);
+    if (this.data?.companyName && this.data?.companyName !== "")
+      formObject.companyName.push(Validators.required);
+    if (this.data?.phoneNumber && this.data?.phoneNumber !== "") {
+      this.phoneNumberRequiredComplement = " *";
+      formObject.phoneNumber.push(Validators.required);
+    }
+    this.updateStakeholderForm = this.formBuilder.group(formObject);
     try {
       const { email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
@@ -55,8 +72,11 @@ export class UpdateStakeHolderComponent implements OnInit {
         });
         this.mappedNotificationsList = mappedNotifications;
       }
+      this.emailNotifications = this.data.emailNotifications;
       const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, role };
       this.updateStakeholderForm.patchValue(payload);
+      if (this.data.restrictRole)
+        this.updateStakeholderForm.get('role').disable();
       this.previousFormValue = { ...payload };
     } catch (e) {
       console.error('some error | ', e);
@@ -103,16 +123,34 @@ export class UpdateStakeHolderComponent implements OnInit {
         this.snackBarService.openSnackBar('Updated stake holder details successfully', '');
         this.onCancel('closed');
       }
+    }, (error) => {
+      this.isDataLoading = false;
     });
+  }
+
+  onChangeToggle(flag: boolean): void {
+    this.toggleStatus = flag;
+    if (flag) {
+        this.emailNotifications = true;
+    } else {
+        this.emailNotifications = false;
+    }
   }
   /**
    * prepare an object with update values only
    * @returns: any 
    */
   preparePayload(): any {
-    const extraData = {...this.updateStakeholderForm.value, notifications:this.notifications, type:this.type, subaccountAdminEmail: this.data.email};
+    let extraData = {
+      ...this.updateStakeholderForm.value, 
+      notifications: this.notifications, 
+      type: this.type, 
+      subaccountAdminEmail: this.data.email, 
+      emailNotifications: this.emailNotifications
+    };
+    extraData.phoneNumber = this.updateStakeholderForm.get('phoneNumber').value ? this.updateStakeholderForm.get('phoneNumber').value.internationalNumber : '';
     if (this.previousFormValue.role === extraData.role) {
-      extraData.role = null;
+      delete extraData.role;
     }
     return extraData;
   }

@@ -16,6 +16,7 @@ public class Permissions {
                         CREATE_USAGE_DETAILS,
                         CREATE_PROJECT,
                         CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
                         CREATE_CTAAS_TEST_SUITE,
                         CREATE_SUBACCOUNT_STAKEHOLDER,
                         // CREATE_FEATURE_TOGGLE,
@@ -30,6 +31,7 @@ public class Permissions {
                         DELETE_LICENSE_USAGE,
                         DELETE_USAGE_DETAILS,
                         DELETE_CTAAS_SETUP,
+                        DELETE_CTAAS_SUPPORT_EMAIL,
                         DELETE_CTAAS_TEST_SUITE,
                         DELETE_SUBACCOUNT_STAKEHOLDER,
                         // DELETE_FEATURE_TOGGLE,
@@ -50,11 +52,12 @@ public class Permissions {
                         GET_ALL_CTAAS_TEST_SUITES,
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_CTAAS_DASHBOARD,
-                        GET_ALL_REPORTS,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_SUBSCRIPTIONS_OVERVIEW,
                         GET_ALL_NOTES,
                         GET_CONSUMPTION_MATRIX,
+                        GET_CHARTS,
+                        GET_MAP,
                         // UPDATE
                         MODIFY_CUSTOMER,
                         MODIFY_SUBACCOUNT,
@@ -80,10 +83,11 @@ public class Permissions {
                         GET_ALL_BUNDLES,
                         GET_ALL_CTAAS_SETUPS,
                         GET_CTAAS_DASHBOARD,
-                        GET_ALL_REPORTS,
                         GET_SUBSCRIPTIONS_OVERVIEW,
                         GET_CONSUMPTION_MATRIX,
-                        GET_ALL_FEATURE_TOGGLES);
+                        GET_ALL_FEATURE_TOGGLES,
+                        GET_CHARTS,
+                        GET_MAP);
 
         public static final EnumSet<Resource> ConfigTesterPermissions = EnumSet.of(
                         // CREATE
@@ -91,14 +95,15 @@ public class Permissions {
                         CREATE_PROJECT,
                         CREATE_USAGE_DETAILS,
                         CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
                         CREATE_CTAAS_TEST_SUITE,
-                        // CREATE
                         CREATE_SUBACCOUNT_STAKEHOLDER,
                         // DELETE
                         DELETE_LICENSE_USAGE,
                         DELETE_USAGE_DETAILS,
                         DELETE_SUBACCOUNT_STAKEHOLDER,
                         DELETE_CTAAS_TEST_SUITE,
+                        DELETE_CTAAS_SUPPORT_EMAIL,
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
@@ -114,9 +119,10 @@ public class Permissions {
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_CTAAS_DASHBOARD,
                         GET_ALL_NOTES,
-                        GET_ALL_REPORTS,
                         GET_CONSUMPTION_MATRIX,
                         GET_ALL_FEATURE_TOGGLES,
+                        GET_CHARTS,
+                        GET_MAP,
                         // UPDATE
                         MODIFY_PROJECT,
                         MODIFY_LICENSE_USAGE,
@@ -170,6 +176,7 @@ public class Permissions {
                         CREATE_SUBACCOUNT_ADMIN_MAIL,
                         CREATE_LICENSE,
                         CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
@@ -216,9 +223,10 @@ public class Permissions {
                         GET_ALL_CTAAS_SETUPS,
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_CTAAS_DASHBOARD,
-                        GET_ALL_REPORTS,
                         GET_ALL_NOTES,
                         GET_ALL_FEATURE_TOGGLES,
+                        GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER);
@@ -228,6 +236,7 @@ public class Permissions {
                         CREATE_SUBACCOUNT_STAKEHOLDER,
                         CREATE_NOTE,
                         CREATE_SUBACCOUNT_ADMIN_DEVICE,
+                        CREATE_CALLBACK,
                         // DELETE
                         DELETE_SUBACCOUNT_STAKEHOLDER,
                         DELETE_NOTE,
@@ -246,9 +255,10 @@ public class Permissions {
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_AUTH_USER_PROFILE,
                         GET_CTAAS_DASHBOARD,
-                        GET_ALL_REPORTS,
                         GET_ALL_NOTES,
                         GET_ALL_FEATURE_TOGGLES,
+                        GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER,
@@ -257,6 +267,8 @@ public class Permissions {
         public static final EnumSet<Resource> SubAccountStakeholderPermissions = EnumSet.of(
                         // CREATE
                         CREATE_SUBACCOUNT_ADMIN_DEVICE,
+        
+                        CREATE_CALLBACK,
                         // DELETE
                         DELETE_SUBACCOUNT_ADMIN_DEVICE,
                         // READ
@@ -265,10 +277,53 @@ public class Permissions {
                         GET_ALL_CTAAS_SETUPS,
                         GET_AUTH_USER_PROFILE,
                         GET_CTAAS_DASHBOARD,
-                        GET_ALL_REPORTS,
                         GET_ALL_NOTES,
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_ALL_FEATURE_TOGGLES,
+                        GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_AUTH_USER_PROFILE);
+
+            public static final EnumSet<Resource> IGESAdminPermissions = EnumSet.of(                
+                        // CREATE
+                        CREATE_LICENSE_USAGE_DETAIL,
+                        CREATE_PROJECT,
+                        CREATE_USAGE_DETAILS,
+                        CREATE_CTAAS_SETUP,
+                        CREATE_CTAAS_SUPPORT_EMAIL,
+                        CREATE_CTAAS_TEST_SUITE,
+                        CREATE_SUBACCOUNT_STAKEHOLDER,
+                        // DELETE
+                        DELETE_LICENSE_USAGE,
+                        DELETE_USAGE_DETAILS,
+                        DELETE_SUBACCOUNT_STAKEHOLDER,
+                        DELETE_CTAAS_TEST_SUITE,
+                        // READ
+                        GET_REPORTABLE_SUBACCOUNTS,
+                        GET_ALL_CUSTOMERS,
+                        GET_ALL_SUBACCOUNTS,
+                        GET_ALL_LICENSES,
+                        GET_ALL_LICENSE_USAGE_DETAILS,
+                        GET_CONSUMPTION_USAGE_DETAILS,
+                        GET_ALL_DEVICES,
+                        GET_ALL_DEVICE_TYPES,
+                        GET_ALL_PROJECTS,
+                        GET_ALL_BUNDLES,
+                        GET_ALL_CTAAS_SETUPS,
+                        GET_ALL_CTAAS_TEST_SUITES,
+                        GET_ALL_SUBACCOUNT_STAKEHOLDER,
+                        GET_CTAAS_DASHBOARD,
+                        GET_ALL_NOTES,
+                        GET_CONSUMPTION_MATRIX,
+                        GET_ALL_FEATURE_TOGGLES,
+                        GET_CHARTS,
+                        GET_MAP,
+                        // UPDATE
+                        MODIFY_PROJECT,
+                        MODIFY_LICENSE_USAGE,
+                        MODIFY_CTAAS_SETUP,
+                        MODIFY_CTAAS_TEST_SUITE,
+                        MODIFY_SUBACCOUNT_STAKEHOLDER
+            );
 }

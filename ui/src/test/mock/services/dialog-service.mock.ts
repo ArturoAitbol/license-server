@@ -24,6 +24,16 @@ export class DialogServiceMock {
         });
     }
 
+    acceptDialog(data: any): Observable<boolean> {
+        return new Observable<boolean>((observer) => {
+            observer.next(this.expectedConfirmDialogValue);
+            observer.complete();
+            return {
+                unsubscribe() { return; }
+            };
+        });
+    }
+
     deleteCustomerDialog(data: DeleteCustomerDialogData): Observable<{confirm, deleteAllData}> {
         return new Observable<{confirm, deleteAllData}>((observer) => {
             observer.next(this.expectedResult);
@@ -53,4 +63,10 @@ export class DialogServiceMock {
         });
     }
     close(): void { return; }
+
+    clearDialogData(): void{}
+
+    transformToDialogData(data:any): void{ }
+
+    updateDialogData(data): void {}
 }

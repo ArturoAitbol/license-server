@@ -28,8 +28,7 @@ export const permissions = {
     },
     'tekvizion.FullAdmin': {
         paths: [
-            'dashboard',
-            'visualization',
+            'customers-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -37,7 +36,6 @@ export const permissions = {
             'devices',
             'redirect',
             'spotlight',
-            'report-dashboards',
             'notes',
             'test-suites',
             'stakeholders',
@@ -45,7 +43,9 @@ export const permissions = {
             'subscriptions-overview',
             'details',
             'reports',
-            'consumption-matrix'
+            'consumption-matrix',
+            'map',
+            'spotlight-dashboard'
         ],
         elements: [
             'addCustomer',
@@ -59,12 +59,14 @@ export const permissions = {
             'deleteSubAccAdminEmail',
             'auditInfo',
             'addTestSuite',
-            'showBanner',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'resetFilter',
             'maintenanceModeCheckbox',
+            'viewDetailedReport',
+            'emailNotifications',
+            'addSupportEmail',
+            'deleteSupportEmail',
         ],
         tables: {
             customerOptions: [
@@ -109,13 +111,16 @@ export const permissions = {
             deviceOptions: [
                 'MODIFY_DEVICE',
                 'DELETE_DEVICE',
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     },
     'tekvizion.SalesAdmin': {
         paths: [
-            'dashboard',
-            'visualization',
+            'customers-dashboard',
+            'spotlight-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -123,13 +128,11 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'subscriptions-overview',
-            'consumption-matrix'
+            'consumption-matrix',
+            'map'
         ],
         elements: [
-            'showBanner',
-            'showUserToggle',
         ],
         tables: {
             customerOptions: [
@@ -158,8 +161,7 @@ export const permissions = {
     },
     'tekvizion.ConfigTester': {
         paths: [
-            'dashboard',
-            'visualization',
+            'customers-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -168,22 +170,26 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'notes',
             'test-suites',
             'stakeholders',
             'setup',
             'details',
             'reports',
-            'consumption-matrix'
+            'consumption-matrix',
+            'spotlight-dashboard',
+            'map'
         ],
         elements: [
             'addProject',
             'addLicenseConsumption',
             'addTestSuite',
-            'showBanner',
-            'showUserToggle',
-            'resetFilter'
+            'resetFilter',
+            'maintenanceModeCheckbox',
+            'viewDetailedReport',
+            'addSupportEmail',
+            'deleteSupportEmail',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -217,13 +223,82 @@ export const permissions = {
                 'VIEW_DASHBOARD'
             ],
             subscriptionsOverviewOptions: [],
-            deviceOptions: []
+            deviceOptions: [],
+            testReportsOptions: [
+                'VIEW_DETAILS'
+            ]
+        }
+    },
+    'tekvizion.IGESAdmin': {
+        paths: [
+            'customers-dashboard',
+            'customer',
+            'consumption',
+            'projects',
+            'licenses',
+            'devices',
+            'redirect',
+            'apps',
+            'spotlight',
+            'notes',
+            'test-suites',
+            'stakeholders',
+            'setup',
+            'details',
+            'reports',
+            'consumption-matrix',
+            'spotlight-dashboard',
+            'map'
+        ],
+        elements: [
+            'addProject',
+            'addLicenseConsumption',
+            'addTestSuite',
+            'resetFilter',
+            'maintenanceModeCheckbox',
+            'addSupportEmail'
+        ],
+        tables: {
+            customerOptions: [
+                'VIEW_LICENSES',
+                'VIEW_CONSUMPTION',
+                'VIEW_PROJECTS',
+                'VIEW_ADMIN_EMAILS',
+                'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD'
+            ],
+            licenseOptions: [],
+            licConsumptionOptions: [
+                'EDIT',
+                'VIEW_DETAILS',
+                'DELETE'
+            ],
+            projectOptions: [
+                'VIEW_CONSUMPTION',
+                'MODIFY_PROJECT',
+                'CLOSE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE',
+                'DELETE_TEST_SUITE'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
+            ],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ],
+            subscriptionsOverviewOptions: [],
+            deviceOptions: [],
+            testReportsOptions: [
+                'VIEW_DETAILS'
+            ]
         }
     },
     'distributor.FullAdmin': {
         paths: [
-            'dashboard',
-            'visualization',
+            'customers-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -231,11 +306,11 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards'
+            'report-dashboards',
+            'spotlight-dashboard'
         ],
         elements: [
-            'showBanner',
-            'showUserToggle'
+            'viewDetailedReport'
         ],
         tables: {
             customerOptions: [
@@ -259,8 +334,7 @@ export const permissions = {
     },
     'customer.FullAdmin': {
         paths: [
-            'dashboard',
-            'visualization',
+            'customers-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -268,20 +342,22 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'stakeholders',
             'notes',
             'details',
-            'reports'
+            'reports',
+            'spotlight-dashboard',
+            'map'
         ],
         elements: [
             'view-profile',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
-            'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call',
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -307,13 +383,15 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     },
     'customer.SubaccountAdmin': {
         paths: [
-            'dashboard',
-            'visualization',
+            'customers-dashboard',
             'customer',
             'consumption',
             'projects',
@@ -321,20 +399,24 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'stakeholders',
             'notes',
             'details',
-            'reports'
+            'reports',
+            'spotlight-dashboard',
+            'map'
         ],
         elements: [
             'view-profile',
-            'showUserToggle',
+            'view-roles-permission',
+            'view-role',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
-            'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call',
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [
@@ -360,6 +442,9 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     },
@@ -368,28 +453,33 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
-            'visualization',
             'stakeholders',
             'notes',
             'details',
-            'reports'
+            'reports',
+            'spotlight-dashboard',
+            'map'
         ],
         elements: [
-            'showUserToggle',
             'view-profile',
-            'showLatestNote',
-            'resetFilter'
+            'view-roles-permission',
+            'view-role',
+            'resetFilter',
+            'request-call',
+            'viewDetailedReport',
+            'emailNotifications'
         ],
         tables: {
             customerOptions: [],
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
-            stakeholderOptions: [],
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     }

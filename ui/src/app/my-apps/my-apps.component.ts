@@ -10,6 +10,8 @@ import {OnboardWizardComponent} from '../modules/ctaas/ctaas-onboard-wizard/ctaa
 import {AvailableServicesService} from '../services/available-services.service';
 import {CtaasSetupService} from '../services/ctaas-setup.service';
 import {SubAccountService} from '../services/sub-account.service';
+import { SnackBarService } from '../services/snack-bar.service';
+import { FeatureToggleService } from '../services/feature-toggle.service';
 
 @Component({
     selector: 'app-my-apps',
@@ -23,6 +25,7 @@ export class MyAppsComponent implements OnInit {
     loggedInUserRoles: string[] = [];
     ctaasSetupDetails: any = {};
     currentSubaccountDetails: any = {};
+    isDataLoading = false;
     subaccountId: any;
 
     constructor(
@@ -32,7 +35,9 @@ export class MyAppsComponent implements OnInit {
         private subaccountService: SubAccountService,
         private dialog: MatDialog,
         private msalService: MsalService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private snackBarService: SnackBarService,
+        private featureToggleService: FeatureToggleService
     ) {
         this.route.queryParams.subscribe((query:Params) => {
             this.subaccountId = query.subaccountId;
@@ -42,9 +47,8 @@ export class MyAppsComponent implements OnInit {
     ngOnInit(): void {
         this.currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
         const accountDetails = this.getAccountDetails();
-        const {idTokenClaims: {roles}} = accountDetails;
-        this.loggedInUserRoles = roles;
-        this.getAvailableServices(roles);
+        this.loggedInUserRoles = accountDetails.idTokenClaims.roles;
+        this.getAvailableServices(accountDetails.idTokenClaims.roles);
         this.fetchCtaasSetupDetails();
     }
 
@@ -61,31 +65,22 @@ export class MyAppsComponent implements OnInit {
      */
     private getAvailableServices(roles?: string) {
         const response = this.availabeService.fetchAllAvailabeServices();
-        if (response.length > 0) {
+        if (response.length > 0)
             this.availableServices = response.filter((x: IService) => x.enabled === true);
-            // get the current logged in subaccount details
-            if (this.currentSubaccountDetails) {
-                let {services} = this.currentSubaccountDetails;
-                if ((services === undefined || services === null) && roles)
-                    services = roles.includes(Constants.SUBACCOUNT_STAKEHOLDER) ? [tekVizionServices.SpotLight] : [];
-                // enable respective access to activated service here
-                this.availableServices = this.availableServices.map(e => {
-                    if (services.includes(e.value))
-                        e.access = true;
-                    return e;
-                });
-            }
-        }
     }
 
     /**
      * navigate to service which is enabled to user
-     * @param value: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }
+     * @param service: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }
      */
-    onClickService(value: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }): void {
-        const {enabled, routePath} = value;
-        if (enabled) {
-            this.router.navigate([routePath], {queryParams:{subaccountId:this.subaccountId}});
+    onClickService(service: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }): void {
+        if (service.enabled) {
+            let routePath = service.routePath;
+            // this is temporal validation meanwhile there is not an unified permanent dashboard
+            if (service.value === tekVizionServices.SpotLight) {
+                routePath = Constants.SPOTLIGHT_DASHBOARD_PATH;
+            }
+            this.router.navigate([routePath], {queryParams: {subaccountId: this.subaccountId}});
         }
     }
 
@@ -93,6 +88,7 @@ export class MyAppsComponent implements OnInit {
      * fetch Ctaas Setup details by subaccount id
      */
     fetchCtaasSetupDetails(): void {
+        this.isDataLoading = true;
         const {id, subaccountId} = this.currentSubaccountDetails;
         const SUB_ACCOUNT_ID = (id) ? id : subaccountId;
         this.subaccountId = SUB_ACCOUNT_ID;
@@ -104,7 +100,14 @@ export class MyAppsComponent implements OnInit {
                     this.isOnboardingComplete = onBoardingComplete;
                     this.onboardSetupStatus = status;
                     this.setupCustomerOnboardDetails();
+                    this.isDataLoading = false;
+                } else {
+                    this.snackBarService.openSnackBar('Error fetching setup details!', '');
+                    this.isDataLoading = false;
                 }
+            }, (err) => {
+                this.snackBarService.openSnackBar(err.error, 'Error fetching setup details!');
+                this.isDataLoading = false;
             });
     }
 

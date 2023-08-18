@@ -2,13 +2,16 @@ package ui.pages.customer;
 
 import org.openqa.selenium.By;
 import ui.core.AbstractPageObject;
-import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 
 public class CustomerRow extends AbstractPageObject {
-    private final String CUSTOMER_NAME_XPATH;
+    private String CUSTOMER_NAME_XPATH;
     public CustomerRow(String customerName){
         this.CUSTOMER_NAME_XPATH = String.format("//td[@title='%s']", customerName);
+    }
+
+    public void getSubaccountRow(String customerName, String subaccountName){
+        this.CUSTOMER_NAME_XPATH = String.format("//span[text()='%s']/parent::*/preceding-sibling::td[@title='%s']", subaccountName, customerName);
     }
 
     public String getCustomerColumn(String column){
@@ -25,8 +28,6 @@ public class CustomerRow extends AbstractPageObject {
         this.action.forceClick(actionMenuSelector);
         return new ActionMenu();
     }
-
-    
 
     public String getSubaccountColumn(String column, String subaccountName){                       
         By columnSelector;

@@ -6,7 +6,6 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 import ui.core.DriverManager;
 import ui.pages.subaccounts.SubaccountForm;
-import ui.pages.subaccounts.SubaccountRow;
 
 public class Customers extends AbstractPageObject {
     @FindBy(css = "#page-title")
@@ -44,8 +43,18 @@ public class Customers extends AbstractPageObject {
         return new CustomerRow(customer);
     }
 
-    public SubaccountRow getSubaccount(String subaccountName) {
-        return new SubaccountRow(subaccountName);
+    public CustomerRow getSubaccount(String customerName, String subaccountName) {
+        String customer = customerName + DriverManager.getInstance().getTimeStamp();
+        String subaccount = subaccountName + DriverManager.getInstance().getTimeStamp();
+        CustomerRow customerRow = new CustomerRow(customer);
+        customerRow.getSubaccountRow(customer, subaccount);
+        return customerRow;
+    }
+    
+    public CustomerRow getCustomerSubaccount(String customerName, String subaccountName){
+        CustomerRow customerRow = new CustomerRow(customerName);
+        customerRow.getSubaccountRow(customerName, subaccountName);
+        return customerRow;
     }
 
     public SubaccountForm openSubaccountForm() {

@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -49,11 +48,13 @@ public class TekvLSCreateSubaccountAdminEmail {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateSubaccountAdminEmail Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSCreateSubaccountAdminEmail Azure function");        
         context.getLogger().info("Request body: " + request);
 
         if (!request.getBody().isPresent()) {
             context.getLogger().info("error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"error: request body is empty.\"}")).build();
         }
 
@@ -61,10 +62,12 @@ public class TekvLSCreateSubaccountAdminEmail {
 
         if (createSubaccountAdminRequest.getAdminEmail() == null) {
             context.getLogger().info("error: Missing adminEmail parameter.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter subaccountAdminEmail.\"}")).build();
         }
         if (createSubaccountAdminRequest.getSubaccountId() == null) {
             context.getLogger().info("error: Missing subaccountId parameter.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter subaccountId.\"}")).build();
         }
 
@@ -79,45 +82,44 @@ public class TekvLSCreateSubaccountAdminEmail {
             statement.setString(1, createSubaccountAdminRequest.getAdminEmail());
             statement.setString(2, createSubaccountAdminRequest.getSubaccountId());
 
-            String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
 
-            if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", createSubaccountAdminRequest.subaccountId)) {
-                final String subaccountNameSql = "SELECT name, customer_id FROM subaccount WHERE id = ?::uuid;";
-                final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?::uuid";
-                try (PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql);
-                        PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql)) {
-                    ctaasSetupStmt.setString(1, createSubaccountAdminRequest.subaccountId);
-                    ResultSet rs = ctaasSetupStmt.executeQuery();
-                    boolean setupExists = rs.next();
+            final String ctaasSetupSql = "SELECT cs.id FROM ctaas_setup cs, subaccount s WHERE cs.subaccount_id = ?::uuid AND cs.subaccount_id = s.id AND s.services LIKE ? AND cs.status=?";
+            final String subaccountNameSql = "SELECT name, customer_id FROM subaccount WHERE id = ?::uuid;";
+            try (PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql);
+                PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)) {
+                ctaasSetupStmt.setString(1, createSubaccountAdminRequest.subaccountId);
+                ctaasSetupStmt.setString(2, "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
+                ctaasSetupStmt.setString(3, Constants.CTaaSSetupStatus.READY.value());
+                context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + ctaasSetupStmt);
+                ResultSet rs = ctaasSetupStmt.executeQuery();
+                boolean setupExists = rs.next();
 
-                    // Only create the user when the setup does not exist or when it exists and the
-                    // status is Ready
-                    if (setupExists
-                            && !Objects.equals(rs.getString("status"), Constants.CTaaSSetupStatus.READY.value()))
-                        return request.createResponseBuilder(HttpStatus.OK).build();
+                // Only create the user when (the subaccount has SpotLight service enabled, the setup exists and is ready) OR ad-license-service-user-creation toggle is enabled
+                if (setupExists || FeatureToggleService.isFeatureActiveBySubaccountId("ad-license-service-user-creation", createSubaccountAdminRequest.subaccountId)) {
                     subaccountNameStmt.setString(1, createSubaccountAdminRequest.getSubaccountId());
                     rs = subaccountNameStmt.executeQuery();
                     if (rs.next()) {
-                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
-                                createSubaccountAdminRequest.getAdminEmail(), SUBACCOUNT_ADMIN, context);
+                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"), createSubaccountAdminRequest.getAdminEmail(), SUBACCOUNT_ADMIN, context);
                     }
                 }
             }
-
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateSubaccountAdminEmail Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
 
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSCreateSubaccountAdminEmail Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
 
@@ -128,7 +130,7 @@ public class TekvLSCreateSubaccountAdminEmail {
         private final String subaccountId;
 
         public CreateSubaccountAdminRequest(String subaccountAdminEmail, String subaccountId) {
-            this.subaccountAdminEmail = subaccountAdminEmail;
+            this.subaccountAdminEmail = subaccountAdminEmail != null? subaccountAdminEmail.toLowerCase() : null;
             this.subaccountId = subaccountId;
         }
 

@@ -1,75 +1,31 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { DataTableComponent } from "../../generics/data-table/data-table.component";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { SharedModule } from "../shared/shared.module";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
-import { MatDialog } from "@angular/material/dialog";
-import { MatDialogMock } from "../../../test/mock/components/mat-dialog.mock";
-import { SnackBarService } from "../../services/snack-bar.service";
 import { SnackBarServiceMock } from "../../../test/mock/services/snack-bar-service.mock";
-import { CustomerService } from "../../services/customer.service";
 import { CustomerServiceMock } from "../../../test/mock/services/customer-service.mock";
-import { MsalService } from "@azure/msal-angular";
-import { MsalServiceMock } from "../../../test/mock/services/msal-service.mock";
-import { HttpClient } from "@angular/common/http";
 import { SubscriptionsOverviewComponent } from "./subscriptions-overview.component";
-import { SubscriptionsOverviewService } from "../../services/subscriptions-overview.service";
 import { SubscriptionsOverviewServiceMock } from "../../../test/mock/services/subscriptions-overview.service.mock";
 import { Sort } from "@angular/material/sort";
 import { throwError } from "rxjs";
 import moment from "moment";
+import { TestBedConfigBuilder } from '../../../test/mock/TestBedConfigHelper.mock';
+import { RouterMock } from '../../../test/mock/Router.mock';
 
 let testInstance: SubscriptionsOverviewComponent;
 let fixture: ComponentFixture<SubscriptionsOverviewComponent>;
 
-const RouterMock = {
-    navigate: (commands: string[], queryParams:any) => { return }
-};
+const configBuilder = new TestBedConfigBuilder().useDefaultConfig(SubscriptionsOverviewComponent);
+configBuilder.addDeclaration(DataTableComponent);
+const defaultTestBedConfig = configBuilder.getConfig();
 
-const defaultTestBedConfig = {
-    declarations: [SubscriptionsOverviewComponent, DataTableComponent],
-    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-    providers: [
-        {
-            provide: Router,
-            useValue: RouterMock
-        },
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: SubscriptionsOverviewService,
-            useValue: SubscriptionsOverviewServiceMock
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        }
-    ]
-}
-
-const beforeEachFunction = async () => {
-    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
-        fixture = TestBed.createComponent(SubscriptionsOverviewComponent)
-        testInstance = fixture.componentInstance;
-        testInstance.ngOnInit();
-    });
-}
+const beforeEachFunction = waitForAsync(
+    () => {
+        TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
+            fixture = TestBed.createComponent(SubscriptionsOverviewComponent)
+            testInstance = fixture.componentInstance;
+            testInstance.ngOnInit();
+        });
+    }
+);
 
 describe('Subscriptions Overview - UI verification tests', () => {
     beforeEach(beforeEachFunction);

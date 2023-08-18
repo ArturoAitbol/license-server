@@ -81,184 +81,184 @@ const START_DATE_A = {
     title: 'CR'+ moment.utc().subtract(0 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(0 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(0 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_B = {
     title: 'CR'+ moment.utc().subtract(1 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(1 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(1 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_C = {
     title: 'CR'+ moment.utc().subtract(2 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(2 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(2 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_D = {
     title: 'CR'+ moment.utc().subtract(3 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(3 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(3 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 
 const START_DATE_E = {
     title: 'CR'+ moment.utc().subtract(4 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(4 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(4 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_F = {
     title: 'CR'+ moment.utc().subtract(5 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(5 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(5 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_G = {
     title: 'CR'+ moment.utc().subtract(6 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(6 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(6 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_H = {
     title: 'CR'+ moment.utc().subtract(7 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(7 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(7 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_I = {
     title: 'CR'+ moment.utc().subtract(8 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(8 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(8 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_J = {
     title: 'CR'+ moment.utc().subtract(9 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(9 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(9 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_K = {
     title: 'CR'+ moment.utc().subtract(10 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(10 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(10 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_L = {
     title: 'CR'+ moment.utc().subtract(11 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(11 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(11 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_M = {
     title: 'CR'+ moment.utc().subtract(12 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(12 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(12 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_N = {
     title: 'CR'+ moment.utc().subtract(13 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(13 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(13 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 const START_DATE_O = {
     title: 'CR'+ moment.utc().subtract(14 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(14 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(14 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'calling'
+    report: 'Daily-CallingReliability'
 }
 
 const START_DATE_AA = {
     title: 'FF'+ moment.utc().subtract(0 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(0 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(0 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_BB = {
     title: 'FF'+ moment.utc().subtract(1 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(1 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(1 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_CC = {
     title: 'FF'+ moment.utc().subtract(2 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(2 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(2 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_DD = {
     title: 'FF'+ moment.utc().subtract(3 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(3 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(3 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 
 const START_DATE_EE = {
     title: 'FF'+ moment.utc().subtract(4 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(4 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(4 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_FF = {
     title: 'FF'+ moment.utc().subtract(5 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(5 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(5 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_GG = {
     title: 'FF'+ moment.utc().subtract(6 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(6 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(6 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_HH = {
     title: 'FF'+ moment.utc().subtract(7 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(7 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(7 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_II = {
     title: 'FF'+ moment.utc().subtract(8 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(8 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(8 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_JJ = {
     title: 'FF'+ moment.utc().subtract(9 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(9 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(9 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_KK = {
     title: 'FF'+ moment.utc().subtract(10 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(10 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(10 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_LL = {
     title: 'FF'+ moment.utc().subtract(11 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(11 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(11 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_MM = {
     title: 'FF'+ moment.utc().subtract(12 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(12 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(12 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_NN = {
     title: 'FF'+ moment.utc().subtract(13 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(13 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(13 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const START_DATE_OO = {
     title: 'FF'+ moment.utc().subtract(14 + 1,'days').format("_MM_DD"),
     startDate:moment.utc().subtract(14 + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), 
     endDate:moment.utc().subtract(14 + 1,'days').format("MM-DD-YYYY 23:59:59 UTC"),
-    report: 'feature'
+    report: 'Daily-FeatureFunctionality'
 }
 const DATE_LIST = [
     START_DATE_B,

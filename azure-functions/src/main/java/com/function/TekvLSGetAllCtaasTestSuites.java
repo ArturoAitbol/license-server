@@ -54,7 +54,9 @@ public class TekvLSGetAllCtaasTestSuites {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetAllCtaasTestSuites Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetAllCtaasTestSuites Azure function");
+        
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
@@ -94,7 +96,7 @@ public class TekvLSGetAllCtaasTestSuites {
                 item.put("nextExecution", rs.getString("next_execution_ts"));
                 item.put("frequency", rs.getString("frequency"));
                 item.put("deviceType", rs.getString("device_type"));
-                item.put("name", rs.getString("name"));
+                item.put("suiteName", rs.getString("name"));
                 array.put(item);
             }
 
@@ -104,17 +106,20 @@ public class TekvLSGetAllCtaasTestSuites {
             }
 
             json.put("ctaasTestSuites", array);
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllCtaasTestSuites Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
                     .body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllCtaasTestSuites Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllCtaasTestSuites Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

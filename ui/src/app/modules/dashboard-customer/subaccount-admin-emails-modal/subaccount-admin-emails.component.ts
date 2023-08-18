@@ -6,6 +6,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Observable } from "rxjs";
 import { SubaccountAdminEmailService } from 'src/app/services/subaccount-admin-email.service';
+import { DialogService } from 'src/app/services/dialog.service';
 
 @Component({
   selector: 'app-subaccount-admin-emails-modal',
@@ -29,6 +30,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
       private subaccountService: SubAccountService,
       private snackBarService: SnackBarService,
       public dialogRef: MatDialogRef<SubaccountAdminEmailsComponent>,
+      private dialogService: DialogService,
       @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
@@ -80,17 +82,28 @@ export class SubaccountAdminEmailsComponent implements OnInit {
 
   deleteExistingEmail(index: number) {
     this.isDataLoading = true;
-    this.subaccountAdminEmailService.deleteAdminEmail(this.adminEmails[index]).subscribe((res: any) => {
-      if (!res?.error) {
-        this.snackBarService.openSnackBar('Subaccount administrator email deleted', '');
-        this.adminEmails.splice(index, 1)
-      } else
-        this.snackBarService.openSnackBar(res.error, 'Error while deleting administrator email!');
-      this.isDataLoading = false;
-    }, err => {
-      this.snackBarService.openSnackBar('Error deleting administrator email!');
-      console.error('Error while deleting administrator email', err);
-      this.isDataLoading = false;
+    this.dialogService.confirmDialog({
+      title: 'Confirm action',
+      message: 'Are your sure you want to delete '+this.adminEmails[index] + '?',
+      confirmCaption: 'Delete account',
+      cancelCaption: 'Cancel',
+    }).subscribe((confirmed) => {
+      if(confirmed){
+        this.subaccountAdminEmailService.deleteAdminEmail(this.adminEmails[index]).subscribe((res: any) => {
+          if (!res?.error) {
+            this.snackBarService.openSnackBar('Subaccount administrator email deleted', '');
+            this.adminEmails.splice(index, 1)
+          } else
+            this.snackBarService.openSnackBar(res.error, 'Error while deleting administrator email!');
+          this.isDataLoading = false;
+        }, err => {
+          this.snackBarService.openSnackBar('Error deleting administrator email!');
+          console.error('Error while deleting administrator email', err);
+          this.isDataLoading = false;
+        });
+      } else {
+        this.isDataLoading = false;
+      }
     });
   }
 

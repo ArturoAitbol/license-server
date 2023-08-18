@@ -1,0 +1,55 @@
+.subtitle h2 {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.subtitle mat-icon {
+    margin-left: 10px;
+}
+
+.viewDetail-button {
+    color: #273176;
+}
+.viewDetail-button:hover{
+    color: white;
+    background-color: #6E76B4;
+}
+
+.tooltip-title {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+.tooltip-body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    display: flex !important;
+}
+
+::ng-deep .mat-tooltip {
+    background-color: #6E76B4;  /* previus color rgb(22,53,89) */
+    font-size: 14px;
+}
+
+.charts-styles {
+    flex: 0 0 calc(50% - 10px); 
+    border: 1px solid #ccc; 
+    width: 95%;
+    border-radius: 1%;
+}
+
+.polqa-chart {
+    border: 1px solid #B9BABB;
+    width: 100%;
+    max-width: 99.4%;
+    border-radius: 1%;
+}
+
+.charts-rows {
+    display: flex; 
+    justify-content: space-between; 
+    width: 100%; 
+    padding-left: 1%;
+}

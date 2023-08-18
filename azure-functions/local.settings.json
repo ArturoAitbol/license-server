@@ -11,7 +11,7 @@
     "POSTGRESQL_SECURITY_MODE": "?ssl=true&sslmode=require",
     "ENVIRONMENT_NAME": "dev",
     "EMAIL_INVITE_CLIENT_ID": "353f505a-d4be-442f-bc22-c016c59132c9",
-    "EMAIL_INVITE_CLIENT_SECRET": "knw8Q~fA6YjXVUzC1yIMLkKopKmLQxShxyu6JaJB",
+    "EMAIL_INVITE_CLIENT_SECRET": "jan8Q~eRD-MDTWMHAqNUGmvD..LuPNPEajcS9bev",
     "DASHBOARD_APP_CLIENT_ID": "928c5e82-089b-4c3d-8080-29a4008bcccb",
     "DASHBOARD_APP_SECRET_ID": "72h8Q~eEuk1F6ZhZ6z1xmtGQd_-r94a3QuPMaday",
     "STORAGE_ACCOUNT_NAME": "lswebappstorage",
@@ -23,10 +23,9 @@
     "NOTIFICATIONS_AUTH_KEY": "key=AAAAZQriFSg:APA91bEaRPdifNydaU1p88GVMXOsempGA7DeNl27zpt9941BJnyeXWwz8OYpKKd7nbuLXred8q5R5P0DmGsPA9Q3MXo8Lxk_RhpzaM3sUsZsB1tNeSG9D70PIl_eP5ilSanm-N4cU-Rs",
     "TAP_USERNAME": "spotlight@tekvizion.com",
     "TAP_PASSWORD": "spotlight123",
-    "SUB_ACCOUNT_ADMIN": "test-functional-subaccount-admin@tekvizion360.com",
-    "POWER_BI_CLIENT_ID": "3f9f8d1d-d6d9-4a20-96a5-75788b040286",
-    "POWER_BI_CLIENT_SECRET": "pDHStJCLoW9G6nMaJdl0vysxOJwai2sxa9VM2FgBCeg=",
-    "POWER_BI_TENANT_ID": "079d8d84-e363-4942-8efc-cd1c6a1ea7e2"
+    "SUB_ACCOUNT_ADMIN_ANDROID": "test-spotlight-subaccount-admin@tekvizionlabs.com",
+    "SUB_ACCOUNT_ADMIN_IOS": "test-functional-subaccount-admin@tekvizionlabs.com",
+      "GEO_CODE_API_KEY": "AAPKbcb7790d07d44f45b22761d4120bcabbsYqk6SpLHbk2fv4uwscansCTMuLM2PK39IutypfBaZ0pAeCt6koQYDbsy6T4wMUX"
   },
   "Host": {
     "LocalHttpPort": 7071,

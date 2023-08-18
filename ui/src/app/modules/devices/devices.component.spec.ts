@@ -1,83 +1,33 @@
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
-import { MsalService } from '@azure/msal-angular';
 import moment from 'moment';
 import { throwError } from 'rxjs';
 import { Device } from 'src/app/model/device.model';
-import { DevicesService } from 'src/app/services/devices.service';
 import { DialogService } from 'src/app/services/dialog.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { DevicesServiceMock } from 'src/test/mock/services/devices-service.mock';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
-import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
-import { SharedModule } from '../shared/shared.module';
 import { AddDeviceComponent } from './add-device/add-device.component';
 import { DevicesComponent } from './devices.component';
 import { ModifyDeviceComponent } from './modify-device/modify-device.component';
-
+import { TestBedConfigBuilder } from '../../../test/mock/TestBedConfigHelper.mock';
 
 let devicesComponentTestInstance: DevicesComponent;
 let fixture: ComponentFixture<DevicesComponent>;
 
-const RouterMock = {
-    navigate: (commands: string[]) => { }
-};
-
 const dialogServiceMock = new DialogServiceMock();
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [DevicesComponent],
-        imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: FormBuilder
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: DevicesService,
-                useValue: DevicesServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            }
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DevicesComponent);
+    configBuilder.addProvider({provide: DialogService, useValue: dialogServiceMock});
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(DevicesComponent);
     devicesComponentTestInstance = fixture.componentInstance;
-    spyOn(console, 'log').and.callThrough();
-}
+};
 
-describe('UI verification tests', () => {
+describe('DevicesComponent - UI verification tests', () => {
     beforeEach(beforeEachFunction);
-    it('should display essential UI and components', () => {
+    it('DevicesComponent - should display essential UI and components', () => {
         fixture.detectChanges();
         devicesComponentTestInstance.sizeChange();
         const h1: HTMLElement = fixture.nativeElement.querySelector('#page-title');

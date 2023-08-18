@@ -14,6 +14,7 @@ public abstract class Roles {
     public static final String CUSTOMER_FULL_ADMIN = "customer.FullAdmin";
     public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
     public static final String SUBACCOUNT_STAKEHOLDER = "customer.SubaccountStakeholder";
+    public static final String IGES_ADMIN = "tekvizion.IGESAdmin";
 
     public static List<String> getAllRoles(){
         return Arrays.asList(FULL_ADMIN,
@@ -25,7 +26,8 @@ public abstract class Roles {
                 DISTRIBUTOR_FULL_ADMIN,
                 CUSTOMER_FULL_ADMIN,
                 SUBACCOUNT_ADMIN,
-                SUBACCOUNT_STAKEHOLDER);
+                SUBACCOUNT_STAKEHOLDER,
+                IGES_ADMIN);
     }
 
     public static List<String> getCustomerRoles(){

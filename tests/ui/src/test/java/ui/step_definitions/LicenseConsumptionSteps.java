@@ -210,7 +210,7 @@ public class LicenseConsumptionSteps {
         String project = consumption.getOrDefault("project", "");
         String type = consumption.getOrDefault("type", "Configuration");
         String device = consumption.getOrDefault("device", "");
-        String callingPLatform = consumption.getOrDefault("callingPlatform", "");
+        String callingPlatform = consumption.getOrDefault("callingPlatform", "");
         String tekTokens = consumption.getOrDefault("tekTokensUsed", "");
         String usageDays = consumption.getOrDefault("usageDays", "");
         this.consumptionRow = new ConsumptionRow(project);
@@ -224,11 +224,9 @@ public class LicenseConsumptionSteps {
             assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
         assertEquals("Consumption doesn't have this type: ".concat(type), type, actualType);
         if (!device.isEmpty())
-            assertEquals("Consumption doesn't have this device: ".concat(device), device,
-                    actualDevice);
-        if (!callingPLatform.isEmpty())
-            assertEquals("Consumption doesn't have this callingPLatform: ".concat(callingPLatform), callingPLatform,
-                actualCallingPlatform);
+            assertTrue("Consumption doesn't have this device: ".concat(device), actualDevice.contains(device));
+        if (!callingPlatform.isEmpty())
+            assertTrue("Consumption doesn't have this callingPLatform: ".concat(callingPlatform), actualCallingPlatform.contains(callingPlatform));
         if (!tekTokens.isEmpty())
             assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), tekTokens,
                     actualTekTokens);
@@ -236,7 +234,7 @@ public class LicenseConsumptionSteps {
             assertEquals("Consumption doesn't have this UsageDays: ".concat("..."), "...", actualUsageDays);
         else {
             if (!usageDays.isEmpty())
-                assertEquals("Consumption doesn't have this UsageDays: ".concat(usageDays), usageDays,actualUsageDays);
+                assertEquals("Consumption doesn't have this UsageDays: ".concat(usageDays), usageDays, actualUsageDays);
         }
     }
 

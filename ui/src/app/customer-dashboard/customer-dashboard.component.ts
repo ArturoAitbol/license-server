@@ -32,7 +32,7 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./customer-dashboard.component.css']
 })
 
-export class DashboardComponent implements OnInit, OnDestroy {
+export class CustomerDashboardComponent implements OnInit, OnDestroy {
     tableMaxHeight: number;
     displayedColumns: any[] = [];
     data: CustomerLicense[] = [];
@@ -47,12 +47,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
-    readonly VIEW_LICENSES: string = 'View tekVizion 360 Subscriptions';
+    readonly VIEW_LICENSES: string = 'View TekVizion 360 Subscriptions';
     readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-    readonly VIEW_CTAAS_DASHBOARD: string = 'View Spotlight Dashboard';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View UCaaS Continuous Testing';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
     readonly CUSTOMER_FILTER: string = 'customer';
@@ -208,7 +208,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             const subaccounts = subaccountsList.filter(s => s.customerId === customer.id);
             if (subaccounts.length > 0) {
                 subaccounts.forEach(subaccount => {
-                    let customerWithDetails = { ...customer };
+                    const customerWithDetails = { ...customer };
                     customerWithDetails.subaccountName = subaccount.name;
                     customerWithDetails.subaccountId = subaccount.id;
                     const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
@@ -313,10 +313,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * open confirm cancel dialog
      */
     openConfirmCancelDialog(customer?: any) {
+        let messageDetail = 'customer "' + customer.name + '"';
+        if (customer.testCustomer)
+            messageDetail = ' subaccount "' + customer.subaccountName + '" / ' + messageDetail;
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
-                message: 'Do you want to confirm this action?',
+                message: 'Are you sure you want to delete the ' + messageDetail + '?',
                 confirmCaption: 'Delete Subaccount',
                 deleteAllDataCaption: 'Delete Customer',
                 cancelCaption: 'Cancel',
@@ -430,10 +433,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 case this.VIEW_CTAAS_DASHBOARD:
                     const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                     if (hasCtaasService) {
-                        const routePath = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id) ? '/spotlight/visualization' : '/spotlight/report-dashboards';
-                        const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
+                        const url = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.selectedSubaccount.id}`;
                         window.open(url);
-                    } else this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
+                    } else this.snackBarService.openSnackBar('UCaaS Continuous Testing Service is not available for this Subaccount', '');
                     break;
                 case this.MODIFY_ACCOUNT:
                     this.openDialog(object.selectedOption, object.selectedRow);

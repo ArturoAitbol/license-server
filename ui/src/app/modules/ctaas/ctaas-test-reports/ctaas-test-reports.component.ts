@@ -5,14 +5,15 @@ import { Subject } from 'rxjs';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
 import { Utility } from 'src/app/helpers/utils';
-import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-import { BannerService } from "../../../services/alert-banner.service";
-import { DialogService } from 'src/app/services/dialog.service';
+import { BannerService } from "../../../services/banner.service";
 import { MatDialog } from '@angular/material/dialog';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
+import { ReportType } from 'src/app/helpers/report-type';
+import { Constants } from 'src/app/helpers/constants';
+import { DialogService } from 'src/app/services/dialog.service';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -35,11 +36,15 @@ export class CtaasTestReportsComponent implements OnInit {
   searchFlag: boolean = true;
   todaySearchFlag: boolean = true;
   submitDisabled = false;
-  readonly CALLING: string = 'calling';
-  readonly FEATURE: string = 'feature';
+  buttonFlag: boolean = true;
+  readonly CALLING: string = 'Calling Reliability';
+  readonly FEATURE: string = 'Feature Functionality';
+  readonly VOICE: string = 'Voice Quality (POLQA)';
   fontStyleControl = new FormControl('');
+  maintenanceModeEnabled = false;
+  readonly VIEW_DETAILS = 'More details';
 
-  readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
+  readonly reportsTypes = ['Feature Functionality', 'Calling Reliability', 'Voice Quality (POLQA)'];
 
   filterForm = this.formBuilder.group({
     reportType: [''],
@@ -49,13 +54,18 @@ export class CtaasTestReportsComponent implements OnInit {
 
   private unsubscribe: Subject<void> = new Subject<void>();
 
+  readonly options = {
+    VIEW_DETAILS: this.VIEW_DETAILS
+  }
+
   constructor(
   private subaccountService: SubAccountService,
   private formBuilder: FormBuilder,
   private ctaasSetupService: CtaasSetupService,
   private bannerService: BannerService,
-  public dialog: MatDialog) { }
-
+  public dialog: MatDialog,
+  private dialogService: DialogService) { }
+  
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
@@ -78,13 +88,9 @@ export class CtaasTestReportsComponent implements OnInit {
       { name: 'End Date', dataKey: 'endDate', position: 'left', isSortable: true }
     ];
   }
-
-  readonly options = {
-    DAILY_FEATURE_FUNCTIONALITY:'Daily-FeatureFunctionality',
-    DAILY_CALLING_RELIABILITY:'Daily-CallingReliability'
-  }
-
+  
   ngOnInit(): void { 
+    this.dialogService.showHelpButton = true;
     this.initColumns();
     this.sizeChange();
     this.dataTable();
@@ -103,6 +109,7 @@ export class CtaasTestReportsComponent implements OnInit {
         this.searchFlag = searchValidator;
         this.todaySearchFlag = todaySearchValidator;
       })
+      this.sendHelpDialogValues();  
   }
 
   dataTable() {
@@ -115,18 +122,25 @@ export class CtaasTestReportsComponent implements OnInit {
         title: 'CR'+ moment.utc().subtract(i + 1,'days').format("_MM_DD"),
         startDate: date + ' ' + '00:00:00 UTC',
         endDate: date + ' ' + '23:59:59 UTC',
-        report: 'calling',
+        report: ReportType.DAILY_CALLING_RELIABILITY,
       });
 
       dateList.push({
         title: 'FF' + moment.utc().subtract(i + 1,'days').format("_MM_DD"),
         startDate: date + ' ' + '00:00:00 UTC',
         endDate: date + ' ' + '23:59:59 UTC',
-        report: 'feature',
+        report: ReportType.DAILY_FEATURE_FUNCTIONALITY,
+      });
+
+      dateList.push({
+        title: 'VQ' + moment.utc().subtract(i + 1,'days').format("_MM_DD"),
+        startDate: date + ' ' + '00:00:00 UTC',
+        endDate: date + ' ' + '23:59:59 UTC',
+        report: ReportType.DAILY_VQ,
       });
     }
     this.dateList = dateList;
-    this.dateListBK = this.dateList.filter(res => res.report === 'calling')
+    this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY)
     this.isLoadingResults = false;
   }
 
@@ -142,9 +156,8 @@ export class CtaasTestReportsComponent implements OnInit {
         else 
           this.tapURLFlag = 'withoutTapURL';
         if (res.ctaasSetups[0].maintenance) {
-          this.bannerService.open("WARNING", "Spotlight service is under maintenance, this function is disabled until the service resumes. ", this.unsubscribe);
-          this.filterForm.disable();
-          this.submitDisabled = true;
+          this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.unsubscribe, "alert");
+          this.maintenanceModeEnabled = true;
         }
       } else {
         this.tapURLFlag = 'withoutData';
@@ -163,13 +176,22 @@ export class CtaasTestReportsComponent implements OnInit {
 
   todayReport() {
     const todayDetails = this.filterForm.value
-    const startDate = moment.utc().format('YYYY-MM-DD 00:00:00');
-    const endDate = moment.utc().format('YYYY-MM-DD HH:mm:ss');
-    const featureParsedStartTime = Utility.parseReportDate(new Date(startDate));
-    const featureParsedEndTime = Utility.parseReportDate(new Date(endDate));
-    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${todayDetails.todayReportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
+    let reportType;
+    switch (todayDetails.todayReportType) {
+      case this.FEATURE:
+        reportType = 'Daily-FeatureFunctionality';
+        break;
+      case this.CALLING:
+        reportType = 'Daily-CallingReliability';
+        break;
+      case this.VOICE:
+        reportType = 'Daily-VQ'
+        break;
+    }
+    const startDate = Utility.parseReportDate(moment.utc().startOf('day'));
+    const endDate = Utility.parseReportDate(moment.utc());
+    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${startDate}&end=${endDate}`;
     window.open(featureUrl);
-    window.close();
   }
 
   searchConsolidatedReport() {
@@ -184,16 +206,61 @@ export class CtaasTestReportsComponent implements OnInit {
     });
   }
 
+  onClickMoreDetails(selectedReport: any): void {
+    const startDate = selectedReport.startDate.split('UTC')[0];
+    const endDate = selectedReport.endDate.split('UTC')[0];
+    const startTime = Utility.parseReportDate(moment.utc(startDate,'MM-DD-YYYY HH:mm:ss'));
+    const endTime = Utility.parseReportDate(moment.utc(endDate,'MM-DD-YYYY HH:mm:ss'));
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
+    window.open(url);
+}
+
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    const { selectedRow } = object;
+    this.onClickMoreDetails(selectedRow);
+  } 
+
   onChangeButtonToggle() {
     const { value } = this.fontStyleControl;
-    if(value === 'calling')
-      this.dateListBK = this.dateList.filter(res => res.report === 'calling');
-    else if (value === 'feature')
-      this.dateListBK = this.dateList.filter(res => res.report === 'feature');
+    switch(value){
+      case 'Calling Reliability':
+        this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY);
+        break;
+      case 'Feature Functionality':
+        this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_FEATURE_FUNCTIONALITY);
+        this.buttonFlag = false;
+        break;
+      case 'Voice Quality (POLQA)':
+        this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_VQ);
+        this.buttonFlag = false;
+        break;
+    }    
   }
 
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
+    this.dialogService.showHelpButton = false;
+  }
+
+  sendHelpDialogValues(): void {
+    const data = {
+      title: 'Test Reports',
+      sections: [
+        {
+          elements: [
+            {
+              description: 'The Test Reports page offers users a comprehensive overview of test results. It serves as a centralized hub for accessing detailed information about various tests conducted within the platform.',
+            },
+            {
+              subtitle: 'Search consolidated report',
+              description: 'You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.'
+            }
+          ]
+        }
+      ]
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
 }

@@ -12,7 +12,7 @@
     </main>
 </ng-template>
 <ng-template #sidebarTemplate>
-    <mat-sidenav-container class="mat-drawer-container" autosize="true">
+    <mat-sidenav-container #snav_container class="mat-drawer-container" autosize>
         <mat-sidenav #snav class="text-center sidenav-color" [mode]="mobileQuery.matches ? 'over' : 'side'"
             [opened]="!mobileQuery.matches" [fixedInViewport]="mobileQuery.matches">
             <div class="sidebar-content">
@@ -68,14 +68,14 @@
 
 <ng-template #showToolbar>
     <div>
-        <mat-toolbar color="primary" class="position-fixed">
+        <mat-toolbar class="position-fixed">
             <button mat-icon-button *ngIf="snav && mobileQuery.matches" (click)="snav.toggle()">
                 <mat-icon>menu</mat-icon>
             </button>
             <!-- logo -->
             <div>
-                <span class="logo-changes" (click)="navigateToMainView()" title="tekVizion">
-                    <img src="assets/images/logo_1.png" alt="" srcset="">
+                <span class="logo-changes" (click)="navigateToMainView()" title="TekVizion">
+                    <img src="assets/images/TekVizionLogoWhite.png" alt="" srcset="">
                 </span>
             </div>
             <!-- divider and service name -->
@@ -113,10 +113,23 @@
                 </mat-list>
             </mat-menu>
             <!-- user name -->
-            <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
+                <div class="help-button">
+                    <button *ngIf="showHelpButton" (click)="openDialog()" matTooltip="Help notes for current tab selection">
+                        <mat-icon style = "color: white;">help_outline</mat-icon>
+                    </button>
+                </div>
+                <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
                 aria-label="Example icon-button with a menu">
-                {{getUserName()}} <mat-icon>arrow_drop_down</mat-icon>
-            </button>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span>
+                                {{getUserName()}}
+                            </span>
+                            <div *lcCheckAccessFor="'view-role'" class="role">{{getRole()}}</div>
+                        </div>
+                        <mat-icon>arrow_drop_down</mat-icon>
+                    </div>
+                </button>
             <!-- user settings menu -->
             <mat-menu #menu="matMenu">
                 <button mat-menu-item (click)="about()" id="about-button" hidden>
@@ -126,6 +139,10 @@
                 <button *lcCheckAccessFor="'view-profile'" mat-menu-item (click)="viewProfile()" id="profile-button">
                     <mat-icon aria-hidden="false" aria-label="person icon">person</mat-icon>
                     <span>Profile</span>
+                </button>
+                <button *lcCheckAccessFor="'view-roles-permission'" mat-menu-item (click)="openRoles()" id="profile-button">
+                    <mat-icon aria-hidden="false" aria-label="person icon">verified_user</mat-icon>
+                    <span>Roles & Privileges</span>
                 </button>
                 <button mat-menu-item (click)="logout()" id="logout-button">
                     <mat-icon>logout</mat-icon>
@@ -138,6 +155,9 @@
 
 
 <ng-template #routerOutletTemplate>
-    <app-alert-banner-outlet></app-alert-banner-outlet>
+    <app-banner-outlet></app-banner-outlet>
+    <div class="loading-shade" *ngIf="isLoading">
+        <mat-spinner></mat-spinner>
+    </div>
     <router-outlet></router-outlet>
 </ng-template>

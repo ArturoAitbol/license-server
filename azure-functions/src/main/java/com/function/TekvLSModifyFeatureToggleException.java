@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 
 public class TekvLSModifyFeatureToggleException {
     /**
@@ -48,6 +47,9 @@ public class TekvLSModifyFeatureToggleException {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifyFeatureToggleException Azure function");
+
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
         context.getLogger().info("Request body: " + requestBody);
@@ -55,6 +57,7 @@ public class TekvLSModifyFeatureToggleException {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleException Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -65,6 +68,7 @@ public class TekvLSModifyFeatureToggleException {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleException Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
@@ -75,6 +79,7 @@ public class TekvLSModifyFeatureToggleException {
                 context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
                 JSONObject json = new JSONObject();
                 json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+                context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleException Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -97,21 +102,23 @@ public class TekvLSModifyFeatureToggleException {
             updateStmt.setString(3, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
 
             // Update exception status
-            String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + updateStmt);
             updateStmt.executeUpdate();
             context.getLogger().info("Feature toggle exception deleted successfully.");
 
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyFeatureToggleException Azure function");
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleException Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSModifyFeatureToggleException Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

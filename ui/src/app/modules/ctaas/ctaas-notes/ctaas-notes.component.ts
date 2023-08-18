@@ -9,11 +9,13 @@ import {NoteService} from '../../../services/notes.service';
 import {SubAccountService} from '../../../services/sub-account.service';
 import {AddNotesComponent} from './add-notes/add-notes.component';
 import { Note } from 'src/app/model/note.model';
-import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { DatePipe } from '@angular/common';
-import { BannerService } from "../../../services/alert-banner.service";
+import { BannerService } from "../../../services/banner.service";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import { Subject } from "rxjs";
+import { Constants } from 'src/app/helpers/constants';
+import { environment } from 'src/environments/environment';
+import moment from 'moment';
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -31,6 +33,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     isRequestCompleted = false;
     toggleStatus = false;
     addNoteDisabled = false;
+    maintenanceModeEnabled = false;
     private subaccountDetails: any;
     private onDestroy: Subject<void> = new Subject<void>();
     readonly CLOSE_NOTE = 'Close Note';
@@ -49,8 +52,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         private noteService: NoteService,
         private subAccountService: SubAccountService,
         private bannerService: BannerService,
-        private ctaasSetupService: CtaasSetupService,
-        private datePipe: DatePipe) {}
+        private ctaasSetupService: CtaasSetupService) {}
     /**
      * calculate table height based on the window height
      */
@@ -80,8 +82,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * get action menu options
      */
     private getActionMenuOptions() {
-        const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions")
+        if(!this.maintenanceModeEnabled) {
+            const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+            this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "noteOptions");
+        }
     }
     /**
      * fetch note data
@@ -93,9 +97,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.noteService.getNoteList(this.subaccountDetails.id).subscribe((res) => {
             this.isRequestCompleted = true;
             this.notesDataBk = res.notes.map(note => {
-                note.openDate = this.datePipe.transform(new Date(note.openDate), 'yyyy-MM-dd  h:mm:ss');
+                note.openDate = moment(note.openDate, Constants.DATE_TIME_FORMAT).format(Constants.DATE_TIME_FORMAT);
                 if(note.closeDate) {
-                    note.closeDate = this.datePipe.transform(new Date(note.closeDate), 'yyyy-MM-dd  h:mm:ss');
+                    note.closeDate = moment(note.closeDate, Constants.DATE_TIME_FORMAT).format(Constants.DATE_TIME_FORMAT);
                 }
                 return note;
             });
@@ -109,11 +113,13 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.dialogService.showHelpButton = true;
+        this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
         this.calculateTableHeight();
-        this.getActionMenuOptions();
         this.initColumns();
         this.fetchNoteList();
         this.checkMaintenanceMode();
+        this.sendHelpDialogValues();  
     }
 
     /**
@@ -152,7 +158,8 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
      * @param note: Note
      */
     viewDashboard(note: Note): void{
-        this.openDialog(this.VIEW_DASHBOARD,note);
+        const featureUrl = `${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${this.subaccountDetails.id}&noteId=${note.id}`;
+        window.open(featureUrl);
     }
 
     /**
@@ -162,7 +169,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     onCloseNote(selectedRow: any): void {
         this.dialogService.confirmDialog({
             title: 'Confirm Action',
-            message: 'Do you want to confirm this action?',
+            message: 'Are you sure you want to close the note created on '+ selectedRow.openDate +'?',
             confirmCaption: 'Close Note',
             cancelCaption: 'Cancel',
         }).subscribe((confirmed) => {
@@ -186,23 +193,14 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         });
     }
 
-    openDialog(type: string, selectedItemData?: any){
+    openDialog(type: string){
         let dialogRef;
         switch (type) {
             case this.ADD_NOTE:
                 dialogRef = this.dialog.open(AddNotesComponent, {
                     width: '85vw',
                     maxHeight: '90vh',
-                    maxWidth: '85vw',
-                    disableClose: false
-                });
-                break;
-            case this.VIEW_DASHBOARD:
-                dialogRef = this.dialog.open(CtaasHistoricalDashboardComponent, {
-                    data: selectedItemData,
-                    width: '100vw',
-                    height: '100vh',
-                    maxWidth: '100vw',
+                    maxWidth: '30vw',
                     disableClose: false
                 });
                 break;
@@ -235,15 +233,42 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.onDestroy.next();
         this.onDestroy.complete();
+        this.dialogService.showHelpButton = false;
     }
+    
 
     private checkMaintenanceMode() {
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
             const ctaasSetupDetails = res['ctaasSetups'][0];
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
-                this.bannerService.open("WARNING", "Spotlight service is under maintenance, the add note functionality is disabled until the service resumes. ", this.onDestroy);
+                this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy, "alert");
+                this.maintenanceModeEnabled = true;
             }
+            this.getActionMenuOptions();
         })
     }
+
+    sendHelpDialogValues(): void {
+        const data = {
+            title: 'Notes',
+            summary: "During any service disruption or quality degradation, the Admin can add Notes with a message to communicate the status. This message, along with the timestamp will be visible to all mobile app users.",
+            sections: [
+                {
+                    elements: [
+                        {
+                            subitle:'Bullet points',
+                            descriptions: [
+                                'To switch between viewing open or closed notes, use the open or closed toggle button.',
+                                'Admin has the ability to create and close notes. To close a note, click on the ellipsis of the notes and click close note.',
+                                'Stakeholder, on the other hand, is restricted to reading the notes.'
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+        this.dialogService.clearDialogData();
+        this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
+      }
 }

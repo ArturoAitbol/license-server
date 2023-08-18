@@ -40,7 +40,8 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
                  "'subaccountAdminEmail': '"+this.stakeHolderEmail +"'," +
                  "'name': 'test-customer-subaccount-stakeholder'," +
                  "'jobTitle': 'Software Engineer'," +
-                 "'companyName': 'tekVizion'," +
+                 "'companyName': 'TekVizion'," +
+                 "'emailNotifications': true," +
                  "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage createResponse = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
@@ -139,7 +140,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
         String bodyRequest = "{'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
+                "'companyName': 'TekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

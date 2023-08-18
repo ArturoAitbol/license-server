@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ConsumptionMatrixComponent } from './consumption-matrix.component';
 import { SnackBarServiceMock } from "../../../test/mock/services/snack-bar-service.mock";
 import { ConsumptionMatrixServiceMock } from "../../../test/mock/services/consumption-matrix-service.mock";
@@ -9,14 +9,16 @@ import { of, throwError } from 'rxjs';
 let testInstance: ConsumptionMatrixComponent;
 let fixture: ComponentFixture<ConsumptionMatrixComponent>;
 
-const beforeEachFunction = async () => {
-  const config = new TestBedConfigBuilder().useDefaultConfig(ConsumptionMatrixComponent).getConfig();
-  TestBed.configureTestingModule(config).compileComponents().then(() => {
-    fixture = TestBed.createComponent(ConsumptionMatrixComponent);
-    testInstance = fixture.componentInstance;
-    testInstance.ngOnInit();
-  });
-};
+const beforeEachFunction = waitForAsync(
+    () => {
+      const config = new TestBedConfigBuilder().useDefaultConfig(ConsumptionMatrixComponent).getConfig();
+      TestBed.configureTestingModule(config).compileComponents().then(() => {
+        fixture = TestBed.createComponent(ConsumptionMatrixComponent);
+        testInstance = fixture.componentInstance;
+        testInstance.ngOnInit();
+      });
+    }
+);
 
 describe('Consumption Matrix - UI verification tests', () => {
   beforeEach(beforeEachFunction);
@@ -39,7 +41,8 @@ describe('Consumption Matrix - UI verification tests', () => {
     const ByocColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[4];
     const applicationColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[5];
     const headsetColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[6];
-    const videoCollabDeviceColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[7];
+    const videoCollabDeviceROWColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[7];
+    const videoCollabDeviceUSColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[8];
 
     expect(callingPlatformColumn.innerText).toBe('Calling Platform');
     expect(devicePhoneAta.innerText).toBe('Device/Phone/ATA');
@@ -48,7 +51,8 @@ describe('Consumption Matrix - UI verification tests', () => {
     expect(ByocColumn.innerText).toBe('BYOC');
     expect(applicationColumn.innerText).toBe('Application');
     expect(headsetColumn.innerText).toBe('Headset');
-    expect(videoCollabDeviceColumn.innerText).toBe('Video Collab Device')
+    expect(videoCollabDeviceROWColumn.innerText).toBe('Video Collab Device (ROW)')
+    expect(videoCollabDeviceUSColumn.innerText).toBe('Video Collab Device (US)')
   });
 });
 

@@ -3,7 +3,7 @@ name: Continuous testing in Integration
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1-23/2 * * *'
+    - cron: '0 */4 * * *'
 
 permissions: write-all
 
@@ -59,7 +59,9 @@ jobs:
         envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_INTEGRATION}}" },
           { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_INTEGRATION}}" },
           { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_INTEGRATION}}" },
-          { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_INTEGRATION}}"}]'
+          { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_INTEGRATION}}" },
+          { "key": "CLIENTID_IGESADMIN", "value": "${{ secrets.CLIENT_ID_IGESADMIN_INTEGRATION}}" },
+          { "key": "CLIENTSECRET_IGESADMIN", "value": "${{ secrets.CLIENT_SECRET_IGESADMIN_INTEGRATION}}" }]'
 
     - name: Publish JUnit Report
       uses: mikepenz/action-junit-report@v3

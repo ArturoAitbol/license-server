@@ -23,6 +23,7 @@ public class SpotlightStakeholdersSteps {
     StakeholderForm stakeholderForm;
     private String actualMessage = "none";
     Environment environment = ConfigFactory.create(Environment.class);
+    private String stakeholderEmail = "";
 
     public SpotlightStakeholdersSteps(Stakeholders stakeholders) {
         this.stakeholders = stakeholders;
@@ -39,64 +40,55 @@ public class SpotlightStakeholdersSteps {
         String name = stakeholder.get("name");
         String jobTitle = stakeholder.get("jobTitle");
         String companyName = stakeholder.get("companyName");
-        String subaccountAdminEmail = environment.stakeholderUser();
+        String countryPhoneNumber = stakeholder.get("countryPhoneNumber");
         String phoneNumber = stakeholder.get("phoneNumber");
-        this.stakeholders = stakeholderForm.addStakeholder(name, jobTitle, companyName, subaccountAdminEmail, phoneNumber);
+        this.stakeholderEmail = getStakeholder();
+        this.stakeholders = stakeholderForm.addStakeholder(name, jobTitle, companyName, this.stakeholderEmail, countryPhoneNumber, phoneNumber);
         this.actualMessage = this.stakeholders.getMessage();
         System.out.println("Message: " + this.actualMessage);
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-    @When("I edit the stakeholder {string} with the following data")
-    public void iEditTheStakeholderWithTheFollowingData(String currentStakeholder, DataTable dataTable) {
-        String expectedName = "";
-        if (DriverManager.getInstance().getActiveDirectoryStatus())
-            expectedName = currentStakeholder;
-        else if (!DriverManager.getInstance().getActiveDirectoryStatus())
-            expectedName = environment.stakeholderUser();
-        this.stakeholderRow = new StakeholderRow(expectedName);
-
+    @When("I edit the stakeholder using the following data")
+    public void iEditTheStakeholderWithTheFollowingData(DataTable dataTable) {
+        String expectedEmail = getStakeholder();
+        this.stakeholderRow = new StakeholderRow(expectedEmail);
         ActionMenu actionMenu = this.stakeholderRow.openActionMenu();
         actionMenu.editForm("stakeholder");
         this.stakeholderForm = new StakeholderForm();
         Map<String, String> stakeholder = dataTable.asMap(String.class, String.class);
-        String name = stakeholder.get("name");
-        String jobTitle = stakeholder.get("jobTitle");
-        String companyName = stakeholder.get("companyName");
-        String phoneNumber = stakeholder.get("phoneNumber");
-        this.stakeholders = stakeholderForm.editStakeholder(name, jobTitle, companyName, phoneNumber);
+        String name = stakeholder.getOrDefault("name","none");
+        String jobTitle = stakeholder.getOrDefault("jobTitle","none");
+        String companyName = stakeholder.getOrDefault("companyName","none");
+        String countryPhoneNumber = stakeholder.getOrDefault("countryPhoneNumber","none");
+        String phoneNumber = stakeholder.getOrDefault("phoneNumber","none");
+        this.stakeholders = stakeholderForm.editStakeholder(name, jobTitle, companyName, countryPhoneNumber, phoneNumber);
         this.actualMessage = this.stakeholders.getMessage();
         this.stakeholders.waitData();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-    @Then("I see the {string} stakeholder in the table")
-    public void iSeeTheStakeholderInTheTable(String currentStakeholder) {
-        String expectedName = "";
-        if (DriverManager.getInstance().getActiveDirectoryStatus()){
-            System.out.println("Active Directory enabled");
-            expectedName = currentStakeholder;
-        }
-        else if (!DriverManager.getInstance().getActiveDirectoryStatus()){
-            System.out.println("Active Directory disabled");
-            expectedName = environment.stakeholderUser();
-        }
-        this.stakeholderRow = new StakeholderRow(expectedName);
-        String actualStakeHolder = this.stakeholderRow.getColumnValue("Name");
-        assertEquals("Stakeholders table doesn't have the stakeholder: ".concat(expectedName), expectedName, actualStakeHolder);
+    @Then("I see the stakeholder in the table")
+    public void iSeeTheStakeholderInTheTable() {
+        String expectedEmail = getStakeholder();
+        this.stakeholderRow = new StakeholderRow(expectedEmail);
+        String actualStakeHolder = this.stakeholderRow.getColumnValue("email");
+        assertEquals("Stakeholders table doesn't have the stakeholder: ".concat(expectedEmail), expectedEmail, actualStakeHolder);
     }
 
-    @Then("I delete the {string} stakeholder")
-    public void iDeleteAStakeholder(String currentStakeholder) throws InterruptedException {
-        String expectedName = "";
-        if (DriverManager.getInstance().getActiveDirectoryStatus())
-            expectedName = currentStakeholder;
-        else if (!DriverManager.getInstance().getActiveDirectoryStatus())
-            expectedName = environment.stakeholderUser();
-        this.stakeholderRow = new StakeholderRow(expectedName);
-
+    @When("I delete the stakeholder")
+    public void iDeleteAStakeholder() {
+        this.stakeholderRow = new StakeholderRow(getStakeholder());
         ActionMenu actionMenu = this.stakeholderRow.openActionMenu();
         this.actualMessage = actionMenu.delete("stakeholder");
         DriverManager.getInstance().setMessage(this.actualMessage);
+    }
+
+    public String getStakeholder(){
+        String stakeholder;
+        stakeholder = this.environment.stakeholderUser();
+        if (!DriverManager.getInstance().getActiveDirectoryStatus())
+            stakeholder = DriverManager.getInstance().addTimeStampToEmail(stakeholder);
+        return stakeholder;
     }
 }

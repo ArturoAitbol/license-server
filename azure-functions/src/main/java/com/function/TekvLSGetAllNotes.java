@@ -58,17 +58,21 @@ public class TekvLSGetAllNotes {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetAllNotes Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetAllNotes Azure function");
+        
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
         if (subaccountId.isEmpty()) {
             JSONObject json = new JSONObject();
             json.put("error", "Missing mandatory parameter: subaccountId");
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         
         String status = request.getQueryParameters().getOrDefault("status", "");
+        String noteId = request.getQueryParameters().getOrDefault("id", "");
 
         // Build SQL statement
         SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM note");
@@ -102,6 +106,9 @@ public class TekvLSGetAllNotes {
 
         if (!status.isEmpty())
             queryBuilder.appendEqualsCondition("status", status, "note_status_type_enum");
+        if (!noteId.isEmpty())
+            queryBuilder.appendEqualsCondition("id", noteId, QueryBuilder.DATA_TYPE.UUID);
+
         queryBuilder.appendOrderBy("open_date", ORDER_DIRECTION.DESC);
 
         // Connect to the database
@@ -122,6 +129,7 @@ public class TekvLSGetAllNotes {
                     if (!rs.next()) {
                         context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + authEmail);
                         json.put("error", MESSAGE_FOR_INVALID_ID);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -131,7 +139,7 @@ public class TekvLSGetAllNotes {
             rs = selectStmt.executeQuery();
             // Return a JSON array of notes
             JSONArray notes = new JSONArray();
-			String closeDate,closedBy,reports;
+			String closeDate,closedBy;
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
@@ -144,22 +152,23 @@ public class TekvLSGetAllNotes {
 				item.put("closeDate", closeDate != null ? closeDate.split(" ") : JSONObject.NULL);
 				closedBy = rs.getString("closed_by");
 				item.put("closedBy", closedBy != null ? closedBy : JSONObject.NULL);
-                reports = rs.getString("reports");
-                item.put("reports",reports != null ? new JSONArray(reports) : JSONObject.NULL);
                 notes.put(item);
             }
             context.getLogger().info("List total " + notes.length() + " notes");
             json.put("notes", notes);
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllNotes Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetAllNotes Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

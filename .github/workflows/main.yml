@@ -2,236 +2,239 @@ name: License Server CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
       - ".github/**"
 
+permissions: write-all
+
 env:
   AZURE_FUNCTIONAPP_NAME: tekvLicenseServerPOCFunction
-  POM_XML_DIRECTORY: 'azure-functions/'
+  POM_XML_DIRECTORY: "azure-functions/"
   POM_FUNCTIONAPP_NAME: myFunction-12345
-  JAVA_VERSION: '8'
+  JAVA_VERSION: "8"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - uses: azure/login@v1
-      with:
+      - uses: azure/login@v1
+        with:
           creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
-     
-    - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: ${{ env.JAVA_VERSION }}
 
-    - name: 'Restore Project Dependencies Using Mvn'
-      shell: bash
-      run: |
-        pushd './${{ env.POM_XML_DIRECTORY }}'
-        mvn clean package -Dmaven.test.skip -Dexec.skip -q
-        mvn azure-functions:package
-        popd
+      - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: ${{ env.JAVA_VERSION }}
 
-    - name: Get current date
-      id: date
-      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - name: "Restore Project Dependencies Using Mvn"
+        shell: bash
+        run: |
+          pushd './${{ env.POM_XML_DIRECTORY }}'
+          mvn clean package -Dmaven.test.skip -Dexec.skip -q
+          mvn azure-functions:package
+          popd
 
-    
-    - name: Get Commit Short Hash
-      id: hash
-      run: echo "hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_OUTPUT
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-    
-    - name: Get Latest tag
-      id: current_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-    
-    - name: 'Get next minor version'
-      id: next_tag
-      uses: "WyriHaximus/github-action-next-semvers@v1"
-      with:
-        version: ${{ steps.current_tag.outputs.tag }}
-    
-    - name: Archive Azure Functions Build
-      uses: vimtor/action-zip@v1
-      with:
-        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/'
-        recursive: true
-        dest: 'af-release-${{steps.date.outputs.date}}.zip'
+      - name: Get Commit Short Hash
+        id: hash
+        run: echo "hash=$(git rev-parse --short "$RELEVANT_SHA")" >> $GITHUB_OUTPUT
+        env:
+          RELEVANT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
-    - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1
-      with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+      - name: Get Latest tag
+        id: current_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
 
-    - name: Use Node.js 12.20
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.20'
-    
-      
-    - name: Replace Build Version
-      uses: jacobtomlinson/gha-find-replace@v2
-      with:
-        find: "[build_version]"
-        replace: "${{ steps.next_tag.outputs.patch }}"
-        include: "ui/src/app/generics/about-modal/**"
-        regex: false
-    
-    - name: Build Angular Production web app
-      run: |
-        cd ./ui
-        npm install
-        npm run build:prod
-        
-    - name: Archive UI Production Build
-      uses: vimtor/action-zip@v1
-      with:
-        files: './ui/dist/'
-        recursive: true
-        dest: 'ui-prod-release-${{steps.date.outputs.date}}.zip'
+      - name: "Get next minor version"
+        id: next_tag
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.current_tag.outputs.tag }}
 
-    - name: Build Angular Integration web app
-      run: |
-        cd ./ui
-        npm install
-        npm run build
-    
-    - name: Archive UI Integration Build
-      uses: vimtor/action-zip@v1
-      with:
-        files: './ui/dist/'
-        recursive: true        
-        dest: 'ui-integration-release-${{steps.date.outputs.date}}.zip'
+      - name: Archive Azure Functions Build
+        uses: vimtor/action-zip@v1
+        with:
+          files: "./${{ env.POM_XML_DIRECTORY }}/target/azure-functions/"
+          recursive: true
+          dest: "af-release-${{steps.date.outputs.date}}.zip"
 
-    - name: Add Release version file
-      run: echo "Released ${{ steps.next_tag.outputs.patch }} Build" > ./ui/dist/license-server/ReleaseVersion.txt
+      - name: "Run Azure Functions Action"
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: "./${{ env.POM_XML_DIRECTORY }}/target/azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}"
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 
-    - name: Clear blob storage
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          az storage blob delete-batch --account-name lswebappstorage --auth-mode key -s '$web'
+      - name: Use Node.js 16.14
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.14"
 
-    - name: Upload to blob storage
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-           az storage blob upload-batch --overwrite --account-name lswebappstorage --auth-mode key -d '$web' -s ./ui/dist
-           
-    - name: Purge CDN endpoint
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
-        
-    - name: Run API tests
-      id: run-newman
-      uses: matt-ball/newman-action@master
-      with:
-        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
-        environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
-        reporters: '["junit", "cli"]'
-        reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
-        envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_INTEGRATION}}" },
-          { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_INTEGRATION}}" },
-          { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_INTEGRATION}}" },
-          { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_INTEGRATION}}"}]'
+      - name: Replace Build Version
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "[build_version]"
+          replace: "${{ steps.next_tag.outputs.patch }}"
+          include: "ui/src/app/generics/about-modal/**"
+          regex: false
 
-    - name: Publish JUnit Report
-      uses: mikepenz/action-junit-report@v3
-      if: always() # always run even if the previous step fails
-      with:
-        report_paths: './tests/api/postman/newman-report.xml'
-        summary: 'true'
-        check_name: 'API Test Report'
+      - name: Build Angular Production web app
+        run: |
+          cd ./ui
+          npm install
+          npm run build:prod
 
-    - name: Set Integration test credentials
-      run: |
-        echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "subaccountAdminUser=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "subaccountAdminPassword=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+      - name: Archive UI Production Build
+        uses: vimtor/action-zip@v1
+        with:
+          files: "./ui/dist/"
+          recursive: true
+          dest: "ui-prod-release-${{steps.date.outputs.date}}.zip"
 
-    - name: Run UI tests
-      id: uiTests
-      run: |
-        cd tests/ui
-        gradle uiTests -Denv=integration -D"cucumber.filter.tags=not @feature-toggle"
-    - uses: deblockt/cucumber-report-annotations-action@v1.10
-      if: success() || failure()
-      name: Publish Cucumber Report
-      with:
-        name: UI Test Report
-        access-token: ${{ secrets.GITHUB_TOKEN }}
-        path: "**/cucumber.json"
-    - uses: actions/upload-artifact@v3
-      if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
-      name: Archive UI test results
-      with:
-        name: ui-test-report
-        path: tests/ui/reports/html/
-    
-    - name: Bump version and push tag
-      id: tag_version
-      uses: mathieudutour/github-tag-action@v6.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Angular Integration web app
+        run: |
+          cd ./ui
+          npm install
+          npm run build
 
-    - name: Archive Full Build
-      uses: vimtor/action-zip@v1
-      with:
-        files: 'af-release-${{steps.date.outputs.date}}.zip ui-integration-release-${{steps.date.outputs.date}}.zip ui-prod-release-${{steps.date.outputs.date}}.zip'
-        recursive: true        
-        dest: 'LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
-    
-    - name: Get latest release details
-      id: release_details
-      uses: cardinalby/git-get-release-action@v1
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      with:
-        latest: true
-    
-    - name: Get Latest Release commit hash
-      id: get_commit
-      uses: actions/github-script@0.9.0
-      with:
-        script: |
-          const commit = "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
-          core.setOutput('commit', commit);
-    
-    - name: Create Release Notes from commit history
-      id: list_messages
-      run: git log --pretty=format:%s --ancestry-path ${{steps.get_commit.outputs.commit}}^..${{steps.hash.outputs.hash}} > ReleaseNotes.txt
+      - name: Archive UI Integration Build
+        uses: vimtor/action-zip@v1
+        with:
+          files: "./ui/dist/"
+          recursive: true
+          dest: "ui-integration-release-${{steps.date.outputs.date}}.zip"
 
-    - name: Create a GitHub release
-      uses: ncipollo/release-action@v1
-      with:
-        tag: ${{ steps.tag_version.outputs.new_tag }}
-        name: Release ${{ steps.tag_version.outputs.new_tag }}
-        bodyFile: "./ReleaseNotes.txt" 
-        artifacts: 'LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
-        token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Print Release Version
-      run: echo 'Released ${{ steps.tag_version.outputs.new_tag }} Build'
-    
-  # Azure logout
-    - name: logout
-      run: |
-            az logout
-      if: always()
+      - name: Add Release version file
+        run: echo "Released ${{ steps.next_tag.outputs.patch }} Build" > ./ui/dist/license-server/ReleaseVersion.txt
+
+      - name: Clear blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob delete-batch --account-name lswebappstorage --auth-mode key -s '$web'
+
+      - name: Upload to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --overwrite --account-name lswebappstorage --auth-mode key -d '$web' -s ./ui/dist
+
+      - name: Purge CDN endpoint
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
+
+      - name: Run API tests
+        id: run-newman
+        uses: matt-ball/newman-action@master
+        with:
+          collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+          environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+          reporters: '["junit", "cli"]'
+          reporter: '{ "junit": { "export": "./tests/api/postman/newman-report.xml" } }'
+          envVar:
+            '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_INTEGRATION}}" },
+            { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_INTEGRATION}}" },
+            { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_INTEGRATION}}" },
+            { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_INTEGRATION}}" },
+            { "key": "CLIENTID_IGESADMIN", "value": "${{ secrets.CLIENT_ID_IGESADMIN_INTEGRATION}}" },
+            { "key": "CLIENTSECRET_IGESADMIN", "value": "${{ secrets.CLIENT_SECRET_IGESADMIN_INTEGRATION}}" }]'
+
+      - name: Publish JUnit Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: "./tests/api/postman/newman-report.xml"
+          summary: "true"
+          check_name: "API Test Report"
+
+      - name: Set Integration test credentials
+        run: |
+          echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+          echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+          echo -e "subaccountAdminUser=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+          echo -e "subaccountAdminPassword=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+          echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+          echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+
+      - name: Run UI tests
+        id: uiTests
+        run: |
+          cd tests/ui
+          gradle uiTests -Denv=integration -D"cucumber.filter.tags=not @feature-toggle"
+      - uses: deblockt/cucumber-report-annotations-action@v1.11
+        if: success() || failure()
+        name: Publish Cucumber Report
+        with:
+          name: UI Test Report
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/cucumber.json"
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
+        name: Archive UI test results
+        with:
+          name: ui-test-report
+          path: tests/ui/reports/html/
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Archive Full Build
+        uses: vimtor/action-zip@v1
+        with:
+          files: "af-release-${{steps.date.outputs.date}}.zip ui-integration-release-${{steps.date.outputs.date}}.zip ui-prod-release-${{steps.date.outputs.date}}.zip"
+          recursive: true
+          dest: "LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip"
+
+      - name: Get latest release details
+        id: release_details
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          latest: true
+
+      - name: Get Latest Release commit hash
+        id: get_commit
+        uses: actions/github-script@v2.1.0
+        with:
+          script: |
+            return "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
+
+      - name: Create Release Notes from commit history
+        id: list_messages
+        run: git log --pretty=format:%s --ancestry-path ${{steps.get_commit.outputs.result}}^..${{steps.hash.outputs.hash}} > ReleaseNotes.txt
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          bodyFile: "./ReleaseNotes.txt"
+          artifacts: "LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print Release Version
+        run: echo 'Released ${{ steps.tag_version.outputs.new_tag }} Build'
+
+      # Azure logout
+      - name: logout
+        run: |
+          az logout
+        if: always()
   # Debug (ssh into running host)
   #  - name: Debug on failure
   #    if: failure()

@@ -3,5 +3,5 @@ export interface SubAccount {
     customerId: string;
     name: string;
     subaccountAdminEmails: string[];
-    services?: string
+    services?: string | string[];
 }

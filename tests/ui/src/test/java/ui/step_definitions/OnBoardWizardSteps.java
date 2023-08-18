@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class OnBoardWizardSteps {
     OnBoardWizard onBoardWizard;
-    String name, jobTitle, email, company, phoneNumber, type, dailyReports, weeklyReports, monthlyReports;
+    String name, jobTitle, email, company, phoneNumber, countryPhoneNumber, type, dailyReports, weeklyReports, monthlyReports;
     Environment environment = ConfigFactory.create(Environment.class);
 
     public OnBoardWizardSteps(OnBoardWizard onBoardWizard){
@@ -25,8 +25,9 @@ public class OnBoardWizardSteps {
 //        this.email = onBoard.get("email");
         this.email = environment.subaccountAdminUser();
         this.company = onBoard.get("company");
+        this.countryPhoneNumber = onBoard.get("countryPhoneNumber");
         this.phoneNumber = onBoard.get("phoneNumber");
-        this.onBoardWizard.acceptForm(name, jobTitle, email, company, phoneNumber);
+        this.onBoardWizard.acceptForm(name, jobTitle, email, company, countryPhoneNumber, phoneNumber);
 //        this.actualMessage = this.onBoardWizard.getMessage();
     }
 }

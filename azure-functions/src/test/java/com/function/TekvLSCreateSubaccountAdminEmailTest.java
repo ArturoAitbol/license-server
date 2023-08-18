@@ -38,10 +38,11 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         this.createSubaccountAdminEmailApi = new TekvLSCreateSubaccountAdminEmail();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         String name = "unitTest" + LocalDateTime.now();
+        String parsedName = name.replace("-", "_").replace(":", "_");
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
+                "    \"subaccountAdminEmail\": \"" + parsedName + "@tekvizion.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = this.createSubaccountApi.run(this.request, context);
@@ -70,7 +71,8 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
     public void createSubaccountAdminEmailTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(name + "@test.com", this.subaccountId);
+        String parsedName = name.replace("-", "_").replace(":", "_");
+        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(parsedName + "@tekvizion.com", this.subaccountId);
         @SuppressWarnings("unchecked")
         HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -218,7 +220,8 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
     public void GenericExceptionTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(name + "@test.com", this.subaccountId);
+        String parsedName = name.replace("-", "_").replace(":", "_");
+        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(parsedName + "@tekvizion.com", this.subaccountId);
         @SuppressWarnings("unchecked")
         HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

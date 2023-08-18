@@ -16,7 +16,6 @@ import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.db.UpdateQueryBuilder;
-import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -59,9 +58,10 @@ public class TekvLSModifyAuthUserProfile {
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
-
-		context.getLogger().info("Entering TekvLSModifyAuthUserProfile Azure function");
+		
 		String authEmail = getEmailFromToken(tokenClaims,context);
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifyAuthUserProfile Azure function");
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
 		context.getLogger().info("Request body: " + requestBody);
@@ -69,6 +69,7 @@ public class TekvLSModifyAuthUserProfile {
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyAuthUserProfile Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
@@ -79,6 +80,7 @@ public class TekvLSModifyAuthUserProfile {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyAuthUserProfile Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		
@@ -101,6 +103,7 @@ public class TekvLSModifyAuthUserProfile {
 				context.getLogger().info(LOG_MESSAGE_FOR_INVALID_EMAIL + authEmail);
 				JSONObject json = new JSONObject();
 				json.put("error", MESSAGE_FOR_MISSING_CUSTOMER_EMAIL);
+				context.getLogger().info("User " + userId + " is leaving TekvLSModifyAuthUserProfile Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			String subaccountId = rs.getString("subaccount_id");
@@ -115,25 +118,27 @@ public class TekvLSModifyAuthUserProfile {
 					context.getLogger().info("Ignoring exception: " + e);
 				}
 			}
-			if (optionalParamsFound == 0) {
-				updateADUser(authEmail, subaccountId, jobj, context);
-				return request.createResponseBuilder(HttpStatus.OK).build();
+			if (jobj.has("emailNotifications")) {
+				queryBuilder.appendValueModification("email_notifications", String.valueOf(jobj.getBoolean("emailNotifications")), QueryBuilder.DATA_TYPE.BOOLEAN);
+				optionalParamsFound++;
 			}
-			queryBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
-
-			PreparedStatement statement = queryBuilder.build(connection);
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			String userId = getUserIdFromToken(tokenClaims,context);
-			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
-			statement.executeUpdate();
-			context.getLogger().info("Subaccount Admin email ( authenticated user ) updated successfully."); 
+			if (optionalParamsFound > 0) {
+				queryBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
+				PreparedStatement statement = queryBuilder.build(connection);
+				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
+				statement.executeUpdate();
+				context.getLogger().info("Subaccount Admin email ( authenticated user ) updated successfully."); 
+			}
 			updateADUser(authEmail, subaccountId, jobj, context);
+			context.getLogger().info("User " + userId + " is succesfully leaving TekvLSModifyAuthUserProfile Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyAuthUserProfile Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
@@ -153,20 +158,16 @@ public class TekvLSModifyAuthUserProfile {
 	}
 	
 	private void updateADUser(String email, String subaccountId, JSONObject jobj, ExecutionContext context) throws Exception {
-		if(!FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
-			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
-			 return;
-		}
 		try {
-			context.getLogger().info("Updating user profile at Azure AD : "+email);
-			GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"),getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
-			context.getLogger().info("Updated user profile at Azure AD : "+jobj);
+			context.getLogger().info("Updating user profile at Azure AD: " + email);
+			GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"), getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
+			context.getLogger().info("Updated user profile at Azure AD: " + jobj);
 		} catch(Exception e) {
 			context.getLogger().info("Failed to update user profile at Azure AD. Exception: " + e.getMessage());
 		}
 	}
 	
 	private String getValue(JSONObject jobj, String key) {
-		return jobj.has(key)?jobj.getString(key):null;
+		return jobj.has(key)? jobj.getString(key) : null;
 	}
 }

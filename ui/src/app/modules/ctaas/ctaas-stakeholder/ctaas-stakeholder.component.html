@@ -1,36 +1,33 @@
-<app-banner [stylesflag]="'stakeholder'" *lcCheckAccessFor="'showBanner'"></app-banner>
-<div class="btn-container">
+<app-banner [stylesflag]="'stakeholder'"></app-banner>
+<div class="btn-container" >
     <div class="stakeholder-heading">
         <h2 id="main-title">Stakeholders</h2>
     </div>
-    <div>
-        <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Stake Holder</span>
-        &nbsp;
-        <mat-slide-toggle *lcCheckAccessFor="'showUserToggle'" id="mat-toggle" [color]="'primary'" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
-        &nbsp;
-        <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Subaccount Admin</span>
-        &nbsp;
-        <button *lcCheckAccessFor="'addStakeholderBtn'" style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
-            Add Stakeholder
-        </button>
-    </div>
 </div>
-
-<section class="table-section">
-    <div id="stakeholders-table" class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
-        <app-data-table 
-        [tableData]="stakeholdersData" 
-        [tableColumns]="displayedColumns" 
-        [isFilterable]="false"
-        [isPageable]="false" 
-        [isLoadingResults]="isLoadingResults" 
-        [isRequestCompleted]="isRequestCompleted"
-        [paginationSizes]="[5,10,20]" 
-        [defaultPageSize]="5"
-        (sort)="sortData($event)"
-        (rowAction)="rowAction($event)"
-        [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
-        [actionMenuList]="actionMenuOptions">
-        </app-data-table>
+<div>
+    <div class="row justify-content-end" style="margin-bottom: 20px;">
+        <div class="col-auto">
+            <button *lcCheckAccessFor="'addStakeholderBtn'" style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
+                Add Stakeholder
+            </button>
+        </div>
     </div>
-</section>
+    <section class="table-section">
+        <div id="stakeholders-table" class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+            <app-data-table 
+            [tableData]="stakeholdersData" 
+            [tableColumns]="displayedColumns" 
+            [isFilterable]="false"
+            [isPageable]="false" 
+            [isLoadingResults]="isLoadingResults" 
+            [isRequestCompleted]="isRequestCompleted"
+            [paginationSizes]="[5,10,20]" 
+            [defaultPageSize]="5"
+            (sort)="sortData($event)"
+            (rowAction)="rowAction($event)"
+            [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
+            [actionMenuList]="actionMenuOptions">
+            </app-data-table>
+        </div>
+    </section>
+</div>

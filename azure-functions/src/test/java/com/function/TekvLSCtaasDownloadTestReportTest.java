@@ -6,7 +6,6 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -17,7 +16,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 class TekvLSCtaasDownloadTestReportTest extends TekvLSTest {
     private String bodyRequest = "";
@@ -217,7 +215,6 @@ class TekvLSCtaasDownloadTestReportTest extends TekvLSTest {
     @Test
     public void invalidRoleTest(){
         //Given
-        String id="EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
@@ -242,7 +239,6 @@ class TekvLSCtaasDownloadTestReportTest extends TekvLSTest {
     @Test
     public void noTokenTest(){
         //Given
-        String id = "EMPTY";
         this.headers.remove("authorization");
 
         //When

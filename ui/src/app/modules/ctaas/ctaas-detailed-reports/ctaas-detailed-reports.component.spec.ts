@@ -7,14 +7,14 @@ import { CtaasDashboardServiceMock } from "src/test/mock/services/ctaas-dashboar
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
-import { DetailedReportsCompoment } from "./ctaas-detailed-reports.component";
+import { DetailedReportsComponent } from "./ctaas-detailed-reports.component";
 
-let onboardWizardComponentInstance: DetailedReportsCompoment;
-let fixture : ComponentFixture<DetailedReportsCompoment>;
+let onboardWizardComponentInstance: DetailedReportsComponent;
+let fixture : ComponentFixture<DetailedReportsComponent>;
 const dialogService = new DialogServiceMock();
 
 const beforeEachFunction = () => {
-    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DetailedReportsCompoment);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DetailedReportsComponent);
     configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
     configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
     configBuilder.addProvider({provide: ActivatedRoute, useValue: {
@@ -24,12 +24,12 @@ const beforeEachFunction = () => {
         })
     }})
     TestBed.configureTestingModule(configBuilder.getConfig());
-    fixture = TestBed.createComponent(DetailedReportsCompoment);
+    fixture = TestBed.createComponent(DetailedReportsComponent);
     onboardWizardComponentInstance = fixture.componentInstance;
     fixture.detectChanges();
 }
 
-describe (' UI test of more-details component', () => {
+describe (' UI test of ctaas-detailed-reports component', () => {
     beforeEach(beforeEachFunction)
 
     it('should throw a error message if something went wrong while fetching data from dashboard', () => {
@@ -37,11 +37,11 @@ describe (' UI test of more-details component', () => {
         spyOn(console, 'error').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
 
-        onboardWizardComponentInstance.type = null;
+        onboardWizardComponentInstance.types = null;
         fixture.detectChanges();
         onboardWizardComponentInstance.fetchDashboardReportDetails();
 
-        expect(onboardWizardComponentInstance.type).toEqual(null);
+        expect(onboardWizardComponentInstance.types).toEqual(null);
     });
 
     it('it should set variables when reports are empty', () => {
@@ -54,14 +54,6 @@ describe (' UI test of more-details component', () => {
         expect(onboardWizardComponentInstance.hasDashboardDetails).toBeFalse();
         expect(onboardWizardComponentInstance.reportResponse).toEqual({})
     });
-
-    // it('should return a empty array if results is null', () => {
-    //    spyOn(CtaasDashboardServiceMock, 'getCtaasDashboardDetailedReport').and.returnValue(of(CtaasDashboardServiceMock.detailedReportWithoutResults));
-
-    //    fixture.detectChanges();
-
-    //     expect(onboardWizardComponentInstance.detailedTestReport).toEqual([]);
-    // });
 
     it('it should set variables when endpoints are empty',() => {
         spyOn(CtaasDashboardServiceMock, 'getCtaasDashboardDetailedReport').and.returnValue(of(CtaasDashboardServiceMock.dashboardDetailedReportsWithEmptyEndpoints));
@@ -218,7 +210,7 @@ describe ('triggered methods', () => {
 
 describe ('download detailed test reports', () => {
     beforeEach(beforeEachFunction);
-    it('it should call downloadDteailedTestReportByType', () => {
+    it('it should call downloadDetailedTestReportByType', () => {
        spyOn(onboardWizardComponentInstance, 'downloadDetailedTestReportByType').and.callThrough();
        spyOn(CtaasDashboardServiceMock, 'downloadCtaasDashboardDetailedReport').and.callThrough();
        fixture.detectChanges();
@@ -250,7 +242,7 @@ describe ('testing errors thrown by functions', () => {
 
         fixture.detectChanges();
         onboardWizardComponentInstance.downloadDetailedTestReportByType();
-        expect(console.error).toHaveBeenCalledWith("Error while downloading report:TypeError: Cannot read properties of null (reading 'Daily-FeatureFunctionality')");
+        expect(console.error).toHaveBeenCalledWith("Error while downloading report:TypeError: Cannot read properties of null (reading 'summary')");
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading downloading report', 'Ok');
     });
 

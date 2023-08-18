@@ -6,10 +6,6 @@ table {
   width: 100%;
 }
 
-.table-section {
-  /* margin-top: 5%; */
-}
-
 th.mat-sort-header-sorted {
   color: black;
 }
@@ -33,9 +29,10 @@ th.mat-sort-header-sorted {
 }
 
 .btn-container {
-  margin: 10px 0px;
+  margin: 10px;
   display: flex;
   justify-content: space-between;
+  margin-bottom: 2%;
 }
 
 .stakeholder-heading {

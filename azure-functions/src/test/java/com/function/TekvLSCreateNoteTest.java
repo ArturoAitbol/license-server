@@ -47,7 +47,7 @@ class TekvLSCreateNoteTest extends TekvLSTest {
     @Test
     public void createNoteTest() {
         //Given
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content', 'reports':[{},{}]}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content', 'reports':[{ 'imageBase64': 'data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD', 'reportType': 'Daily-FeatureFunctionality', 'startDateStr': '230411154558', endDateStr: '230411154558' }]}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         //When
@@ -66,6 +66,51 @@ class TekvLSCreateNoteTest extends TekvLSTest {
         this.noteId = jsonBody.getString("id");
         assertNotNull(this.noteId);
     }
+
+    @Test
+    public void createNoteWithDeviceTokenEmptyExceptionTest() {
+        //Given
+        this.bodyRequest = "{'subaccountId':'2c8e386b-d1bd-48b3-b73a-12bfa5d00805', 'content':'note content', 'reports':[{ 'imageBase64': 'data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD', 'reportType': 'Daily-FeatureFunctionality', 'startDateStr': '230411154558', endDateStr: '230411154558' }]}";
+        doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = this.createNote.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("id"));
+
+        this.noteId = jsonBody.getString("id");
+        assertNotNull(this.noteId);
+    }
+     @Test
+     public void createNoteWithDeviceTokenTest() {
+         //Given
+         this.bodyRequest = "{'subaccountId':'2c8e386b-d1bd-48b3-b73a-12bfa5d00805', 'content':'note content', 'reports':[{ 'imageBase64': 'data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD', 'reportType': 'Daily-FeatureFunctionality', 'startDateStr': '230411154558', endDateStr: '230411154558' }]}";
+         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
+
+         //When
+         HttpResponseMessage response = this.createNote.run(this.request, this.context);
+         this.context.getLogger().info(response.getBody().toString());
+
+         //Then
+         HttpStatusType actualStatus = response.getStatus();
+         HttpStatus expected = HttpStatus.OK;
+         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+         String body = (String) response.getBody();
+         JSONObject jsonBody = new JSONObject(body);
+         assertTrue(jsonBody.has("id"));
+
+         this.noteId = jsonBody.getString("id");
+         assertNotNull(this.noteId);
+     }
 
     @Test
     public void missingMandatoryParameterTest() {

@@ -20,6 +20,8 @@ import { ModifyDeviceComponent } from "./modify-device.component";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { of } from "rxjs";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { AddDeviceComponent } from '../add-device/add-device.component';
 
 let modifyDeviceComponentTestInstance: ModifyDeviceComponent;
 let fixture: ComponentFixture<ModifyDeviceComponent>;
@@ -45,68 +47,19 @@ const currentDevice: Device = {
 }
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [ModifyDeviceComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: MatSnackBarRef,
-                useValue: {}
-            },
-            {
-                provide: DevicesService,
-                useValue: DevicesServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: FormBuilder
-            },
-            {
-                provide: MatDialogRef,
-                useValue: dialogService
-            },
-            {
-                provide: ModifyDeviceComponent,
-                useValue: {}
-            },
-            {
-                provide: MAT_DIALOG_DATA,
-                useValue: currentDevice
-            },
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ModifyDeviceComponent);
+    configBuilder.addProvider({provide: MAT_DIALOG_DATA, useValue: currentDevice});
+    configBuilder.addProvider({provide: DialogService, useValue: dialogService});
+    configBuilder.addProvider({provide: ModifyDeviceComponent, useValue: {}});
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(ModifyDeviceComponent);
     modifyDeviceComponentTestInstance = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
 };
 
-describe('UI verification test', () => {
+describe('ModifyDeviceComponent - UI verification test', () => {
     beforeEach(beforeEachFunction);
-    it('should display the essential UI and components', () => {
+    it('ModifyDeviceComponent - should display the essential UI and components', () => {
 
         fixture.detectChanges();
         const h1: HTMLElement = fixture.nativeElement.querySelector('#dialog-title');
@@ -165,12 +118,12 @@ describe('modify device details interactions', () => {
     it('should cancel modifyDevice', () => {
         spyOn(modifyDeviceComponentTestInstance, 'modifyDevice').and.callThrough();
         spyOn(modifyDeviceComponentTestInstance, 'onCancel').and.callThrough();
-        spyOn(dialogService, 'close').and.callThrough();
+        spyOn(MatDialogMock, 'close').and.callThrough();
 
         modifyDeviceComponentTestInstance.modifyDevice();
         modifyDeviceComponentTestInstance.onCancel();
 
-        expect(dialogService.close).toHaveBeenCalled();
+        expect(MatDialogMock.close).toHaveBeenCalled();
         expect(modifyDeviceComponentTestInstance.onCancel).toHaveBeenCalled();
     });
 });

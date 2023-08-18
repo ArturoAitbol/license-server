@@ -19,6 +19,18 @@ mat-form-field {
   display: none !important;
 }
 
+.custom-icon {
+  margin-top: 5%;
+  color: white;
+}
+
+.mat-raised-button-sm{
+  min-width: 35px !important;
+  width: 35px !important;
+  padding: 0 5px;
+  background: #23578f;
+}
+
 /* ul {
   list-style-type: none;
   margin: 0;

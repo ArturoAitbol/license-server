@@ -1,0 +1,58 @@
+.chart-label {
+    color: #76BD83;
+    font-weight: normal;
+    font-size: 18px;
+}
+
+.card-header {
+    background: #273176;  /* previus color #6E76B4; */
+    /* background: #6E76B4; */
+    color: white;
+}
+
+.top-spacing-2 {
+    margin-top: 2em;
+}
+
+.top-spacing-1 {
+    margin-top: 1em;
+}
+
+.card-header h1{
+    margin-bottom: 8px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.card-header mat-icon {
+    margin-left: 15px;
+}
+
+.card-footer {
+    background: #F2F3F4;
+    color: #273176;
+}
+
+.fail {
+    color: #bb2426;
+}
+.footer-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-text label{
+    margin-bottom: 0%;
+}
+
+.viewDetail-button {
+    color: #273176;
+}
+.viewDetail-button:hover{
+    color: white;
+    background-color: #6E76B4;
+}

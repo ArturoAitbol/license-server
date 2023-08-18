@@ -1,5 +1,5 @@
-<app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
-<div class="btn-container">
+<app-banner></app-banner>
+<div class="btn-container" *ngIf="!maintenanceModeEnabled">
     <div *ngIf="tapURLFlag === 'withTapURL'">
         <form [formGroup]="filterForm" (ngSubmit)="todayReport()">
             <div class="row d-flex justify-content-start">
@@ -23,9 +23,9 @@
                     </div>
                 </div>
                 <div class="col-3">
-                    <button class="mt-2" color="primary" style="margin-bottom: 1%;" mat-raised-button id="submit-filters" 
-                    [disabled]="todaySearchFlag" type="submit">
-                        Search
+                    <button class=" mt-2 custom-btn" mat-raised-button id="submit-filters" [disabled]="todaySearchFlag"
+                        type="submit">
+                      Search 
                     </button>
                 </div>
                 <div class="col-auto ms-auto justify-content-end gy-3">
@@ -45,8 +45,9 @@
                   <div class="banner-container">
                     <mat-button-toggle-group [formControl]="fontStyleControl" aria-label="Font Style"
                       (change)="onChangeButtonToggle()">
-                      <mat-button-toggle id="calling-button" [value]="CALLING">{{CALLING | titlecase}}</mat-button-toggle>
+                      <mat-button-toggle [checked]="buttonFlag" id="calling-button" [value]="CALLING">{{CALLING | titlecase}}</mat-button-toggle>
                       <mat-button-toggle id="feature-button"  [value]="FEATURE">{{FEATURE | titlecase}}</mat-button-toggle>
+                      <mat-button-toggle id="feature-button"  [value]="VOICE">{{VOICE}}</mat-button-toggle>
                     </mat-button-toggle-group>
                   </div>
                 </div>
@@ -55,9 +56,9 @@
         <section class="table-section">
             <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
                 <app-data-table [tableData]="dateListBK" [tableColumns]="displayedColumns" [isFilterable]="false"
-                    [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                    [isPageable]="false" [isLoadingResults]="isLoadingResults" (rowAction)="rowAction($event)" [isRequestCompleted]="isRequestCompleted"
                     [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
-                    [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"[actionMenuList]="actionMenuOptions">
+                    [rowActionIcon]="actionMenuOptions.length === 0 && 'search'">
                 </app-data-table>
             </div>
         </section>
@@ -83,7 +84,7 @@
                   <mat-card-subtitle ></mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
-                  <p class='text-content2'>Unable to find a Spotlight Setup for this Customer, please contact your service provider</p>
+                  <p class='text-content2'>Unable to find a UCaaS Continuous Testing Setup for this Customer, please contact your service provider</p>
                 </mat-card-content>
               </mat-card>
         </div>

@@ -1,89 +1,32 @@
-import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { MatDialog } from "@angular/material/dialog";
-import { Sort } from "@angular/material/sort";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
-import { MsalService } from "@azure/msal-angular";
 import { throwError } from "rxjs";
 import { License } from "src/app/model/license.model";
-import { CustomerService } from "src/app/services/customer.service";
 import { DialogService } from "src/app/services/dialog.service";
-import { LicenseService } from "src/app/services/license.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
-import { SubAccountService } from "src/app/services/sub-account.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
-import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
-import { SharedModule } from "../../shared/shared.module";
 import { AddLicenseComponent } from "./add-license/add-license.component";
 import { LicensesComponent } from "./licenses.component"
 import { ModifyLicenseComponent } from "./modify-license/modify-license.component";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let licensesComponentTestInstance: LicensesComponent;
 let fixture : ComponentFixture<LicensesComponent>;
-
-const RouterMock = {
-    navigate: (commands: string[]) => {}
-};
-
 const dialogServiceMock = new DialogServiceMock();
 
 const beforeEachFunction = () =>{
-    TestBed.configureTestingModule({
-        declarations:[LicensesComponent],
-        imports: [CommonModule,SharedModule,BrowserAnimationsModule],
-        providers: [ 
-             {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: Router,
-            useValue: RouterMock
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: DialogService,
-            useValue: dialogServiceMock
-        },
-        {
-            provide: SubAccountService,
-            useValue: SubaccountServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        }
-    ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(LicensesComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogServiceMock });
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(LicensesComponent);
     licensesComponentTestInstance = fixture.componentInstance;
     spyOn(SubaccountServiceMock, 'setSelectedSubAccount').and.callThrough();
 }
 
-describe('licenses - UI verification tests',()=>{
-
+describe('licenses.component - UI verification tests',()=>{
     beforeEach(beforeEachFunction);
 
     it('should display essential UI and components and call sizeChange()',()=>{
@@ -97,13 +40,13 @@ describe('licenses - UI verification tests',()=>{
         const addLicenseButton: HTMLElement = fixture.nativeElement.querySelector('#add-license-button');
         const currentSubaccount = licensesComponentTestInstance.customerSubaccountDetails;
         expect(h1.textContent).toBe(`${currentSubaccount.customerName} - ${currentSubaccount.name}`);
-        expect(h2.textContent).toBe('tekVizion 360 Subscriptions');
-        expect(addLicenseButton.textContent).toBe('Add tekVizion 360 Subscription');
+        expect(h2.textContent).toBe('TekVizion 360 Subscriptions');
+        expect(addLicenseButton.textContent).toBe('Add TekVizion 360 Subscription');
     });
 
-    it('sould load correct data columns for the table', ()=>{
+    it('should load correct data columns for the table', ()=>{
         fixture.detectChanges();
-        
+
         const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
         expect(headers[0].innerText).toBe('Start Date');
         expect(headers[1].innerText).toBe('Renewal Date');
@@ -115,8 +58,7 @@ describe('licenses - UI verification tests',()=>{
     });
 });
 
-describe('Data collection and parsing tests',()=>{
-
+describe('licenses.component - Data collection and parsing tests',()=>{
     beforeEach(beforeEachFunction);
 
     it('should make a call to get selected Customer, licenses and actionMenuOptions',()=>{
@@ -176,8 +118,7 @@ describe('Data collection and parsing tests',()=>{
     });
 });
 
-describe('Dialog calls and interactions', ()=>{
-
+describe('licenses.component - Dialog calls and interactions', ()=>{
     beforeEach(beforeEachFunction);
 
     it('should execute rowAction() with expected data given set arguments',()=>{
@@ -231,8 +172,7 @@ describe('Dialog calls and interactions', ()=>{
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(LicenseServiceMock.deleteLicense).toHaveBeenCalledWith(license.id);
         expect(licensesComponentTestInstance.fetchLicenses).toHaveBeenCalled();
-    })
-
+    });
     
     it('should not delete license if the operation is NOT confirmed in confirmDialog after calling onDelete()',()=>{
         spyOn(dialogServiceMock,'confirmDialog').and.callThrough();
@@ -245,6 +185,6 @@ describe('Dialog calls and interactions', ()=>{
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(LicenseServiceMock.deleteLicense).not.toHaveBeenCalled();
         expect(licensesComponentTestInstance.fetchLicenses).not.toHaveBeenCalled();
-    })
+    });
 
 });

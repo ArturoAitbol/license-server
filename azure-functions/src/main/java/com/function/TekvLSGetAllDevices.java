@@ -11,6 +11,9 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+
+import io.jsonwebtoken.Claims;
+
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
@@ -41,7 +44,8 @@ public class TekvLSGetAllDevices {
 			@BindingName("id") String id,
 			final ExecutionContext context) {
 
-		JSONArray roles = getRolesFromToken(request, context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		JSONArray roles = getRolesFromToken(tokenClaims, context);
 		if (roles.isEmpty()) {
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -55,7 +59,8 @@ public class TekvLSGetAllDevices {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAllDevices Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSGetAllDevices Azure function");
 
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -151,17 +156,21 @@ public class TekvLSGetAllDevices {
 				array.put(item);
 			}
 			json.put("devices", array);
+
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetAllDevices Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
 					.body(json.toString()).build();
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllDevices Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSGetAllDevices Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

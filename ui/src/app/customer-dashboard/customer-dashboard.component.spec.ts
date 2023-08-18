@@ -1,105 +1,45 @@
-import { HttpClient } from '@angular/common/http';
-import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { MsalService } from '@azure/msal-angular';
-import { CustomerService } from '../services/customer.service';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { DialogService } from '../services/dialog.service';
-import { LicenseService } from '../services/license.service';
-import { SubAccountService } from '../services/sub-account.service';
-import { DashboardComponent } from './customer-dashboard.component';
-import { SharedModule } from '../modules/shared/shared.module';
-import { DataTableComponent } from '../generics/data-table/data-table.component';
+import { CustomerDashboardComponent } from './customer-dashboard.component';
 import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from '../modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from '../modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
 import { AdminEmailsComponent } from '../modules/dashboard-customer/admin-emails-modal/admin-emails.component';
 import { SubaccountAdminEmailsComponent } from '../modules/dashboard-customer/subaccount-admin-emails-modal/subaccount-admin-emails.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LicenseServiceMock } from '../../test/mock/services/license-service.mock';
 import { CustomerServiceMock } from '../../test/mock/services/customer-service.mock';
 import { SubaccountServiceMock } from '../../test/mock/services/subaccount-service.mock';
 import { MatDialogMock } from '../../test/mock/components/mat-dialog.mock';
-import { MsalServiceMock } from '../../test/mock/services/msal-service.mock';
 import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.mock";
-import { SnackBarService } from "../services/snack-bar.service";
 import { DialogServiceMock } from '../../test/mock/services/dialog-service.mock';
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { tekVizionServices } from '../helpers/tekvizion-services';
 import { of, throwError } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import { FeatureToggleServiceMock } from 'src/test/mock/services/feature-toggle-service.mock';
-import { FeatureToggleService } from '../services/feature-toggle.service';
 import { environment } from 'src/environments/environment';
+import { TestBedConfigBuilder } from '../../test/mock/TestBedConfigHelper.mock';
+import { RouterMock } from '../../test/mock/Router.mock';
+import { Constants } from '../helpers/constants';
 
-let dashboardComponentTestInstance: DashboardComponent;
-let fixture: ComponentFixture<DashboardComponent>;
+let dashboardComponentTestInstance: CustomerDashboardComponent;
+let fixture: ComponentFixture<CustomerDashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
 
-const RouterMock = {
-    navigate: (commands: string[], queryParams: any) => { }
-};
+const beforeEachFunction = waitForAsync(
+    () => {
+        const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CustomerDashboardComponent);
+        configBuilder.addProvider({ provide: DialogService, useValue: dialogServiceMock });
+        TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents().then(() => {
+            fixture = TestBed.createComponent(CustomerDashboardComponent);
+            dashboardComponentTestInstance = fixture.componentInstance;
+            dashboardComponentTestInstance.ngOnInit();
+        });
+    }
+);
 
-const defaultTestBedConfig = {
-    declarations: [DashboardComponent, DataTableComponent, AddCustomerAccountModalComponent, AddSubaccountModalComponent, ModifyCustomerAccountComponent, AdminEmailsComponent, SubaccountAdminEmailsComponent],
-    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-    providers: [
-        {
-            provide: Router,
-            useValue: RouterMock
-        },
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: DialogService,
-            useValue: dialogServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: SubAccountService,
-            useValue: SubaccountServiceMock
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: FeatureToggleService,
-            useValue: FeatureToggleServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        }
-    ]
-    
-};
-
-const beforeEachFunction = async () =>{
-    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
-        fixture = TestBed.createComponent(DashboardComponent);
-        dashboardComponentTestInstance = fixture.componentInstance;
-        dashboardComponentTestInstance.ngOnInit();
-    });
-}
-
-describe('UI verification tests', () => {
+describe('CustomerDashboardComponent - UI verification tests', () => {
     beforeEach(beforeEachFunction);
-    it('should display essential UI and components', () => {
+    it('CustomerDashboardComponent - should display essential UI and components', () => {
         fixture.detectChanges();
         const h1 = fixture.nativeElement.querySelector('#page-title');
         const addCustomerButton = fixture.nativeElement.querySelector('#add-customer-button');
@@ -228,7 +168,7 @@ describe('Dialog calls and interactions', () => {
 
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
-            message: 'Do you want to confirm this action?',
+            message: 'Are you sure you want to delete the customer "' + expectedCustomerObject.name + '"?',
             confirmCaption: 'Delete Subaccount',
             deleteAllDataCaption: 'Delete Customer',
             cancelCaption: 'Cancel',
@@ -257,7 +197,7 @@ describe('Dialog calls and interactions', () => {
         await fixture.whenStable();
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
-            message: 'Do you want to confirm this action?',
+            message: 'Are you sure you want to delete the customer "' + expectedCustomerObject.name + '"?',
             confirmCaption: 'Delete Subaccount',
             deleteAllDataCaption: 'Delete Customer',
             cancelCaption: 'Cancel',
@@ -277,15 +217,6 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
-        const selectedTestData = { selectedRow: {
-            name: "testV2",
-            id: "157fdef0-c28e-4764-9023-75c06daad09d",
-            subaccountName: "testv2Demo",
-            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-            services: "tokenConsumption,spotlight"
-        }, 
-        selectedOption: 'selectedTestOption', 
-        selectedIndex: '0' };  
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseConsumption({});
@@ -299,7 +230,7 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
     });
 
-    it('should navigate to Spotlight dashboard ', () => {
+    it('should navigate to UCaaS Continuous Testing dashboard ', () => {
         const selectedTestData = { selectedRow: {
             name: "testV2",
             id: "157fdef0-c28e-4764-9023-75c06daad09d",
@@ -316,24 +247,13 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('UCaaS Continuous Testing Service is not available for this Subaccount', '');
     });
 });
 
-describe('routes to spothlight dashboard', () => {
-    const RouterMock2 = {
-        navigate: (commands: string[], queryParams:any) => { }
-    };
-    beforeEach(() => {
-        TestBed.configureTestingModule(defaultTestBedConfig);
-        TestBed.overrideProvider(Router, {
-            useValue: RouterMock2
-        });
-        fixture = TestBed.createComponent(DashboardComponent);
-        dashboardComponentTestInstance = fixture.componentInstance;
-    });
-    
-    it('should navigate to Spotlight dashboard ', () => {
+describe('routes to spotlight dashboard', () => {
+    beforeEach(beforeEachFunction);
+    it('should navigate to UCaaS Continuous Testing dashboard ', () => {
         const selectedTestData = { selectedRow: {
             name: "testV2",
             id: "157fdef0-c28e-4764-9023-75c06daad09d",
@@ -344,14 +264,12 @@ describe('routes to spothlight dashboard', () => {
         selectedOption: 'selectedTestOption', 
         selectedIndex: '0' }; 
         spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
-        spyOn(RouterMock2, 'navigate').and.callThrough();
+        spyOn(RouterMock, 'navigate').and.callThrough();
         spyOn(window, 'open').and.returnValue(null);
 
-        const routePath = '/spotlight/visualization';
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(window.open).toHaveBeenCalledWith(`${environment.BASE_URL}/#${routePath}?subaccountId=${selectedTestData.selectedRow.subaccountId}`)
+        expect(window.open).toHaveBeenCalledWith(`${environment.BASE_URL}/#${Constants.SPOTLIGHT_DASHBOARD_PATH}?subaccountId=${selectedTestData.selectedRow.subaccountId}`)
     });
 });
 
@@ -584,7 +502,7 @@ describe('Filtering table rows', () => {
 
 describe('error messages', () => {
     beforeEach(beforeEachFunction);
-    it('should display an message if an error ocurred while fetching data', () => {
+    it('should display an message if an error occurred while fetching data', () => {
         const err = "some error";
         spyOn(CustomerServiceMock, 'getCustomerList').and.returnValue(throwError(err));
         spyOn(console, 'debug').and.callThrough();
@@ -596,7 +514,7 @@ describe('error messages', () => {
         expect(dashboardComponentTestInstance.isRequestCompleted).toBeTrue();
     });
 
-    it('should display a message if ocurred an error deleting a customer', () => {
+    it('should display a message if occurred an error deleting a customer', () => {
         const expectedCustomerObjectA = {
             customerType: 'MSP',
             testCustomer: false,
@@ -637,7 +555,7 @@ describe('error messages', () => {
         expect(CustomerServiceMock.deleteCustomer).toHaveBeenCalled();
     });
 
-    it('should display a meesage if an error ocurred while deleting a subaccount', () => {
+    it('should display a message if an error occurred while deleting a subaccount', () => {
         const expectedCustomerObjectC = {
             customerType: 'MSP',
             testCustomer: false,

@@ -10,14 +10,30 @@ import { CtaasStakeholderComponent } from "./ctaas-stakeholder.component";
 import { UpdateStakeHolderComponent } from "./update-stake-holder/update-stake-holder.component";
 import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 import { MsalServiceMock } from '../../../../test/mock/services/msal-service.mock';
+import { delay } from "rxjs/operators";
+import { MatDialog } from "@angular/material/dialog";
+import { CallbackService } from "src/app/services/callback.service";
+import { CallbackServiceMock } from "src/test/mock/services/callback-service.mock";
+import { FeatureToggleServiceMock } from "src/test/mock/services/feature-toggle-service.mock";
 
 let ctaasStakeholderComponentTestInstance: CtaasStakeholderComponent;
 let fixture: ComponentFixture<CtaasStakeholderComponent>;
 const dialogService = new DialogServiceMock();
+const CustomMatDialogMock = {
+    open: <T, D = any, R = any>(arg1) => {
+        return {
+            afterClosed: () => {
+                return of(true).pipe(delay(200));
+            },
+        };
+    },
+};
+
 
 const beforeEachFunction = () => {
     const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasStakeholderComponent);
     configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addProvider({provide: CallbackService, useValue: CallbackServiceMock});
     configBuilder.addDeclaration(AddStakeHolderComponent);
     configBuilder.addDeclaration(UpdateStakeHolderComponent);
     TestBed.configureTestingModule(configBuilder.getConfig());
@@ -41,10 +57,10 @@ describe('UI verification test', () => {
         
         const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
         expect(headers[0].innerText).toBe('User');
-        expect(headers[1].innerText).toBe('Company Name');
-        expect(headers[2].innerText).toBe('Job Title');
-        expect(headers[3].innerText).toBe('Email');
-        expect(headers[4].innerText).toBe('Phone Number');
+        expect(headers[1].innerText).toBe('Phone Number');
+        expect(headers[2].innerText).toBe('Email');
+        expect(headers[3].innerText).toBe('Company Name');
+        expect(headers[4].innerText).toBe('Job Title');
     });
 
     it('should execute sortData()', () => {
@@ -97,7 +113,7 @@ describe('dialog calls and interactions',() => {
         selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Deleted Stakeholder successfully', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Stakeholder deleted successfully!', '');
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
 
@@ -108,14 +124,6 @@ describe('dialog calls and interactions',() => {
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
     });
 
-    it('should call onChangeToggle with false flag', () => {
-        spyOn(ctaasStakeholderComponentTestInstance, 'onChangeToggle').and.callThrough();
-
-        ctaasStakeholderComponentTestInstance.toggleStatus = true;
-        fixture.detectChanges();
-
-        expect(ctaasStakeholderComponentTestInstance.onChangeToggle).toHaveBeenCalledWith(true);
-    });
 
     it('should show a messge if an error ocurred while deleteing stakeholder', () => {
         const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '1' }
@@ -164,12 +172,16 @@ describe('dialog calls and interactions',() => {
 
     it('should throw a error if you exceeded the amount of stakeholders created', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callFake((ftName, subaccountId) => {
+            if (ftName === 'multitenant-demo-subaccount')
+                return false;
+        });
 
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.stakeholdersCount = Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
         ctaasStakeholderComponentTestInstance.addStakeholder();
 
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
     });
 
     it('should display an error message if an error ocurred in fetchStakeholderList', () => {
@@ -190,7 +202,6 @@ describe('calls with customer subaccount admin role', () => {
         spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
-        ctaasStakeholderComponentTestInstance.toggleStatus = true;
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount({
             "subaccountId": "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",

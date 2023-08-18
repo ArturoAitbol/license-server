@@ -36,7 +36,10 @@ public class CustomerForm extends AbstractPageObject {
         this.action.sendText(this.adminEmail, DriverManager.getInstance().addTimeStampToEmail(adminEmail));
         if (!subaccount.equals("Default"))
             this.action.replaceText(this.subaccountName, subaccount);
-        this.action.sendText(this.subaccountAdminEmail, DriverManager.getInstance().addTimeStampToEmail(subAdminEmail));
+        if (!DriverManager.getInstance().getActiveDirectoryStatus())
+            this.action.sendText(this.subaccountAdminEmail, DriverManager.getInstance().addTimeStampToEmail(subAdminEmail));
+        else
+            this.action.sendText(this.subaccountAdminEmail, environment.subaccountAdminUser());
         if (!spotlightPermission.equals("no") && !spotlightPermission.equals("disable"))
             this.action.click(this.spotlightPermission);
         if (!testCustomer.equals("no") && !testCustomer.equals("disable"))

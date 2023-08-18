@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Constants } from 'src/app/helpers/constants';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { Report } from 'src/app/helpers/report';
 import { IUserProfile } from 'src/app/model/user-profile.model';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -18,31 +17,31 @@ export class AddStakeHolderComponent implements OnInit {
 
   isDataLoading = false;
   userprofileDetails: IUserProfile;
-  private subaccountId: any;
+  CountryISO = CountryISO;
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  emailNotifications: boolean = true;
+  toggleStatus = true;
+  preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
     private stakeholderService: StakeHolderService,
     public dialogRef: MatDialogRef<AddStakeHolderComponent>,
     private subaccountService: SubAccountService) {}
-  readonly type = 'TYPE:Detailed';
-  readonly notifications = 'DAILY_REPORTS';
+    readonly type = 'TYPE:Detailed';
+    readonly notifications = 'DAILY_REPORTS';
   /**
    * initialize update stake holder form
    */
   addStakeholderForm = this.formBuilder.group({
     name: ['', Validators.required],
-    jobTitle: ['', Validators.required],
+    jobTitle: [''],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-    companyName: ['', Validators.required],
-    phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]]
+    companyName: [''],
+    phoneNumber: ['']
   });
 
-  reports: any =  [
-    { label: "Daily Reports", value: Report.DAILY_REPORTS},
-    { label: "Weekly Reports", value: Report.WEEKLY_REPORTS},
-    { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS}
-  ];
   
   /**
    * fetch user profile details
@@ -51,6 +50,7 @@ export class AddStakeHolderComponent implements OnInit {
     const subaccountUserProfileDetails = this.subaccountService.getSelectedSubAccount();
     if (subaccountUserProfileDetails) {
       const { companyName } = subaccountUserProfileDetails;
+      const { customerName } = subaccountUserProfileDetails;
       if (subaccountUserProfileDetails.id) {
         this.userprofileDetails = { subaccountId: subaccountUserProfileDetails.id };
       } else {
@@ -59,12 +59,24 @@ export class AddStakeHolderComponent implements OnInit {
       // check for company name and set it to form if company name has value
       if (companyName) {
         this.addStakeholderForm.patchValue({ companyName });
+      } else {
+        if(customerName)
+          this.addStakeholderForm.patchValue({ companyName: customerName });
       }
     }
   }
 
   ngOnInit(): void {
     this.fetchUserProfileDetails();
+  }
+  
+  onChangeToggle(flag: boolean): void {
+    this.toggleStatus = flag;
+    if (flag) {
+        this.emailNotifications = true;
+    } else {
+        this.emailNotifications = false;
+    }
   }
   
   /**
@@ -81,8 +93,12 @@ export class AddStakeHolderComponent implements OnInit {
     try {
       this.isDataLoading = true;
       const { subaccountId } = this.userprofileDetails;
-      const stakeholderDetails = { ... this.addStakeholderForm.value };
-      let stakeholderNotificationsAndtype = {...stakeholderDetails, type: this.type, notifications: this.notifications};
+      let stakeholderDetails = { ... this.addStakeholderForm.value };
+      if (stakeholderDetails.phoneNumber)
+        stakeholderDetails.phoneNumber = stakeholderDetails.phoneNumber.internationalNumber;
+      else 
+        stakeholderDetails.phoneNumber = "";
+      let stakeholderNotificationsAndtype = {...stakeholderDetails, type: this.type, notifications: this.notifications, emailNotifications: this.emailNotifications};
       stakeholderNotificationsAndtype.subaccountId = subaccountId;
       if (stakeholderNotificationsAndtype.notifications.length > 0) {
         stakeholderNotificationsAndtype.notifications = stakeholderNotificationsAndtype.type + ',' + stakeholderNotificationsAndtype.notifications;
@@ -93,17 +109,19 @@ export class AddStakeHolderComponent implements OnInit {
           this.snackBarService.openSnackBar(response.error, 'Error adding stakeholder');
           this.isDataLoading = false;
         } else {
-          this.isDataLoading = false;
           this.snackBarService.openSnackBar('Created Stakeholder successfully', '');
+          this.isDataLoading = false;
           this.onCancel('closed');
         }
       }, (err) => {
-        this.isDataLoading = false;
         this.snackBarService.openSnackBar(err.error, 'Error adding stakeholder');
+        this.isDataLoading = false;
         this.onCancel('closed');
       });
     } catch (e) {
-      console.error('error while creating stake holder | ', e);
+      console.error('error while creating stakeholder | ', e);
+      this.isDataLoading = false;
+      this.onCancel('closed');
     }
   }
 }

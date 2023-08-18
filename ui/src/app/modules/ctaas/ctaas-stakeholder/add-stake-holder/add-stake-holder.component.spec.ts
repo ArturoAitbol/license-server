@@ -32,14 +32,12 @@ describe('UI verification test', () => {
         const jobTitleLabel = fixture.nativeElement.querySelector('#job-title-label');
         const companyNameLabel = fixture.nativeElement.querySelector('#company-name-label');
         const emailLabel = fixture.nativeElement.querySelector('#email-label');
-        const mobileNumberLabel = fixture.nativeElement.querySelector('#mobile-number-label');
 
         expect(h1.textContent).toBe('Add Stakeholder');
         expect(name.textContent).toBe(' Name');
         expect(jobTitleLabel.textContent).toBe('Job Title');
         expect(companyNameLabel.textContent).toBe('Company Name');
         expect(emailLabel.textContent).toBe('Email');
-        expect(mobileNumberLabel.textContent).toBe('Phone Number');
     });
 
     it('should enable the submit button', () => {
@@ -50,7 +48,14 @@ describe('UI verification test', () => {
             jobTitle:'testJob11',
             companyName:'testComp11',
             subaccountAdminEmail:'tests1takeholder@gmail.com',
-            phoneNumber:'+919898989809'
+            phoneNumber:{
+                countryCode:"US",
+                dialCode: "+1",
+                e164Number: "+19198989898",
+                internationalNumber: "+1 919-898-9898",
+                nationalNumber: "(919) 898-9898",
+                number: "+19198989898"
+            }
         });
         fixture.detectChanges();
         expect(submitButton.disabled).toBeFalse();
@@ -68,6 +73,24 @@ describe('UI verification test', () => {
         });
         expect(submitButton.disabled).toBeTrue();
     });
+
+    it('should make the necessary checks for Name and Email', () => {
+        fixture.detectChanges();
+        const modifyStakeholder = addStakeholderComponentTestInstance.addStakeholderForm
+
+        modifyStakeholder.setValue({
+            name: '',
+            jobTitle:'',
+            companyName:'',
+            subaccountAdminEmail:'',
+            phoneNumber:'',
+        });
+        expect(modifyStakeholder.get('name').valid).toBeFalse();
+        expect(modifyStakeholder.get('jobTitle').valid).toBeTrue();
+        expect(modifyStakeholder.get('companyName').valid).toBeTrue();
+        expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
+        expect(modifyStakeholder.get('phoneNumber').valid).toBeTrue();
+    });
 });
 
 describe('add stakeholder interactions', () => {
@@ -80,7 +103,14 @@ describe('add stakeholder interactions', () => {
         addStakeholderComponentTestInstance.addStakeholderForm.get('jobTitle').setValue('testJ');
         addStakeholderComponentTestInstance.addStakeholderForm.get('companyName').setValue('testC');
         addStakeholderComponentTestInstance.addStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
-        addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue('1111111111');
+        addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue({
+            countryCode:"US",
+            dialCode: "+1",
+            e164Number: "+19198989898",
+            internationalNumber: "+1 919-898-9898",
+            nationalNumber: "(919) 898-9898",
+            number: "+19198989898"
+        });
 
         addStakeholderComponentTestInstance.addStakeholder();
 
@@ -96,7 +126,14 @@ describe('add stakeholder interactions', () => {
         addStakeholderComponentTestInstance.addStakeholderForm.get('jobTitle').setValue('testJ');
         addStakeholderComponentTestInstance.addStakeholderForm.get('companyName').setValue('testC');
         addStakeholderComponentTestInstance.addStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
-        addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue('1111111111');
+        addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue({
+            countryCode:"US",
+            dialCode: "+1",
+            e164Number: "+19198989898",
+            internationalNumber: "+1 919-898-9898",
+            nationalNumber: "(919) 898-9898",
+            number: "+19198989898"
+        });
 
         addStakeholderComponentTestInstance.addStakeholder();
 
@@ -136,7 +173,7 @@ describe('display of error messages', () => {
         addStakeholderComponentTestInstance.userprofileDetails = null;
         addStakeholderComponentTestInstance.addStakeholder();
 
-        expect(console.error).toHaveBeenCalledWith('error while creating stake holder | ', jasmine.any(TypeError));
+        expect(console.error).toHaveBeenCalledWith('error while creating stakeholder | ', jasmine.any(TypeError));
     })
 });
 
@@ -169,7 +206,14 @@ describe('addStakeholder - without subaccount id', () => {
         addStakeholderComponentTestInstance.addStakeholderForm.get('jobTitle').setValue('testJ');
         addStakeholderComponentTestInstance.addStakeholderForm.get('companyName').setValue('testC');
         addStakeholderComponentTestInstance.addStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
-        addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue('1111111111');
+        addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue({
+            countryCode:"US",
+            dialCode: "+1",
+            e164Number: "+19198989898",
+            internationalNumber: "+1 919-898-9898",
+            nationalNumber: "(919) 898-9898",
+            number: "+19198989898"
+        });
 
         addStakeholderComponentTestInstance.addStakeholder();
 

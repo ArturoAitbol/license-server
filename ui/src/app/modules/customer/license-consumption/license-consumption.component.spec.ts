@@ -1,28 +1,15 @@
-import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
-import { MsalService } from '@azure/msal-angular';
 import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
-import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
-import { ProjectService } from 'src/app/services/project.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { CurrentCustomerServiceMock } from 'src/test/mock/services/current-customer-service.mock';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
-import { SharedModule } from '../../shared/shared.module';
 import { LicenseConsumptionComponent } from './license-consumption.component';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
-import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { LicenseServiceMock } from 'src/test/mock/services/license-service.mock';
-import { LicenseService } from 'src/app/services/license.service';
 import { ConsumptionServiceMock } from 'src/test/mock/services/license-consumption-service.mock';
-import { ReactiveFormsModule } from '@angular/forms';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatHeaderCellHarness } from '@angular/material/table/testing';
@@ -36,17 +23,13 @@ import { Sort } from '@angular/material/sort';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 import { EventEmitter } from '@angular/core';
 import { delay } from 'rxjs/operators';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let licenseConsumptionComponentTestInstance: LicenseConsumptionComponent;
 let fixture: ComponentFixture<LicenseConsumptionComponent>;
 let loader: HarnessLoader;
 const dialogService = new DialogServiceMock();
-
-const RouterMock = {
-    navigate: (commands: string[]) => { }
-};
 
 const CustomMatDialogMock = {
     open: <T, D = any, R = any>(arg1) => {
@@ -63,55 +46,14 @@ const CustomMatDialogMock = {
 
 const updateProjectsEvent = new EventEmitter<any>();
 
-const TestBedParams = {
-    declarations: [LicenseConsumptionComponent, DataTableComponent, ModifyLicenseConsumptionDetailsComponent, AddLicenseConsumptionComponent, StaticConsumptionDetailsComponent],
-    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, ReactiveFormsModule],
-    providers: [
-        {
-            provide: Router,
-            useValue: RouterMock
-        },
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: ProjectService,
-            useValue: ProjectServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: LicenseConsumptionService,
-            useValue: ConsumptionServiceMock
-        },
-        {
-            provide: DialogService,
-            useValue: dialogService
-        },
-        {
-            provide: CustomerService,
-            useValue: CurrentCustomerServiceMock
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: SubAccountService,
-            useValue: SubaccountServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        }
-    ]
-};
+const configBuilder = new TestBedConfigBuilder().useDefaultConfig(LicenseConsumptionComponent);
+configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+configBuilder.addDeclaration(DataTableComponent);
+configBuilder.addDeclaration(ModifyLicenseConsumptionDetailsComponent);
+configBuilder.addDeclaration(AddLicenseConsumptionComponent);
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule(TestBedParams);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(LicenseConsumptionComponent);
     licenseConsumptionComponentTestInstance = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
@@ -131,7 +73,6 @@ const beforeEachFunction = () => {
 
 describe('license-consumption - UI verification test', () => {
     beforeEach(beforeEachFunction);
-    beforeEach(() => spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of({ licenses: [] })));
     it('should display essential UI and components', async () => {
         fixture.detectChanges();
         //Titles
@@ -148,7 +89,7 @@ describe('license-consumption - UI verification test', () => {
         //Buttons
         const addLicenseButton = fixture.nativeElement.querySelector('#add-license-button');
         const addLicenseConsumptionButton = fixture.nativeElement.querySelector('#add-license-consumption');
-        expect(addLicenseButton.textContent).toContain('Add tekVizion 360 Subscription');
+        expect(addLicenseButton.textContent).toContain('Add TekVizion 360 Subscription');
         expect(addLicenseConsumptionButton.textContent).toContain('Add tekToken Consumption');
 
         const cloneConsumptionButton: HTMLElement = fixture.nativeElement.querySelector('#clone-consumption');
@@ -165,7 +106,7 @@ describe('license-consumption - UI verification test', () => {
         const projectForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#project-form" }));
         const dateForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#date-form" }));
         expect(await consumptionTypeForm.getLabel()).toContain('Consumption Type');
-        expect(await licensePeriodForm.getLabel()).toContain('tekVizion 360 Subscription');
+        expect(await licensePeriodForm.getLabel()).toContain('TekVizion 360 Subscription');
         expect(await projectForm.getLabel()).toContain('Project');
         expect(await dateForm.getLabel()).toContain(licenseConsumptionComponentTestInstance.getDatePickerLabel());
 
@@ -253,7 +194,8 @@ describe('Data collection and parsing tests', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId);
-        expect(licenseConsumptionComponentTestInstance.licensesList).toEqual([LicenseServiceMock.mockLicenseN, LicenseServiceMock.mockLicenseO],);
+        expect(licenseConsumptionComponentTestInstance.licensesList).toEqual([LicenseServiceMock.mockLicenseN, LicenseServiceMock.mockLicenseO]);
+        await fixture.whenStable();
         expect(licenseConsumptionComponentTestInstance.isLicenseListLoaded).toBeTrue();
         expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchProjectsList).toHaveBeenCalled();
@@ -261,7 +203,6 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should change the status of all the loading-related variables if there is no licenses to show after initializing', () => {
-        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of({ licenses: [] }));
         fixture.detectChanges();
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryLoadingResults).toBeFalse();
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryRequestCompleted).toBeTrue();
@@ -317,7 +258,7 @@ describe('Data collection and parsing tests', () => {
 
     it('should throw an error when something goes wrong getting licenseConsumptionDetails for summary view when calling fetchSummaryData()', () => {
         fixture.detectChanges();
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(throwError(error));
@@ -331,12 +272,13 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails for equipment view when calling fetchEquipment()', () => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+    it('should make a call to get licenseConsumptionDetails for equipment view when calling fetchEquipment()', async () => {
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.fetchEquipment();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -346,7 +288,7 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should make a call to get licenseConsumptionDetails for equipment view when calling fetchEquipment()', async () => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(throwError(error));
@@ -361,12 +303,15 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isEquipmentSummaryRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData()', () => {
+    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData()', async() => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.setMonthAndYear(moment("2022-08-02"));
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
+
+        fixture.detectChanges();
+        await fixture.whenStable();
 
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
@@ -389,12 +334,15 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.tokenConsumptionData).toEqual([expectedConsumptionDetail]);
     });
 
-    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData() - Case: (selectedType: Configuration, tokenConsumption variables null', () => {
+    it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData() - Case: (selectedType: Configuration, tokenConsumption variables null', async() => {
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         licenseConsumptionComponentTestInstance.selectedType = 'Configuration';
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(of(ConsumptionServiceMock.mockDetailedInfoNoTokenConsumption));
+
+        fixture.detectChanges();
+        await fixture.whenStable();
 
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
@@ -408,7 +356,7 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.tokenConsumptionData).toEqual([expectedConsumptionDetail]);
     });
 
-    it('should throw an error if getting licenseConsumptionDetails failed when calling fetchAggregatedData()', () => {
+    it('should throw an error if getting licenseConsumptionDetails failed when calling fetchAggregatedData()', async() => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
@@ -416,6 +364,7 @@ describe('Data collection and parsing tests', () => {
         spyOn(console, 'error');
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -426,13 +375,14 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isDetailedConsumptionRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails when calling onPageChange()', () => {
+    it('should make a call to get licenseConsumptionDetails when calling onPageChange()', async() => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
         const event = { pageIndex: 0, pageSize: 10 };
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.onPageChange(event);
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -443,8 +393,8 @@ describe('Data collection and parsing tests', () => {
     });
 
 
-    it('should throw an error if getting licenseConsumptionDetails failed when calling onPageChange()', () => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+    it('should throw an error if getting licenseConsumptionDetails failed when calling onPageChange()', async() => {
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         const err = "some error";
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.returnValue(throwError(err));
@@ -452,6 +402,7 @@ describe('Data collection and parsing tests', () => {
         const event = { pageIndex: 0, pageSize: 10 };
 
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.onPageChange(event);
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -460,11 +411,12 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isDetailedConsumptionRequestCompleted).toBeTrue();
     });
 
-    it('should make a call to get licenseConsumptionDetails with default queries when calling fetchDetailedConsumptionData() without arguments', () => {
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+    it('should make a call to get licenseConsumptionDetails with default queries when calling fetchDetailedConsumptionData() without arguments', async () => {
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock, 'getLicenseConsumptionDetails').and.callThrough();
         fixture.detectChanges();
+        await fixture.whenStable();
         licenseConsumptionComponentTestInstance.fetchDetailedConsumptionData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -477,7 +429,7 @@ describe('Data collection and parsing tests', () => {
     it('should call to fetchAggregatedData when calling setWeek()', () => {
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, 'resetCalendar');
         const date = moment.utc();
@@ -522,7 +474,7 @@ describe('Dialog calls and interactions', () => {
 
     it('should execute licConsumptionRowAction() with expected data given set arguments', () => {
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         const selectedTestData = { selectedRow: ConsumptionServiceMock.mockConsumptionA, selectedOption: 'selectedTestOption', selectedIndex: '0' };
         const renewalDate = licenseConsumptionComponentTestInstance.selectedLicense.renewalDate;
         spyOn(licenseConsumptionComponentTestInstance, 'openDialog').and.callThrough();
@@ -583,7 +535,7 @@ describe('Methods Calls', () => {
     it('should set the variable aggregation (used to filter data based on a given period of time) when calling getMultipleChoiceAnswer()', () => {
         fixture.detectChanges();
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, 'resetCalendar');
 
@@ -617,7 +569,7 @@ describe('Methods Calls', () => {
 
     it('should call to fetchAggregatedData when calling setMonthAndYear()', async () => {
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, 'setMonthAndYear').and.callThrough();
         fixture.detectChanges();
@@ -659,7 +611,7 @@ describe('Methods Calls', () => {
 
     it('should change the selected type and make a call to fetchAggregatedData when calling getType()', () => {
         licenseConsumptionComponentTestInstance.customerSubaccountDetails = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
         spyOn(licenseConsumptionComponentTestInstance, 'fetchAggregatedData').and.callThrough();
         fixture.detectChanges();
         const type = 'AutomationPlatform';
@@ -786,7 +738,7 @@ describe('Weekly Table', () => {
 describe('openDialog', () => {
 
     beforeEach(() => {
-        TestBed.configureTestingModule(TestBedParams);
+        TestBed.configureTestingModule(configBuilder.getConfig());
         TestBed.overrideProvider(MatDialog, { useValue: CustomMatDialogMock });
         fixture = TestBed.createComponent(LicenseConsumptionComponent);
         licenseConsumptionComponentTestInstance = fixture.componentInstance;

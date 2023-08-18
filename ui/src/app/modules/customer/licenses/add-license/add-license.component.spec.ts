@@ -1,58 +1,20 @@
-import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatDialogRef } from "@angular/material/dialog";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { of } from "rxjs";
-import { SharedModule } from "src/app/modules/shared/shared.module";
-import { BundleService } from "src/app/services/bundle.service";
-import { CustomerService } from "src/app/services/customer.service";
-import { LicenseService } from "src/app/services/license.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
 import { BundleServiceMock } from "src/test/mock/services/bundle-service.mock";
 import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { AddLicenseComponent } from "./add-license.component";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
+import { CustomerService } from '../../../../services/customer.service';
 
 let addLicenseComponentTestInstance: AddLicenseComponent;
 let fixture: ComponentFixture<AddLicenseComponent>;
 
-const MatDialogRefMock = {
-    close: () => { return null }
-};
-
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [AddLicenseComponent],
-        imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
-        providers: [{
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: BundleService,
-            useValue: BundleServiceMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: MatDialogRef,
-            useValue: MatDialogRefMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        }
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddLicenseComponent);
+    configBuilder.addProvider({ provide: CustomerService, useValue: CustomerServiceMock });
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddLicenseComponent);
     addLicenseComponentTestInstance = fixture.componentInstance;
 }
@@ -68,7 +30,7 @@ describe('UI and component verification tests', () => {
         const submitButton: HTMLElement = fixture.nativeElement.querySelector('#submit-button');
         const labels: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('label'));
 
-        expect(h1.textContent).toBe('Add tekVizion 360 Subscription');
+        expect(h1.textContent).toBe('Add TekVizion 360 Subscription');
         expect(cancelButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
         expect(labels.find(label => label.textContent.includes("Start Date"))).not.toBeUndefined();

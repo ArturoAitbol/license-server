@@ -19,12 +19,13 @@ import com.microsoft.azure.functions.HttpStatusType;
 
 public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
 
-    private final TekvLSGetAllCtaasSetups tekvLSGetAllCtaasSetups = new TekvLSGetAllCtaasSetups();
+    private TekvLSGetAllCtaasSetups tekvLSGetAllCtaasSetups;
 
     @BeforeEach
     public void setup(){
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
+        this.tekvLSGetAllCtaasSetups = new TekvLSGetAllCtaasSetups();
     }
 
     @Tag("acceptance")

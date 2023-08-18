@@ -8,4 +8,7 @@ export interface IStakeholder {
     subaccountId?: string;
     type:string;
     role:string;
+    parsedRole:string;
+    latestCallbackRequestDate?:string;
+    emailNotifications?: any;
 }

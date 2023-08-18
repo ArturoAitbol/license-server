@@ -21,38 +21,10 @@ const MOCK_TOGGLES =
                 "status": false
             },
             {
-                "author": "ogonzalez@tekvizionlabs.com",
-                "name": "ad-subaccount-user-creation",
-                "description": "Subaccount User Creation",
-                "id": "6826a94e-c4da-46e9-8001-668df24877ec",
-                "exceptions": [
-                    {
-                        "subaccountId": "f5a609c0-8b70-4a10-9dc8-9536bdb5652c",
-                        "customerId": "7d133fd2-8228-44ff-9636-1881f58f2dbb",
-                        "subaccountName": "Test RealCustomer - 360 Small",
-                        "customerName": "Test RealCustomer",
-                        "status": false
-                    }
-                ],
-                "status": false
-            },
-            {
-                "name": "ctaasFeature",
-                "description": "Ctaas features",
-                "id": "63f1d301-2d99-448a-9334-5dd10fe98c24",
-                "status": true
-            },
-            {
                 "name": "notificationFeature",
                 "description": "Notification feature",
                 "id": "d43815a7-8927-4c8d-a75f-49e080493827",
                 "status": false
-            },
-            {
-                "name": "powerbiFeature",
-                "description": "Power Bi feature",
-                "id": "3c9d0d97-7878-4f1f-8ca5-18bf93069691",
-                "status": true
             },
             {
                 "name": "testFT",

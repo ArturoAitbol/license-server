@@ -7,4 +7,6 @@ export interface IUserProfile {
     subaccountId?: string;
     type?: string;
     notifications?: string | [] | any;
+    latestCallbackRequest?: number;
+    emailNotifications?:boolean;
 }

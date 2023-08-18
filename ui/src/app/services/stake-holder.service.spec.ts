@@ -46,6 +46,7 @@ describe('Stakeholder service http requests test', () => {
             phoneNumber: '1111111111',
             notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
+            parsedRole: 'Stakeholder',
             type: 'Detailed',
             role: Constants.SUBACCOUNT_STAKEHOLDER,
             subaccountAdminEmail: "test@mail.com"
@@ -66,6 +67,7 @@ describe('Stakeholder service http requests test', () => {
             phoneNumber: '1111111111',
             notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
+            parsedRole: 'Stakeholder',
             type: 'Detailed',
             role: Constants.SUBACCOUNT_STAKEHOLDER,
             subaccountAdminEmail: "test@mail.com"
@@ -86,6 +88,7 @@ describe('Stakeholder service http requests test', () => {
           phoneNumber: '1111111111',
           notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
           subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
+          parsedRole: 'Stakeholder',
           type: 'Detailed',
           role: Constants.SUBACCOUNT_STAKEHOLDER,
           subaccountAdminEmail: "test@mail.com"

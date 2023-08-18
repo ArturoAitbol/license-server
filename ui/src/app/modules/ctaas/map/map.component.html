@@ -1,0 +1,90 @@
+<!-- Load Leaflet from CDN-->
+<app-banner [stylesflag]="'notes'"></app-banner>
+<mat-progress-bar *ngIf="autoRefresh" mode="indeterminate"></mat-progress-bar>
+<div [formGroup]="filterForm">
+  <div class="row">
+    <div class="col-8 date-picker-form justify-content-end mt-2 mb-2">
+      <div class="container-reverse">
+          <div class="date-field">
+            <span *ngIf="dateHasChanged()" class="d-flex justify-content-end apply-flag">
+              <mat-icon>error_outline</mat-icon>
+              <div>Not applied</div>
+            </span>
+            <mat-form-field  style="margin-bottom: -1.25em" class="col" appearance="outline">
+              <mat-label>Date</mat-label>
+              <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="startDateFilterControl">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+              <mat-datepicker #dp></mat-datepicker>
+            </mat-form-field> 
+          </div>
+          <div class="region-field">
+            <span *ngIf="regionsHasChanged()" class="d-flex justify-content-end apply-flag">
+              <mat-icon>error_outline</mat-icon>
+              <div>Not applied</div>
+            </span>
+            <mat-form-field appearance="outline" style="width: 80%;">
+                <mat-label>Region</mat-label>
+                <mat-hint>[Country] or [State, Country] or [City, State, Country]</mat-hint>
+                <input type="text"
+                placeholder="City or State or Country"
+                matInput
+                #regionInput
+                formControlName="region"
+                [matAutocomplete]="regionAuto">
+                <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" (optionSelected)="addRegion()">
+                    <mat-option *ngFor="let region of notSelectedFilteredRegions" [value]="region" title="{{region.displayName}}">
+                        {{region.displayName}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+      </div>
+      <div class="align-items-start apply-button-container" [ngClass]="{'apply-button-container-enable':(!dateHasChanged() && !regionsHasChanged())}">
+          <button class="mt-2 apply-button" mat-raised-button
+                  id="filter-button" (click)="dateFilter()" [disabled]="!filterForm.valid || (!dateHasChanged() && !regionsHasChanged())">Apply</button>
+      </div>
+    </div>
+    <div class="col-4 justify-content-end">
+      <div class="legend">
+        <div class="legend-item">
+          <div class="color-box good" matTooltip="Number of failed calls < 1 and Average POLQA > 3."></div>
+          <span class="legend-label" matTooltip="Number of failed calls < 1 and Average POLQA > 3.">Good</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box fair" matTooltip="Number of failed calls >= 1 and < 5, or Average POLQA >= 2 and <= 3."></div>
+          <span class="legend-label" matTooltip="Number of failed calls >= 1 and < 5, or Average POLQA >= 2 and <= 3.">Fair</span>
+        </div>
+        <div class="legend-item">
+          <div class="color-box bad" matTooltip="Number of failed calls >= 5 or Average POLQA < 2."></div>
+          <span class="legend-label" matTooltip="Number of failed calls >= 5 or Average POLQA < 2.">Bad</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="this.preselectedRegions.length>0">
+    <div class="col-md-6 offset-md-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
+                    <button [disabled]="this.preselectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+            </div>
+            <mat-chip-list aria-label="Region selection">
+                <mat-chip
+                  *ngFor="let region of preselectedRegions"
+                  (removed)="removeRegion(region)">
+                  {{region.displayName}}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+            </mat-chip-list>
+        <hr>
+    </div>
+  </div>
+</div>
+<div class="map-container" id="map-container">
+  <div class="loading-shade" *ngIf="isLoadingResults" id="map-spinner">
+    <mat-spinner id="map-spinner" *ngIf="isLoadingResults"></mat-spinner>
+  </div>
+  <div id="map" ></div>
+</div>

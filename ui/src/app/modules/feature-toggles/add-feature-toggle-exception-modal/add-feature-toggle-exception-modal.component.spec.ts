@@ -1,99 +1,51 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { AddFeatureToggleExceptionModalComponent } from './add-feature-toggle-exception-modal.component';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { SharedModule } from "../../shared/shared.module";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
-import { SnackBarService } from "../../../services/snack-bar.service";
 import { SnackBarServiceMock } from "../../../../test/mock/services/snack-bar-service.mock";
-import { HttpClient } from "@angular/common/http";
-import { FeatureToggleMgmtService } from "../../../services/feature-toggle-mgmt.service";
 import { FeatureToggleMgmtServiceMock } from "../../../../test/mock/services/feature-toggle-mgmt-service.mock";
-import { CustomerService } from "../../../services/customer.service";
-import { CustomerServiceMock } from "../../../../test/mock/services/customer-service.mock";
-import { SubAccountService } from "../../../services/sub-account.service";
-import { SubaccountServiceMock } from "../../../../test/mock/services/subaccount-service.mock";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { DialogServiceMock } from "../../../../test/mock/services/dialog-service.mock";
 import { of, throwError } from "rxjs";
 import { MatDialogMock } from "../../../../test/mock/components/mat-dialog.mock";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { DialogService } from '../../../services/dialog.service';
 
 let testInstance: AddFeatureToggleExceptionModalComponent;
 let fixture: ComponentFixture<AddFeatureToggleExceptionModalComponent>;
 
-const RouterMock = {
-  navigate: (commands: string[]) => { return }
+const DIALOG_DATA = {
+  featureToggle: {
+    name: "testFT",
+    description: "Test FT",
+    id: "df6f5bc2-2687-49df-8dc0-beff88012235",
+    exceptions: [
+      {
+        subaccountId: "31d81e5c-a916-470b-aabe-6860f8464211",
+        customerId: "b566c90f-3671-47e3-b01e-c44684e28f99",
+        subaccountName: "Test Subaccount",
+        customerName: "Test Subaccount",
+        status: false
+      }
+    ],
+    status: true
+  }
 };
 
 const MatDialogRefMock = {
   close: ()=> {}
 };
 const dialogMock = new DialogServiceMock();
-const beforeEachFunction = async () => {
-  TestBed.configureTestingModule({
-    declarations: [ AddFeatureToggleExceptionModalComponent ],
-    imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule ],
-    providers: [
-      {
-        provide: Router,
-        useValue: RouterMock
-      },
-      {
-        provide: SnackBarService,
-        useValue: SnackBarServiceMock
-      },
-      {
-        provide: HttpClient,
-        useValue: HttpClient
-      },
-      {
-        provide: FeatureToggleMgmtService,
-        useValue: FeatureToggleMgmtServiceMock
-      },
-      {
-        provide: CustomerService,
-        useValue: CustomerServiceMock
-      },
-      {
-        provide: SubAccountService,
-        useValue: SubaccountServiceMock
-      },
-      {
-        provide: MatDialogRef,
-        useValue: MatDialogRefMock
-      },
-      {
-        provide: MatDialog,
-        useValue: MatDialogMock
-      },
-      {
-        provide: MAT_DIALOG_DATA,
-        useValue: {
-          featureToggle: {
-            name: "testFT",
-            description: "Test FT",
-            id: "df6f5bc2-2687-49df-8dc0-beff88012235",
-            exceptions: [
-              {
-                subaccountId: "31d81e5c-a916-470b-aabe-6860f8464211",
-                customerId: "b566c90f-3671-47e3-b01e-c44684e28f99",
-                subaccountName: "Test Subaccount",
-                customerName: "Test Subaccount",
-                status: false
-              }
-            ],
-            status: true
-          }
-        }
-      },
-    ]
-  }).compileComponents().then(() => {
-    fixture = TestBed.createComponent(AddFeatureToggleExceptionModalComponent);
-    testInstance = fixture.componentInstance;
-    testInstance.ngOnInit();
-  });
-};
+const beforeEachFunction = waitForAsync(
+    () => {
+      const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddFeatureToggleExceptionModalComponent);
+      configBuilder.addProvider({provide: DialogService, useValue: dialogMock});
+      configBuilder.addProvider({provide: MAT_DIALOG_DATA, useValue: DIALOG_DATA});
+      TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents().then(() => {
+        fixture = TestBed.createComponent(AddFeatureToggleExceptionModalComponent);
+        testInstance = fixture.componentInstance;
+        testInstance.ngOnInit();
+      });
+    }
+);
 describe('AddFeatureToggleExceptionModalComponent - UI verification tests', () => {
   beforeEach(beforeEachFunction);
   it('should display essential UI and components', () => {
@@ -121,9 +73,9 @@ describe('AddFeatureToggleExceptionModalComponent - UI verification tests', () =
 describe('AddFeatureToggleExceptionModalComponent - Basic functionality', () => {
   beforeEach(beforeEachFunction);
   it('should call dialogRef.close at onCancel()',  () => {
-    spyOn(MatDialogRefMock, 'close');
+    spyOn(MatDialogMock, 'close');
     testInstance.onCancel();
-    expect(MatDialogRefMock.close).toHaveBeenCalled();
+    expect(MatDialogMock.close).toHaveBeenCalled();
   });
 
   it('should execute submit action', () => {

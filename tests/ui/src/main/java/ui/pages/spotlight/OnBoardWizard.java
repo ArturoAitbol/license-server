@@ -4,7 +4,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
-import ui.core.DriverManager;
 
 public class OnBoardWizard extends AbstractPageObject {
     @FindBy(css="[formcontrolname='name']")
@@ -15,7 +14,9 @@ public class OnBoardWizard extends AbstractPageObject {
     WebElement email;
     @FindBy(css="[formcontrolname='companyName']")
     WebElement companyName;
-    @FindBy(css="[formcontrolname='phoneNumber']")
+    @FindBy(css = "[dropdown]")
+    WebElement countryDropDown;
+    @FindBy(css="[id='phone-number']")
     WebElement phoneNumber;
     @FindBy(css="[formcontrolname='type']")
     WebElement type;
@@ -29,12 +30,14 @@ public class OnBoardWizard extends AbstractPageObject {
     WebElement submitButton;
 
 
-    public void acceptForm(String name, String jobTitle, String email, String companyName, String phoneNumber) {
+    public void acceptForm(String name, String jobTitle, String email, String companyName, String countryPhoneNumber, String phoneNumber) {
         this.action.replaceText(this.name, name);
+        this.action.replaceText(this.companyName, companyName);
+        By countrySelector = By.xpath(String.format("//span[contains(text(), '%s')]/parent::li", countryPhoneNumber));
+        this.action.selectOption(countryDropDown, countrySelector);
+        this.action.replaceText(this.phoneNumber, phoneNumber);
         this.action.replaceText(this.jobTitle, jobTitle);
         this.action.replaceText(this.email, email);
-        this.action.replaceText(this.companyName, companyName);
-        this.action.replaceText(this.phoneNumber, phoneNumber);
         this.action.click(this.submitButton);
         String message = getMessage();
         System.out.println("Complete On Board : " + message);

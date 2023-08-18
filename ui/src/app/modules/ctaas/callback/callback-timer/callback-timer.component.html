@@ -1,0 +1,17 @@
+<div class="container">
+    <h1 mat-dialog-title id="callback-timer-title">Call request not available</h1>
+    <div class="flex-container">
+        <mat-dialog-content>
+            <h3>Please wait to request a new call if you still need it.</h3>
+            <h3>Time before your next request:</h3>
+            <div id="countdown-timer">
+                <h1><b>{{formatTime()}}</b></h1>
+            </div>
+        </mat-dialog-content>
+    </div>
+    <mat-dialog-actions>
+        <button class="btn-custom" mat-raised-button [mat-dialog-close]="true" id="dismiss">
+            Dismiss
+        </button>
+    </mat-dialog-actions>
+</div>

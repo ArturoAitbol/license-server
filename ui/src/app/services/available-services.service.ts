@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { tekVizionServices } from '../helpers/tekvizion-services';
 import { IService } from '../model/service.model';
+import { Constants } from '../helpers/constants';
 @Injectable({
   providedIn: 'root'
 })
@@ -12,16 +13,16 @@ export class AvailableServicesService {
       "value": tekVizionServices.tekTokenConstumption,
       "enabled": true,
       "access": false,
-      "routePath": "/dashboard",
+      "routePath": Constants.CUSTOMERS_DASHBOARD_VIEW_PATH,
       "imagePath": "assets/images/tokens.png",
-      "tabName": "tekVizion 360 Portal"
+      "tabName": "TekVizion 360 Portal"
     },
     {
-      "label": "Spotlight",
+      "label": "UCaaS Continuous Testing",
       "value": tekVizionServices.SpotLight,
       "enabled": true,
       "access": false,
-      "routePath": "/spotlight/visualization",
+      "routePath": Constants.SPOTLIGHT_DASHBOARD_PATH,
       "imagePath": "assets/images/dashboard.png",
       "tabName": "SpotLight"
     }

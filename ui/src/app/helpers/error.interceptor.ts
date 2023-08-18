@@ -8,13 +8,17 @@ import { AutoLogoutService } from "../services/auto-logout.service";
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
     constructor(private snackBarService: SnackBarService,
-                private autoLogoutService: AutoLogoutService) { }
+        private autoLogoutService: AutoLogoutService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(
             tap(event => this.autoLogoutService.restartTimer()),
             catchError(err => {
-                const error = err.error || err.statusText;
+                let error;
+                if (!err)
+                    error = { error: "Unexpected Error" };
+                else
+                    error = err.error ? err.error : err.statusText;
                 this.snackBarService.openSnackBar(error.error, 'Error performing action!');
                 if (err.status === 401)
                     this.autoLogoutService.logout();

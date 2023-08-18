@@ -1,96 +1,28 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { SharedModule } from "../../../shared/shared.module";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { MatDialogMock } from "../../../../../test/mock/components/mat-dialog.mock";
-import { SnackBarService } from "../../../../services/snack-bar.service";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { SnackBarServiceMock } from "../../../../../test/mock/services/snack-bar-service.mock";
-import { CustomerService } from "../../../../services/customer.service";
-import { CustomerServiceMock } from "../../../../../test/mock/services/customer-service.mock";
 import { DialogService } from "../../../../services/dialog.service";
-import { MsalService } from "@azure/msal-angular";
-import { MsalServiceMock } from "../../../../../test/mock/services/msal-service.mock";
-import { HttpClient } from "@angular/common/http";
 import { AddLicenseConsumptionComponent } from "./add-license-consumption.component";
-import { LicenseConsumptionService } from "../../../../services/license-consumption.service";
 import { ConsumptionServiceMock } from "../../../../../test/mock/services/license-consumption-service.mock";
-import { ProjectService } from "../../../../services/project.service";
 import { ProjectServiceMock } from "../../../../../test/mock/services/project-service.mock";
 import { By } from "@angular/platform-browser";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { DevicesService } from "../../../../services/devices.service";
 import { DevicesServiceMock } from "../../../../../test/mock/services/devices-service.mock";
 import moment from "moment";
 import { of, throwError } from "rxjs";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
+import { DialogServiceMock } from '../../../../../test/mock/services/dialog-service.mock';
 
 let testInstance: AddLicenseConsumptionComponent;
 let fixture: ComponentFixture<AddLicenseConsumptionComponent>;
 
-const MatDialogRefMock = {
-    close: () => {
-        return null
-    }
-};
-
-const defaultTestBedConfig = {
-    declarations: [ AddLicenseConsumptionComponent ],
-    imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule ],
-    providers: [
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: DevicesService,
-            useValue: DevicesServiceMock
-        },
-        {
-            provide: ProjectService,
-            useValue: ProjectServiceMock
-        },
-        {
-            provide: LicenseConsumptionService,
-            useValue: ConsumptionServiceMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: DialogService,
-            useValue: () => {
-                return {};
-            }
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        },
-        {
-            provide: MatDialogRef,
-            useValue: MatDialogRefMock
-        },
-        {
-            provide: MAT_DIALOG_DATA,
-            useValue: {}
-        }
-    ]
-};
+const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddLicenseConsumptionComponent);
+configBuilder.addProvider({ provide: DialogService, useValue: new DialogServiceMock() });
+configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: {} });
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule(defaultTestBedConfig);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddLicenseConsumptionComponent);
     testInstance = fixture.componentInstance;
-    spyOn(console, 'log').and.callThrough();
     fixture.detectChanges();
 };
 
@@ -543,47 +475,56 @@ describe('add-license-consumption - Day toggles', () => {
 
 describe('add-license-consumption - Cloning consumptions', () => {
     beforeEach(() => {
-        TestBed.configureTestingModule(defaultTestBedConfig);
+        TestBed.configureTestingModule(configBuilder.getConfig());
         TestBed.overrideProvider(MAT_DIALOG_DATA, {
             useValue: {
-                selectedConsumptions: [
+                selectedConsumptions:[
                     {
-                        "consumptionDate": "2022-08-21",
-                        "product": "KX-NS700",
-                        "usageDays": [
-                            "Mon"
-                        ],
-                        "consumption": "2022-08-21 - Week 34",
-                        "deviceId": "755955b7-4100-4328-9f6e-7038b92e4a02",
-                        "version": "v007.00138",
-                        "vendor": "Panasonic",
-                        "granularity": "week",
-                        "supportType": false,
-                        "id": "e7874f3c-2b98-4d87-ba8a-f69216d5b35e",
-                        "tokensConsumed": 2,
-                        "projectName": "Test",
-                        "projectId": "9fd20dca-33f0-4bd2-b484-d81dd6423626",
-                        "usageType": "Configuration"
+                        "consumptionDate": "2023-04-09",
+                        "usageDays": "...",
+                        "comment": "",
+                        "consumption": "2023-04-09 - Week 15",
+                        "id": "ee3ade60-128b-4eb9-9047-494cf764ed66",
+                        "tokensConsumed": 0,
+                        "projectName": "Project 1",
+                        "projectId": "be612704-c26e-48ea-ab9b-19312f03d644",
+                        "device": {
+                            "supportType": true,
+                            "product": "Genesys Pure Cloud",
+                            "vendor": "Genesys",
+                            "granularity": "static",
+                            "id": "422c2998-4553-4d5c-81f3-6e29b66c8788",
+                            "type": "CC",
+                            "version": "1.0.0.10206"
+                        },
+                        "usageType": "Configuration",
+                        "deviceInfo": "CC: Genesys - Genesys Pure Cloud 1.0.0.10206",
+                        "callingPlatformInfo": ""
                     },
                     {
-                        "consumptionDate": "2022-08-02",
-                        "product": "HylaFAX Enterprise",
+                        "consumptionDate": "2023-04-09",
                         "usageDays": [
                             "Mon",
-                            "Wed",
-                            "Thu"
+                            "Tue"
                         ],
-                        "consumption": "2022-08-02 - Week 31",
-                        "deviceId": "001ee852-4ab5-4642-85e1-58f5a477fbb3",
-                        "version": "6.2",
-                        "vendor": "HylaFAX",
-                        "granularity": "static",
-                        "supportType": true,
-                        "id": "fdf1a727-67bd-430b-824d-07d49064d0e9",
-                        "tokensConsumed": 0,
-                        "projectName": "Test",
-                        "projectId": "9fd20dca-33f0-4bd2-b484-d81dd6423626",
-                        "usageType": "Configuration"
+                        "comment": "",
+                        "consumption": "2023-04-09 - Week 15",
+                        "id": "eae05239-bf05-4301-a377-88dbf3aff613",
+                        "tokensConsumed": 2,
+                        "projectName": "Project 1",
+                        "projectId": "be612704-c26e-48ea-ab9b-19312f03d644",
+                        "device": {
+                            "supportType": false,
+                            "product": "3CX",
+                            "vendor": "3CX",
+                            "granularity": "week",
+                            "id": "ef7a4bcd-fc3f-4f87-bf87-ae934799690b",
+                            "type": "PBX",
+                            "version": "18.0.1880"
+                        },
+                        "usageType": "Configuration",
+                        "deviceInfo": "PBX: 3CX - 3CX 18.0.1880",
+                        "callingPlatformInfo": ""
                     }
                 ]
             }

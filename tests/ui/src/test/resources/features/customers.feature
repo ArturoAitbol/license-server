@@ -1,4 +1,4 @@
-@customersTest
+@customersTest @license
 Feature: Customers
   Background: Login successfully with valid credentials
     Given I am on the landing page
@@ -16,6 +16,7 @@ Feature: Customers
       | subAdminEmail | test-customer@tekvizion.com       |
       | testCustomer  | yes                               |
     Then I see the customer "functional-test-customer" in the table
+    And I verify "customer" admin emails
 
   @addCustomerAdmin
   Scenario: Add a customer administrator
@@ -23,6 +24,7 @@ Feature: Customers
     And I open the Customer Administrator Emails of "functional-test-customer"
     When I add an administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer admin emails edited successfully!"
+    And I verify "customer" admin emails
 
   @subscriptionsView @CTaaSFeature
   Scenario: Go to the subscriptions tab
@@ -37,21 +39,15 @@ Feature: Customers
   Scenario: Delete a customer administrator
     Given I see the customer "functional-test-customer" in the table
     And I open the Customer Administrator Emails of "functional-test-customer"
-    When I delete the administrator with email "admintest@tekvizion.com"
+    When I delete administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer administrator email deleted"
 
   @editCustomer
   Scenario: Edit a test customer
     Given I see the customer "functional-test-customer" in the table
     When I edit the customer "functional-test-customer" with the following data
-      | name          | functional-test-customer-modified        |
-      | type          | MSP                     |
-      | subaccount    | subCustomModified       |
+      | name          | functional-license-customer    |
+      | type          | MSP                            |
+      | subaccount    | subCustomModified              |
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Customers table
-
-  @deleteCustomer @delete
-  Scenario: Delete a test customer
-    Given I see the customer "functional-test-customer-modified" in the table
-    When I delete the customer "functional-test-customer-modified"
-    Then I should see the message "Customer deleted successfully!"

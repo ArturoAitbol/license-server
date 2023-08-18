@@ -17,4 +17,7 @@ export const MatDialogMock = {
             componentInstance:{}
         };
     },
+    close: () => {
+        return null;
+    }
 };

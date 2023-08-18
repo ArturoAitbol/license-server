@@ -13,6 +13,8 @@ import { Report } from 'src/app/helpers/report';
 import { Utility } from 'src/app/helpers/utils';
 import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
+import { SubaccountAdminEmailService } from 'src/app/services/subaccount-admin-email.service';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -27,7 +29,7 @@ export class CtaasStakeholderComponent implements OnInit {
   isLoadingResults = false;
   isRequestCompleted = false;
   stakeholdersCount = 0;
-  toggleStatus = false;
+  isDataLoading = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Account';
@@ -37,13 +39,17 @@ export class CtaasStakeholderComponent implements OnInit {
     DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER
   };
 
+  private subaccountDetails: any;
+
   constructor(
     private msalService: MsalService,
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
     private dialogService: DialogService,
     private stakeholderService: StakeHolderService,
-    private subaccountService: SubAccountService
+    private subaccountAdminEmailService: SubaccountAdminEmailService,
+    private subaccountService: SubAccountService,
+    private featureToggleService: FeatureToggleService
   ) { }
   /**
    * calculate table height based on the window height
@@ -63,10 +69,11 @@ export class CtaasStakeholderComponent implements OnInit {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'User', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Company Name', dataKey: 'companyName', position: 'left', isSortable: true },
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
-      { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
-      { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Role', dataKey: 'parsedRole', position:'left', isSortable:true}
     ];
   }
   /**
@@ -74,7 +81,11 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   private getActionMenuOptions() {
     const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
+    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions");
+    if(!this.featureToggleService.isFeatureEnabled('callback')) {
+      const filteredControls = this.actionMenuOptions.filter(control => control !== 'Request Call to this Account');
+      this.actionMenuOptions = filteredControls;
+    }
   }
   /**
    * fetch stakeholder data
@@ -82,13 +93,19 @@ export class CtaasStakeholderComponent implements OnInit {
   private fetchStakeholderList(): void {
     this.isRequestCompleted = false;
     this.isLoadingResults = true;
-    let subaccountDetails = this.subaccountService.getSelectedSubAccount();
-    this.stakeholderService.getStakeholderList(subaccountDetails.id).pipe(
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.stakeholderService.getStakeholderList(this.subaccountDetails.id).pipe(
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
           try {
             this.stakeholdersCount = this.countStakeholders(e.stakeHolders);
             stakeHolders.forEach((x: IStakeholder) => {
+              let parsedRole
+              if(x.role === Constants.SUBACCOUNT_STAKEHOLDER)
+                parsedRole = 'Stakeholder';
+              else if (x.role === Constants.SUBACCOUNT_ADMIN)
+                parsedRole = 'Admin';
+              x.parsedRole = parsedRole;
               if (x.notifications) {
                 const reports = this.getReports();
                 if (x.notifications.includes(',')) {
@@ -120,7 +137,6 @@ export class CtaasStakeholderComponent implements OnInit {
         const { stakeHolders } = response;
         if (stakeHolders) {
           this.stakeholdersDataBk = this.stakeholdersData = stakeHolders;
-          this.onChangeToggle(this.toggleStatus);
         }
       }, (error) => {
         this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
@@ -128,10 +144,12 @@ export class CtaasStakeholderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.dialogService.showHelpButton = true;
     this.calculateTableHeight();
     this.getActionMenuOptions();
     this.initColumns();
     this.fetchStakeholderList();
+    this.sendHelpDialogValues();  
     // this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
   }
 
@@ -154,10 +172,12 @@ export class CtaasStakeholderComponent implements OnInit {
    * open add stake holder component in dialog
    */
   addStakeholder(): void {
-    if(this.stakeholdersCount < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT)
+    const limit = this.featureToggleService.isFeatureEnabled("multitenant-demo-subaccount", this.subaccountDetails.id)?
+      Constants.STAKEHOLDERS_LIMIT_MULTITENANT_SUBACCOUNT : Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
+    if(this.stakeholdersCount < limit)
       this.openDialog(this.ADD_STAKEHOLDER);
     else
-      this.snackBarService.openSnackBar('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
+      this.snackBarService.openSnackBar('The maximum amount of users (' + limit + ') has been reached', '');
   }
   /**
    * open dialog
@@ -174,6 +194,8 @@ export class CtaasStakeholderComponent implements OnInit {
         });
         break;
       case this.MODIFY_STAKEHOLDER:
+        if (data.role === Constants.SUBACCOUNT_ADMIN && this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1)
+          data.restrictRole = true;
         dialogRef = this.dialog.open(UpdateStakeHolderComponent, {
           width: '400px',
           data: data,
@@ -183,12 +205,14 @@ export class CtaasStakeholderComponent implements OnInit {
       // case this.DELETE_STAKEHOLDER:
       //   break;
     }
-    dialogRef.afterClosed().subscribe((res: any) => {
-      if (res) {
-        this.stakeholdersDataBk = this.stakeholdersData = [];
-        this.fetchStakeholderList();
-      }
-    });
+    if(dialogRef) {
+      dialogRef.afterClosed().subscribe((res: any) => {
+        if (res) {
+          this.stakeholdersDataBk = this.stakeholdersData = [];
+          this.fetchStakeholderList();
+        }
+      });
+    }
   }
   /**
    * action row click event
@@ -210,21 +234,22 @@ export class CtaasStakeholderComponent implements OnInit {
    * @param selectedRow: any
    */
   onDeleteStakeholderAccount(selectedRow: any): void {
-    if (this.toggleStatus && this.msalService.instance.getActiveAccount()?.idTokenClaims?.roles.includes(Constants.SUBACCOUNT_ADMIN)) {
-      if (this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1) {
-        this.snackBarService.openSnackBar("Error deleting administrator email, at least one administrator must remain");
-        return;
-      }
+    if (selectedRow.role === Constants.SUBACCOUNT_ADMIN && this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1) {
+      this.snackBarService.openSnackBar("Error deleting administrator email, at least one administrator must remain");
+      return;
     }
     this.dialogService.confirmDialog({
       title: 'Confirm Action',
-      message: 'Do you want to confirm this action?',
+      message: 'Are you sure you want to delete the stakeholder linked to '+ selectedRow.email +'?',
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {
       if (confirmed) {
         const { email } = selectedRow;
-        this.deleteStakeholder(email);
+        if (selectedRow.role === Constants.SUBACCOUNT_ADMIN)
+          this.deleteSubaccountAdmin(email);
+        else
+          this.deleteStakeholder(email);
         this.stakeholdersCount = this.stakeholdersCount - 1
       }
     });
@@ -235,21 +260,39 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   deleteStakeholder(email: string): void {
     this.stakeholderService.deleteStakeholder(email).subscribe((response: any) => {
-      if (response) {
-        const { error } = response;
-        if (error) {
-          this.snackBarService.openSnackBar(response.error, 'Error while deleting Stakeholder');
-        } else {
-          this.stakeholdersDataBk = this.stakeholdersData = [];
-          this.fetchStakeholderList();
-        }
+      this.processDeletion(response, "Stakeholder");
+    });
+  }
+  /**
+   * delete selected stakeholder details by id
+   * @param email: string 
+   */
+  deleteSubaccountAdmin(email: string): void {
+    this.subaccountAdminEmailService.deleteAdminEmail(email).subscribe((response: any) => {
+      this.processDeletion(response, "Admin");
+    });
+  }
+  /**
+   * process selected stakeholder deletion
+   * @param response: any 
+   * @param role: string 
+   */
+  processDeletion(response: any, role: string): void {
+    if (response) {
+      const { error } = response;
+      if (error) {
+        this.snackBarService.openSnackBar(response.error, 'Error while deleting ' + role);
       } else {
-        this.snackBarService.openSnackBar('Deleted Stakeholder successfully', '');
         this.stakeholdersDataBk = this.stakeholdersData = [];
         this.fetchStakeholderList();
       }
-    });
+    } else {
+      this.snackBarService.openSnackBar(role + ' deleted successfully!', '');
+      this.stakeholdersDataBk = this.stakeholdersData = [];
+      this.fetchStakeholderList();
+    }
   }
+
   /**
    * get reports
    * @returns: any[]
@@ -261,21 +304,29 @@ export class CtaasStakeholderComponent implements OnInit {
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }
-  /**
-   * get when slide toggle state is changed
-   * @param e: boolean 
-   */
-  onChangeToggle(flag: boolean): void {
-    this.toggleStatus = flag;
-    if (flag) {
-      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN);
-    } else {
-      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER);
-
-    }
-  }
 
   private countStakeholders(stakholdersList: IStakeholder[]): number {
     return stakholdersList.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER).length;
+  }
+
+  sendHelpDialogValues(): void {
+    const data = {
+      title: 'Stakeholders',
+      sections: [
+        {
+          elements: [
+            {
+              description: 'Clicking on the stakeholders page will display Admins with complete access and stakeholders with limited access. Only an Admin can add multiple stakeholders using the add stakeholder button. Admin can delete/modify stakeholder details.',
+            }
+          ]
+        }
+      ]
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
+  }
+
+  ngOnDestroy() {
+    this.dialogService.showHelpButton = false;
   }
 }

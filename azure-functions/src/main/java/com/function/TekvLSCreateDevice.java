@@ -49,7 +49,8 @@ public class TekvLSCreateDevice {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSCreateDevice Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSCreateDevice Azure function");
 
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -58,6 +59,7 @@ public class TekvLSCreateDevice {
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateDevice Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -68,6 +70,7 @@ public class TekvLSCreateDevice {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateDevice Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -78,6 +81,7 @@ public class TekvLSCreateDevice {
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
+				context.getLogger().info("User " + userId + " is leaving TekvLSCreateDevice Azure function with error");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
@@ -114,7 +118,6 @@ public class TekvLSCreateDevice {
 					: "infinity");
 
 			// Insert
-			String userId = getUserIdFromToken(tokenClaims, context);
 			context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
 			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("Device inserted successfully.");
@@ -124,16 +127,19 @@ public class TekvLSCreateDevice {
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
 
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSCreateDevice Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateDevice Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSCreateDevice Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

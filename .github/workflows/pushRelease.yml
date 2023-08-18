@@ -5,149 +5,160 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Release Version (use tags/vxx.xx.xx format)'
+        description: "Release Version (use tags/vxx.xx.xx format)"
         required: true
-        default: 'latest'
+        default: "latest"
 env:
   AZURE_FUNCTIONAPP_NAME: tekvizion360-portal-fa
   POM_FUNCTIONAPP_NAME: myFunction-12345
 
 jobs:
   build:
-      if: github.actor == 'tekviziondev'
-      runs-on: ubuntu-latest
-      steps:
-        - uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_PRODUCTION_LICENSE_SERVER_CREDENTIALS }}
-        - name: Install Zip
-          uses: montudor/action-zip@v1
-        
-        - name: Retrieve release assets
-          id: release_download
-          uses: dsaltares/fetch-gh-release-asset@master
-          with:
-            version: '${{ github.event.inputs.release_version }}'
-            regex: true
-            file: "LS"
-            target: "./"
+    if: github.actor == 'tekviziondev' || github.actor == 'tekvizionadmin'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_PRODUCTION_LICENSE_SERVER_CREDENTIALS }}
+      - name: Install Zip
+        uses: montudor/action-zip@v1
 
-        - name: Unzip Release Folder
-          run: unzip -qq *.zip -d Release
+      - name: Retrieve release assets
+        id: release_download
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          version: "${{ github.event.inputs.release_version }}"
+          regex: true
+          file: "LS"
+          target: "./"
 
-        - name: Unzip Production UI
-          run: unzip -qq ui-prod-release*.zip -d UI-prod-build
-          working-directory: Release
-        
-        - name: Add Release version file
-          run: echo "Released ${{ steps.release_download.outputs.version }} Build" > ./Release/UI-prod-build/license-server/ReleaseVersion.txt
+      - name: Unzip Release Folder
+        run: unzip -qq *.zip -d Release
 
-        - name: Clear blob storage
-          uses: azure/CLI@v1
-          with:
-            inlineScript: |
-              az storage blob delete-batch --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME_PRODUCTION }} --auth-mode key -s '$web'
-        
-        - name: Upload to blob storage
-          uses: azure/CLI@v1
-          with:
-            inlineScript: |
-              az storage blob upload-batch --overwrite --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME_PRODUCTION }} --auth-mode key -d '$web' -s ./Release/UI-prod-build/license-server
-        
-        - name: Purge CDN endpoint
-          uses: azure/CLI@v1
-          with:
-            inlineScript: |
-              az cdn endpoint purge --content-paths  "/*" --profile-name ${{ secrets.AZURE_PRODUCTION_CDN_PROFILE_NAME }} --name ${{ secrets.AZURE_PRODUCTION_CDN_ENDPOINT }} --resource-group ${{ secrets.AZURE_PRODUCTION_RESOURCE_GROUP }}
+      - name: Unzip Production UI
+        run: unzip -qq ui-prod-release*.zip -d UI-prod-build
+        working-directory: Release
 
-        - name: Unzip Azure Functions UI
-          run: unzip -qq af-release*.zip -d Azure-functions
-          working-directory: Release
-        
-        - name: 'Run Azure Functions Action'
-          uses: Azure/functions-action@v1
-          id: fa
-          with:
-            app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-            package: './Release/Azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
-            publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
-        
-        - name: Print deployed Release Version
-          run: |
-            echo 'Released ${{ steps.release_download.outputs.version }} Build'
-            echo "Build-${{ steps.release_download.outputs.version }}" > ./ReleaseBuild.txt
-        
-        - name: Archive Release Build Version
-          uses: actions/upload-artifact@v3
-          with:
-            name: prod-released-version
-            path: ./ReleaseBuild.txt
-        
-        - name: Get release details
-          id: release_details
-          uses: cardinalby/git-get-release-action@v1
-          env:
-            GITHUB_TOKEN: ${{ github.token }}
-          with:
-            tag: ${{ steps.release_download.outputs.version }}
+      - name: Add Release version file
+        run: echo "Released ${{ steps.release_download.outputs.version }} Build" > ./Release/UI-prod-build/license-server/ReleaseVersion.txt
 
-        - name: Get Latest Release commit hash
-          id: get_commit
-          uses: actions/github-script@0.9.0
-          with:
-            script: |
-              const commit = "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
-              core.setOutput('commit', commit);
-        
-        - name: Download Repository code
-          uses: actions/checkout@v3
-          with:
-            fetch-depth: 0
-          
-        - name: Checkout specific commit 
-          run: git checkout ${{steps.get_commit.outputs.commit}}
+      - name: Clear blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob delete-batch --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME_PRODUCTION }} --auth-mode key -s '$web'
 
-        - name: Run API tests
-          id: run-newman
-          uses: matt-ball/newman-action@master
-          with:
-            collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
-            environment: ./tests/api/postman/LicenseServerAPIsProdEnv.postman_environment.json
-            reporters: '["junit", "cli"]'
-            reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
-            envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_PRODUCTION}}" },
-              { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_PRODUCTION}}" },
-              { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_PRODUCTION}}" },
-              { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_PRODUCTION}}"}]'
+      - name: Upload to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --overwrite --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME_PRODUCTION }} --auth-mode key -d '$web' -s ./Release/UI-prod-build/license-server
 
-        - name: Publish JUnit Report
-          uses: mikepenz/action-junit-report@v3
-          if: always() # always run even if the previous step fails
-          with:
-            report_paths: './tests/api/postman/newman-report.xml'
-            summary: 'true'
-            check_name: 'API Test Report'
-          
-        - name: Set Production test credentials
-          run: |
-            echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
-            echo -e "password=${{ secrets.AZURE_TEST_USER_PWD_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
-            echo -e "subaccountAdminUser=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
-            echo -e "subaccountAdminPassword=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/production.properties
-            echo -e "stakeholderUser=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
-            echo -e "stakeholderPassword=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/production.properties
+      - name: Purge CDN endpoint
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az cdn endpoint purge --content-paths  "/*" --profile-name ${{ secrets.AZURE_PRODUCTION_CDN_PROFILE_NAME }} --name ${{ secrets.AZURE_PRODUCTION_CDN_ENDPOINT }} --resource-group ${{ secrets.AZURE_PRODUCTION_RESOURCE_GROUP }}
 
-        - name: Run UI tests
-          run: |
-            cd tests/ui
-            gradle uiTests -Denv=production -D"cucumber.filter.tags=not @feature-toggle"
-        
-        - name: Publish Cucumber Report
-          uses: deblockt/cucumber-report-annotations-action@v1.7
-          with:
-              access-token: ${{ secrets.GITHUB_TOKEN }}
-              path: "**/cucumber.json"
+      - name: Unzip Azure Functions UI
+        run: unzip -qq af-release*.zip -d Azure-functions
+        working-directory: Release
 
-        - name: logout
-          run: az logout
-          if: always()
+      - name: "Run Azure Functions Action"
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: "./Release/Azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}"
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
+
+      - name: Print deployed Release Version
+        run: |
+          echo 'Released ${{ steps.release_download.outputs.version }} Build'
+          echo "Build-${{ steps.release_download.outputs.version }}" > ./ReleaseBuild.txt
+
+      - name: Archive Release Build Version
+        uses: actions/upload-artifact@v3
+        with:
+          name: prod-released-version
+          path: ./ReleaseBuild.txt
+
+      - name: Get release details
+        id: release_details
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag: ${{ steps.release_download.outputs.version }}
+
+      - name: Get Latest Release commit hash
+        id: get_commit
+        uses: actions/github-script@v2.1.0
+        with:
+          script: |
+            return "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
+            
+      - name: Download Repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Checkout specific commit
+        run: git checkout ${{steps.get_commit.outputs.result}}
+
+      - name: Run API tests
+        id: run-newman
+        uses: matt-ball/newman-action@master
+        with:
+          collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+          environment: ./tests/api/postman/LicenseServerAPIsProdEnv.postman_environment.json
+          reporters: '["junit", "cli"]'
+          reporter: '{ "junit": { "export": "./tests/api/postman/newman-report.xml" } }'
+          envVar:
+            '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_PRODUCTION}}" },
+            { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_PRODUCTION}}" },
+            { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_PRODUCTION}}" },
+            { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_PRODUCTION}}"},
+            { "key": "CLIENTID_IGESADMIN", "value": "${{ secrets.CLIENT_ID_IGESADMIN_PRODUCTION}}" },
+            { "key": "CLIENTSECRET_IGESADMIN", "value": "${{ secrets.CLIENT_SECRET_IGESADMIN_PRODUCTION}}" }]'
+
+      - name: Publish JUnit Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: "./tests/api/postman/newman-report.xml"
+          summary: "true"
+          check_name: "API Test Report"
+
+      - name: Set Production test credentials
+        run: |
+          echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
+          echo -e "password=${{ secrets.AZURE_TEST_USER_PWD_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
+          echo -e "subaccountAdminUser=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
+          echo -e "subaccountAdminPassword=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/production.properties
+          echo -e "stakeholderUser=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
+          echo -e "stakeholderPassword=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/production.properties
+
+      - name: Run UI tests
+        id: uiTests
+        run: |
+          cd tests/ui
+          gradle uiTests -Denv=production -D"cucumber.filter.tags=not @feature-toggle"
+
+      - name: Publish Cucumber Report
+        uses: deblockt/cucumber-report-annotations-action@v1.7
+        if: success() || failure()
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/cucumber.json"
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
+        with:
+          name: ui-test-report
+          path: tests/ui/reports/html/
+
+      - name: logout
+        run: az logout
+        if: always()

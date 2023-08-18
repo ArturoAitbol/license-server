@@ -1,0 +1,90 @@
+.card-header {
+    background: #273176;  /* previus color #6E76B4; */
+    /* background: #6E76B4; */
+    color: white;
+}
+
+.card-header h1{
+    margin-bottom: 8px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.subtitle h2 {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.subtitle mat-icon {
+    margin-left: 10px;
+}
+
+.card-header mat-icon {
+    margin-left: 15px;
+}
+
+.summary {
+    font-size: 18px;
+}
+
+.blue-label {
+    color: #273176;  /* previus color #6E76B4; */
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.lights-container {
+    z-index: 0 !important;
+    overflow: hidden;
+}
+
+.apply-bttn{
+    position: relative;
+    bottom: 5px;
+    right: -10px;
+}
+
+.apply-flag{
+    color: #6E76B4;
+}
+
+.value-description{
+    font-size: 13px;
+    color: #8d8d8d;
+}
+
+.network-trends,.polqa-charts {
+    font-size: 22px;
+}
+
+@media (max-width: 600px) {
+    .metrics-values mat-icon{
+        align-items: center;
+        margin-right: 3px;
+    }
+    .metrics-values p{
+        align-items: center;
+        margin-bottom: 0; 
+        margin-left: 2px;
+    }
+    .metrics label{
+        clear: left;
+    }
+    .metrics-values{
+        display: flex;
+        justify-content: center !important;
+        align-items: center !important; 
+        margin-bottom: 8px;
+    }
+}
+
+.custom-icon {
+    margin-bottom: 4px;
+}

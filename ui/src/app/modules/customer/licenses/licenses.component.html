@@ -6,13 +6,13 @@
             </div>
             <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3 add-btn">
                 <mat-button-toggle-group *lcCheckAccessFor="'addLicense'" name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle id="add-license-button" value="add-new-license" (click)="onNewLicense()">Add tekVizion 360 Subscription</mat-button-toggle>
+                    <mat-button-toggle id="add-license-button" value="add-new-license" (click)="onNewLicense()">Add TekVizion 360 Subscription</mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
         </div>
     </main>
     <!-- license summary section -->
-    <h2 id="table-title">tekVizion 360 Subscriptions</h2>
+    <h2 id="table-title">TekVizion 360 Subscriptions</h2>
     <section>
         <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
             <app-data-table [tableData]="licenses" [tableColumns]="displayedColumns" [isFilterable]="false"

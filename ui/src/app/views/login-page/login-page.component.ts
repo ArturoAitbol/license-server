@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { AuthenticationResult } from '@azure/msal-browser';
+
 @Component({
     selector: 'app-login-page',
     templateUrl: './login-page.component.html',
@@ -19,12 +20,15 @@ export class LoginPageComponent implements OnInit {
             this.router.navigate(['/']);
     }
 
-    ngOnInit() {
+    ngOnInit() {       
+        let bannerArray = [];
+        Object.keys(localStorage).forEach(key => key.includes("-hiddenBanner") ? bannerArray.push({ key: key, value: localStorage[key] }) : '');
         localStorage.clear();
+        bannerArray.forEach(item => localStorage.setItem(item.key, item.value));
         setTimeout(() => {
             this.loading_status = true;
         }, 3000);
-        // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || Constants.CUSTOMERS_DASHBOARD_VIEW_PATH;
     }
 
     /**

@@ -1,3 +1,3 @@
 export const RouterMock = {
-    navigate: (commands: string[]) => { return; }
+    navigate: (commands: string[], queryParams: any) => { return; }
 };

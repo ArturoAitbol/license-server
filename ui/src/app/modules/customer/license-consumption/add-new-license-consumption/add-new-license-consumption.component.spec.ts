@@ -1,105 +1,30 @@
-import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MsalService } from '@azure/msal-angular';
-import { SharedModule } from 'src/app/modules/shared/shared.module';
-import { CustomerService } from 'src/app/services/customer.service';
-import { DevicesService } from 'src/app/services/devices.service';
 import { DialogService } from 'src/app/services/dialog.service';
-import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
-import { ProjectService } from 'src/app/services/project.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
-import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
 import { DevicesServiceMock } from 'src/test/mock/services/devices-service.mock';
 import { ConsumptionServiceMock } from 'src/test/mock/services/license-consumption-service.mock';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
 import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption.component';
 import moment from "moment";
 import { of, throwError } from "rxjs";
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
 
 let testInstance: AddNewLicenseConsumptionComponent;
 let fixture: ComponentFixture<AddNewLicenseConsumptionComponent>;
 const dialogService = new DialogServiceMock();
 
-const MatDialogRefMock = {
-    close: () => {
-        return null
-    }
-};
-
-const defaultTestBedConfig = {
-    declarations: [AddNewLicenseConsumptionComponent],
-    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-    providers: [
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: DevicesService,
-            useValue: DevicesServiceMock
-        },
-        {
-            provide: ProjectService,
-            useValue: ProjectServiceMock
-        },
-        {
-            provide: LicenseConsumptionService,
-            useValue: ConsumptionServiceMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: DialogService,
-            useValue: () => {
-                return {};
-            }
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        },
-        {
-            provide: MatDialogRef,
-            useValue: MatDialogRefMock
-        },
-        {
-            provide: DialogService,
-            useValue: dialogService
-        },
-        {
-            provide: MAT_DIALOG_DATA,
-            useValue: {}
-        }
-    ]
-};
-
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule(defaultTestBedConfig);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddNewLicenseConsumptionComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: {} });
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddNewLicenseConsumptionComponent);
     testInstance = fixture.componentInstance;
-    spyOn(console, 'log').and.callThrough();
     fixture.detectChanges();
 };
-
 
 describe('add-new-license-consumption - UI verification tests', () => {
     beforeEach(beforeEachFunction);
@@ -692,6 +617,7 @@ describe('add new license consumption - testing errors thrown by functions', () 
         spyOn(testInstance, 'addDut').and.callThrough();
         spyOn(testInstance, 'addCallingPlatform').and.callThrough();
         spyOn(ConsumptionServiceMock, 'addLicenseConsumptionEvent').and.returnValue(throwError('some error'));
+        spyOn(console, 'log');
         testInstance.addLicenseConsumptionForm.value.startWeek = moment();
         testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
         testInstance.addDutForm.value.product = DevicesServiceMock.device;

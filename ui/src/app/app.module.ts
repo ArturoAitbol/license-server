@@ -12,8 +12,7 @@ import { LoginPageComponent } from './views/login-page/login-page.component';
 import { LoadingComponent } from './generics/loading/loading.component';
 import { ErrorInterceptor } from './helpers/error.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DashboardComponent } from './customer-dashboard/customer-dashboard.component';
-import { MaterialModule } from './modules/material/material.module';
+import { CustomerDashboardComponent } from './customer-dashboard/customer-dashboard.component';
 import { AddCustomerAccountModalComponent } from './modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from './modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
@@ -39,14 +38,18 @@ import { FeatureTogglesComponent } from './modules/feature-toggles/feature-toggl
 import { FeatureToggleCardComponent } from './modules/feature-toggles/feature-toggle-card/feature-toggle-card.component';
 import { AddFeatureToggleModalComponent } from './modules/feature-toggles/add-feature-toggle-modal/add-feature-toggle-modal.component';
 import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggles/add-feature-toggle-exception-modal/add-feature-toggle-exception-modal.component';
-import { AlertBannerComponent } from './generics/alert-banner/alert-banner.component';
-
+import { BannerComponent } from './generics/banner/banner.component';
+import { AcceptComponent } from './dialogs/accept/accept.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { OptionalComponent } from './dialogs/optional/optional.component';
+import { DialogComponent } from './generics/dialog/dialog.component';
+import { PermissionsChartComponent } from './generics/permissions-chart/permissions-chart.component';
 @NgModule({
     declarations: [
         AppComponent,
         LoginPageComponent,
         LoadingComponent,
-        DashboardComponent,
+        CustomerDashboardComponent,
         AddCustomerAccountModalComponent,
         AddSubaccountModalComponent,
         ModifyCustomerAccountComponent,
@@ -64,7 +67,11 @@ import { AlertBannerComponent } from './generics/alert-banner/alert-banner.compo
         FeatureToggleCardComponent,
         AddFeatureToggleModalComponent,
         AddFeatureToggleExceptionModalComponent,
-        AlertBannerComponent,
+        BannerComponent,
+        AcceptComponent,
+        OptionalComponent,
+        DialogComponent,
+        PermissionsChartComponent,
     ],
     imports: [
         AppRoutingModule,
@@ -74,6 +81,7 @@ import { AlertBannerComponent } from './generics/alert-banner/alert-banner.compo
         FormsModule,
         ReactiveFormsModule,
         FlexLayoutModule,
+        MatTooltipModule,
         MsalModule.forRoot(new PublicClientApplication({
             auth: {
                 clientId: environment.UI_CLIENT_ID,

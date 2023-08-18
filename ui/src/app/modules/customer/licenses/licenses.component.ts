@@ -154,7 +154,7 @@ export class LicensesComponent implements OnInit {
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
-        message: 'Do you want to confirm this action?',
+        message: 'Are you sure you want to delete '+ license.description +'?',
         confirmCaption: 'Confirm',
         cancelCaption: 'Cancel',
       })

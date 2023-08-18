@@ -447,7 +447,7 @@ export const SubaccountServiceMock = {
             subaccountId: "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",
             phoneNumber: "+1111111111",
             jobTitle: "Subaccount Admin",
-            companyName: "tekVizion",
+            companyName: "TekVizion",
             name: "Subaccount Admin",
             email: "test-customer-subaccount-admin@tekvizionlabs.com"
         }

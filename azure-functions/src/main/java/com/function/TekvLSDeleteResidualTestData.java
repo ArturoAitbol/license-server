@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -47,9 +46,12 @@ public class TekvLSDeleteResidualTestData {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
-        context.getLogger().info("Entering TekvLSDeleteResidualTestData Azure function");
+        
+        String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSDeleteResidualTestData Azure function");
 
-        String deleteNoteSql = "DELETE FROM note WHERE opened_by = ? AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
+        String deleteNoteSql = "DELETE FROM note WHERE (opened_by = ? OR opened_by = ?) " +
+                "AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
         String deleteCustomerSql = "DELETE FROM customer WHERE name LIKE ? AND test_customer = ?::boolean";
         String currentTimestamp = "SELECT CURRENT_TIMESTAMP - INTERVAL '1 hour';";
 
@@ -62,46 +64,30 @@ public class TekvLSDeleteResidualTestData {
             PreparedStatement timeStatement = connection.prepareStatement(currentTimestamp)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            noteStatement.setString(1, "aamoroso@tekvizionlabs.com");
+            noteStatement.setString(1, System.getenv("SUB_ACCOUNT_ADMIN_ANDROID"));
+            noteStatement.setString(2, System.getenv("SUB_ACCOUNT_ADMIN_IOS"));
             context.getLogger().info("Execute SQL statement: " + noteStatement);
             noteStatement.executeUpdate();
 
-            context.getLogger().info("Execute SQL statement: " + timeStatement);
-            ResultSet resultSet = timeStatement.executeQuery();
-            ResultSetMetaData rsmd = resultSet.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-            JSONObject json = new JSONObject();
-//            JSONArray array = new JSONArray();
-            JSONObject item = new JSONObject();
-            while (resultSet.next()) {
-//                JSONObject item = new JSONObject();
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1) System.out.print(",  ");
-                    String columnValue = resultSet.getString(i);
-                    System.out.print("Timestamp: " + columnValue + " " + rsmd.getColumnName(i));
-                    item.put(Integer.toString(i), resultSet.getString(rsmd.getColumnName(i)));
-                }
-                System.out.println("");
-//                array.put(item);
-                json.put("timeStamp", item);
-            }
-
-            customerStatement.setString(1, "xxxxxx");
+            customerStatement.setString(1, "functional-%");
             customerStatement.setString(2, "true");
             context.getLogger().info("Execute SQL statement: " + customerStatement);
             customerStatement.executeUpdate();
-            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(item.toString()).build();
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSDeleteResidualTestData Azure function");
+            return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteResidualTestData Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSDeleteResidualTestData Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

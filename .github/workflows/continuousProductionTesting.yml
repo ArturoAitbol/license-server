@@ -32,11 +32,10 @@ jobs:
 
     - name: Get Latest Release commit hash
       id: get_commit
-      uses: actions/github-script@0.9.0
+      uses: actions/github-script@v2.1.0
       with:
         script: |
-          const commit = "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
-          core.setOutput('commit', commit);
+          return "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();          
     
     - name: Download Repository code
       uses: actions/checkout@v3
@@ -44,7 +43,7 @@ jobs:
         fetch-depth: 0
       
     - name: Checkout specific commit 
-      run: git checkout ${{steps.get_commit.outputs.commit}}
+      run: git checkout ${{steps.get_commit.outputs.result}}
 
     - name: Run API tests
       id: run-newman
@@ -57,7 +56,9 @@ jobs:
         envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_PRODUCTION}}" },
           { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_PRODUCTION}}" },
           { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_PRODUCTION}}" },
-          { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_PRODUCTION}}"}]'
+          { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_PRODUCTION}}"},
+          { "key": "CLIENTID_IGESADMIN", "value": "${{ secrets.CLIENT_ID_IGESADMIN_PRODUCTION}}" },
+          { "key": "CLIENTSECRET_IGESADMIN", "value": "${{ secrets.CLIENT_SECRET_IGESADMIN_PRODUCTION}}" }]'
 
     - name: Publish JUnit Report
       uses: mikepenz/action-junit-report@v3

@@ -1,5 +1,9 @@
-import { FocusKeyManager } from "@angular/cdk/a11y";
+import { ISidebar } from "../model/sidebar.model";
 import { permissions } from "./role-permissions";
+import { FeatureToggleService } from "../services/feature-toggle.service";
+import moment, { Moment } from "moment";
+import { ReportName, ReportType } from "./report-type";
+import { Constants } from "./constants";
 
 export class Utility {
 
@@ -83,12 +87,12 @@ export class Utility {
                     case 'unavailable':
                     case 'rebooting':
                     case 'inactive':
-                        return '#7694B7';
+                        return '#6E76B4';
                     default:
-                        return 'red';
+                        return '#bb2426';
                 }
             } catch (e: any) {
-                return 'red';
+                return '#bb2426';
             }
         }
     }
@@ -115,17 +119,20 @@ export class Utility {
      * @param options: any[]
      * @return: any[]
      */
-    public static getNavbarOptions(roles: string[], options: any[]): any[] {
+    public static getNavbarOptions(roles: string[], options: ISidebar[], featureToggleService: FeatureToggleService, subaccountId: string): any[] {
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         options.forEach((item) => {
-            roles.forEach(accountRole => {
-                const found = permissions[accountRole]?.paths.find(path => path === item.path);
-                if (found)
-                    set.add(item)
-            });
+            if (featureToggleService.isFeatureEnabled(item.path, subaccountId)) {
+                roles.forEach(accountRole => {
+                    const found: boolean = item.element ? permissions[accountRole]?.elements.includes(item.element)
+                        : permissions[accountRole]?.paths.includes(item.path);
+                    if (found)
+                        set.add(item)
+                });
+            }
         });
-        return [...set];
+        return [ ...set ];
     }
 
     public static sortDatesInAscendingOrder(list: any[] | [any], key: string): any[] {
@@ -154,21 +161,99 @@ export class Utility {
         return sortedData;
     }
     
-    public static parseReportDate(incomingDate: Date): string {
-        let parsedDate = "";
-        const parsedYear = incomingDate.getFullYear().toString().slice(-2);
-        let parsedMonth: any = incomingDate.getMonth() + 1;
-        parsedMonth = parsedMonth > 9 ? parsedMonth : '0' + parsedMonth.toString();
-        let parsedDay: any = incomingDate.getDate();
-        parsedDay = parsedDay > 9 ? parsedDay : '0' + parsedDay.toString();
-        let parsedHours: any = incomingDate.getHours();
-        parsedHours = parsedHours > 9 ? parsedHours : '0' + parsedHours.toString();
-        let parsedMinutes: any = incomingDate.getMinutes();
-        parsedMinutes = parsedMinutes > 9 ? parsedMinutes : '0' + parsedMinutes.toString();
-        let parsedSeconds: any = incomingDate.getSeconds();
-        parsedSeconds = parsedSeconds > 9 ? parsedSeconds : '0' + parsedSeconds.toString();
-        parsedDate = `${parsedYear}${parsedMonth}${parsedDay}${parsedHours}${parsedMinutes}${parsedSeconds}`;
-        return parsedDate;
+    public static parseReportDate(incomingDate: Moment): string {
+        return incomingDate.format(Constants.DATE_TIME_FORMAT);
+    }
+    
+    /**
+     * get worst case selector based on metric name
+     * @param metric: string 
+     * @returns: string 
+     */
+
+    public static worstCaseSelectorBasedOnMetric(metric: string): string {
+        switch (metric) {
+        case "sentBitrate":
+            return "";
+        case "polqa":
+            return "min";
+        default:
+            // receivedJitter, roundTripTime, receivedPacketLoss
+            return "max";
+        }
+    }
+    /**
+     * get report name by report type
+     * @param reportType: string 
+     * @returns: string 
+     */
+    public static getReportNameByReportTypeOrTestPlan(reportType: string): string {
+        switch (reportType) {
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+            case ReportName.TAP_FEATURE_FUNCTIONALITY:
+                return ReportName.FEATURE_FUNCTIONALITY_NAME;
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
+            case ReportName.TAP_CALLING_RELIABILITY:
+                return ReportName.CALLING_RELIABILITY_NAME;
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+            case ReportName.TAP_VQ:
+                return ReportName.VQ_NAME;
+        }
+    }
+    
+    /**
+     * get report name by report type
+     * @param tag: string 
+     * @returns: string 
+     */
+    public static getTAPTestPlaNameByReportTypeOrName(tag: string): string {
+        switch (tag) {
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+            case ReportName.FEATURE_FUNCTIONALITY_NAME:
+                return ReportName.TAP_FEATURE_FUNCTIONALITY;
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
+            case ReportName.CALLING_RELIABILITY_NAME:
+                return ReportName.TAP_CALLING_RELIABILITY;
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+            case ReportName.VQ_NAME:
+                return ReportName.TAP_VQ;
+            default:
+                return tag;
+        }
     }
 
+    public static setHoursOfDate(date){
+        const today = moment().utc();
+        if(date.format("MM-DD-YYYY") === today.format("MM-DD-YYYY"))
+            return date.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
+        return date.endOf("day");
+    }
+
+    public static setMinutesOfDate(date){
+        const today = moment().utc();
+        if(date.format("MM-DD-YYYY HH") === today.format("MM-DD-YYYY HH"))
+            return date.minute(today.get("minute")).seconds(today.get("seconds"));
+        return date.endOf("hour");
+    }
+
+    public static parseMetric(metricsObj: any, metric: string): number {
+        if(metric === "Received packet loss"){
+          const percentageString = metricsObj[metric];
+          const packetLossString =  percentageString.replace("%", "");
+          return parseFloat(packetLossString);
+        }
+        if(metric === "Sent bitrate" || metric === "Received Jitter" || metric === "Round trip time" ){
+          const bitrateString = metricsObj[metric];
+          const values = bitrateString.split(' ');
+          const numericString = values[0];
+          return parseFloat(numericString);
+        }
+        return parseFloat(metricsObj[metric]);
+      }
 }

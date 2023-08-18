@@ -1,5 +1,4 @@
 import { Observable } from "rxjs";
-import { Bundle } from 'src/app/model/bundle.model';
 
 const BASIC_BUNDLE = {
     bundleName: "Basic",
@@ -58,7 +57,7 @@ export const BundleServiceMock = {
             );
             observer.complete();
             return {
-                unsubscribe() { }
+                unsubscribe() { return; }
             };
         });
     },
@@ -72,7 +71,7 @@ export const BundleServiceMock = {
                 );
             observer.complete();
             return {
-                unsubscribe() { }
+                unsubscribe() { return; }
             };
         });
     },

@@ -13,7 +13,7 @@ export const SubaccountAdminEmailServiceMock = {
     },
     deleteAdminEmail: (adminEmail: string) => {
         return new Observable((observer) => {
-            observer.next({ res: {} });
+            observer.next(null);
             observer.complete();
             return {
                 unsubscribe() { }

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, ExtraOptions } from '@angular/router';
 import { LoginPageComponent } from './views/login-page/login-page.component';
-import { DashboardComponent } from './customer-dashboard/customer-dashboard.component';
+import { CustomerDashboardComponent } from './customer-dashboard/customer-dashboard.component';
 import { MsalGuard } from '@azure/msal-angular';
 import { RoleGuard } from './security/role.guard';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: '', redirectTo: 'redirect', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
   { path: 'no-permissions', component: NoPermissionsPageComponent, canActivate: [MsalGuard] },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
+  { path: 'customers-dashboard', component: CustomerDashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'subscriptions-overview', component: SubscriptionsOverviewComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'consumption-matrix', component: ConsumptionMatrixComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'apps', component: MyAppsComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },

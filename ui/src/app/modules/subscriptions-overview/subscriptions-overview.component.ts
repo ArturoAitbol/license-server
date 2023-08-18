@@ -23,7 +23,7 @@ import { SubAccountService } from "src/app/services/sub-account.service";
 
 export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
 
-    readonly VIEW_LICENSES: string = 'View tekVizion 360 Subscriptions';
+    readonly VIEW_LICENSES: string = 'View TekVizion 360 Subscriptions';
     readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
 
     readonly options = {

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { Utility } from 'src/app/helpers/utils';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
+import { DialogService } from 'src/app/services/dialog.service';
 
 @Component({
   selector: 'app-search-consolidated-report',
@@ -12,17 +13,24 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./search-consolidated-report.component.css']
 })
 export class SearchConsolidatedReportComponent implements OnInit {
-  public maxDate: any;
-  public minEndDate: any;
+  maxStartDate: any;
+  minStartDate: any;
+  maxEndDate: any;
+  minEndDate: any;
   subaccountDetails:any;
   isDataLoading = false;
   maxTime: any;
-  minTimeBK: any;
+  maxTimeBK: any;
   minTime: any;
-  startDate: any;
-  endDate: any;
+  minTimeBK: any;
+  startDate: Moment;
+  endDate: Moment;
+  dateLimit: number = 4;
+  readonly CALLING: string = 'Calling Reliability';
+  readonly FEATURE: string = 'Feature Functionality';
+  readonly VOICE: string = 'Voice Quality (POLQA)';
 
-  readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
+  readonly reportsTypes = ['Feature Functionality', 'Calling Reliability', 'Voice Quality (POLQA)'];
 
   searchForm = this.formBuilder.group({
     reportType: ['',Validators.required],
@@ -36,11 +44,14 @@ export class SearchConsolidatedReportComponent implements OnInit {
   constructor(
     private subaccountService: SubAccountService,
     private formBuilder: FormBuilder,
-    public dialogRef: MatDialogRef<SearchConsolidatedReportComponent>) { }
+    public dialogRef: MatDialogRef<SearchConsolidatedReportComponent>,
+    private dialogService: DialogService) { }
 
   ngOnInit(): void {
+    this.dialogService.showHelpButton = true;
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
-    this.maxDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
+    this.maxStartDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
+    this.maxEndDate = this.maxStartDate;
   }
 
   onCancel(): void {
@@ -49,19 +60,36 @@ export class SearchConsolidatedReportComponent implements OnInit {
 
   consolidatedReport(): void {
     const details = this.searchForm.value;
-    const parsedStartTime = moment.utc(details.startDate).format("MM-DD-YYYY") + ' ' + details.startTime + ':00';
-    const parsedEndTime = moment.utc(details.endDate).format("MM-DD-YYYY") + ' ' + details.endTime + ':59'; 
-    const parsedStartDate = Utility.parseReportDate(new Date(parsedStartTime));
-    const parsedEndDate = Utility.parseReportDate(new Date(parsedEndTime));
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${details.reportType}&start=${parsedStartDate}&end=${parsedEndDate}`;
+    let reportType;
+    switch (details.reportType) {
+      case this.FEATURE:
+        reportType = 'Daily-FeatureFunctionality';
+        break;
+      case this.CALLING:
+        reportType = 'Daily-CallingReliability';
+        break;
+      case this.VOICE:
+        reportType = 'Daily-VQ'
+        break;
+    }
+    const startTime = details.startTime.split(':');
+    const parsedStartTime = moment.utc(details.startDate).hour(Number(startTime[0])).minute(Number(startTime[1])).second(0);
+    const endTime = details.endTime.split(':');
+    const parsedEndTime = moment.utc(details.endDate).hour(Number(endTime[0])).minute(Number(endTime[1])).second(59);
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${Utility.parseReportDate(parsedStartTime)}&end=${Utility.parseReportDate(parsedEndTime)}`;
     window.open(url);
-    window.close();
   }
 
-  toggleDateValue(date: any) {
-    this.minEndDate = date;
+  toggleStartDate(date: any) {
     this.startDate = date;
     this.searchForm.get('startTime').setValue("");
+    this.minEndDate = date;
+    let actualDate = moment.utc();
+    let dateLimitControl = moment.utc(date).add(this.dateLimit, "days");
+    if (actualDate.isSameOrBefore(dateLimitControl))
+      this.maxEndDate = actualDate.format("YYYY-MM-DD[T]HH:mm:ss");
+    else
+      this.maxEndDate = dateLimitControl.format("YYYY-MM-DD[T]HH:mm:ss");
   }
   
   toggleEndDate(endDate: any) {
@@ -70,18 +98,28 @@ export class SearchConsolidatedReportComponent implements OnInit {
   }
 
   validateTimers() {
-    if(this.endDate > this.startDate)
+    if (!this.startDate || !this.endDate)
+      return;
+    const daysDiff = this.endDate.diff(this.startDate, "days");
+    if (daysDiff > 0) {
       this.minTime = "00:00";
-    else
+      this.maxTime = "23:59";
+    } else if (daysDiff === 0) {
       this.minTime = this.minTimeBK;
+      this.maxTime = this.maxTimeBK;
+    }
   }
   
-  onChangeStartTime(event) {
-    this.minTime = event
-    this.minTimeBK = event
+  onChangeStartTime(event: any) {
+    if (this.startDate && this.endDate && this.endDate.diff(this.startDate, "days") === 0)
+      this.minTime = event;
+    this.minTimeBK = event;
   }
 
-  endtTimeChanged(event) {
-    this.maxTime = event
+  onChangeEndTime(event: any) {
+    if (this.startDate && this.endDate && this.endDate.diff(this.startDate, "days") === 0)
+      this.maxTime = event;
+    this.maxTimeBK = event;
   }
+
 }

@@ -416,20 +416,24 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   loadClonedDevices() {
     if (this.data.selectedConsumptions) {
-      const devices = JSON.parse(JSON.stringify(this.data.selectedConsumptions));
-      devices.forEach(device => {
-        device.id = device.deviceId;
+      const selectedConsumptions = JSON.parse(JSON.stringify(this.data.selectedConsumptions));
+      selectedConsumptions.forEach(selectedConsumption => {
+        const device=  { id: null, vendor: null, product: null, days: null };
+        device.id = selectedConsumption.device.id;
+        device.vendor = selectedConsumption.device.vendor;
+        const productLabel = selectedConsumption.device.version ? selectedConsumption.device.product + " - v." + selectedConsumption.device.version : selectedConsumption.device.product;
+        device.product = productLabel + " (" + selectedConsumption.device.granularity + " - " + selectedConsumption.tokensConsumed + ")";
         device.days = JSON.parse(JSON.stringify(this.deviceDays));
-        if (device.granularity === 'week') {
+        if (selectedConsumption.device.granularity === 'week') {
           device.days.forEach(day => {
-            if (device.usageDays.includes(day.name)) {
+            if (selectedConsumption.usageDays.includes(day.name)) {
               day.used = true;
             }
           });
         }
-        if (device.supportType === false) this.devicesUsed.push(device);
-        else this.supportUsed.push(device);
-      });
+        if (selectedConsumption.device.supportType) this.supportUsed.push(device);
+        else this.devicesUsed.push(device);
+        });
     }
   }
 

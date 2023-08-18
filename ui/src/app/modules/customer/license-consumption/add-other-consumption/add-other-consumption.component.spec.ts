@@ -1,96 +1,26 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { SharedModule } from "../../../shared/shared.module";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { MatDialogMock } from "../../../../../test/mock/components/mat-dialog.mock";
-import { SnackBarService } from "../../../../services/snack-bar.service";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { SnackBarServiceMock } from "../../../../../test/mock/services/snack-bar-service.mock";
-import { CustomerService } from "../../../../services/customer.service";
-import { CustomerServiceMock } from "../../../../../test/mock/services/customer-service.mock";
 import { DialogService } from "../../../../services/dialog.service";
-import { MsalService } from "@azure/msal-angular";
-import { MsalServiceMock } from "../../../../../test/mock/services/msal-service.mock";
-import { HttpClient } from "@angular/common/http";
 import { AddOtherConsumptionComponent } from "./add-other-consumption.component";
-import { LicenseConsumptionService } from "../../../../services/license-consumption.service";
 import { ConsumptionServiceMock } from "../../../../../test/mock/services/license-consumption-service.mock";
-import { ProjectService } from "../../../../services/project.service";
 import { ProjectServiceMock } from "../../../../../test/mock/services/project-service.mock";
 import { By } from "@angular/platform-browser";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { DevicesService } from "../../../../services/devices.service";
-import { DevicesServiceMock } from "../../../../../test/mock/services/devices-service.mock";
 import moment from "moment";
 import { of, throwError } from "rxjs";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
+import { DialogServiceMock } from '../../../../../test/mock/services/dialog-service.mock';
 
 let testInstance: AddOtherConsumptionComponent;
 let fixture: ComponentFixture<AddOtherConsumptionComponent>;
 
-const MatDialogRefMock = {
-    close: () => {
-        return null
-    }
-};
-
-const defaultTestBedConfig = {
-    declarations: [ AddOtherConsumptionComponent ],
-    imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule ],
-    providers: [
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: DevicesService,
-            useValue: DevicesServiceMock
-        },
-        {
-            provide: ProjectService,
-            useValue: ProjectServiceMock
-        },
-        {
-            provide: LicenseConsumptionService,
-            useValue: ConsumptionServiceMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: DialogService,
-            useValue: () => {
-                return {};
-            }
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        },
-        {
-            provide: MatDialogRef,
-            useValue: MatDialogRefMock
-        },
-        {
-            provide: MAT_DIALOG_DATA,
-            useValue: {}
-        }
-    ]
-};
-
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule(defaultTestBedConfig);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddOtherConsumptionComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: new DialogServiceMock() });
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: {} });
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddOtherConsumptionComponent);
     testInstance = fixture.componentInstance;
-    spyOn(console, 'log').and.callThrough();
     fixture.detectChanges();
 };
 

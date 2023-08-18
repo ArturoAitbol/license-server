@@ -19,7 +19,18 @@ const currentStakeHolder = {
     jobTitle: "test",
     name: "testName",
     notifications: 'Weekly Reports,Monthly Summaries',
-    phoneNumber: "2222222222",
+    phoneNumber: "+2222222222",
+    subaccountId: "f6c0e45e-cfdc-4c1a-820e-bef6a856aaea",
+    type: "High level"
+};
+
+const incompleteStakeHolder = {
+    companyName: "",
+    email: "teststakeholder11@gmail.com",
+    jobTitle: "",
+    name: "testName",
+    notifications: 'Weekly Reports,Monthly Summaries',
+    phoneNumber: "",
     subaccountId: "f6c0e45e-cfdc-4c1a-820e-bef6a856aaea",
     type: "High level"
 };
@@ -43,14 +54,12 @@ describe('UI verification test', () => {
         const jobTitleLabel = fixture.nativeElement.querySelector('#job-title-label');
         const companyNameLabel = fixture.nativeElement.querySelector('#company-name-label');
         const emailLabel = fixture.nativeElement.querySelector('#email-label');
-        const mobileNumberLabel = fixture.nativeElement.querySelector('#mobile-number-label');
 
         expect(h1.textContent).toBe('Update Stakeholder')
         expect(name.textContent).toBe(' Name');
         expect(jobTitleLabel.textContent).toBe('Job Title');
         expect(companyNameLabel.textContent).toBe('Company Name');
         expect(emailLabel.textContent).toBe('Email');
-        expect(mobileNumberLabel.textContent).toBe('Phone Number')
     });
 });
 
@@ -115,9 +124,40 @@ describe('modify stakeholder interactions', () => {
     })
 });
 
+describe('modify incomplete stakeholder - FromGroup verification test', () => {
+    beforeEach(() => {
+        const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasStakeholderComponent);
+        configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+        configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
+        configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: incompleteStakeHolder });
+        TestBed.configureTestingModule(configBuilder.getConfig());
+        fixture = TestBed.createComponent(UpdateStakeHolderComponent);
+        modifyStakeholderComponentTestInstance = fixture.componentInstance;
+    });
+
+    it('should make the necessary checks for Name and Email only', () => {
+        fixture.detectChanges();
+        const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm
+
+        modifyStakeholder.setValue({
+            name: '',
+            jobTitle:'',
+            companyName:'',
+            subaccountAdminEmail:'',
+            phoneNumber:'',
+            role: '',
+        });
+        expect(modifyStakeholder.get('name').valid).toBeFalse();
+        expect(modifyStakeholder.get('jobTitle').valid).toBeTrue();
+        expect(modifyStakeholder.get('companyName').valid).toBeTrue();
+        expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
+        expect(modifyStakeholder.get('phoneNumber').valid).toBeTrue();
+    });
+});
+
 describe('modify stakeholder - FromGroup verification test', () => {
     beforeEach(beforeEachFunction);
-    it('should make all the controls required', () => {
+    it('should make the necessary checks for all fields and disabled submit button', () => {
         fixture.detectChanges();
         const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm
 
@@ -134,6 +174,8 @@ describe('modify stakeholder - FromGroup verification test', () => {
         expect(modifyStakeholder.get('companyName').valid).toBeFalse();
         expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
         expect(modifyStakeholder.get('phoneNumber').valid).toBeFalse();
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeTrue();
     });
 
     it('it should enable the submit button', () => {
@@ -145,29 +187,13 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'testJf',
             companyName:'testCf',
             subaccountAdminEmail:'teststakeholder11@gmail.com',
-            phoneNumber:'+919898989809',
+            phoneNumber:{e164Number: '+919898989809'},
             role: '',
         });
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').enable();
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('teststakeholder11@gmail.com');
         fixture.detectChanges();
         expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeFalse();
-    });
-
-    it('it should disable the submit button', () => {
-        fixture.detectChanges();
-        const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm;
-
-        modifyStakeholder.setValue({
-            name:'',
-            jobTitle:'',
-            companyName:'',
-            subaccountAdminEmail:'',
-            phoneNumber:'',
-            role: '',
-        });
-        fixture.detectChanges();
-        expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeTrue();
     });
 })
 

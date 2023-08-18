@@ -59,8 +59,9 @@ public class TekvLSModifyLicenseUsageById
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSModifyLicenseUsageById Azure function");
 		String emailId = getEmailFromToken(tokenClaims, context);
+		String userId = getUserIdFromToken(tokenClaims, context);
+		context.getLogger().info("User " + userId + " is Entering TekvLSModifyLicenseUsageById Azure function");
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -69,6 +70,7 @@ public class TekvLSModifyLicenseUsageById
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyLicenseUsageById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
@@ -78,6 +80,7 @@ public class TekvLSModifyLicenseUsageById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyLicenseUsageById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -96,6 +99,7 @@ public class TekvLSModifyLicenseUsageById
 		queryBuilder.appendValueModification("modified_date", LocalDate.now().toString(), QueryBuilder.DATA_TYPE.TIMESTAMP);
 		queryBuilder.appendValueModification("modified_by", emailId);
 		if (optionalParamsFound == 0) {
+			context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyLicenseUsageById Azure function");
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 
@@ -122,10 +126,10 @@ public class TekvLSModifyLicenseUsageById
 			}
 			queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 			try (PreparedStatement stmt = queryBuilder.build(connection)) {
-				String userId = getUserIdFromToken(tokenClaims,context);
 				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + stmt);
 				stmt.executeUpdate();
 				context.getLogger().info("License updated successfully.");
+				context.getLogger().info("User " + userId + " is successfully leaving TekvLSModifyLicenseUsageById Azure function");
 				return request.createResponseBuilder(HttpStatus.OK).build();
 			}
 		}
@@ -133,12 +137,14 @@ public class TekvLSModifyLicenseUsageById
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyLicenseUsageById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
+			context.getLogger().info("User " + userId + " is leaving TekvLSModifyLicenseUsageById Azure function with error");
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

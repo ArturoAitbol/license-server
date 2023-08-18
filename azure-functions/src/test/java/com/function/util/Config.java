@@ -34,12 +34,6 @@ public class Config {
     private static final String tapUsername = "tap_username";
     private static final String tapPassword = "tap_password";
 
-    private static  final String powerbiClientId = "powerbi_client_id";
-
-    private  static  final String powerbiClientSecret = "powerbi_client_secret";
-
-    private static  final String powerbiTenantId = "powerbi_tenant_id";
-
     //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
 
@@ -125,12 +119,7 @@ public class Config {
     public String getStorageContainerName() {
         return getConfig(storageContainerName);
     }
-
-    public String getpowerbiClientSecret() { return getConfig(powerbiClientSecret); }
-
-    public String getPowerbiClientId() { return getConfig(powerbiClientId); }
-
-    public String getPowerbiTenantId() { return getConfig(powerbiTenantId); }
+    
     public String getTapUsername() {
         return getConfig(tapUsername);
     }
@@ -198,6 +187,10 @@ public class Config {
                 break;
             case "test":
                 return getConfig("testRoleToken");
+            case "IGESAdmin":                
+                roleId = "IGESAdminId";
+                roleSecret = "IGESAdminSecret";
+                break;
             default:
                 logger.severe("Error retrieving token using the role: " + role);
                 throw new RuntimeException();

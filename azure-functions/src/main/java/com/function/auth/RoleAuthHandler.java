@@ -1,5 +1,7 @@
 package com.function.auth;
 
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpRequestMessage;
 import io.jsonwebtoken.*;
@@ -71,6 +73,9 @@ public class RoleAuthHandler {
             case SUBACCOUNT_STAKEHOLDER:
                 rolePermissions = SubAccountStakeholderPermissions;
                 break;
+            case IGES_ADMIN:
+                rolePermissions = IGESAdminPermissions;
+                break;
             default:
                 return false;
         }
@@ -89,7 +94,7 @@ public class RoleAuthHandler {
                     return role;
             }
         }
-        return roles.getString(0);
+        return "";
     }
 
     public static String evaluateRoles(JSONArray roles) {
@@ -106,14 +111,9 @@ public class RoleAuthHandler {
         }
         if (configTesterFound)
             return CONFIG_TESTER;
-        List<String> customerRoles = getCustomerRoles();
-        for (String customerRole : customerRoles) {
-            for (int i = 0; i < roles.length(); i++) {
-                roleIt = roles.getString(i);
-                if (roleIt.equals(customerRole))
-                    return roleIt;
-            }
-        }
+        String customerRole = evaluateCustomerRoles(roles);
+        if (!customerRole.isEmpty())
+            return customerRole;
         return roles.getString(0);
     }
 
@@ -188,7 +188,7 @@ public class RoleAuthHandler {
     public static String getEmailFromToken(Claims tokenClaims, ExecutionContext context) {
         if (tokenClaims != null) {
             try {
-                return tokenClaims.get("preferred_username").toString();
+                return tokenClaims.get("preferred_username").toString().toLowerCase();
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: Getting preferred_username claim failed.");
             }
@@ -205,5 +205,27 @@ public class RoleAuthHandler {
             }
         }
         return "";
+    }
+
+    public static SelectQueryBuilder getCustomerRoleVerificationQuery(String subaccountId, JSONArray roles,
+            String email) {
+        SelectQueryBuilder verificationQueryBuilder = null;
+        String currentRole = evaluateRoles(roles);
+        switch (currentRole) {
+            case CUSTOMER_FULL_ADMIN:
+                verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
+                verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?",
+                        email);
+                verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+                break;
+            case SUBACCOUNT_ADMIN:
+            case SUBACCOUNT_STAKEHOLDER:
+                verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
+                verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
+                verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId,
+                        QueryBuilder.DATA_TYPE.UUID);
+                break;
+        }
+        return verificationQueryBuilder;
     }
 }

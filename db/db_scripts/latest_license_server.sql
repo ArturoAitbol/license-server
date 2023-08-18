@@ -70,7 +70,8 @@ CREATE TYPE public.dut_type_enum AS ENUM (
     'BYOC',
     'Application',
     'Headset',
-    'Video Collab Device'
+    'Video Collab Device (ROW)',
+    'Video Collab Device (US)'
 );
 
 --
@@ -111,7 +112,8 @@ CREATE TYPE public.device_type_enum AS ENUM (
     'BYOC',
     'Application',
     'Headset',
-    'Video Collab Device',
+    'Video Collab Device (ROW)',
+    'Video Collab Device (US)',
     'OTHER'
 );
 
@@ -344,14 +346,15 @@ CREATE TABLE public.subaccount (
     customer_id uuid
 );
 
-
 --
 -- Name: subaccount_admin; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.subaccount_admin (
     subaccount_admin_email character varying NOT NULL,
-    subaccount_id uuid NOT NULL
+    subaccount_id uuid NOT NULL,
+    latest_callback_request_date timestamp without time zone,
+    email_notifications boolean DEFAULT true
 );
 
 CREATE TABLE public.ctaas_test_suite
@@ -383,6 +386,11 @@ CREATE TABLE public.ctaas_setup
     on_boarding_complete boolean,
     subaccount_id uuid NOT NULL,
     maintenance boolean default false
+);
+
+CREATE TABLE public.ctaas_support_email (
+	ctaas_setup_id  uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+	email VARCHAR
 );
 
 CREATE TABLE public.feature_toggle (
@@ -421,8 +429,7 @@ CREATE TABLE public.note (
     open_date timestamp without time zone,
     opened_by character varying,
     close_date timestamp without time zone,
-    closed_by character varying,
-    reports character varying
+    closed_by character varying
 );
 
 
@@ -733,7 +740,8 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	3	Application	CCaaS
 9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	5	Headset	UCaaS
 f2b57afb-c389-48ec-a54b-7d8a05a51f32	5	Headset	CCaaS
 2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	5	Headset	CPaaS
-7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Video Collab Device	UCaaS
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Video Collab Device (ROW)	UCaaS
+cdd0e8af-1ba4-4a20-b354-bf7c6c121dc3	3	Video Collab Device (US)	UCaaS
 \.
 
 
@@ -895,6 +903,9 @@ ALTER TABLE ONLY public.ctaas_run_instance
 ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT ctaas_setup_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY public.ctaas_support_email
+    ADD CONSTRAINT ctaas_support_email_pkey PRIMARY KEY (ctaas_setup_id, email);
+
 ALTER TABLE ONLY public.subaccount_admin_device
     ADD CONSTRAINT subaccount_admin_device_pkey PRIMARY KEY (subaccount_admin_email, device_token);
 
@@ -1022,6 +1033,9 @@ ALTER TABLE ONLY public.ctaas_test_suite
 
 ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.ctaas_support_email
+    ADD CONSTRAINT fk_ctaas_setup FOREIGN KEY (ctaas_setup_id) REFERENCES public.ctaas_setup(id) ON UPDATE CASCADE ON DELETE CASCADE;
 	
 ALTER TABLE ONLY public.ctaas_run_instance
 	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON UPDATE CASCADE ON DELETE CASCADE;
@@ -1031,6 +1045,9 @@ ALTER TABLE IF EXISTS public.subaccount
 	
 ALTER TABLE IF EXISTS public.subaccount_admin
     ADD COLUMN IF NOT EXISTS notifications character varying;
+
+ALTER TABLE IF EXISTS public.subaccount_admin
+    ADD COLUMN IF NOT EXISTS latest_callback_request_date timestamp without time zone;
 
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT feature_toggle_pkey PRIMARY KEY (id);

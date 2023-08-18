@@ -20,7 +20,7 @@
                     <div class="col-8">
                         <mat-form-field appearance="outline">
                             <mat-label id="start-date-label">Start Date</mat-label>
-                            <input required matInput [matDatepicker]="picker" formControlName="startDate" [max]="maxDate"  step="60" (dateChange)="toggleDateValue($event.value); validateTimers()">
+                            <input required matInput [matDatepicker]="picker" formControlName="startDate" [min]="minStartDate" [max]="maxStartDate" step="60" (dateChange)="toggleStartDate($event.value); validateTimers()">
                             <mat-datepicker-toggle matSuffix [for]="picker" id="start-date-calendar"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
@@ -30,6 +30,7 @@
                             <input matInput required
                                    name="selected_time_B"
                                    format="24"
+                                   [max]="maxTime"
                                    formControlName="startTime"
                                    [ngxMatTimepicker]="pickerA"
                                    placeholder="00:00"
@@ -46,7 +47,7 @@
                     <div class="col-8">
                         <mat-form-field appearance="outline">
                             <mat-label id="end-date-label">End Date</mat-label>
-                            <input required matInput [matDatepicker]="endPicker" formControlName="endDate" (dateChange)="toggleEndDate($event.value); validateTimers()" step="60" [min]="minEndDate" [max]="maxDate">
+                            <input required matInput [matDatepicker]="endPicker" formControlName="endDate" (dateChange)="toggleEndDate($event.value); validateTimers()" step="60" [min]="minEndDate" [max]="maxEndDate" >
                             <mat-datepicker-toggle matSuffix [for]="endPicker" id="start-date-calendar"></mat-datepicker-toggle>
                             <mat-datepicker #endPicker></mat-datepicker>
                         </mat-form-field>
@@ -66,7 +67,7 @@
                                 watch_later
                             </mat-icon>
                         </mat-form-field>
-                        <ngx-mat-timepicker #pickerB></ngx-mat-timepicker>
+                        <ngx-mat-timepicker #pickerB (timeChanged)="onChangeEndTime($event)"></ngx-mat-timepicker>
                     </div>
                 </div>
             </mat-dialog-content>

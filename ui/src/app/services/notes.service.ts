@@ -25,10 +25,13 @@ export class NoteService {
      * @param subaccountId: string
      * @returns: Observable
      */
-    public getNoteList(subaccountId?: string) {
+    public getNoteList(subaccountId?: string, id?: string) {
         let params = new HttpParams();
         if (subaccountId) {
             params = params.set('subaccountId', subaccountId);
+        }
+        if (id) {
+            params = params.set('id', id);
         }
         const headers = this.getHeaders();
         return this.httpClient.get<NoteAPIResponse>(this.API_URL, { headers, params });

@@ -4,7 +4,7 @@ import { SharedModule } from "../../app/modules/shared/shared.module";
 import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { RouterMock } from "./Router.mock";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatDialogMock } from "./components/mat-dialog.mock";
 import { MsalService } from "@azure/msal-angular";
 import { MsalServiceMock } from "./services/msal-service.mock";
@@ -28,22 +28,39 @@ import { LicenseServiceMock } from "./services/license-service.mock";
 import { LicenseConsumptionService } from "../../app/services/license-consumption.service";
 import { ProjectServiceMock } from "./services/project-service.mock";
 import { ProjectService } from "../../app/services/project.service";
-import { DialogService } from "../../app/services/dialog.service";
 import { CustomerService } from "../../app/services/customer.service";
-import { CurrentCustomerServiceMock } from "./services/current-customer-service.mock";
 import { NoteServiceMock } from './services/ctaas-note-service.mock';
 import { ConsumptionServiceMock } from './services/license-consumption-service.mock';
-import { BannerService } from '../../app/services/alert-banner.service';
+import { BannerService } from '../../app/services/banner.service';
 import { BannerServiceMock } from './services/alert-banner-service.mock';
 import { FeatureToggleService } from '../../app/services/feature-toggle.service';
 import { FeatureToggleServiceMock } from './services/feature-toggle-service.mock';
 import { ConsumptionMatrixService } from '../../app/services/consumption-matrix.service';
 import { ConsumptionMatrixServiceMock } from './services/consumption-matrix-service.mock';
+import { DevicesService } from '../../app/services/devices.service';
+import { DevicesServiceMock } from './services/devices-service.mock';
+import { UsageDetailService } from '../../app/services/usage-detail.service';
+import { UsageDetailServiceMock } from './services/usage-detail-service.mock';
+import { BundleService } from '../../app/services/bundle.service';
+import { BundleServiceMock } from './services/bundle-service.mock';
+import { CustomerServiceMock } from './services/customer-service.mock';
+import { FeatureToggleMgmtService } from '../../app/services/feature-toggle-mgmt.service';
+import { FeatureToggleMgmtServiceMock } from './services/feature-toggle-mgmt-service.mock';
+import { SubscriptionsOverviewService } from '../../app/services/subscriptions-overview.service';
+import { SubscriptionsOverviewServiceMock } from './services/subscriptions-overview.service.mock';
+import { UserProfileService } from '../../app/services/user-profile.service';
+import { UserProfileServiceMock } from './services/user-profile.mock';
+import { CallbackService } from "src/app/services/callback.service";
+import { CallbackServiceMock } from "./services/callback-service.mock";
+import { MapService } from "src/app/services/map.service";
+import { MapServiceMock } from "./services/map-service.mock";
+import { SpotlightChartsService } from "src/app/services/spotlight-charts.service";
+import { SpotlightChartsServiceMock } from "./services/spotlightCharts-service.mock";
 
 export class TestBedConfigBuilder {
-    testBedConfig:{declarations:Array<any>, imports:Array<any>, providers:Array<any>};
+    testBedConfig:{declarations:Array<any>, schema?:Array<any>, imports:Array<any>, providers:Array<any>};
 
-    useCustomConfig(customConfig:{declarations:Array<any>, imports:Array<any>, providers:Array<any>}){
+    useCustomConfig(customConfig:{declarations:Array<any>, schema?:Array<any>, imports:Array<any>, providers:Array<any>}){
         this.testBedConfig = customConfig;
         return this;
     }
@@ -51,6 +68,7 @@ export class TestBedConfigBuilder {
     useDefaultConfig(component) {
         this.testBedConfig = {
             declarations: [component],
+            schema: [],
             imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule, HttpClientTestingModule],
             providers: [
                 { provide: Router, useValue: RouterMock },
@@ -68,12 +86,22 @@ export class TestBedConfigBuilder {
                 { provide: NoteService, useValue: NoteServiceMock },
                 { provide: StakeHolderService, useValue: StakeHolderServiceMock },
                 { provide: LicenseService, useValue: LicenseServiceMock },
+                { provide: MapService, useValue: MapServiceMock},
+                { provide: SpotlightChartsService, useValue: SpotlightChartsServiceMock},
                 { provide: LicenseConsumptionService, useValue: ConsumptionServiceMock },
                 { provide: ProjectService, useValue: ProjectServiceMock },
-                { provide: CustomerService, useValue: CurrentCustomerServiceMock },
+                { provide: CustomerService, useValue: CustomerServiceMock },
                 { provide: BannerService, useValue: BannerServiceMock },
                 { provide: FeatureToggleService, useValue: FeatureToggleServiceMock},
                 { provide: ConsumptionMatrixService, useValue: ConsumptionMatrixServiceMock },
+                { provide: DevicesService, useValue: DevicesServiceMock },
+                { provide: UsageDetailService, useValue: UsageDetailServiceMock },
+                { provide: BundleService, useValue: BundleServiceMock },
+                { provide: MatDialogRef, useValue: MatDialogMock },
+                { provide: FeatureToggleMgmtService, useValue: FeatureToggleMgmtServiceMock },
+                { provide: SubscriptionsOverviewService, useValue: SubscriptionsOverviewServiceMock },
+                { provide: UserProfileService, useValue: UserProfileServiceMock },
+                { provide: CallbackService, useValue: CallbackServiceMock }
             ]};
         return this;
     }
@@ -94,5 +122,10 @@ export class TestBedConfigBuilder {
 
     getConfig(){
         return this.testBedConfig;
+    }
+
+    addSchema(schemaData) {
+        this.testBedConfig.schema.push(schemaData);
+        return this;
     }
 }

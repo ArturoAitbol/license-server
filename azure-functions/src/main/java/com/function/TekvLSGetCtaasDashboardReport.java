@@ -4,6 +4,7 @@ import com.function.auth.Resource;
 import com.function.clients.TAPClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.util.Constants.ReportTypes;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -59,25 +60,25 @@ public class TekvLSGetCtaasDashboardReport {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetCtaasDashboardReport Azure function");
+        String userId = getUserIdFromToken(tokenClaims, context);
+        context.getLogger().info("User " + userId + " is Entering TekvLSGetCtaasDashboardReport Azure function");
 
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-        String reportType = request.getQueryParameters().getOrDefault("reportType", "");
+        String types = request.getQueryParameters().getOrDefault("reportType", 
+            ReportTypes.FEATURE_FUNCTIONALITY.value() + "," + ReportTypes.CALLING_RELIABILITY.value() + "," + ReportTypes.POLQA.value()); // LTS,STS,POLQA
+        String status = request.getQueryParameters().getOrDefault("status", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
+        String regions = request.getQueryParameters().getOrDefault("regions", "");
+        String users = request.getQueryParameters().getOrDefault("users", "");
+        String polqaCalls = request.getQueryParameters().getOrDefault("polqaCalls", "");
 
         // Check if sub account is empty
         if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-        // Check if reportType is empty
-        if (reportType.isEmpty() || reportType == null) {
-            context.getLogger().info(MESSAGE_FOR_INVALID_REPORT_TYPE + " | Report Type: " + reportType);
-            JSONObject json = new JSONObject();
-            json.put("error", MESSAGE_FOR_INVALID_REPORT_TYPE);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if start date is null
@@ -85,6 +86,7 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info(MESSAGE_FOR_INVALID_START_DATE + " | Start Date: " + null);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_START_DATE);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if end date is null
@@ -92,6 +94,7 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info(MESSAGE_FOR_INVALID_END_DATE + " | End Date: " + null);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_END_DATE);
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Build SQL statement
@@ -140,6 +143,7 @@ public class TekvLSGetCtaasDashboardReport {
                     if (!rs.next()) {
                         context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
                         json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                        context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
                         return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
                     }
                 }
@@ -161,40 +165,46 @@ public class TekvLSGetCtaasDashboardReport {
             if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
                 context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
                 json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
             if (tapURL == null || tapURL.isEmpty()) {
                 context.getLogger().info(LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
                 json.put("error", MESSAGE_FOR_INVALID_TAP_URL);
+                context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             context.getLogger().info("Requesting TAP for detailed report. URL: " + tapURL);
             // Make a http call to TAP and get the access token
             String accessToken = TAPClient.getAccessToken(tapURL, context);
-            context.getLogger().info("Report Type: " + reportType + " | Start Date: " + startDate + " | End Date: " + endDate);
-            // Make a http call to North Bound API to fetch detailed test report by reportType
-            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, context);
+            context.getLogger().info("Report Types: " + types + " | Status: " + status + " | Start Date: " + startDate + " | End Date: " + endDate + " | POLQA: " + !polqaCalls.isEmpty());
+            // Make a http call to North Bound API to fetch detailed test report by types
+            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, types, startDate, endDate, status, regions, users, !polqaCalls.isEmpty(), context);
             if (response == null) {
                 json.put("error", "Error with fetching detailed test report from Automation Platform");
                 context.getLogger().info("Error with fetching detailed test report from Automation Platform");
             } else {
                 context.getLogger().info("Received detailed test report response from Automation Platform");
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("reportType", reportType);
+                jsonObject.put("reportType", types);
+                jsonObject.put("status", status);
                 jsonObject.put("report", response);
                 json.put("response", jsonObject);
             }
+            context.getLogger().info("User " + userId + " is successfully leaving TekvLSGetCtaasDashboardReport Azure function");
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
+            context.getLogger().info("User " + userId + " is leaving TekvLSGetCtaasDashboardReport Azure function with error");
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }

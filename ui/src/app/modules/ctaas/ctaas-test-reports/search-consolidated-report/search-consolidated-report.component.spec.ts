@@ -46,9 +46,8 @@ describe('UI test if search consolidated date Component', () => {
 
 describe('modal actions', () => {
     beforeEach(beforeEachFunction);
-    it('should make a call to consolidatedReport also open and close the modal', () => {
+    it('should make a call to consolidatedReport in a new tab', () => {
         spyOn(window, 'open').and.returnValue(null);
-        spyOn(window, 'close').and.returnValue(null);
         spyOn(consolidatedDateInstance.dialogRef, 'close').and.callThrough();
         spyOn(consolidatedDateInstance, 'consolidatedReport').and.callThrough();
 
@@ -57,13 +56,21 @@ describe('modal actions', () => {
 
         expect(consolidatedDateInstance.dialogRef.close).toHaveBeenCalled();
         expect(window.open).toHaveBeenCalled();
-        expect(window.close).toHaveBeenCalled();
     });
 
-    it('should make a call to toggleDateValue and set start date and min end date', () => {
-        spyOn(consolidatedDateInstance, 'toggleDateValue').and.callThrough();
+    it('should make a call to toggleStartDate and set start date and min end date', () => {
+        spyOn(consolidatedDateInstance, 'toggleStartDate').and.callThrough();
         const testDate = moment();
-        consolidatedDateInstance.toggleDateValue(testDate);
+        consolidatedDateInstance.toggleStartDate(testDate);
+        fixture.detectChanges();
+        expect(consolidatedDateInstance.minEndDate).toEqual(testDate);
+        expect(consolidatedDateInstance.startDate).toEqual(testDate);
+    });
+
+    it('should make a call to toggleStartDate and set with old dates', () => {
+        spyOn(consolidatedDateInstance, 'toggleStartDate').and.callThrough();
+        const testDate = moment("12/03/2023", "DD/MM/YYYY");
+        consolidatedDateInstance.toggleStartDate(testDate);
         fixture.detectChanges();
         expect(consolidatedDateInstance.minEndDate).toEqual(testDate);
         expect(consolidatedDateInstance.startDate).toEqual(testDate);
@@ -76,29 +83,44 @@ describe('modal actions', () => {
         expect(consolidatedDateInstance.endDate).toEqual(testDate);
     });
 
-    it('should set min time with 00:00', () => {
+    it('should set min time with 00:00 and max time with 23:59 when start and end date are different', () => {
+        consolidatedDateInstance.startDate = moment().subtract(3, 'days');
+        spyOn(consolidatedDateInstance, 'toggleStartDate').and.callThrough();
+        consolidatedDateInstance.endDate  = moment().subtract(1, 'days');
         spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
-        consolidatedDateInstance.endDate  = moment().add(1, 'days');
-        consolidatedDateInstance.startDate = moment();
         fixture.detectChanges(); 
 
         consolidatedDateInstance.validateTimers();
         expect(consolidatedDateInstance.minTime).toEqual("00:00")
+        expect(consolidatedDateInstance.maxTime).toEqual("23:59")
     });
 
-    it('should set min time', () => {
-        spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
-        consolidatedDateInstance.endDate  = moment();
+    it('should set min and max times with backup data when start and end date are the same', () => {
         consolidatedDateInstance.startDate = moment();
-        consolidatedDateInstance.minTimeBK = "10:00";
-
+        spyOn(consolidatedDateInstance, 'toggleStartDate').and.callThrough();
+        consolidatedDateInstance.minTimeBK = "02:00";
+        consolidatedDateInstance.endDate  = moment();
+        spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
+        consolidatedDateInstance.maxTimeBK = "10:00";
         fixture.detectChanges(); 
-        
+
         consolidatedDateInstance.validateTimers();
-        expect(consolidatedDateInstance.minTime).toEqual("10:00")
+        expect(consolidatedDateInstance.minTime).toEqual("02:00")
+        expect(consolidatedDateInstance.maxTime).toEqual("10:00")
     });
 
-    it('should make a call onChangeStartTime', () => {
+    it('should make a call onChangeStartTime and change minTimeBK', () => {
+        spyOn(consolidatedDateInstance, 'onChangeStartTime').and.callThrough();
+
+        consolidatedDateInstance.onChangeStartTime('02:00');
+
+        expect(consolidatedDateInstance.minTimeBK).toEqual('02:00');
+    });
+
+    it('should make a call onChangeStartTime and change minTime variables when start and end date are the same', () => {
+        consolidatedDateInstance.startDate = moment();
+        consolidatedDateInstance.endDate  = moment();
+
         spyOn(consolidatedDateInstance, 'onChangeStartTime').and.callThrough();
 
         consolidatedDateInstance.onChangeStartTime('02:00');
@@ -107,11 +129,23 @@ describe('modal actions', () => {
         expect(consolidatedDateInstance.minTimeBK).toEqual('02:00');
     });
 
-    it('should make a call endTimeChanged', () => {
-        spyOn(consolidatedDateInstance, 'endtTimeChanged').and.callThrough();
+    it('should make a call endTimeChanged and change maxTimeBK', () => {
+        spyOn(consolidatedDateInstance, 'onChangeEndTime').and.callThrough();
 
-        consolidatedDateInstance.endtTimeChanged('02:00');
+        consolidatedDateInstance.onChangeEndTime('02:00');
+
+        expect(consolidatedDateInstance.maxTimeBK).toBe('02:00')
+    });
+
+    it('should make a call onChangeEndTime and change maxTime variables when start and end date are the same', () => {
+        consolidatedDateInstance.startDate = moment();
+        consolidatedDateInstance.endDate  = moment();
+
+        spyOn(consolidatedDateInstance, 'onChangeEndTime').and.callThrough();
+
+        consolidatedDateInstance.onChangeEndTime('02:00');
 
         expect(consolidatedDateInstance.maxTime).toBe('02:00')
-    })
+        expect(consolidatedDateInstance.maxTimeBK).toBe('02:00')
+    });
 });
