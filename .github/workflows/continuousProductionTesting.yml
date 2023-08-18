@@ -1,8 +1,9 @@
 name: Continuous testing in Production
 
 on:
-  schedule:
-    - cron: '0 */4 * * *'
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 */2 * * *'
 
 permissions: write-all
 

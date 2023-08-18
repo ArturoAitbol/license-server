@@ -53,13 +53,15 @@ public class TekvLSDeleteResidualTestData {
         String deleteNoteSql = "DELETE FROM note WHERE (opened_by = ? OR opened_by = ?) " +
                 "AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
         String deleteCustomerSql = "DELETE FROM customer WHERE name LIKE ? AND test_customer = ?::boolean";
+        String currentTimestamp = "SELECT CURRENT_TIMESTAMP - INTERVAL '1 hour';";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
             PreparedStatement noteStatement = connection.prepareStatement(deleteNoteSql);
-            PreparedStatement customerStatement = connection.prepareStatement(deleteCustomerSql)) {
+            PreparedStatement customerStatement = connection.prepareStatement(deleteCustomerSql);
+            PreparedStatement timeStatement = connection.prepareStatement(currentTimestamp)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             noteStatement.setString(1, System.getenv("SUB_ACCOUNT_ADMIN_ANDROID"));
