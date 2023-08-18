@@ -9,15 +9,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 public class Chrome extends AbstractDriver {
     @Override
     public WebDriver initDriver() {
-        WebDriverManager.chromedriver().setup();
+//        System.setProperty("webdriver.chrome.driver","/Users/arturoamorosogarcia/.m2/repository/webdriver/chromedriver/mac64/116.0.5845.96/chromedriver");
+//        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--lang=en");
         options.addArguments("--remote-allow-origins=*");
-/*        DesiredCapabilities cap = DesiredCapabilities.chrome();
-        cap.setCapability(ChromeOptions.CAPABILITY, options);
-        LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
-        options.setCapability("goog:loggingPrefs", logPrefs);*/
         return new ChromeDriver(options);
     }
 }
