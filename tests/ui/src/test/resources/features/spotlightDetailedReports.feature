@@ -332,7 +332,7 @@ Feature: spotlightDashboard
         | From       | 2142428803               |
         | From POLQA | Min: N/A, Avg: N/A       |
         | To         | 9725980054               |
-        | To POLQA   | Min: N/A, Avg:N/A        |
+        | To POLQA   | Min: N/A, Avg: N/A        |
         | Status     | FAILED                   |
         | Call Type  | On-Net                   |
 #    Then I click on "Many-Many-POLQA-A to B drop-button" button
