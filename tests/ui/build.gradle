@@ -41,11 +41,11 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 
     // Selenium
-    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.4.0'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.11.0'
 
     // Web Driver Manager
-//    testCompile("io.github.bonigarcia:webdrivermanager:3.7.1")
-    implementation "io.github.bonigarcia:webdrivermanager:3.7.1"
+//    implementation "io.github.bonigarcia:webdrivermanager:3.7.1"
+    implementation "io.github.bonigarcia:webdrivermanager:5.4.1"
 
     // BDD
     implementation 'io.cucumber:cucumber-java:6.6.1'
