@@ -3,6 +3,7 @@ import { permissions } from "./role-permissions";
 import { FeatureToggleService } from "../services/feature-toggle.service";
 import moment, { Moment } from "moment";
 import { ReportName, ReportType } from "./report-type";
+import { Constants } from "./constants";
 
 export class Utility {
 
@@ -161,20 +162,7 @@ export class Utility {
     }
     
     public static parseReportDate(incomingDate: Moment): string {
-        let parsedDate = "";
-        const parsedYear = incomingDate.year().toString().slice(-2);
-        let parsedMonth: any = incomingDate.month() + 1;
-        parsedMonth = parsedMonth > 9 ? parsedMonth : '0' + parsedMonth.toString();
-        let parsedDay: any = incomingDate.date();
-        parsedDay = parsedDay > 9 ? parsedDay : '0' + parsedDay.toString();
-        let parsedHours: any = incomingDate.hours();
-        parsedHours = parsedHours > 9 ? parsedHours : '0' + parsedHours.toString();
-        let parsedMinutes: any = incomingDate.minutes();
-        parsedMinutes = parsedMinutes > 9 ? parsedMinutes : '0' + parsedMinutes.toString();
-        let parsedSeconds: any = incomingDate.seconds();
-        parsedSeconds = parsedSeconds > 9 ? parsedSeconds : '0' + parsedSeconds.toString();
-        parsedDate = `${parsedYear}${parsedMonth}${parsedDay}${parsedHours}${parsedMinutes}${parsedSeconds}`;
-        return parsedDate;
+        return incomingDate.format(Constants.DATE_TIME_FORMAT);
     }
     
     /**

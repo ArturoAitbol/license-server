@@ -25,11 +25,11 @@ import { NoteService } from "../../../services/notes.service";
 import { Constants } from 'src/app/helpers/constants';
 import { AddNotesComponent } from "../ctaas-notes/add-notes/add-notes.component";
 import { MatDialog } from "@angular/material/dialog";
-import { FeatureToggleService } from "../../../services/feature-toggle.service";
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { BannerService } from 'src/app/services/banner.service';
 import { MsalService } from '@azure/msal-angular';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
+import { DialogService } from 'src/app/services/dialog.service';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -152,11 +152,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     private spotlightChartsService: SpotlightChartsService,
     private noteService: NoteService,
     private route: ActivatedRoute,
-    private ftService: FeatureToggleService,
     private ctaasSetupService: CtaasSetupService,
     private bannerService: BannerService,
     private fb: FormBuilder,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private dialogService: DialogService) {
     this.vqChartOptions = defaultVqChartOptions;
     this.vqChartOptions.tooltip.custom = ({ series, seriesIndex, dataPointIndex, w }) => {
       return `
@@ -188,6 +188,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.dialogService.showHelpButton = true;
     this.closedBanner = localStorage.getItem("closedBanner") ? JSON.parse(localStorage.getItem("closedBanner")) : false;
     let accountId = this.msalService.instance.getActiveAccount().localAccountId;
     this.hiddenBanner = localStorage.getItem(accountId + "-hiddenBanner") ? JSON.parse(localStorage.getItem(accountId + "-hiddenBanner")) : false;
@@ -260,6 +261,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     });
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
+    this.sendHelpDialogValuesDaily();
   }
 
   /**
@@ -375,13 +377,16 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
   }
 
   selectedPeriodChange() {
+    this.dialogService.clearDialogData();
     if (this.selectedPeriod == 'daily') {
+      this.sendHelpDialogValuesDaily();
       if (!this.isHistoricalView && this.filters.get('date').value.isSame(moment.utc(), 'day')) {
         this.filters.get('date').setValue(moment.utc());
         this.setDate();
       }
       this.setNewNoteBtn(this.filters.get('date').value);
     } else {
+      this.sendHelpDialogValuesWeekly();
       if (!this.isHistoricalView && this.weeklyFilters.get('date').value.isSame(moment.utc(), 'day')) {
         this.weeklyFilters.get('date').setValue(moment.utc());
         this.setWeeklyRange();
@@ -423,6 +428,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, true));//.pipe(catchError(e => of(e))));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, this.weeklySelectedRegions, subaccountId, ReportName.TAP_VQ));
     }
+    
+    if (this.selectedRegions.length > 0)
+      this.reloadUserOptions(this.selectedRegions);
+    else
+      this.reloadFilterOptions();
 
     this.chartsSubscription = forkJoin(obs).subscribe((res: any) => {
       try {
@@ -503,10 +513,6 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         event.target.style.cursor ='pointer';   
       }
     };
-    if (this.selectedRegions.length > 0)
-      this.reloadUserOptions(this.selectedRegions);
-    else
-      this.reloadFilterOptions();
   }
 
   private processWeeklyData(res: any) {
@@ -601,11 +607,6 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       vqData.numericValues.fair,
       vqData.numericValues.poor
     ];
-
-    if (this.weeklySelectedRegions.length > 0)
-      this.reloadUserOptions(this.weeklySelectedRegions);
-    else
-      this.reloadFilterOptions();
   }
 
   changeHeatMapData() {
@@ -614,23 +615,26 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
-  navigateToDetailedTable(reportType?: string, status?: string, section?: boolean) {
+  navigateToDetailedTable(params:{reportType?: string, status?: string, section?: boolean, statsTab?:boolean}) {
     let reportFilter = "";
-    if (reportType && reportType != "")
-      reportFilter += "type=" + reportType;
-    else if (status && status != "")
-      reportFilter += "status=" + status;
-    if (section) reportFilter += "&sectionFailed=" + section;
+    if (params.reportType && params.reportType != "")
+      reportFilter += "type=" + params.reportType;
+    else if (params.status && params.status != "")
+      reportFilter += "status=" + params.status;
+    if (params.section) 
+      reportFilter += "&sectionFailed=" + params.section;
+    if(params.statsTab)
+      reportFilter += "&statsTab=true";
     this.goToDetailedReportView(reportFilter);
   }
 
   navigateToPOLQACallsDetailedTable() {
-    const reportFilter = "polqaCalls=true";
+    const reportFilter = "polqaCalls=true&statsTab=true";
     this.goToDetailedReportView(reportFilter);
   }
 
   private navigateToPOLQACallsDetailedTableFilter(position: number): void {
-    const reportFilter = `polqaCalls=true&avg=${position + 1}`;
+    const reportFilter = `polqaCalls=true&statsTab=true&avg=${position + 1}`;
     this.goToDetailedReportView(reportFilter);
   }
 
@@ -650,12 +654,12 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
         endDate = this.getEndWeekDate();
       }
     }
-    const startTime = Utility.parseReportDate(startDate);
-    const endTime = Utility.parseReportDate(endDate);
     let regions = ""
     if (this.selectedRegions.length > 0)
       regions = JSON.stringify(this.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
+    const parsedStartTime = Utility.parseReportDate(startDate);
+    const parsedEndTime = Utility.parseReportDate(endDate);
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&${reportFilter}&start=${parsedStartTime}&end=${parsedEndTime}&regions=${regions}`;
     window.open(url);
   }
 
@@ -699,7 +703,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     if (this.disableFiltersWhileLoading) {
       this.weeklyFilters.disable();
       this.filters.disable();
-      this.networkQuality.filters.disable();
+      this.networkQuality?.filters.disable();
     }
     const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
@@ -732,7 +736,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
 
       this.networkQuality.users = res.users;
       this.networkQuality.initAutocompletes();
-      this.networkQuality.filters.enable();
+      this.networkQuality?.filters.enable();
     })
   }
 
@@ -740,7 +744,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
     if (this.disableFiltersWhileLoading) {
       this.filters.disable();
       this.weeklyFilters.disable();
-      this.networkQuality.filters.disable();
+      this.networkQuality?.filters.disable();
     }
     const subaccountId = this.subaccountDetails.id;
     let startDate, endDate;
@@ -759,7 +763,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.weeklyFilters.enable();
 
       this.networkQuality.initAutocompletes();
-      this.networkQuality.filters.enable();
+      this.networkQuality?.filters.enable();
     })
   }
 
@@ -842,7 +846,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.isSelectedDayInWeekly = true;
       this.selectedDayInWeekly = this.weeklyFilters.get('date').value.clone().subtract((6 - config.dataPointIndex), 'days');
       var seriesIndex = config.seriesIndex;
-      const reportFilter = `polqaCalls=true&avg=${seriesIndex + 1}`;
+      const reportFilter = `polqaCalls=true&statsTab=true&avg=${seriesIndex + 1}`;
       this.goToDetailedReportView(reportFilter);
     }
   }
@@ -854,5 +858,242 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
       this.refreshIntervalSubscription.unsubscribe();
     this.onDestroy.next();
     this.onDestroy.complete();
+    this.dialogService.showHelpButton = false;
+  }
+
+  sendHelpDialogValuesDaily(): void {
+    const data = {
+      title: 'Dashboard [Daily]',
+      summary: 'A dashboard is a visual representation of data that provides an overview of key information and metrics in a concise and accessible manner.',
+      sections: [
+          {
+              //name: empty as section doesn't have title
+              elements: [
+                {
+                  subtitle: 'Region', 
+                  description: "The region field indicates the geographic area, which can represent either the entire [Country], a specific [State] within a country, or a more detailed location like [City, State, Country]. It provides insights into your network's performance within that specific location.",
+                },
+                {
+                  subtitle: 'Calling Reliability', 
+                  description: "Represents the status of call routing across the selected regions. Hovering over the graph, it gives the overall Pass percentage.",
+                },
+                {
+                  subtitle: 'Feature Functionality', 
+                  description: 'Represents the status of various call features. Hovering over the graph, it gives the overall Pass percentage.',
+                },
+                {
+                  subtitle: 'Voice Quality (POLQA)', 
+                  description: "Displays voice quality of different call streams measured using the ITU's POLQA algorithm. It displays the Percentage Quality of these call streams for the particular date. Hovering over the graph gives the Call Streams and the Percentage of Excellent, Good, Fair, or Poor calls.",
+                },
+                {
+                  subtitle: 'Failed calls', 
+                  description: "Failed calls are calls that were not successful and couldn't be completed due to various reasons like network issues or incorrect dialling. Hovering over the graph, it gives the overall fail percentage.",
+                },
+                {
+                  subtitle: 'Number of calls', // done
+                  description: 'Refers to the total count of call volume made or received during a specific period of time.'
+                },  
+                {
+                  subtitle: 'P2P', 
+                  description: 'Refer to Peer-Peer call wherein the two users have a direct call within the same call server.'
+                },  
+                {
+                  subtitle: 'On-net', 
+                  description: 'Refers to phone calls that are routed between the same service provider network.'
+                },
+                {
+                  subtitle: 'Off-net', 
+                  description: 'Refers to phone calls that are routed between different service provider network.'
+                },  
+                {
+                  subtitle: 'View detailed report', 
+                  description: 'Provides in-depth summary of data for a better understanding and analysis.'
+                }
+              ]
+          },
+          {
+              name: "Network Quality",
+              elements: [
+                {
+                  description: "Represents the customer's network quality summary along with the detailed reports of Received Packet Loss, Round Trip Time, Jitter, Sent Bit Rate and POLQA.",
+                },
+                {
+                  subtitle: 'User', 
+                  description: 'Selecting the user and clicking on Apply gives the network stats for the selected user.',
+                },
+                {
+                  subtitle: 'Calls with Network Stats', 
+                  description: 'Refers to calls that come with detailed statistics about network performance.',
+                },
+                {
+                  subtitle: 'Calls Above Threshold Metrics', 
+                  description: 'Number of calls that exceed the recommended threshold for a particular metric.'
+                },  
+                {
+                  subtitle: 'Worst Case', 
+                  description: 'Displays the results for the user who has experienced the most significant drop in network performance for the specific date.'
+                },  
+                {
+                  subtitle: 'Average', 
+                  description: 'Displays the average of the network parameters across all users.'
+                },  
+                {
+                  subtitle: 'Network Metrics Summary', 
+                  description: 'Worst case and Average value for each network metric.',
+                },
+                {
+                  subtitle: 'Jitter (ms) (> 30 ms)', 
+                  description: 'Jitter is the variation in packet delay during the transmission of data over a network. As per MS recommendation allowed threshold for Jitter is 30 ms.',
+                },
+                {
+                  subtitle: 'Packet Loss (%) (> 10%)', 
+                  description: 'Packet Loss is when data packets go missing or get lost while traveling through a network, causing problems in communication. As per MS recommendation allowed threshold for packet loss is 10%.',
+                },
+                {
+                  subtitle: 'Round Trip Time (ms) (> 500 ms)', 
+                  description: 'Time taken for a data packet to travel from the source to the destination and back again to the source in a network communication. As per MS recommendation allowed threshold for Round Trip Time is 500 ms.',
+                },
+                {
+                  subtitle: 'POLQA', 
+                  description: 'This is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
+                },
+                {
+                  subtitle: 'Sent Bitrate (kbps)', 
+                  description: 'Sent Bitrate is the rate at which data bits are transmitted from the source during a communication session.',
+                },
+                {
+                  subtitle: 'POLQA Calls Media Stats', 
+                  description: 'Average versus Worst Case values histogram for POLQA and Network Metrics in Voice Quality (POLQA) tests. Hovering over the data on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance.',
+                },
+                {
+                  subtitle: 'Network Trends', 
+                  description: "Provides insight into the behaviour of the client's network across various metrics throughout a given day. Hovering over the data points on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance. When you click on the graph pointer, a new page opens, displaying the details in a detailed report.",
+                }
+              ]
+          }
+      ]
+  };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
+  }
+
+  sendHelpDialogValuesWeekly(): void {
+    const data = {
+      title: 'Dashboard [Weekly]',
+      summary: 'A dashboard is a visual representation of data that provides an overview of key information and metrics in a concise and accessible manner.',
+      sections: [
+        {
+          //name: empty as section doesn't have title
+          elements: [
+            {
+              subtitle: 'Region', 
+              description: "The region field indicates the geographic area, which can represent either City, State or a  Country. It provides insights into your network's performance within that specific location. Data is displayed for the latest week (last seven days from selected date).",
+            },
+            {
+              subtitle: 'Feature Functionality', 
+              description: 'Graph displays total call by region, comparing number of calls vs. Success rate, Pass, or Fail for the latest week. Hovering over the data points on the graph, gives the overall Success percentage.',
+            },
+            {
+              subtitle: 'Calling Reliability', 
+              description: "Shows call routing status across regions, with number of calls vs. Success rate or Pass/Fail for the latest week (last seven days from selected date) in the Date field. Hovering over the data points on the graph, it gives the overall Success percentage.",
+            },
+            {
+              subtitle: 'Voice Quality (POLQA)', 
+              description: "Displays voice quality of different call streams measured using the ITU's POLQA algorithm. It displays the Percentage Quality of these call streams over the past week from the selected date. Hovering over the graph gives the Date, Category, Call Streams, and the Percentage of Excellent, Good, Fair, or Poor calls.",
+            },
+            {
+              subtitle: 'Call Status History', 
+              description: 'This is a record of the calls made or received, including details like date, time. Click on the failed section to identify patterns of call failure, helping you identify and resolve issues effectively. Data is displayed for the latest week (last seven days from selected date).',
+            },
+            {
+              subtitle: 'Number of call streams', 
+              description: 'Refers to the toal number of calls + P2P + On-net + Off-net.'
+            },  
+            {
+              subtitle: 'Number of calls', // done
+              description: 'Refers to the total count of call volume made or received for the latest week (last seven days from selected date).'
+            },  
+            {
+              subtitle: 'P2P', 
+              description: 'Refer to Peer-Peer call wherein the two users have a direct call within the same call server. Data is displayed for the latest week (last seven days from selected date).'
+            },  
+            {
+              subtitle: 'On-net', 
+              description: 'Refers to phone calls that are routed between the same service provider network. Data is displayed for the latest week (last seven days from selected date).'
+            },
+            {
+              subtitle: 'Off-net', 
+              description: 'Refers to phone calls that are routed between different service provider network. Data is displayed for the latest week (last seven days from selected date).'
+            },  
+            {
+              subtitle: 'View detailed report',
+              description: 'Provides in-depth summary of data for a better understanding and analysis.'
+            }
+          ]
+        },
+        {
+          name: "Network Quality",
+          elements: [
+            {
+              description: "This section represents the customer's network quality summary along with the detailed reports of Received Packet Loss, Round Trip Time, Jitter, Sent Bit Rate and POLQA. Data is displayed for the latest week (last seven days from selected date).",
+            },
+            {
+              subtitle: 'User', 
+              description: 'Selecting the user and clicking on Apply gives the network stats for the selected user. Data is displayed for the latest week (last seven days from selected date).',
+            },
+            {
+              subtitle: 'Calls with Network Stats', 
+              description: 'Refers to calls that come with detailed statistics about network performance. Data is displayed for the latest week (last seven days from selected date).',
+            },
+            {
+              subtitle: 'Calls Above Threshold Metrics', 
+              description: 'Number of calls that exceed the recommended threshold for a particular metric. Data is displayed for the latest week (last seven days from selected date).'
+            },  
+            {
+              subtitle: 'Worst Case', 
+              description: 'Displays the results for the user who has experienced the most significant drop in network performance.'
+            },  
+            {
+              subtitle: 'Average', 
+              description: 'Displays the average of the network parameters across all users.'
+            },  
+            {
+              subtitle: 'Network Metrics Summary', 
+              description: 'Worst case and Average value for each network metric. ',
+            },
+            {
+              subtitle: 'Jitter (ms) (> 30 ms)', 
+              description: 'Jitter is the variation in packet delay during the transmission of data over a network. As per MS recommendation allowed threshold for Jitter is 30 ms.',
+            },
+            {
+              subtitle: 'Packet Loss (%) (> 10%)', 
+              description: 'Packet Loss is when data packets go missing or get lost while traveling through a network, causing problems in communication. As per MS recommendation allowed threshold for packet loss is 10%.',
+            },
+            {
+              subtitle: 'Round Trip Time (ms) (> 500 ms)', 
+              description: 'Time taken for a data packet to travel from the source to the destination and back again to the source in a network communication. As per MS recommendation allowed threshold for Round Trip Time is 500 ms.',
+            },
+            {
+              subtitle: 'POLQA', 
+              description: 'This is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
+            },
+            {
+              subtitle: 'Sent Bitrate (kbps)', 
+              description: 'This is the rate at which data bits are transmitted from the source during a communication session.',
+            },
+            {
+              subtitle: 'POLQA Calls Media Stats', 
+              description: 'Average versus Worst Case values histogram for POLQA and Network Metrics in Voice Quality (POLQA) tests. Hovering over the data on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance.',
+            },
+            {
+              subtitle: 'Network Trends', 
+              description: "Provides insight into the behaviour of the client's network across various metrics throughout the given week. Hovering over the data points on the graph, reveals specific metrics for each hour, allowing for in-depth analysis and understanding of network performance. When you click on the graph pointer, a new page opens, displaying the details in a detailed report.",
+            }
+          ]
+      }
+      ]
+  };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
 }

@@ -97,9 +97,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         this.noteService.getNoteList(this.subaccountDetails.id).subscribe((res) => {
             this.isRequestCompleted = true;
             this.notesDataBk = res.notes.map(note => {
-                note.openDate = moment(note.openDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
+                note.openDate = moment(note.openDate, Constants.DATE_TIME_FORMAT).format(Constants.DATE_TIME_FORMAT);
                 if(note.closeDate) {
-                    note.closeDate = moment(note.closeDate, 'yyyy-MM-DD  hh:mm:ss').format('yyyy-MM-DD  h:mm:ss');
+                    note.closeDate = moment(note.closeDate, Constants.DATE_TIME_FORMAT).format(Constants.DATE_TIME_FORMAT);
                 }
                 return note;
             });
@@ -113,11 +113,13 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.dialogService.showHelpButton = true;
         this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
         this.calculateTableHeight();
         this.initColumns();
         this.fetchNoteList();
         this.checkMaintenanceMode();
+        this.sendHelpDialogValues();  
     }
 
     /**
@@ -231,7 +233,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.onDestroy.next();
         this.onDestroy.complete();
+        this.dialogService.showHelpButton = false;
     }
+    
 
     private checkMaintenanceMode() {
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
@@ -244,4 +248,27 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             this.getActionMenuOptions();
         })
     }
+
+    sendHelpDialogValues(): void {
+        const data = {
+            title: 'Notes',
+            summary: "During any service disruption or quality degradation, the Admin can add Notes with a message to communicate the status. This message, along with the timestamp will be visible to all mobile app users.",
+            sections: [
+                {
+                    elements: [
+                        {
+                            subitle:'Bullet points',
+                            descriptions: [
+                                'To switch between viewing open or closed notes, use the open or closed toggle button.',
+                                'Admin has the ability to create and close notes. To close a note, click on the ellipsis of the notes and click close note.',
+                                'Stakeholder, on the other hand, is restricted to reading the notes.'
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+        this.dialogService.clearDialogData();
+        this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
+      }
 }

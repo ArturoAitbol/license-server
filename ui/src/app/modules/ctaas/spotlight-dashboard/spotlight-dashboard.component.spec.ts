@@ -17,6 +17,7 @@ import { ReportName, ReportType } from "src/app/helpers/report-type";
 import { environment } from "src/environments/environment";
 import { SubAccountService } from "src/app/services/sub-account.service";
 import { Utility } from "src/app/helpers/utils";
+import { Constants } from "src/app/helpers/constants";
 
 let dashboardPocComponentTestInstance: SpotlightDashboardComponent;
 let fixture: ComponentFixture<SpotlightDashboardComponent>;
@@ -282,12 +283,12 @@ describe("DashboardPocComponent", () => {
     fixture.detectChanges();
     const callingReliabilityTestPlans = ReportName.TAP_CALLING_RELIABILITY + "," + ReportName.TAP_VQ;
     const reportFilter = "type=" + callingReliabilityTestPlans;
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format(Constants.DATE_TIME_FORMAT);
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format(Constants.DATE_TIME_FORMAT);
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
-    dashboardPocComponentTestInstance.navigateToDetailedTable(callingReliabilityTestPlans);
+    dashboardPocComponentTestInstance.navigateToDetailedTable({reportType:callingReliabilityTestPlans});
     expect(window.open).toHaveBeenCalledWith(url);
   });
 
@@ -296,12 +297,12 @@ describe("DashboardPocComponent", () => {
     dashboardPocComponentTestInstance.selectedRegions = [{country: "United States", state: "Illinois", city: "Chicago", displayName: "Chicago"}];
     fixture.detectChanges();
     const reportFilter = "type=" + ReportType.DAILY_FEATURE_FUNCTIONALITY;
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format(Constants.DATE_TIME_FORMAT);
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format(Constants.DATE_TIME_FORMAT);
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
-    dashboardPocComponentTestInstance.navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY);
+    dashboardPocComponentTestInstance.navigateToDetailedTable({reportType:ReportType.DAILY_FEATURE_FUNCTIONALITY});
     expect(window.open).toHaveBeenCalledWith(url);
   });
 
@@ -310,12 +311,12 @@ describe("DashboardPocComponent", () => {
     dashboardPocComponentTestInstance.selectedRegions = [{country: "United States", state: "Illinois", city: "Chicago", displayName: "Chicago"}];
     fixture.detectChanges();
     const reportFilter = "status=" + 'FAILED';
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format(Constants.DATE_TIME_FORMAT);
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format(Constants.DATE_TIME_FORMAT);
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
-    dashboardPocComponentTestInstance.navigateToDetailedTable(null, 'FAILED');
+    dashboardPocComponentTestInstance.navigateToDetailedTable({reportType:null,status:'FAILED'});
     expect(window.open).toHaveBeenCalledWith(url);
   });
 
@@ -324,11 +325,12 @@ describe("DashboardPocComponent", () => {
     dashboardPocComponentTestInstance.selectedRegions = [{country: "United States", state: "Illinois", city: "Chicago", displayName: "Chicago"}];
     fixture.detectChanges();
     const reportFilter = "polqaCalls=true";
-    const startTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day'));
-    const endTime = Utility.parseReportDate(dashboardPocComponentTestInstance.selectedDate.clone().utc());
+    const startTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().startOf('day').format(Constants.DATE_TIME_FORMAT);
+    const endTime = dashboardPocComponentTestInstance.selectedDate.clone().utc().format(Constants.DATE_TIME_FORMAT);
     //const subaccountDetails = subaccountService.getSelectedSubAccount();
     const regions = JSON.stringify(dashboardPocComponentTestInstance.selectedRegions);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
+    const stastTab = 'statsTab=true';
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${dashboardPocComponentTestInstance.subaccountDetails.id}&${reportFilter}&${stastTab}&start=${startTime}&end=${endTime}&regions=${regions}`;
     dashboardPocComponentTestInstance.navigateToPOLQACallsDetailedTable();
     expect(window.open).toHaveBeenCalledWith(url);
   });

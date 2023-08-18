@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
 import { Utility } from 'src/app/helpers/utils';
-import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -14,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
 import { ReportType } from 'src/app/helpers/report-type';
 import { Constants } from 'src/app/helpers/constants';
+import { DialogService } from 'src/app/services/dialog.service';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -61,10 +61,10 @@ export class CtaasTestReportsComponent implements OnInit {
   constructor(
   private subaccountService: SubAccountService,
   private formBuilder: FormBuilder,
-  private msalService: MsalService,
   private ctaasSetupService: CtaasSetupService,
   private bannerService: BannerService,
-  public dialog: MatDialog) { }
+  public dialog: MatDialog,
+  private dialogService: DialogService) { }
   
   @HostListener('window:resize')
   sizeChange() {
@@ -90,6 +90,7 @@ export class CtaasTestReportsComponent implements OnInit {
   }
   
   ngOnInit(): void { 
+    this.dialogService.showHelpButton = true;
     this.initColumns();
     this.sizeChange();
     this.dataTable();
@@ -108,6 +109,7 @@ export class CtaasTestReportsComponent implements OnInit {
         this.searchFlag = searchValidator;
         this.todaySearchFlag = todaySearchValidator;
       })
+      this.sendHelpDialogValues();  
   }
 
   dataTable() {
@@ -186,11 +188,9 @@ export class CtaasTestReportsComponent implements OnInit {
         reportType = 'Daily-VQ'
         break;
     }
-    const startDate = moment.utc().format('YYYY-MM-DD 00:00:00');
-    const endDate = moment.utc().format('YYYY-MM-DD HH:mm:ss');
-    const featureParsedStartTime = Utility.parseReportDate(moment.utc(startDate));
-    const featureParsedEndTime = Utility.parseReportDate(moment.utc(endDate));
-    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
+    const startDate = Utility.parseReportDate(moment.utc().startOf('day'));
+    const endDate = Utility.parseReportDate(moment.utc());
+    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${startDate}&end=${endDate}`;
     window.open(featureUrl);
   }
 
@@ -209,8 +209,8 @@ export class CtaasTestReportsComponent implements OnInit {
   onClickMoreDetails(selectedReport: any): void {
     const startDate = selectedReport.startDate.split('UTC')[0];
     const endDate = selectedReport.endDate.split('UTC')[0];
-    const startTime = Utility.parseReportDate(moment(startDate,'MM-DD-YYYY HH:mm:ss'));
-    const endTime = Utility.parseReportDate(moment(endDate,'MM-DD-YYYY HH:mm:ss'));
+    const startTime = Utility.parseReportDate(moment.utc(startDate,'MM-DD-YYYY HH:mm:ss'));
+    const endTime = Utility.parseReportDate(moment.utc(endDate,'MM-DD-YYYY HH:mm:ss'));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
 }
@@ -240,5 +240,27 @@ export class CtaasTestReportsComponent implements OnInit {
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
+    this.dialogService.showHelpButton = false;
+  }
+
+  sendHelpDialogValues(): void {
+    const data = {
+      title: 'Test Reports',
+      sections: [
+        {
+          elements: [
+            {
+              description: 'The Test Reports page offers users a comprehensive overview of test results. It serves as a centralized hub for accessing detailed information about various tests conducted within the platform.',
+            },
+            {
+              subtitle: 'Search consolidated report',
+              description: 'You can customize the Search Consolidated Report by selecting specific date, time ranges and choosing the report type categories (Feature Functionality, Calling Reliability and Voice Quality (POLQA)) from the drop-down menu. The maximum limit for the Consolidated report is five days.'
+            }
+          ]
+        }
+      ]
+    };
+    this.dialogService.clearDialogData();
+    this.dialogService.updateDialogData(this.dialogService.transformToDialogData(data));
   }
 }

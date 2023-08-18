@@ -139,7 +139,7 @@ public class TekvLSGetAllNotes {
             rs = selectStmt.executeQuery();
             // Return a JSON array of notes
             JSONArray notes = new JSONArray();
-			String closeDate,closedBy,reports;
+			String closeDate,closedBy;
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));

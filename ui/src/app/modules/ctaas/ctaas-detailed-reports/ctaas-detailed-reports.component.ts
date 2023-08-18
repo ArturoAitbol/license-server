@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportName } from 'src/app/helpers/report-type';
@@ -10,13 +10,16 @@ import { Sort } from '@angular/material/sort';
 import moment, { Moment } from 'moment';
 import { DialogService } from 'src/app/services/dialog.service';
 import { ConfirmDialogConst, EndpointColumnsConst, SummaryColumnsConst, TestFeatureandCallReliability, StatsColumnsConst } from 'src/app/helpers/ctaas-detailed-reports';
+import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CtaasCallsDetailsComponent } from './ctaas-calls-details/ctaas-calls-details.component';
+import { Constants } from 'src/app/helpers/constants';
 @Component({
   selector: 'app-detailed-reports',
   templateUrl: './ctaas-detailed-reports.component.html',
   styleUrls: ['./ctaas-detailed-reports.component.css']
 })
 export class DetailedReportsComponent implements OnInit {
-
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
@@ -24,13 +27,22 @@ export class DetailedReportsComponent implements OnInit {
   types: string = '';
   testPlanNames: string = '';
   status: string = '';
+
+  groupBy:string = 'hour';
+  polqaTrendsData:any;
+  isPolqaTrendsLoading: boolean = false;
+  loadPolqaTrendsCharts: boolean = false;
+  displayStats: boolean = false;
+  selectedTab:number = 0;
+  startDate: Moment;
+  endDate: Moment;
   startDateStr: string = '';
   endDateStr: string = '';
   regionsStr: string = '';
   usersStr:string = '';
   polqaCalls: boolean = false;
   loggedInUserRoles: string[] = [];
-  private subaccountDetails: any;
+  subaccountDetails: any;
   hasDashboardDetails: boolean = false;
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -82,7 +94,9 @@ export class DetailedReportsComponent implements OnInit {
     private route: ActivatedRoute,
     private snackBarService: SnackBarService,
     private subaccountService: SubAccountService,
+    private spotlightChartsService: SpotlightChartsService,
     private dialogService: DialogService,
+    public dialog: MatDialog
   ) {}
   /**
    * get logged in account details
@@ -107,8 +121,19 @@ export class DetailedReportsComponent implements OnInit {
       this.filterByAvg = params.avg ? params.avg : 0;
       this.sectionFailed = params.sectionFailed ? params.sectionFailed : false;
       this.failedIsChecked = params.status ? true : false;
-      this.startDateStr = params.start;
-      this.endDateStr = params.end;
+      this.startDate = moment.utc(params.start, Constants.DATE_TIME_FORMAT);
+      this.endDate = moment.utc(params.end, Constants.DATE_TIME_FORMAT);
+      this.startDateStr = this.startDate.format('YYMMDDHHmmss');
+      this.endDateStr =  this.endDate.format('YYMMDDHHmmss');
+      this.displayStats = params.statsTab === 'true' ? params.statsTab : false;
+      if(this.displayStats){
+        if(this.filterByAvg!=0){
+          this.selectedTab = 1;
+          this.fetchPolqaTrends();
+        }else{
+          this.loadPolqaTrendsCharts=true;
+        }
+      }
       this.parseTitle();
       this.fetchDashboardReportDetails();
     });
@@ -155,13 +180,40 @@ export class DetailedReportsComponent implements OnInit {
   getAll(): void {
     this.status = '';
     this.failedIsChecked = false;
+    this.loadPolqaTrendsCharts = true;
     this.fetchDashboardReportDetails();
   }
   getFailed(): void {
     this.status = 'FAILED';
     this.failedIsChecked = true;
+    this.loadPolqaTrendsCharts = true;
     this.fetchDashboardReportDetails();
   }
+
+  changeSelectedTab(tab){
+    this.selectedTab = tab.index;
+    if(this.loadPolqaTrendsCharts){
+      this.fetchPolqaTrends();
+      this.loadPolqaTrendsCharts = false;
+    }
+  }
+
+  public fetchPolqaTrends(){
+    const testPlans = this.parseTestPlanNames();
+    const regions = this.regionsStr !=='' ? JSON.parse(this.regionsStr) : [];
+    this.polqaTrendsData = null;
+    this.isPolqaTrendsLoading=true;
+    this.spotlightChartsService.getPolqaTrendsData(this.startDate, this.endDate, testPlans, regions,
+      this.subaccountDetails.id, this.groupBy, Number(this.filterByAvg), this.status).subscribe((res: any)=>{
+        this.isPolqaTrendsLoading = false;
+        this.polqaTrendsData = res;
+      }, (error) => {
+        this.isPolqaTrendsLoading = false;
+        console.error("Error while loading dashboard: " + error.error);
+        this.snackBarService.openSnackBar("Error while loading dashboard",'');
+      });
+  }
+
   /**
    * fetch detailed dashboard report
    */
@@ -422,14 +474,14 @@ export class DetailedReportsComponent implements OnInit {
     
   private insideTheScope(testResult: any) {
     testResult.filterByAvg = false;
-    if (Number(this.filterByAvg) == 1 && (testResult.fromPolqaAvg >= 4 || testResult.toPolqaAvg >= 4) && (testResult.fromPolqaAvg <= 5 || testResult.toPolqaAvg <= 5))
+    if (Number(this.filterByAvg) == 1 && (Number(testResult.fromPolqaAvg) >= 4 || Number(testResult.toPolqaAvg) >= 4) && (Number(testResult.fromPolqaAvg) <= 5 || Number(testResult.toPolqaAvg) <= 5))
       testResult.filterByAvg = true;
-    if (Number(this.filterByAvg) == 2 && (testResult.fromPolqaAvg >= 3 || testResult.toPolqaAvg >= 3) && (testResult.fromPolqaAvg < 4 || testResult.toPolqaAvg < 4))
+    if (Number(this.filterByAvg) == 2 && (Number(testResult.fromPolqaAvg) >= 3 || Number(testResult.toPolqaAvg) >= 3) && (Number(testResult.fromPolqaAvg) < 4 || Number(testResult.toPolqaAvg) < 4))
       testResult.filterByAvg = true;
-    if (Number(this.filterByAvg) == 3 && (testResult.fromPolqaAvg >= 2 || testResult.toPolqaAvg >= 2) && (testResult.fromPolqaAvg < 3 || testResult.toPolqaAvg < 3))
+    if (Number(this.filterByAvg) == 3 && (Number(testResult.fromPolqaAvg) >= 2 || Number(testResult.toPolqaAvg) >= 2) && (Number(testResult.fromPolqaAvg) < 3 || Number(testResult.toPolqaAvg) < 3))
       testResult.filterByAvg = true;
-    if (Number(this.filterByAvg) == 4 && (testResult.fromPolqaAvg >= 0 || testResult.toPolqaAvg >= 0) && (testResult.fromPolqaAvg) < 2 || testResult.toPolqaAvg < 2)
-    testResult.filterByAvg = true;  
+    if (Number(this.filterByAvg) == 4 && (Number(testResult.fromPolqaAvg) >= 0 || Number(testResult.toPolqaAvg) >= 0) && (Number(testResult.fromPolqaAvg) < 2 || Number(testResult.toPolqaAvg) < 2))
+      testResult.filterByAvg = true;
   }
 
   getSelectedFromTimeStamp(event) {
@@ -731,5 +783,16 @@ export class DetailedReportsComponent implements OnInit {
   private updateMetricSum(parsedValue: number, objLocation: any, metric: string) {
     objLocation[metric].sum += parsedValue;
     objLocation[metric].count++;
+  }
+
+  openDetails(selectedItem: any) {
+    let dialogRef = this.dialog.open(CtaasCallsDetailsComponent, {
+      width: '70vw',
+      height: '87vh',
+      maxHeight: '100vh',
+      maxWidth: '85vw',
+      data: selectedItem,
+      disableClose: false
+    });
   }
 }

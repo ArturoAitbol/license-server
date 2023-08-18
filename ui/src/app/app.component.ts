@@ -26,6 +26,9 @@ import { CallbackService } from './services/callback.service';
 import { SnackBarService } from './services/snack-bar.service';
 import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 import { CallbackTimerComponent } from './modules/ctaas/callback/callback-timer/callback-timer.component';
+import { DialogComponent } from './generics/dialog/dialog.component';  
+import { PermissionsChartComponent } from './generics/permissions-chart/permissions-chart.component';
+import { LoginPageComponent } from './views/login-page/login-page.component';
 
 
 @Component({
@@ -175,6 +178,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ];
 
     currentRoutePath = '';
+    currentRole = '';
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
@@ -193,7 +197,8 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly FEATURE_TOGGLES = '/feature-toggles';
 
     private _mobileQueryListener: () => void;
-
+    
+    _showHelpButton: boolean;
     constructor(
         private router: Router,
         private msalService: MsalService,
@@ -367,6 +372,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this._showHelpButton = this.showHelpButton;
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
         }
@@ -414,13 +420,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.subaccountId = this.subaccountService.getSelectedSubAccount().id;
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
             let disabledItems: any[] = [];
-            const featureToggleProtectedItems = [
-                {
-                    toggleName: "mapFeature",
-                    subaccountId: this.subaccountId,
-                    item: "map"
-                }
-            ];
+            const featureToggleProtectedItems = [];
             featureToggleProtectedItems.forEach(featureToggle => {
                 if (!this.featureToggleService.isFeatureEnabled(featureToggle.toggleName, featureToggle.subaccountId))
                     disabledItems.push(featureToggle.item);
@@ -481,6 +481,21 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     getUserName(): string {
         return this.msalService.instance.getActiveAccount().name;
+    }
+
+    getRole(): string{
+        const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+        const camellCaseSplit = this.getOnlySpecifiedRole(roles);
+        return camellCaseSplit;
+    }
+
+    getOnlySpecifiedRole(roles: string[]){
+        const subaccountAdminList = roles.filter(item => item.includes("SubaccountAdmin"));
+        if(subaccountAdminList.length>0)
+            return "Admin";
+        const stakeholdersList = roles.filter(item => item.includes("SubaccountStakeholder"));
+        if(stakeholdersList.length>0)
+            return "Stakeholder";
     }
 
     /**
@@ -613,5 +628,17 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         this._destroying$.next(undefined);
         this._destroying$.complete();
+    }
+
+    openDialog(): void {
+        this.dialog.open(DialogComponent);
+    }
+
+    get showHelpButton(): boolean {
+        return this.dialogService.showHelpButton;
+    }
+
+    openRoles(): void {
+        this.dialog.open(PermissionsChartComponent);
     }
 }

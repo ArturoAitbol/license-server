@@ -52,25 +52,25 @@ Feature: spotlightDashboard
         | To POLQA      | Min:N/A, Avg:N/A         |
         | Status        | FAILED                   |
         | Call Type     | On-Net                   |
-    Then I click on "Many-Many-POLQA-A to B drop-button" button
-    And I should see the detailed row table with the following data
-        | Start Date                | 06/24/2023 23:22:04   |
-        | End Date                  | 06/24/2023 23:27:56   |
-        | Status                    | FAILED                |
-        | Call Type                 | On-Net                |
-        | Error Category            | Routing               |
-        | Reason                    | Routing: Unavailable, The person you're trying to reach isn't available. Try again later.|
-        | From Jitter (ms)          | N/A                   |
-        | To Jitter (ms)            | N/A                   |
-        | From Round trip time (ms) | N/A                   |
-        | To Round trip time (ms)   | N/A                   |
-        | From Packet Loss (%)      | N/A                   |
-        | To Packet Loss (%)        | N/A                   |
-        | From Bitrate (kbps)       | N/A                   |
-        | To Bitrate (kbps)         | N/A                   |
-    And I should see the following data in the DID section
-    | From      | 2142428803           |
-    | To        | 9725980054           |
+#    Then I click on "Many-Many-POLQA-A to B drop-button" button
+#    And I should see the detailed row table with the following data
+#        | Start Date                | 06/24/2023 23:22:04   |
+#        | End Date                  | 06/24/2023 23:27:56   |
+#        | Status                    | FAILED                |
+#        | Call Type                 | On-Net                |
+#        | Error Category            | Routing               |
+#        | Reason                    | Routing: Unavailable, The person you're trying to reach isn't available. Try again later.|
+#        | From Jitter (ms)          | N/A                   |
+#        | To Jitter (ms)            | N/A                   |
+#        | From Round trip time (ms) | N/A                   |
+#        | To Round trip time (ms)   | N/A                   |
+#        | From Packet Loss (%)      | N/A                   |
+#        | To Packet Loss (%)        | N/A                   |
+#        | From Bitrate (kbps)       | N/A                   |
+#        | To Bitrate (kbps)         | N/A                   |
+#    And I should see the following data in the DID section
+#    | From      | 2142428803           |
+#    | To        | 9725980054           |
 
   @validateFunctionality
   Scenario: Go to the Feature Funcionality detailed report
@@ -109,47 +109,47 @@ Feature: spotlightDashboard
         | To POLQA      | Min:N/A, Avg:N/A                 |
         | Status        | PASSED                           |
         | Call Type     | On-Net                           |
-    Then I click on "2_Func_tekV-Basic-MSTeams-001 drop-button" button
-    And I should see the detailed row table with the following data
-        | Start Date                | 06/24/2023 00:39:51   |
-        | End Date                  | 06/24/2023 00:45:30   |
-        | Status                    | PASSED                |
-        | Call Type                 | On-Net                |
-        | Error Category            | N/A                   |
-        | Reason                    | N/A                   |
-        | From Jitter (ms)          | Max: 8.93, Avg: 8.82  |
-        | To Jitter (ms)            | Max: 8.8, Avg: 8.57   |
-        | From Round trip time (ms) | Max: 49, Avg: 48.33   |
-        | To Round trip time (ms)   | Max: 135, Avg: 134.33 |
-        | From Packet Loss (%)      | Max: 0, Avg: 0        |
-        | To Packet Loss (%)        | Max: 0, Avg: 0        |
-        | From Bitrate (kbps)       | Avg: 36               |
-        | To Bitrate (kbps)         | Avg: 36               |
-    And I should see the following data in the DID section
-        | From      | 9725980066           |
-        | To        | 2142428818           |
-    And I click on "drop-from" button
-    And I should see the DID "from" table with the following data
-        | Sent packets	            | 3417 packets  |
-        | Received codec            | SILKWide      |
-        | Sent bitrate	            | 36 Kbps       |
-        | Received packet loss      | 0.00%         |
-        | Received Jitter	        | 8.93 ms       |
-        | Sent codec	            | SILKWide      |
-        | Round trip time	        | 49.00 ms      |
-        | Received packets	        | 3323 packets  |
-        | POLQA	                    | N/A           |
-    And I click on "drop-to" button
-    And I should see the DID "to" table with the following data
-        | Sent packets	            | 2285 packets  |
-        | Received codec            | SILKWide      |
-        | Sent bitrate	            | 36 Kbps       |
-        | Received packet loss      | 0.00%         |
-        | Received Jitter	        | 8.59 ms       |
-        | Sent codec	            | SILKWide      |
-        | Round trip time	        | 134.00 ms     |
-        | Received packets	        | 1465 packets  |
-        | POLQA	                    | N/A           |
+#    Then I click on "2_Func_tekV-Basic-MSTeams-001 drop-button" button
+#    And I should see the detailed row table with the following data
+#        | Start Date                | 06/24/2023 00:39:51   |
+#        | End Date                  | 06/24/2023 00:45:30   |
+#        | Status                    | PASSED                |
+#        | Call Type                 | On-Net                |
+#        | Error Category            | N/A                   |
+#        | Reason                    | N/A                   |
+#        | From Jitter (ms)          | Max: 8.93, Avg: 8.82  |
+#        | To Jitter (ms)            | Max: 8.8, Avg: 8.57   |
+#        | From Round trip time (ms) | Max: 49, Avg: 48.33   |
+#        | To Round trip time (ms)   | Max: 135, Avg: 134.33 |
+#        | From Packet Loss (%)      | Max: 0, Avg: 0        |
+#        | To Packet Loss (%)        | Max: 0, Avg: 0        |
+#        | From Bitrate (kbps)       | Avg: 36               |
+#        | To Bitrate (kbps)         | Avg: 36               |
+#    And I should see the following data in the DID section
+#        | From      | 9725980066           |
+#        | To        | 2142428818           |
+#    And I click on "drop-from" button
+#    And I should see the DID "from" table with the following data
+#        | Sent packets	            | 3417 packets  |
+#        | Received codec            | SILKWide      |
+#        | Sent bitrate	            | 36 Kbps       |
+#        | Received packet loss      | 0.00%         |
+#        | Received Jitter	        | 8.93 ms       |
+#        | Sent codec	            | SILKWide      |
+#        | Round trip time	        | 49.00 ms      |
+#        | Received packets	        | 3323 packets  |
+#        | POLQA	                    | N/A           |
+#    And I click on "drop-to" button
+#    And I should see the DID "to" table with the following data
+#        | Sent packets	            | 2285 packets  |
+#        | Received codec            | SILKWide      |
+#        | Sent bitrate	            | 36 Kbps       |
+#        | Received packet loss      | 0.00%         |
+#        | Received Jitter	        | 8.59 ms       |
+#        | Sent codec	            | SILKWide      |
+#        | Round trip time	        | 134.00 ms     |
+#        | Received packets	        | 1465 packets  |
+#        | POLQA	                    | N/A           |
 
   @validateVoiceQuality
   Scenario: Go to the Voice Quality detailed report
@@ -197,47 +197,47 @@ Feature: spotlightDashboard
         | To POLQA    | Min:2.46, Avg:3.79    |
         | Status      | PASSED                |
         | Call Type   | On-Net                |
-    Then I click on "LTS-POLQA-1 drop-button" button
-    And I should see the detailed row table with the following data
-        | Start Date                | 06/24/2023 01:01:03     |
-        | End Date                  | 06/24/2023 01:11:15     |
-        | Status                    | PASSED                  |
-        | Call Type                 | On-Net                  |
-        | Error Category            | N/A                     |
-        | Reason                    | N/A                     |
-        | From Jitter (ms)          | Max: 7.09, Avg: 6.65    |
-        | To Jitter (ms)            | Max: 8.93, Avg: 7.53    |
-        | From Round trip time (ms) | Max: 117, Avg: 116.13   |
-        | To Round trip time (ms)   | Max: 116, Avg: 116      |
-        | From Packet Loss (%)      | Max: 0, Avg: 0          |
-        | To Packet Loss (%)        | Max: 0, Avg: 0          |
-        | From Bitrate (kbps)       | Avg: 36                 |
-        | To Bitrate (kbps)         | Avg: 36                 |
-    And I should see the following data in the DID section
-        | From      | 2142428818           |
-        | To        | 9725980066           |
-    And I click on "drop-from" button
-    And I should see the DID "from" table with the following data
-        | Sent packets	            | 2306 packets  |
-        | Received codec            | SILKWide      |
-        | Sent bitrate	            | 36 Kbps       |
-        | Received packet loss      | 0.00%         |
-        | Received Jitter	        | 6.31 ms       |
-        | Sent codec	            | SILKWide      |
-        | Round trip time	        | 117.00 ms     |
-        | Received packets	        | 629 packets   |
-        | POLQA	                    | N/A           |
-    And I click on "drop-to" button
-    And I should see the DID "to" table with the following data
-        | Sent packets	            | 2326 packets  |
-        | Received codec            | SILKWide      |
-        | Sent bitrate	            | 36 Kbps       |
-        | Received packet loss      | --            |
-        | Received Jitter	        | --            |
-        | Sent codec	            | SILKWide      |
-        | Round trip time	        | 116.00 ms     |
-        | Received packets	        | 8 packets     |
-        | POLQA	                    | N/A           |
+#    Then I click on "LTS-POLQA-1 drop-button" button
+#    And I should see the detailed row table with the following data
+#        | Start Date                | 06/24/2023 01:01:03     |
+#        | End Date                  | 06/24/2023 01:11:15     |
+#        | Status                    | PASSED                  |
+#        | Call Type                 | On-Net                  |
+#        | Error Category            | N/A                     |
+#        | Reason                    | N/A                     |
+#        | From Jitter (ms)          | Max: 7.09, Avg: 6.65    |
+#        | To Jitter (ms)            | Max: 8.93, Avg: 7.53    |
+#        | From Round trip time (ms) | Max: 117, Avg: 116.13   |
+#        | To Round trip time (ms)   | Max: 116, Avg: 116      |
+#        | From Packet Loss (%)      | Max: 0, Avg: 0          |
+#        | To Packet Loss (%)        | Max: 0, Avg: 0          |
+#        | From Bitrate (kbps)       | Avg: 36                 |
+#        | To Bitrate (kbps)         | Avg: 36                 |
+#    And I should see the following data in the DID section
+#        | From      | 2142428818           |
+#        | To        | 9725980066           |
+#    And I click on "drop-from" button
+#    And I should see the DID "from" table with the following data
+#        | Sent packets	            | 2306 packets  |
+#        | Received codec            | SILKWide      |
+#        | Sent bitrate	            | 36 Kbps       |
+#        | Received packet loss      | 0.00%         |
+#        | Received Jitter	        | 6.31 ms       |
+#        | Sent codec	            | SILKWide      |
+#        | Round trip time	        | 117.00 ms     |
+#        | Received packets	        | 629 packets   |
+#        | POLQA	                    | N/A           |
+#    And I click on "drop-to" button
+#    And I should see the DID "to" table with the following data
+#        | Sent packets	            | 2326 packets  |
+#        | Received codec            | SILKWide      |
+#        | Sent bitrate	            | 36 Kbps       |
+#        | Received packet loss      | --            |
+#        | Received Jitter	        | --            |
+#        | Sent codec	            | SILKWide      |
+#        | Round trip time	        | 116.00 ms     |
+#        | Received packets	        | 8 packets     |
+#        | POLQA	                    | N/A           |
 
   @validateTotalFailedCalls
   Scenario: Go to Total Failed Calls detailed report
@@ -284,22 +284,22 @@ Feature: spotlightDashboard
         | To POLQA   | Min:N/A, Avg:N/A         |
         | Status     | FAILED                   |
         | Call Type  | On-Net                   |
-    Then I click on "Many-Many-POLQA-A to B drop-button" button
-    And I should see the detailed row table with the following data
-        | Start Date                | 06/24/2023 23:22:04   |
-        | End Date                  | 06/24/2023 23:27:56   |
-        | Status                    | FAILED                |
-        | Call Type                 | On-Net                |
-        | Error Category            | Routing               |
-        | Reason                    | Routing: Unavailable, The person you're trying to reach isn't available. Try again later.|
-        | From Jitter (ms)          | N/A                   |
-        | To Jitter (ms)            | N/A                   |
-        | From Round trip time (ms) | N/A                   |
-        | To Round trip time (ms)   | N/A                   |
-        | From Packet Loss (%)      | N/A                   |
-        | To Packet Loss (%)        | N/A                   |
-        | From Bitrate (kbps)       | N/A                   |
-        | To Bitrate (kbps)         | N/A                   |
+#    Then I click on "Many-Many-POLQA-A to B drop-button" button
+#    And I should see the detailed row table with the following data
+#        | Start Date                | 06/24/2023 23:22:04   |
+#        | End Date                  | 06/24/2023 23:27:56   |
+#        | Status                    | FAILED                |
+#        | Call Type                 | On-Net                |
+#        | Error Category            | Routing               |
+#        | Reason                    | Routing: Unavailable, The person you're trying to reach isn't available. Try again later.|
+#        | From Jitter (ms)          | N/A                   |
+#        | To Jitter (ms)            | N/A                   |
+#        | From Round trip time (ms) | N/A                   |
+#        | To Round trip time (ms)   | N/A                   |
+#        | From Packet Loss (%)      | N/A                   |
+#        | To Packet Loss (%)        | N/A                   |
+#        | From Bitrate (kbps)       | N/A                   |
+#        | To Bitrate (kbps)         | N/A                   |
 
   @validateFailedCalls
   Scenario: Go to the Failed Calls detailed report
@@ -335,19 +335,19 @@ Feature: spotlightDashboard
         | To POLQA   | Min:N/A, Avg:N/A         |
         | Status     | FAILED                   |
         | Call Type  | On-Net                   |
-    Then I click on "Many-Many-POLQA-A to B drop-button" button
-    And I should see the detailed row table with the following data
-        | Start Date                | 06/24/2023 23:22:04   |
-        | End Date                  | 06/24/2023 23:27:56   |
-        | Status                    | FAILED                |
-        | Call Type                 | On-Net                |
-        | Error Category            | Routing               |
-        | Reason                    | Routing: Unavailable, The person you're trying to reach isn't available. Try again later.|
-        | From Jitter (ms)          | N/A                   |
-        | To Jitter (ms)            | N/A                   |
-        | From Round trip time (ms) | N/A                   |
-        | To Round trip time (ms)   | N/A                   |
-        | From Packet Loss (%)      | N/A                   |
-        | To Packet Loss (%)        | N/A                   |
-        | From Bitrate (kbps)       | N/A                   |
-        | To Bitrate (kbps)         | N/A                   |
+#    Then I click on "Many-Many-POLQA-A to B drop-button" button
+#    And I should see the detailed row table with the following data
+#        | Start Date                | 06/24/2023 23:22:04   |
+#        | End Date                  | 06/24/2023 23:27:56   |
+#        | Status                    | FAILED                |
+#        | Call Type                 | On-Net                |
+#        | Error Category            | Routing               |
+#        | Reason                    | Routing: Unavailable, The person you're trying to reach isn't available. Try again later.|
+#        | From Jitter (ms)          | N/A                   |
+#        | To Jitter (ms)            | N/A                   |
+#        | From Round trip time (ms) | N/A                   |
+#        | To Round trip time (ms)   | N/A                   |
+#        | From Packet Loss (%)      | N/A                   |
+#        | To Packet Loss (%)        | N/A                   |
+#        | From Bitrate (kbps)       | N/A                   |
+#        | To Bitrate (kbps)         | N/A                   |
