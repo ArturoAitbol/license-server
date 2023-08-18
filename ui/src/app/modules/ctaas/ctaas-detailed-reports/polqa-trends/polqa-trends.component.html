@@ -6,7 +6,7 @@
     </div>
 </div>
 <div class="mb-4 text-center">
-    <div id="polqa-trends-chart" class="mt-1" style="height: 300px">
+    <div id="polqa-trends-chart" class="mt-1 polqa-chart">
         <apx-chart
             [series]="polqaTrendsChartOptions.series"
             [title]="polqaTrendsChartOptions.title"
@@ -23,8 +23,8 @@
             [tooltip]="polqaTrendsChartOptions.tooltip">
         </apx-chart>
     </div>
-    <div class="row">
-        <div id="polqa-chart" class="col-md-6 mt-3" style="height: 300px">
+    <div class="row charts-rows">
+        <div id="polqa-chart" class="col-md-6 mt-3 charts-styles">
             <apx-chart
                 [series]="polqaPacketLossChartOptions.series"
                 [title]="polqaPacketLossChartOptions.title"
@@ -40,7 +40,7 @@
                 [tooltip]="polqaPacketLossChartOptions.tooltip">
             </apx-chart>
         </div>
-        <div id="polqa-jitter-chart" class="col-md-6 mt-3" style="height: 300px">
+        <div id="polqa-jitter-chart" class="col-md-4 mt-3 charts-styles">
             <apx-chart
                     [series]="polqaJitterChartOptions.series"
                     [title]="polqaJitterChartOptions.title"
@@ -57,8 +57,8 @@
             </apx-chart>
         </div>
     </div>
-    <div class="row">
-        <div id="polqa-packet-loss-chart" class="col-md-6 mt-3" style="height: 300px">
+    <div class="row charts-rows">
+        <div id="polqa-packet-loss-chart" class="col-md-6 mt-3 charts-styles">
             <apx-chart
                 [series]="polqaSentBitrateChartOptions.series"
                 [title]="polqaSentBitrateChartOptions.title"
@@ -74,7 +74,7 @@
                 [tooltip]="polqaSentBitrateChartOptions.tooltip">
             </apx-chart>
         </div>
-        <div id="polqa-rtt-chart" class="col-md-6 mt-3" style="height: 300px">
+        <div id="polqa-rtt-chart" class="col-md-6 mt-3 charts-styles">
             <apx-chart
                     [series]="polqaRoundTripChartOptions.series"
                     [title]="polqaRoundTripChartOptions.title"

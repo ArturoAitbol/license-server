@@ -12,67 +12,68 @@ export class PermissionsChartComponent implements OnInit {
   constructor(public dialogService: DialogService, public dialogRef: MatDialogRef<PermissionsChartComponent> ) { }
 
   tableData: any;
-  
+  tableHeader: any;
   ngOnInit(): void {
-     this.tableData = {
+    this.tableHeader = ['Role ', 'Admin', 'Stakeholder'];
+
+    this.tableData = {
       row: [
         {
-          header: 'Onboarding Wizard',
-          administrator: true,
+          action: 'Onboarding Wizard',
+          admin: true,
           stakeholder: false,
         },
         {
-          header: 'View SpotLight Users and their roles (Admin or Stakeholder)',
-          administrator: true,
+          action: 'View UCaaS Users and their roles (Admin or Stakeholder)',
+          admin: true,
           stakeholder: true,
         },
         {
-          header: 'View/Add/Delete/Modify SpotLight Users (Managing users)',
-          administrator: true,
+          action: 'Add/Delete/Modify UCaaS Users (Managing users)',
+          admin: true,
           stakeholder: false,
         },
         {
-          header: 'Change Roles of SpotLight Users',
-          administrator: true,
+          action: 'Change Roles of UCaaS Users',
+          admin: true,
           stakeholder: false,
         },
         {
-          header: 'Contact Support',
-          administrator: true,
+          action: 'Contact Support',
+          admin: true,
           stakeholder: true,
         },
         {
-          header: 'View Map (Visualization with regions and stats)',
-          administrator: true,
+          action: 'View Map (Visualization with regions and stats)',
+          admin: true,
           stakeholder: true,
         },
         {
-          header: 'View Dashboard (Visualizations and notes)',
-          administrator: true,
+          action: 'View Dashboard (Visualizations and notes)',
+          admin: true,
           stakeholder: true,
         },
         {
-          header: 'Add notes in the dashboard',
-          administrator: true,
+          action: 'Add notes in the dashboard',
+          admin: true,
           stakeholder: false,
         },
         {
-          header: 'View and download detailed test reports',
-          administrator: true,
+          action: 'View and download detailed test reports',
+          admin: true,
           stakeholder: true,
         },
         {
-          header: 'View/Filter DIDs',
-          administrator: true,
+          action: 'View/Filter DIDs',
+          admin: true,
           stakeholder: true,
         },
         {
-          header: 'View/Filter Regions',
-          administrator: true,
+          action: 'View/Filter Regions',
+          admin: true,
           stakeholder: true,
         },
       ]
-     
     };
   }
 

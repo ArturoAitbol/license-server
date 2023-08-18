@@ -642,7 +642,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
   sendHelpDialogValues(): void {
     const data = {
-      title: 'Map Help',
+      title: 'Map',
       summary: "Map/Route path offers an overview of all regions and cross-calling between them. It also serves as a reference point to identify if any regions is experiencing issues with calls.",
       sections: [
         {
