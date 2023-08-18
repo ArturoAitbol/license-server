@@ -44,6 +44,7 @@ dependencies {
     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.11.0'
 
     // Web Driver Manager
+//    implementation "io.github.bonigarcia:webdrivermanager:3.7.1"
     implementation "io.github.bonigarcia:webdrivermanager:5.4.1"
 
     // BDD
@@ -67,9 +68,8 @@ dependencies {
     //Handle multiple environments
     implementation group: 'org.aeonbits.owner', name: 'owner', version: '1.0.8'
 
+// https://mvnrepository.com/artifact/net.lightbody.bmp/browsermob-core
 //    implementation group: 'net.lightbody.bmp', name: 'browsermob-core', version: '2.1.2'
-    // https://mvnrepository.com/artifact/net.lightbody.bmp/browsermob-core
-//    compile group: 'net.lightbody.bmp', name: 'browsermob-core', version: '2.1.5'
 }
 
 cluecumberReports {

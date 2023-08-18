@@ -82,7 +82,7 @@
         </ng-container>
         <ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr [ngStyle]="{'background-color':getRowColor(row)}" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </ng-container>
     </table>
     <!-- table for no data -->

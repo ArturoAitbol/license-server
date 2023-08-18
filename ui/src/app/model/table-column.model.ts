@@ -5,4 +5,5 @@ export interface TableColumn {
     isSortable?: boolean;
     isClickable?: boolean;
     canHighlighted?: boolean;
+    color?:string;
 }

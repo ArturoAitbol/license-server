@@ -9,7 +9,7 @@ Feature: LicensesConsumption
   Scenario: Create a test customer for labs consumption tests
     Given I open the Add Customer form
     When I create a customer with the following data
-      | name          | functional-license-customer         |
+      | name          | functional-license-customer           |
       | type          | MSP                                   |
       | adminEmail    | test-usage@tekvizion.com              |
       | subaccount    | Default                               |

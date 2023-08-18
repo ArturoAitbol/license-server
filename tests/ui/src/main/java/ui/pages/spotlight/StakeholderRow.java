@@ -20,9 +20,7 @@ public class StakeholderRow extends AbstractPageObject {
     }
 
     public ActionMenu openActionMenu() {
-        By actionMenuSelector = By.xpath(this.STAKEHOLDER_EMAIL_XPATH + "/following-sibling::td[@id='more_vert']/button");
-        this.action.forceClick(actionMenuSelector);
-        return new ActionMenu();
+        return this.action.openActionMenu(this.STAKEHOLDER_EMAIL_XPATH);
     }
 
 }

@@ -114,6 +114,9 @@ export const permissions = {
             ],
             testReportsOptions: [
                 'VIEW_DETAILS'
+            ],
+            detailedReports: [
+                'VIEW_CALLS_DETAILS'
             ]
         }
     },
@@ -226,6 +229,9 @@ export const permissions = {
             deviceOptions: [],
             testReportsOptions: [
                 'VIEW_DETAILS'
+            ],
+            detailedReports: [
+                'VIEW_CALLS_DETAILS'
             ]
         }
     },
@@ -329,7 +335,10 @@ export const permissions = {
                 'VIEW_CONSUMPTION'
             ],
             stakeholderOptions: [],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            detailedReports: [
+                'VIEW_CALLS_DETAILS'
+            ]
         }
     },
     'customer.FullAdmin': {
@@ -386,6 +395,9 @@ export const permissions = {
             ],
             testReportsOptions: [
                 'VIEW_DETAILS'
+            ],
+            detailedReports: [
+                'VIEW_CALLS_DETAILS'
             ]
         }
     },
@@ -480,6 +492,9 @@ export const permissions = {
             ],
             testReportsOptions: [
                 'VIEW_DETAILS'
+            ],
+            detailedReports: [
+                'VIEW_CALLS_DETAILS'
             ]
         }
     }

@@ -9,7 +9,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Sort } from '@angular/material/sort';
 import moment, { Moment } from 'moment';
 import { DialogService } from 'src/app/services/dialog.service';
-import { ConfirmDialogConst, EndpointColumnsConst, SummaryColumnsConst, TestFeatureandCallReliability, StatsColumnsConst } from 'src/app/helpers/ctaas-detailed-reports';
+import { ConfirmDialogConst, EndpointColumnsConst, SummaryColumnsConst, TestFeatureandCallReliability, StatsColumnsConst, DetailReportColumns } from 'src/app/helpers/ctaas-detailed-reports';
 import { SpotlightChartsService } from 'src/app/services/spotlight-charts.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CtaasCallsDetailsComponent } from './ctaas-calls-details/ctaas-calls-details.component';
@@ -21,13 +21,14 @@ import { Constants } from 'src/app/helpers/constants';
 })
 export class DetailedReportsComponent implements OnInit {
   endpointDisplayedColumns: any = [];
+  detailedReportColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
   title: string = ReportName.FEATURE_FUNCTIONALITY_NAME + " + " + ReportName.CALLING_RELIABILITY_NAME + " + " + ReportName.VQ_NAME;
   types: string = '';
   testPlanNames: string = '';
   status: string = '';
-
+  actionMenuOptions: any = [];
   groupBy:string = 'hour';
   polqaTrendsData:any;
   isPolqaTrendsLoading: boolean = false;
@@ -82,6 +83,10 @@ export class DetailedReportsComponent implements OnInit {
     packetLoss: {count: 0, sum: 0},
     bitrate: {count: 0, sum: 0},
   };
+  readonly VIEW_CALLS_DETAILS: string = 'More info';
+  readonly options = {
+    VIEW_CALLS_DETAILS: this.VIEW_CALLS_DETAILS
+  }
   messageSpinner = 'Please wait while we prepare your call report.';
   filterByAvg = 0;
   sectionFailed = false;
@@ -111,6 +116,7 @@ export class DetailedReportsComponent implements OnInit {
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
+    this.getActionMenuOptions();
     this.route.queryParams.subscribe((params: any) => {
       this.subaccountDetails.id = params.subaccountId;
       if (params.type) this.types = params.type;
@@ -126,6 +132,7 @@ export class DetailedReportsComponent implements OnInit {
       this.startDateStr = this.startDate.format('YYMMDDHHmmss');
       this.endDateStr =  this.endDate.format('YYMMDDHHmmss');
       this.displayStats = params.statsTab === 'true' ? params.statsTab : false;
+      this.displayStats = params.statsTab && this.startDate.isSame(this.endDate,'day');
       if(this.displayStats){
         if(this.filterByAvg!=0){
           this.selectedTab = 1;
@@ -421,6 +428,18 @@ export class DetailedReportsComponent implements OnInit {
               filterDID.push(testResult.to.DID);
             }
         }
+        testResult.fromDID = testResult.from.DID;
+        testResult.toDID = testResult.to.DID;
+
+        if(testResult.fromPolqaMin &&  testResult.fromPolqaAvg)
+          testResult.fromPOLQA = 'Min: ' + testResult.fromPolqaMin +', Avg: ' +  testResult.fromPolqaAvg;
+        else
+          testResult.fromPOLQA = 'Min: N/A, Avg: N/A';
+
+        if(testResult.toPolqaMin && testResult.toPolqaAvg)
+          testResult.toPOLQA = 'Min: ' + testResult.toPolqaMin +', Avg: ' +  testResult.toPolqaAvg;
+        else 
+          testResult.toPOLQA = 'Min: N/A, Avg: N/A';
       });
 
       if (this.filterByAvg) {
@@ -492,6 +511,16 @@ export class DetailedReportsComponent implements OnInit {
   }
   getSelectedOtherPartyTimeStamp(event) {
     this.otherPartiesMediaStats = event.data;
+  }
+
+  private getActionMenuOptions() {
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
+    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "detailedReports");
+  }
+
+  rowAction(event:any) {
+    if(event.selectedOption === "More info")
+      this.openDetails(event.selectedRow)
   }
 
   setStep(key: any, index: number, rowIndex) {
@@ -604,6 +633,7 @@ export class DetailedReportsComponent implements OnInit {
    */
   initColumns(): void {
     this.endpointDisplayedColumns = EndpointColumnsConst;
+    this.detailedReportColumns = DetailReportColumns;
     this.summaryDisplayedColumns = SummaryColumnsConst;
     this.detailedTestFeatureandCallReliability = TestFeatureandCallReliability;
     this.mediaStatsDisplayedColumns = StatsColumnsConst;

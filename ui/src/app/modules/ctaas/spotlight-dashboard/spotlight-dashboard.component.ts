@@ -899,11 +899,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
                 },  
                 {
                   subtitle: 'On-net', 
-                  description: 'Refers to phone calls that are routed between the same service provider network.'
+                  description: 'On-net calling refers to phone calls that are routed between the same service provider network.'
                 },
                 {
                   subtitle: 'Off-net', 
-                  description: 'Refers to phone calls that are routed between different service provider network.'
+                  description: 'Off-net calling refers to phone calls that are routed between different service provider network.'
                 },  
                 {
                   subtitle: 'View detailed report', 
@@ -995,7 +995,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
             },
             {
               subtitle: 'Calling Reliability', 
-              description: "Shows call routing status across regions, with number of calls vs. Success rate or Pass/Fail for the latest week (last seven days from selected date) in the Date field. Hovering over the data points on the graph, it gives the overall Success percentage.",
+              description: "Shows call routing status across regions, with number of calls vs. Success rate or Pass/Fail for the latest week in the Date field. Hovering over the data points on the graph, it gives the overall Success percentage.",
             },
             {
               subtitle: 'Voice Quality (POLQA)', 
@@ -1003,7 +1003,7 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
             },
             {
               subtitle: 'Call Status History', 
-              description: 'This is a record of the calls made or received, including details like date, time. Click on the failed section to identify patterns of call failure, helping you identify and resolve issues effectively. Data is displayed for the latest week (last seven days from selected date).',
+              description: 'Provides insights into the number of calls executed at a given time and date helping the user understand the pattern of call disruptions. For instance, observing elevated call failures on Monday mornings or the peak afternoon hours within a week.',
             },
             {
               subtitle: 'Number of call streams', 
@@ -1011,19 +1011,19 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
             },  
             {
               subtitle: 'Number of calls', // done
-              description: 'Refers to the total count of call volume made or received for the latest week (last seven days from selected date).'
+              description: 'Refers to the total count of call volume made or received for the last week from the date selected.'
             },  
             {
               subtitle: 'P2P', 
-              description: 'Refer to Peer-Peer call wherein the two users have a direct call within the same call server. Data is displayed for the latest week (last seven days from selected date).'
+              description: 'Refer to Peer-Peer call wherein the two users have a direct call within the same call server.'
             },  
             {
               subtitle: 'On-net', 
-              description: 'Refers to phone calls that are routed between the same service provider network. Data is displayed for the latest week (last seven days from selected date).'
+              description: 'On-net calling refers to phone calls that are routed between the same service provider network.'
             },
             {
               subtitle: 'Off-net', 
-              description: 'Refers to phone calls that are routed between different service provider network. Data is displayed for the latest week (last seven days from selected date).'
+              description: 'Off-net calling refers to phone calls that are routed between different service provider network.'
             },  
             {
               subtitle: 'View detailed report',
@@ -1035,19 +1035,19 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
           name: "Network Quality",
           elements: [
             {
-              description: "This section represents the customer's network quality summary along with the detailed reports of Received Packet Loss, Round Trip Time, Jitter, Sent Bit Rate and POLQA. Data is displayed for the latest week (last seven days from selected date).",
+              description: "Represents the customer's network quality summary along with the detailed reports of Received Packet Loss, Round Trip Time, Jitter, Sent Bit Rate and POLQA.",
             },
             {
               subtitle: 'User', 
-              description: 'Selecting the user and clicking on Apply gives the network stats for the selected user. Data is displayed for the latest week (last seven days from selected date).',
+              description: 'Selecting the user and clicking on Apply gives the network stats for the selected user.',
             },
             {
               subtitle: 'Calls with Network Stats', 
-              description: 'Refers to calls that come with detailed statistics about network performance. Data is displayed for the latest week (last seven days from selected date).',
+              description: 'Refers to calls that come with detailed statistics about network performance.',
             },
             {
               subtitle: 'Calls Above Threshold Metrics', 
-              description: 'Number of calls that exceed the recommended threshold for a particular metric. Data is displayed for the latest week (last seven days from selected date).'
+              description: 'Number of calls that exceed the recommended threshold for a particular metric. '
             },  
             {
               subtitle: 'Worst Case', 
@@ -1075,11 +1075,11 @@ export class SpotlightDashboardComponent implements OnInit, OnDestroy {
             },
             {
               subtitle: 'POLQA', 
-              description: 'This is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
+              description: 'POLQA is a metric used to measure the minimum audio quality in telecommunications, such as voice calls.',
             },
             {
               subtitle: 'Sent Bitrate (kbps)', 
-              description: 'This is the rate at which data bits are transmitted from the source during a communication session.',
+              description: 'Sent Bitrate is the rate at which data bits are transmitted from the source during a communication session.',
             },
             {
               subtitle: 'POLQA Calls Media Stats', 
