@@ -8,7 +8,6 @@ import ui.core.AbstractDriver;
 public class ChromeHeadless extends AbstractDriver {
     @Override
     public WebDriver initDriver() {
-//        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--lang=en");
         options.addArguments("--remote-allow-origins=*");
