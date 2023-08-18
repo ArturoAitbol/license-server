@@ -143,6 +143,11 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit, OnC
       return Utility.getColorCode(value[tableColumn.dataKey]);
   }
 
+  getRowColor(value: any):any{
+    if(value.color)
+      return value.color
+  }
+
   /**
    * emit pageChanged event
    * @param event: PageEvent
