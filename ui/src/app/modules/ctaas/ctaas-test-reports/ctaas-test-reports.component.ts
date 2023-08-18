@@ -190,7 +190,7 @@ export class CtaasTestReportsComponent implements OnInit {
     }
     const startDate = Utility.parseReportDate(moment.utc().startOf('day'));
     const endDate = Utility.parseReportDate(moment.utc());
-    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${startDate}&end=${endDate}`;
+    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${startDate}&end=${endDate}&statsTab=true`;
     window.open(featureUrl);
   }
 
@@ -211,7 +211,7 @@ export class CtaasTestReportsComponent implements OnInit {
     const endDate = selectedReport.endDate.split('UTC')[0];
     const startTime = Utility.parseReportDate(moment.utc(startDate,'MM-DD-YYYY HH:mm:ss'));
     const endTime = Utility.parseReportDate(moment.utc(endDate,'MM-DD-YYYY HH:mm:ss'));
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}&statsTab=true`;
     window.open(url);
 }
 

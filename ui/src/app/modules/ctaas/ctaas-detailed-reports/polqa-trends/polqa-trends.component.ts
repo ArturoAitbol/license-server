@@ -108,7 +108,7 @@ export class PolqaTrendsComponent implements OnInit {
 
   setPacketLoss(data){
     this.polqaPacketLossChartOptions = {...this.commonOptions,...defaultPolqaTrendsPacketLossChartOptions};
-    this.polqaPacketLossChartOptions.title.text = this.series.packetLoss.label;
+    this.polqaPacketLossChartOptions.title.text = this.series.packetLoss.label + ' (%)';
     this.polqaPacketLossChartOptions.tooltip.custom = ({ series, seriesIndex, dataPointIndex, w }) => {
       return this.getToolTip(w.config.series,dataPointIndex);
     }
@@ -127,7 +127,7 @@ export class PolqaTrendsComponent implements OnInit {
 
   setJitter(data){
     this.polqaJitterChartOptions = {...this.commonOptions,...defaultPolqaTrendsJitterChartOptions};
-    this.polqaJitterChartOptions.title.text = this.series.jitter.label;
+    this.polqaJitterChartOptions.title.text = this.series.jitter.label + ' (ms)';
     this.polqaJitterChartOptions.tooltip.custom = ({ series, seriesIndex, dataPointIndex, w }) => {
       return this.getToolTip(w.config.series,dataPointIndex);
     }
@@ -146,7 +146,7 @@ export class PolqaTrendsComponent implements OnInit {
 
   setSentBitrate(data){
     this.polqaSentBitrateChartOptions = {...this.commonOptions,...defaultPolqaTrendsSentBitrateChartOptions};
-    this.polqaSentBitrateChartOptions.title.text = this.series.sentBitrate.label;
+    this.polqaSentBitrateChartOptions.title.text = this.series.sentBitrate.label + ' (kbps)';
     this.polqaSentBitrateChartOptions.tooltip.custom = ({ series, seriesIndex, dataPointIndex, w }) => {
       return this.getToolTip(w.config.series,dataPointIndex);
     }
@@ -161,7 +161,7 @@ export class PolqaTrendsComponent implements OnInit {
 
   setRoundTripTime(data){
     this.polqaRoundTripChartOptions = {...this.commonOptions,...defaultPolqaTrendsRoundtripTimeChartOptions};
-    this.polqaRoundTripChartOptions.title.text = this.series.roundTripTime.label;
+    this.polqaRoundTripChartOptions.title.text = this.series.roundTripTime.label + ' (ms)';
     this.polqaRoundTripChartOptions.tooltip.custom = ({ series, seriesIndex, dataPointIndex, w }) => {
       return this.getToolTip(w.config.series,dataPointIndex);
     }
