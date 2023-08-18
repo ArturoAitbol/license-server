@@ -10,7 +10,7 @@ import ui.core.AbstractDriver;
 public class Firefox extends AbstractDriver {
     @Override
     public WebDriver initDriver() {
-        WebDriverManager.firefoxdriver().setup();
+//        WebDriverManager.firefoxdriver().setup();
         FirefoxProfile profile = new FirefoxProfile();
         profile.setPreference("intl.accept_languages", "en-GB");
         FirefoxOptions options = new FirefoxOptions();

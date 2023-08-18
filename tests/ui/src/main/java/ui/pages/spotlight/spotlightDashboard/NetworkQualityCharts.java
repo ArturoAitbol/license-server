@@ -57,6 +57,7 @@ public class NetworkQualityCharts extends AbstractPageObject {
     }
 
     public String getCallsWithNetworkStats(){
+        this.action.waitVisibilityElement(this.callsWithNetStats);
         this.action.scrollToElement(this.callsWithNetStats);
         return this.callsWithNetStats.getText();
     }
