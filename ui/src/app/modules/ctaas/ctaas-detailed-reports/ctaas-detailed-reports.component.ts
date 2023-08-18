@@ -126,6 +126,7 @@ export class DetailedReportsComponent implements OnInit {
       this.startDateStr = this.startDate.format('YYMMDDHHmmss');
       this.endDateStr =  this.endDate.format('YYMMDDHHmmss');
       this.displayStats = params.statsTab === 'true' ? params.statsTab : false;
+      this.displayStats = params.statsTab && this.startDate.isSame(this.endDate,'day');
       if(this.displayStats){
         if(this.filterByAvg!=0){
           this.selectedTab = 1;
