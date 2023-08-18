@@ -254,3 +254,10 @@ mat-panel-title {
   align-items: center; 
   justify-content: center; */
 }
+
+.detailed-report {
+  position: relative;
+  min-height: 395px;
+  overflow: auto;
+}
+ 

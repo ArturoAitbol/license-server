@@ -156,6 +156,12 @@ public class TekvLSGetPolqaTrends {
 			case "LTS":
 				subQuery += " AND tp.name='" + Utils.TEST_PLAN_NAMES.FEATURE_FUNCTIONALITY.value() + "'";
 				break;
+			case "STS":
+				subQuery += " AND tp.name='" + Utils.TEST_PLAN_NAMES.CALLING_RELIABILITY.value() + "'";
+				break;
+			case "POLQA":
+				subQuery += " AND tp.name='" + Utils.TEST_PLAN_NAMES.POLQA.value() + "'";
+				break;
 			case "STS,POLQA":
 				subQuery += " AND (tp.name='" + Utils.TEST_PLAN_NAMES.CALLING_RELIABILITY.value() + "' OR tp.name='" + Utils.TEST_PLAN_NAMES.POLQA.value() + "')";
 				break;
