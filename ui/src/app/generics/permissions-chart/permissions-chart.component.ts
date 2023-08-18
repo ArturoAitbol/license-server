@@ -24,17 +24,17 @@ export class PermissionsChartComponent implements OnInit {
           stakeholder: false,
         },
         {
-          action: 'View SpotLight Users and their roles (Admin or Stakeholder)',
+          action: 'View UCaaS Users and their roles (Admin or Stakeholder)',
           admin: true,
           stakeholder: true,
         },
         {
-          action: 'Add/Delete/Modify SpotLight Users (Managing users)',
+          action: 'Add/Delete/Modify UCaaS Users (Managing users)',
           admin: true,
           stakeholder: false,
         },
         {
-          action: 'Change Roles of SpotLight Users',
+          action: 'Change Roles of UCaaS Users',
           admin: true,
           stakeholder: false,
         },
