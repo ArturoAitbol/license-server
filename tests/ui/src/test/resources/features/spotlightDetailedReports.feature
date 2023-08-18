@@ -6,7 +6,7 @@ Feature: spotlightDashboard
     Then I should see the "Customers" page
     And I close all tabs but the current one
 
-  @ValidateCallingReliability
+  @validateCallingReliability
   Scenario: Go to the Calling Reliability detailed report
     Given I go to the spotlight dashboard of subaccount "DashboardFunctionalTest" of customer "DashboardFunctionalTest"
     When I see the dashboard tab is fully loaded in the "Daily" report page
@@ -47,9 +47,9 @@ Feature: spotlightDashboard
         | Test Case     | Many-Many-POLQA-A to B   |
         | Start Date    | 06/24/2023 23:22:04      |
         | From          | 2142428803               |
-        | From POLQA    | Min:N/A, Avg:N/A         |
+        | From POLQA    | Min: N/A, Avg: N/A       |
         | To            | 9725980054               |
-        | To POLQA      | Min:N/A, Avg:N/A         |
+        | To POLQA      | Min: N/A, Avg: N/A       |
         | Status        | FAILED                   |
         | Call Type     | On-Net                   |
 #    Then I click on "Many-Many-POLQA-A to B drop-button" button
@@ -104,9 +104,9 @@ Feature: spotlightDashboard
         | Test Case     | 2_Func_tekV-Basic-MSTeams-001    |
         | Start Date    | 06/24/2023 00:39:51              |
         | From          | 9725980066                       |
-        | From POLQA    | Min:N/A, Avg:N/A                 |
+        | From POLQA    | Min: N/A, Avg: N/A               |
         | To            | 2142428818                       |
-        | To POLQA      | Min:N/A, Avg:N/A                 |
+        | To POLQA      | Min: N/A, Avg: N/A               |
         | Status        | PASSED                           |
         | Call Type     | On-Net                           |
 #    Then I click on "2_Func_tekV-Basic-MSTeams-001 drop-button" button
@@ -192,9 +192,9 @@ Feature: spotlightDashboard
         | Test Case   | LTS-POLQA-1           |
         | Start Date  | 06/24/2023 01:01:03   |
         | From        | 2142428818            |
-        | From POLQA  | Min:2.54, Avg:3.67    |
+        | From POLQA  | Min: 2.54, Avg: 3.67  |
         | To          | 9725980066            |
-        | To POLQA    | Min:2.46, Avg:3.79    |
+        | To POLQA    | Min: 2.46, Avg: 3.79  |
         | Status      | PASSED                |
         | Call Type   | On-Net                |
 #    Then I click on "LTS-POLQA-1 drop-button" button
@@ -279,9 +279,9 @@ Feature: spotlightDashboard
         | Test Case  | Many-Many-POLQA-A to B   |
         | Start Date | 06/24/2023 23:22:04      |
         | From       | 2142428803               |
-        | From POLQA | Min:N/A, Avg:N/A         |
+        | From POLQA | Min: N/A, Avg: N/A       |
         | To         | 9725980054               |
-        | To POLQA   | Min:N/A, Avg:N/A         |
+        | To POLQA   | Min: N/A, Avg: N/A       |
         | Status     | FAILED                   |
         | Call Type  | On-Net                   |
 #    Then I click on "Many-Many-POLQA-A to B drop-button" button
@@ -330,9 +330,9 @@ Feature: spotlightDashboard
         | Test Case  | Many-Many-POLQA-A to B   |
         | Start Date | 06/24/2023 23:22:04      |
         | From       | 2142428803               |
-        | From POLQA | Min:N/A, Avg:N/A         |
+        | From POLQA | Min: N/A, Avg: N/A       |
         | To         | 9725980054               |
-        | To POLQA   | Min:N/A, Avg:N/A         |
+        | To POLQA   | Min: N/A, Avg:N/A        |
         | Status     | FAILED                   |
         | Call Type  | On-Net                   |
 #    Then I click on "Many-Many-POLQA-A to B drop-button" button
