@@ -66,7 +66,7 @@
                                     [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                                     [tableColumns]="endpointDisplayedColumns" (sort)="sortData($event)"></app-data-table>
                                 </div>
-                                </mat-card-content>
+                            </mat-card-content>
                         </mat-card>
                     </section>
                 </div>
@@ -83,88 +83,21 @@
     </mat-tab-group>
 </ng-template>
 <ng-template #viewTestDetailedReport>
-    <section class="table-section">
-        <mat-card class="card" style="height: 400px;overflow: auto;">
-            <div class="panel-title-container">
-                <mat-card-content id ="{{title}} Details" class="row">
-                <div>
-                    <ng-container class="column-content" *ngIf="detailedTestReport.length > 0" >
-                        <div class="fix-header">
-                            <mat-accordion class="accordian-container">
-                                <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
-                                    <mat-expansion-panel-header>
-                                        <mat-panel-title  id = "Test Case Column" class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('testCaseName')"> Test Case
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'testCaseName'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                        <mat-panel-title id = "Start Date Column" class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('startTime')"> Start Date
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'startTime'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                        <mat-panel-title id = "From Column" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('from')"> From
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'from'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                        <mat-panel-title id = "From POLQA Column" class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('fromPolqaAvg')"> From POLQA
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'fromPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                        <mat-panel-title id = "To Column" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col" style="color: black;font-weight: 500" (click)="handleSort('to')"> To
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'to'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                        <mat-panel-title id = "To POLQA Column" class="col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('toPolqaAvg')"> To POLQA
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'toPolqaAvg'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                        <mat-panel-title id = "Status Column" class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('status')"> Status
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'status'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                        <mat-panel-title id = "Call Type Column" class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col" style="color: black;font-weight: 500;" (click)="handleSort('callType')"> Call Type
-                                            <mat-icon class="small-icon" *ngIf="sortColumn === 'callType'">{{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-                                        </mat-panel-title>
-                                    </mat-expansion-panel-header>
-                                </mat-expansion-panel>
-                            </mat-accordion>
-                        </div>
-                        <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
-                            class="accordian-container">
-                            <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
-                                <mat-expansion-panel-header [style.background-color] = "item.color" (mouseover)="item.color = item.colorOnMouseOver"
-                                (mouseout)="item.color = item.colorOnMouseOut"class="text-container">
-                                    <mat-panel-title class="col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
-                                        <span class="testcasename" [title]="item.testCaseName">
-                                            {{item.testCaseName | na}}
-                                        </span>
-                                    </mat-panel-title>
-                                    <mat-panel-title [title]="item.startTime" class="col-12 col-lg-2 col-md-2 col-sm-1 custom-col">
-                                        {{item.startTime | na}}
-                                    </mat-panel-title>
-                                    <mat-panel-title [title]="item.from?.DID" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
-                                        {{item.from?.DID | na}}
-                                    </mat-panel-title>
-                                    <mat-panel-title [title]="'AVGFrom'" class="average-col col-xl-1 col-12 col-lg-2 col-md-2 col-sm-2 custom-col">
-                                        Min:{{item.fromPolqaMin | number:'.2' | na }}, Avg:{{item.fromPolqaAvg | number:'.2' | na }}
-                                    </mat-panel-title>
-                                    <mat-panel-title [title]="item.to?.DID" class="col-12 col-xl-1 col-lg-2 col-md-1 col-sm-2 custom-col">
-                                        {{item.to?.DID | na}}
-                                    </mat-panel-title>
-                                    <mat-panel-title [title]="'AVGTo'" class="average-col col-12 col-xl-1 col-lg-2 col-md-2 col-sm-2 custom-col">
-                                        Min:{{item.toPolqaMin | number:'.2' | na }}, Avg:{{item.toPolqaAvg | number:'.2' | na }}
-                                    </mat-panel-title>
-                                    <mat-panel-title [title]="item.status" class="col-12 col-lg-1 col-md-1 col-sm-1 custom-col">
-                                        {{item.status | na}}
-                                    </mat-panel-title>
-                                    <mat-panel-title [title]="item.callType" class="col-12 col-xl-1 col-lg-1 col-md-1 col-sm-1 custom-col">
-                                        {{item.callType | na}}
-                                    </mat-panel-title>
-                                        <mat-icon [matMenuTriggerFor]="menu" title="{{item.testCaseName}} drop-button" class="arrow-button col-12 col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">
-                                            more_vert</mat-icon>
-                                        <mat-menu #menu="matMenu">
-                                            <button mat-menu-item (click)="openDetails(item)">More Info</button>
-                                        </mat-menu>
-                                </mat-expansion-panel-header>
-                            </mat-expansion-panel>
-                        </mat-accordion>
-                    </ng-container>
-                    <h3 class="no-data-found" *ngIf="detailedTestReport.length === 0">No Data to display</h3>
+    <section class="table-section-reports">
+        <mat-card class="detailed-report">
+            <mat-card-content [style.max-height.px]="tableMaxHeight">
+                <div id="endpoint-resources-table" >
+                    <app-data-table id="{{title}} Endpoint Resources" class="table-container mat-elevation-z8" 
+                    [tableData]="detailedTestReport"
+                    [isLoadingResults]="isLoadingResults" 
+                    [isRequestCompleted]="isRequestCompleted"
+                    [rowActionIcon]="actionMenuOptions.length > 0 && 'more_vert'"
+                    [actionMenuList]="actionMenuOptions"
+                    [tableColumns]="detailedReportColumns" 
+                    (rowAction)="rowAction($event)"
+                    (sort)="sortData($event)"></app-data-table>
                 </div>
             </mat-card-content>
-        </div>
         </mat-card>
     </section>
 </ng-template>
