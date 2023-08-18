@@ -51,3 +51,14 @@ export const StatsColumnsConst = [
     { header: 'Received packets', value: 'Received packets' },
     { header: 'POLQA', value: 'POLQA'}
 ];
+
+export const DetailReportColumns = [
+    { name: 'Test Case', dataKey: 'testCaseName', color:'color'},
+    { name: 'Start Date', dataKey: 'startTime', color:'color'},
+    { name: 'From', dataKey: 'fromDID', color:'color'},
+    { name: 'From POLQA', dataKey: 'fromPOLQA', color:'color'},
+    { name: 'To', dataKey: 'toDID', color:'color'},
+    { name: 'To POLQA', dataKey: 'toPOLQA', color:'color'},
+    { name: 'Status', dataKey: 'status', color:'color'},
+    { name: 'Call Type', dataKey: 'callType', color:'color'}
+];
