@@ -17,9 +17,6 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 
 public class MapNode extends AbstractPageObject {
-    @FindBy(css = "[title='Chicago']")
-    WebElement node;
-    //Chicago San Antonio
     @FindBy(css = "[id='cancel-button']")
     WebElement cancelButton;
     @FindBy(css = "[id='go-dashboard']")
@@ -107,9 +104,10 @@ public class MapNode extends AbstractPageObject {
         String tPacketLoss= "Max: 22.07, Avg: 0.06";
         String tBitrate= "Avg: 37.11";
         waitData();
-        this.action.click(this.node);
+        By nodeSelector = By.cssSelector("[title='Chicago']");
+        this.action.click(nodeSelector);
         if(this.action.checkElement(this.nodeTitle) != "ok") {
-            this.action.click(this.node);
+            this.action.click(nodeSelector);
         }
         assertEquals("originated POLQA isn't the same: ".concat(this.action.getText(originatedPOLQA)),oPOLQA,this.action.getText(originatedPOLQA));
         assertEquals("originated Jitter isn't the same: ".concat(this.action.getText(originatedJitter)),oJitter,this.action.getText(originatedJitter));
