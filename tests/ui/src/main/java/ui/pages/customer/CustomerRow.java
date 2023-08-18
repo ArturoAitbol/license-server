@@ -24,9 +24,7 @@ public class CustomerRow extends AbstractPageObject {
     }
 
     public ActionMenu openActionMenu(){
-        By actionMenuSelector = By.xpath(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[@id='more_vert']/button");
-        this.action.forceClick(actionMenuSelector);
-        return new ActionMenu();
+        return this.action.openActionMenu(this.CUSTOMER_NAME_XPATH);
     }
 
     public String getSubaccountColumn(String column, String subaccountName){                       

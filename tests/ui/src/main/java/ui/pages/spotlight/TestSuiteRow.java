@@ -20,9 +20,7 @@ public class TestSuiteRow extends AbstractPageObject {
     }
 
     public ActionMenu openActionMenu() {
-        By actionMenuSelector = By.xpath(this.TEST_SUITE_NAME_XPATH + "/following-sibling::td[@id='more_vert']/button");
-        this.action.forceClick(actionMenuSelector);
-        return new ActionMenu();
+        return this.action.openActionMenu(this.TEST_SUITE_NAME_XPATH);
     }
 
 }

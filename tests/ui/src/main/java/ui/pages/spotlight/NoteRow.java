@@ -17,9 +17,7 @@ public class NoteRow extends AbstractPageObject {
     }
 
     public ActionMenu openActionMenu(){
-        By actionMenuSelector = By.xpath(this.NOTE_CONTENT_XPATH + "/following-sibling::td[@id='more_vert']/button");
-        this.action.forceClick(actionMenuSelector);
-        return new ActionMenu();
+        return this.action.openActionMenu(this.NOTE_CONTENT_XPATH);
     }
 
 }

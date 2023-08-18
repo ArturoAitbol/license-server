@@ -78,6 +78,7 @@ public class CustomerSteps {
     @Then("I see the customer {string} in the table")
     public void iShouldSeeTheCustomerInTheTable(String customerName) {
         String expectedCustomer = customerName + this.timeStamp;
+        System.out.println("Expected customer:" + expectedCustomer);
         this.customerRow = this.customers.getCustomer(customerName);
         String actualCustomerName = this.customerRow.getCustomerColumn("Customer");
         assertEquals("Customers table doesn't have the customer: ".concat(expectedCustomer), expectedCustomer,

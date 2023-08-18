@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import ui.pages.ActionMenu;
 
 import java.time.Duration;
 import java.util.List;
@@ -69,6 +70,7 @@ public class WebDriverAction {
         } catch (Exception e) {
             System.out.println("Spinner wasn't displayed");
             System.out.println(e);
+            wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
         }
     }
 
@@ -172,6 +174,7 @@ public class WebDriverAction {
         }
         catch (Exception e){
             output="error";
+            wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
         }
         wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
         return output;
@@ -184,5 +187,22 @@ public class WebDriverAction {
     public void scrollToElement(WebElement element) {
         JavascriptExecutor js = (JavascriptExecutor) this.driver;
         js.executeScript("arguments[0].scrollIntoView();", element);
+    }
+
+    public ActionMenu openActionMenu(String elementName){
+        By actionMenuSelector = By.xpath(elementName + "/following-sibling::td[@id='more_vert']/button");
+        String visible = checkElement(actionMenuSelector);
+        if(visible.equals("ok"))
+            forceClick(actionMenuSelector);
+        else if (visible.equals("error")) {
+            System.out.println("Action menu button was not found at the first attempt. Refreshing customers view...");
+            this.driver.navigate().refresh();
+            visible = checkElement(actionMenuSelector);
+            if (visible.equals("ok"))
+                forceClick(actionMenuSelector);
+            else
+                throw new RuntimeException();
+        }
+        return new ActionMenu();
     }
 }

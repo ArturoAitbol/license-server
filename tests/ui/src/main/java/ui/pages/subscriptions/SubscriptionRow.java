@@ -24,9 +24,7 @@ public class SubscriptionRow extends AbstractPageObject {
     }
 
     public ActionMenu openActionMenu(){
-        By actionMenuSelector = By.xpath(this.LICENSE_TITLE_XPATH + "/following-sibling::td[@id='more_vert']/button");
-        this.action.forceClick(actionMenuSelector);
-        return new ActionMenu();
+        return this.action.openActionMenu(this.LICENSE_TITLE_XPATH);
     }
     
 }
