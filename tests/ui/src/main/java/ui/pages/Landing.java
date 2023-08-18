@@ -14,8 +14,7 @@ public class Landing extends AbstractPageObject {
     Environment environment = ConfigFactory.create(Environment.class);
 
     public Landing(){
-//        driver.get(this.environment.url());
-//        driver.navigate().to(this.environment.url());
+        driver.get(this.environment.url());
         System.out.println("Navigate to:" + this.environment.url());
     }
 
@@ -30,7 +29,6 @@ public class Landing extends AbstractPageObject {
     }
 
     public String checkIfLoggedIn() {
-        driver.navigate().to(this.environment.url());
         By settingsSelector = By.cssSelector("#settings-button");
         String res = this.action.checkElement(settingsSelector);
         return res;
