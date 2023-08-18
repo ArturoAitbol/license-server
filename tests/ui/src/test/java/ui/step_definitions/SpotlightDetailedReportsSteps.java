@@ -76,7 +76,7 @@ public class SpotlightDetailedReportsSteps {
         int index = 0;
         for (String expectedValue : data) {
             expectedValue = data.get(index);
-            value = this.detailedReport.getColumnValue(actualTitle + " Details", expectedValue + " Column");
+            value = this.detailedReport.getColumnValue(actualTitle + " Details", expectedValue);
             index++;
             Assert.assertEquals(expectedValue, value);
         }
@@ -94,14 +94,16 @@ public class SpotlightDetailedReportsSteps {
         String expectedToPOLQA = data.get("To POLQA");
         String expectedStatus = data.get("Status");
         String expectedCallType = data.get("Call Type");
-        String testCases = this.detailedReport.getMatSpanValue(tableNane, expectedTestCases);
-        String startDate = this.detailedReport.getMatPanelValue(tableNane, expectedStartDate);
-        String from = this.detailedReport.getMatPanelValue(tableNane, expectedFrom);
-        String fromPOLQA = this.detailedReport.getMatPanelValue(tableNane, "AVGFrom");
-        String to = this.detailedReport.getMatPanelValue(tableNane, expectedTo);
-        String toPOLQA = this.detailedReport.getMatPanelValue(tableNane, "AVGTo");
-        String status = this.detailedReport.getMatPanelValue(tableNane, expectedStatus);
-        String callType = this.detailedReport.getMatPanelValue(tableNane, expectedCallType);
+        String testCases = this.detailedReport.getMatSpanValue(tableNane, "Test Case");
+        String startDate = this.detailedReport.getMatPanelValue(tableNane, "Start Date");
+        String from = this.detailedReport.getMatPanelValue(tableNane, "From");
+//        String fromPOLQA = this.detailedReport.getMatPanelValue(tableNane, "AVGFrom");
+        String fromPOLQA = this.detailedReport.getMatPanelValue(tableNane, "From POLQA");
+        String to = this.detailedReport.getMatPanelValue(tableNane, "To");
+//        String toPOLQA = this.detailedReport.getMatPanelValue(tableNane, "AVGTo");
+        String toPOLQA = this.detailedReport.getMatPanelValue(tableNane, "To POLQA");
+        String status = this.detailedReport.getMatPanelValue(tableNane, "Status");
+        String callType = this.detailedReport.getMatPanelValue(tableNane, "Call Type");
         Assert.assertEquals(expectedTestCases, testCases);
         Assert.assertEquals(expectedStartDate, startDate);
         Assert.assertEquals(expectedFrom, from);

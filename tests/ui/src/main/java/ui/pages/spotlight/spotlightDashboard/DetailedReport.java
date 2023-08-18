@@ -21,21 +21,24 @@ import org.openqa.selenium.By;
 
      public String getColumnValue(String table, String column){
          WebElement matCardContent = driver.findElement(By.id(table));
-         WebElement matPanelTitle = matCardContent.findElement(By.xpath(".//mat-panel-title[@id='" + column + "']"));
+//         WebElement matPanelTitle = matCardContent.findElement(By.xpath(".//mat-panel-title[@id='" + column + "']"));
+         WebElement matPanelTitle = matCardContent.findElement(By.xpath("//th[text()=' "+ column +" ']"));
          String value = matPanelTitle.getText();
          return value;
      }
 
      public String getMatSpanValue(String table, String field){
          WebElement matCardContent = driver.findElement(By.id(table));
-         WebElement matPanelTitle = matCardContent.findElement(By.xpath(".//span[@title='" + field + "']"));
+//         WebElement matPanelTitle = matCardContent.findElement(By.xpath(".//span[@title='" + field + "']"));
+         WebElement matPanelTitle = matCardContent.findElement(By.xpath("//td[@id='" + field +"']"));
          String value = matPanelTitle.getText();
          return value;
      }
 
      public String getMatPanelValue(String table, String field){
          WebElement matCardContent = driver.findElement(By.id(table));
-         WebElement matPanelTitle = matCardContent.findElement(By.xpath(".//mat-panel-title[@title='" + field + "']"));
+//         WebElement matPanelTitle = matCardContent.findElement(By.xpath(".//mat-panel-title[@title='" + field + "']"));
+         WebElement matPanelTitle = matCardContent.findElement(By.xpath("//td[@id='" + field +"']"));
          String value = matPanelTitle.getText();
          return value;
      }
